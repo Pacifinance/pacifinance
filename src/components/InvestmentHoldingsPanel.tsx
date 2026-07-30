@@ -72,6 +72,28 @@ const DividendsSummary = styled.p`
   opacity: 0.75;
 `;
 
+const TabBar = styled.div`
+  display: flex;
+  gap: 0.4rem;
+  margin-bottom: 0.9rem;
+  border-bottom: 1px solid ${(p) => (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)')};
+`;
+
+const TabButton = styled.button<{ $active: boolean }>`
+  padding: 0.55rem 0.2rem;
+  margin-bottom: -1px;
+  border: none;
+  border-bottom: 2px solid ${(p) => (p.$active ? p.theme.buttonBackgroundColor : 'transparent')};
+  background: transparent;
+  color: ${(p) => p.theme.textColor};
+  opacity: ${(p) => (p.$active ? 1 : 0.55)};
+  font-size: 0.82rem;
+  font-weight: ${(p) => (p.$active ? 700 : 600)};
+  cursor: pointer;
+
+  &:hover { opacity: 1; }
+`;
+
 /** Visually groups every "add" control (manual form/trigger + CSV import) into
  * one distinct block, set apart from the holdings list above it — the two
  * used to blend into a single flat list of buttons and rows. */
@@ -409,11 +431,27 @@ export default function InvestmentHoldingsPanel({
   const { investmentService } = useDemoServices();
   const t = translations.investments.holdings;
 
+  // A "closed" holding (fully sold) is never deleted, just set to quantity 0
+  // (see closeStaleHolding.ts / InvestmentImportWizard's handleCloseHolding) -
+  // split once here so "current holdings" never shows 0,00€ noise and "past
+  // holdings" has something to show. Only meaningful in the live/current-month
+  // view (see the tabs below); past-month mode doesn't use these.
+  const activeHoldings = holdings.filter((h) => (h.quantity ?? 0) > 0);
+  const pastHoldings = holdings.filter((h) => (h.quantity ?? 0) <= 0);
+
   const [form, setForm] = useState<FormState>(emptyForm);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
   const [isDefaultPrefilled, setIsDefaultPrefilled] = useState(false);
-  const [showForm, setShowForm] = useState(holdings.length === 0);
+  const [showForm, setShowForm] = useState(activeHoldings.length === 0);
+  /** Which of the 3 top-level sections is shown - only relevant in the live/
+   * current-month view (past-month mode keeps its own single-list layout,
+   * it has no "add new" or "past holdings" concept at all). Defaults to the
+   * "add" tab when there are no ACTIVE holdings yet, same intent as showForm's
+   * own default above but scoped to this asset key's real, open positions -
+   * a user whose only holding here is a closed one still has nothing to
+   * manage in "current", so land them on "add" instead of an empty list. */
+  const [activeTab, setActiveTab] = useState<'current' | 'add' | 'past'>(activeHoldings.length === 0 ? 'add' : 'current');
   const [historicalEditingId, setHistoricalEditingId] = useState<number | null>(null);
   const [historicalValueInput, setHistoricalValueInput] = useState('');
   const [savingHistorical, setSavingHistorical] = useState(false);
@@ -460,7 +498,7 @@ export default function InvestmentHoldingsPanel({
   // nothing if the search fails or finds no exact match. Only relevant for the
   // live-portfolio add flow, which past-month mode doesn't offer.
   useEffect(() => {
-    if (!isCurrentMonth || holdings.length > 0) return;
+    if (!isCurrentMonth || activeHoldings.length > 0) return;
     const hint = DEFAULT_INSTRUMENT_HINTS[assetKey];
     const kind = ASSET_KEY_TO_KIND[assetKey];
     const source = kind ? KIND_TO_SEARCH_SOURCE[kind] : null;
@@ -624,6 +662,177 @@ export default function InvestmentHoldingsPanel({
     return sum + (entry?.totalAmount ?? 0);
   }, 0);
 
+  // One holding's row (+ its history drawer / historical-edit block) - shared
+  // by every list that shows holdings (the current-holdings tab, the
+  // past-holdings tab, and the single unified list past-month mode still
+  // uses) so there's exactly one place that knows how to render a holding,
+  // not three slightly-drifting copies.
+  const renderHoldingRow = (holding: InvestmentHoldingDto) => {
+    const historicalEntry = historyByEntityId[holding.id];
+    const isEditingHistorical = historicalEditingId === holding.id;
+    return (
+      <React.Fragment key={holding.id}>
+        <HoldingRow theme={theme}>
+          <HoldingInfo theme={theme}>
+            <strong>
+              {holding.instrument?.symbol ?? '—'}
+              {holding.instrument?.provider === 'manual' && (
+                <UnverifiedBadge title={t.unverifiedHint || "Not verified — won't count toward comparisons with other users."}>
+                  {t.unverifiedBadge || 'Unverified'}
+                </UnverifiedBadge>
+              )}
+            </strong>
+            <span>{holding.instrument?.name}</span>
+            {formatInstrumentDetails(holding.instrument) !== '' && (
+              <span>{formatInstrumentDetails(holding.instrument)}</span>
+            )}
+            {(() => {
+              const source = isCurrentMonth ? holding : historicalEntry;
+              if (!source || source.quantity == null || source.averagePrice == null) return null;
+              const locale = language === 'it' ? 'it-IT' : 'en-US';
+              return (
+                <span>
+                  {source.quantity.toLocaleString(locale, { maximumFractionDigits: 6 })}
+                  {' × '}
+                  {formatAmount(source.averagePrice)}
+                </span>
+              );
+            })()}
+            {isCurrentMonth && holding.instrument && dividendsByInstrumentId.has(holding.instrument.id) && (() => {
+              const entry = dividendsByInstrumentId.get(holding.instrument.id)!;
+              const ratio = holding.investedAmount ? (entry.totalAmount / holding.investedAmount) * 100 : null;
+              const label = (t.dividendsReceived || 'Dividends: {amount}{ratio}')
+                .replace('{amount}', formatAmount(entry.totalAmount))
+                .replace('{ratio}', ratio != null ? ` (${ratio.toFixed(1)}% ${t.dividendsOfInvested || 'of invested'})` : '');
+              return <span>{label}</span>;
+            })()}
+          </HoldingInfo>
+          <HoldingValue theme={theme}>
+            {isCurrentMonth ? (
+              <strong>{formatAmount(holding.currentValue ?? holding.investedAmount ?? 0)}</strong>
+            ) : historicalEntry ? (
+              <strong>{formatAmount(historicalEntry.currentValue ?? historicalEntry.investedAmount ?? 0)}</strong>
+            ) : (
+              <span className="no-value">{t.noValueForMonth}</span>
+            )}
+            {(() => {
+              const source = isCurrentMonth ? holding : historicalEntry;
+              if (!source || source.currentValue == null || source.investedAmount == null || source.investedAmount === 0) return null;
+              const gain = source.currentValue - source.investedAmount;
+              const gainPct = (gain / source.investedAmount) * 100;
+              return (
+                <GainLoss $positive={gain >= 0}>
+                  {gain >= 0 ? '+' : ''}{formatAmount(gain)} ({gain >= 0 ? '+' : ''}{gainPct.toFixed(1)}%)
+                </GainLoss>
+              );
+            })()}
+          </HoldingValue>
+          <HoldingActions theme={theme}>
+            {isCurrentMonth ? (
+              <>
+                <button type="button" onClick={() => toggleHistoryDrawer(holding.id)} aria-label={t.historyTitle || 'Storico'}>
+                  <FontAwesomeIcon icon={faClockRotateLeft} />
+                </button>
+                <button type="button" onClick={() => startEdit(holding)} aria-label={t.editTitle}>
+                  <FontAwesomeIcon icon={faPen} />
+                </button>
+                <button type="button" onClick={() => handleDelete(holding.id)} aria-label={t.deleteButton}>
+                  <FontAwesomeIcon icon={faTrash} />
+                </button>
+              </>
+            ) : (
+              <button type="button" onClick={() => startHistoricalEdit(holding)} aria-label={t.editTitle}>
+                <FontAwesomeIcon icon={faPen} />
+              </button>
+            )}
+          </HoldingActions>
+        </HoldingRow>
+        {isCurrentMonth && expandedHistoryHoldingId === holding.id && (
+          <HistoryDrawer theme={theme}>
+            {loadingHistory && <span style={{ fontSize: '0.78rem', opacity: 0.6 }}>{t.historyLoading || 'Caricamento storico…'}</span>}
+            {!loadingHistory && (() => {
+              const monthsForHolding = (allHistory ?? [])
+                .filter((entry) => entry.holdingId === holding.id)
+                .sort((a, b) => a.userDate.localeCompare(b.userDate));
+              if (monthsForHolding.length === 0) {
+                return <span style={{ fontSize: '0.78rem', opacity: 0.6 }}>{t.historyEmptyState || 'Nessuno storico registrato per questo titolo.'}</span>;
+              }
+              return monthsForHolding.map((entry) => (
+                editingHistoryMonthKey === entry.userDate ? (
+                  <HistoryMonthEditRow key={entry.userDate} theme={theme}>
+                    <input
+                      type="number"
+                      autoFocus
+                      value={historyMonthInputs.currentValue}
+                      onChange={(e) => setHistoryMonthInputs((f) => ({ ...f, currentValue: e.target.value }))}
+                      placeholder={t.currentValue}
+                    />
+                    <input
+                      type="number"
+                      value={historyMonthInputs.investedAmount}
+                      onChange={(e) => setHistoryMonthInputs((f) => ({ ...f, investedAmount: e.target.value }))}
+                      placeholder={t.investedAmount}
+                    />
+                    <input
+                      type="number"
+                      value={historyMonthInputs.quantity}
+                      onChange={(e) => setHistoryMonthInputs((f) => ({ ...f, quantity: e.target.value }))}
+                      placeholder={t.quantity}
+                    />
+                    <button type="button" onClick={() => setEditingHistoryMonthKey(null)} aria-label={translations.general.cancel}>
+                      <FontAwesomeIcon icon={faTimes} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => saveHistoryMonth(holding.id, entry.userDate)}
+                      disabled={savingHistoryMonth}
+                      aria-label={t.saveButton}
+                    >
+                      <FontAwesomeIcon icon={faCheck} />
+                    </button>
+                  </HistoryMonthEditRow>
+                ) : (
+                  <HistoryMonthRow key={entry.userDate} theme={theme}>
+                    <span className="month">{formatHistoryMonthLabel(entry.userDate)}</span>
+                    <span className="values">
+                      {formatAmount(entry.currentValue ?? entry.investedAmount ?? 0)}
+                      {entry.quantity != null && ` · ${entry.quantity.toLocaleString(language === 'it' ? 'it-IT' : 'en-US', { maximumFractionDigits: 6 })}`}
+                    </span>
+                    <button type="button" onClick={() => startHistoryMonthEdit(entry)} aria-label={t.editTitle}>
+                      <FontAwesomeIcon icon={faPen} />
+                    </button>
+                  </HistoryMonthRow>
+                )
+              ));
+            })()}
+          </HistoryDrawer>
+        )}
+        {isEditingHistorical && (
+          <HistoricalEditRow theme={theme}>
+            <input
+              type="number"
+              autoFocus
+              value={historicalValueInput}
+              onChange={(e) => setHistoricalValueInput(e.target.value)}
+              placeholder={t.currentValue}
+            />
+            <button type="button" onClick={() => setHistoricalEditingId(null)} aria-label={translations.general.cancel}>
+              <FontAwesomeIcon icon={faTimes} />
+            </button>
+            <button
+              type="button"
+              onClick={() => saveHistoricalValue(holding.id)}
+              disabled={historicalValueInput === '' || savingHistorical}
+              aria-label={t.saveButton}
+            >
+              <FontAwesomeIcon icon={faCheck} />
+            </button>
+          </HistoricalEditRow>
+        )}
+      </React.Fragment>
+    );
+  };
+
   return (
     <Overlay theme={theme} onClick={onClose}>
       <ModalContainer theme={theme} onClick={(e: React.MouseEvent) => e.stopPropagation()}>
@@ -638,180 +847,46 @@ export default function InvestmentHoldingsPanel({
         </ModalHeader>
 
         <ModalBody theme={theme}>
-          <SectionLabel theme={theme}>{t.positionsListTitle}</SectionLabel>
+          {isCurrentMonth && (
+            <TabBar theme={theme}>
+              <TabButton type="button" theme={theme} $active={activeTab === 'current'} onClick={() => setActiveTab('current')}>
+                {t.currentTabLabel || 'Attuali'}{activeHoldings.length > 0 && ` (${activeHoldings.length})`}
+              </TabButton>
+              <TabButton type="button" theme={theme} $active={activeTab === 'add'} onClick={() => setActiveTab('add')}>
+                {t.addTabLabel || 'Aggiungi'}
+              </TabButton>
+              {pastHoldings.length > 0 && (
+                <TabButton type="button" theme={theme} $active={activeTab === 'past'} onClick={() => setActiveTab('past')}>
+                  {t.pastTabLabel || 'Passati'} ({pastHoldings.length})
+                </TabButton>
+              )}
+            </TabBar>
+          )}
+
           {isCurrentMonth && totalDividendsForAssetKey > 0 && (
             <DividendsSummary theme={theme}>
               {(t.dividendsReceivedTotal || 'Dividends received: {amount}').replace('{amount}', formatAmount(totalDividendsForAssetKey))}
             </DividendsSummary>
           )}
-          {holdings.length === 0 && <EmptyState theme={theme}>{t.emptyState}</EmptyState>}
 
-          {holdings.map((holding) => {
-            const historicalEntry = historyByEntityId[holding.id];
-            const isEditingHistorical = historicalEditingId === holding.id;
-            return (
-              <React.Fragment key={holding.id}>
-                <HoldingRow theme={theme}>
-                  <HoldingInfo theme={theme}>
-                    <strong>
-                      {holding.instrument?.symbol ?? '—'}
-                      {holding.instrument?.provider === 'manual' && (
-                        <UnverifiedBadge title={t.unverifiedHint || "Not verified — won't count toward comparisons with other users."}>
-                          {t.unverifiedBadge || 'Unverified'}
-                        </UnverifiedBadge>
-                      )}
-                    </strong>
-                    <span>{holding.instrument?.name}</span>
-                    {formatInstrumentDetails(holding.instrument) !== '' && (
-                      <span>{formatInstrumentDetails(holding.instrument)}</span>
-                    )}
-                    {(() => {
-                      const source = isCurrentMonth ? holding : historicalEntry;
-                      if (!source || source.quantity == null || source.averagePrice == null) return null;
-                      const locale = language === 'it' ? 'it-IT' : 'en-US';
-                      return (
-                        <span>
-                          {source.quantity.toLocaleString(locale, { maximumFractionDigits: 6 })}
-                          {' × '}
-                          {formatAmount(source.averagePrice)}
-                        </span>
-                      );
-                    })()}
-                    {isCurrentMonth && holding.instrument && dividendsByInstrumentId.has(holding.instrument.id) && (() => {
-                      const entry = dividendsByInstrumentId.get(holding.instrument.id)!;
-                      const ratio = holding.investedAmount ? (entry.totalAmount / holding.investedAmount) * 100 : null;
-                      const label = (t.dividendsReceived || 'Dividends: {amount}{ratio}')
-                        .replace('{amount}', formatAmount(entry.totalAmount))
-                        .replace('{ratio}', ratio != null ? ` (${ratio.toFixed(1)}% ${t.dividendsOfInvested || 'of invested'})` : '');
-                      return <span>{label}</span>;
-                    })()}
-                  </HoldingInfo>
-                  <HoldingValue theme={theme}>
-                    {isCurrentMonth ? (
-                      <strong>{formatAmount(holding.currentValue ?? holding.investedAmount ?? 0)}</strong>
-                    ) : historicalEntry ? (
-                      <strong>{formatAmount(historicalEntry.currentValue ?? historicalEntry.investedAmount ?? 0)}</strong>
-                    ) : (
-                      <span className="no-value">{t.noValueForMonth}</span>
-                    )}
-                    {(() => {
-                      const source = isCurrentMonth ? holding : historicalEntry;
-                      if (!source || source.currentValue == null || source.investedAmount == null || source.investedAmount === 0) return null;
-                      const gain = source.currentValue - source.investedAmount;
-                      const gainPct = (gain / source.investedAmount) * 100;
-                      return (
-                        <GainLoss $positive={gain >= 0}>
-                          {gain >= 0 ? '+' : ''}{formatAmount(gain)} ({gain >= 0 ? '+' : ''}{gainPct.toFixed(1)}%)
-                        </GainLoss>
-                      );
-                    })()}
-                  </HoldingValue>
-                  <HoldingActions theme={theme}>
-                    {isCurrentMonth ? (
-                      <>
-                        <button type="button" onClick={() => toggleHistoryDrawer(holding.id)} aria-label={t.historyTitle || 'Storico'}>
-                          <FontAwesomeIcon icon={faClockRotateLeft} />
-                        </button>
-                        <button type="button" onClick={() => startEdit(holding)} aria-label={t.editTitle}>
-                          <FontAwesomeIcon icon={faPen} />
-                        </button>
-                        <button type="button" onClick={() => handleDelete(holding.id)} aria-label={t.deleteButton}>
-                          <FontAwesomeIcon icon={faTrash} />
-                        </button>
-                      </>
-                    ) : (
-                      <button type="button" onClick={() => startHistoricalEdit(holding)} aria-label={t.editTitle}>
-                        <FontAwesomeIcon icon={faPen} />
-                      </button>
-                    )}
-                  </HoldingActions>
-                </HoldingRow>
-                {isCurrentMonth && expandedHistoryHoldingId === holding.id && (
-                  <HistoryDrawer theme={theme}>
-                    {loadingHistory && <span style={{ fontSize: '0.78rem', opacity: 0.6 }}>{t.historyLoading || 'Caricamento storico…'}</span>}
-                    {!loadingHistory && (() => {
-                      const monthsForHolding = (allHistory ?? [])
-                        .filter((entry) => entry.holdingId === holding.id)
-                        .sort((a, b) => a.userDate.localeCompare(b.userDate));
-                      if (monthsForHolding.length === 0) {
-                        return <span style={{ fontSize: '0.78rem', opacity: 0.6 }}>{t.historyEmptyState || 'Nessuno storico registrato per questo titolo.'}</span>;
-                      }
-                      return monthsForHolding.map((entry) => (
-                        editingHistoryMonthKey === entry.userDate ? (
-                          <HistoryMonthEditRow key={entry.userDate} theme={theme}>
-                            <input
-                              type="number"
-                              autoFocus
-                              value={historyMonthInputs.currentValue}
-                              onChange={(e) => setHistoryMonthInputs((f) => ({ ...f, currentValue: e.target.value }))}
-                              placeholder={t.currentValue}
-                            />
-                            <input
-                              type="number"
-                              value={historyMonthInputs.investedAmount}
-                              onChange={(e) => setHistoryMonthInputs((f) => ({ ...f, investedAmount: e.target.value }))}
-                              placeholder={t.investedAmount}
-                            />
-                            <input
-                              type="number"
-                              value={historyMonthInputs.quantity}
-                              onChange={(e) => setHistoryMonthInputs((f) => ({ ...f, quantity: e.target.value }))}
-                              placeholder={t.quantity}
-                            />
-                            <button type="button" onClick={() => setEditingHistoryMonthKey(null)} aria-label={translations.general.cancel}>
-                              <FontAwesomeIcon icon={faTimes} />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => saveHistoryMonth(holding.id, entry.userDate)}
-                              disabled={savingHistoryMonth}
-                              aria-label={t.saveButton}
-                            >
-                              <FontAwesomeIcon icon={faCheck} />
-                            </button>
-                          </HistoryMonthEditRow>
-                        ) : (
-                          <HistoryMonthRow key={entry.userDate} theme={theme}>
-                            <span className="month">{formatHistoryMonthLabel(entry.userDate)}</span>
-                            <span className="values">
-                              {formatAmount(entry.currentValue ?? entry.investedAmount ?? 0)}
-                              {entry.quantity != null && ` · ${entry.quantity.toLocaleString(language === 'it' ? 'it-IT' : 'en-US', { maximumFractionDigits: 6 })}`}
-                            </span>
-                            <button type="button" onClick={() => startHistoryMonthEdit(entry)} aria-label={t.editTitle}>
-                              <FontAwesomeIcon icon={faPen} />
-                            </button>
-                          </HistoryMonthRow>
-                        )
-                      ));
-                    })()}
-                  </HistoryDrawer>
-                )}
-                {isEditingHistorical && (
-                  <HistoricalEditRow theme={theme}>
-                    <input
-                      type="number"
-                      autoFocus
-                      value={historicalValueInput}
-                      onChange={(e) => setHistoricalValueInput(e.target.value)}
-                      placeholder={t.currentValue}
-                    />
-                    <button type="button" onClick={() => setHistoricalEditingId(null)} aria-label={translations.general.cancel}>
-                      <FontAwesomeIcon icon={faTimes} />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => saveHistoricalValue(holding.id)}
-                      disabled={historicalValueInput === '' || savingHistorical}
-                      aria-label={t.saveButton}
-                    >
-                      <FontAwesomeIcon icon={faCheck} />
-                    </button>
-                  </HistoricalEditRow>
-                )}
-              </React.Fragment>
-            );
-          })}
+          {!isCurrentMonth && (
+            <>
+              <SectionLabel theme={theme}>{t.positionsListTitle}</SectionLabel>
+              {holdings.length === 0 && <EmptyState theme={theme}>{t.emptyState}</EmptyState>}
+              {holdings.map(renderHoldingRow)}
+            </>
+          )}
 
+          {isCurrentMonth && activeTab === 'current' && (
+            <>
+              {activeHoldings.length === 0 && <EmptyState theme={theme}>{t.emptyState}</EmptyState>}
+              {activeHoldings.map(renderHoldingRow)}
+            </>
+          )}
+
+          {isCurrentMonth && activeTab === 'past' && pastHoldings.map(renderHoldingRow)}
+
+          {(!isCurrentMonth || activeTab === 'add') && (
           <AddSection theme={theme}>
             <SectionLabel theme={theme}>{t.addSectionTitle}</SectionLabel>
 
@@ -901,9 +976,10 @@ export default function InvestmentHoldingsPanel({
               </DefaultInstrumentHint>
             )}
           </AddSection>
+          )}
         </ModalBody>
 
-        {isCurrentMonth && showForm && (
+        {isCurrentMonth && activeTab === 'add' && showForm && (
           <ModalFooter theme={theme}>
             {editingId && <SecondaryButton theme={theme} onClick={resetForm}>{t.cancelEdit}</SecondaryButton>}
             <ModernActionButton theme={theme} onClick={handleSave} disabled={!form.instrument || saving}>

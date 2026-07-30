@@ -365,6 +365,10 @@ export default function InsertModals({
   const holdingsByAssetKey = React.useMemo(() => {
     const map = {};
     for (const holding of investmentHoldings) {
+      // A "closed" holding (fully sold) is never deleted, just set to
+      // quantity 0 (see closeStaleHolding.ts) - this is a read-only balance
+      // confirmation dialog, it never needs closed holdings for anything.
+      if ((holding.quantity ?? 0) <= 0) continue;
       (map[holding.assetKey] ||= []).push(holding);
     }
     return map;

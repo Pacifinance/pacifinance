@@ -19,10 +19,12 @@
  * date is always today), to avoid touching InsertValues' larger, more fragile
  * balance-delta logic.
  */
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState, lazy, Suspense } from 'react';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faCheck, faTimes, faKeyboard, faCommentDots, faMagic } from '@fortawesome/free-solid-svg-icons';
+import {
+  faPlus, faCheck, faTimes, faKeyboard, faCommentDots, faMagic, faPencil, faFileImport, faChartLine,
+} from '@fortawesome/free-solid-svg-icons';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
 import { UserContext } from '../contexts/UserContext';
@@ -33,6 +35,12 @@ import { parseSmartPasteText } from '../utils/smartPasteParser';
 import { detectPlatform } from '../utils/platformDetection';
 import { ASSET_KEYS, buildSnapshotWithDeltas } from '../constants/balanceSchema';
 import CategoryPicker from './CategoryPicker';
+import {
+  Overlay as ModalOverlay, ModalContainer, ModalHeader, ModalTitle, CloseButton, ModalBody,
+} from './multiInsert/SharedStyles';
+
+const DataImportWizard = lazy(() => import('./DataImportWizard'));
+const InvestmentImportWizard = lazy(() => import('./InvestmentImportWizard'));
 
 /* Bottom-right, above the mobile BottomNavBar (66-74px tall, see index.css). */
 const Fab = styled.button`
@@ -125,6 +133,32 @@ const CloseBtn = styled.button`
   padding: 0.3rem;
 
   &:hover { opacity: 1; }
+`;
+
+const MenuList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+`;
+
+const MenuItemButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.85rem 0.9rem;
+  border-radius: 0.9rem;
+  border: 1px solid ${(p) => (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : '#e2e8f0')};
+  background: ${(p) => (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.015)')};
+  color: ${(p) => p.theme.textColor};
+  font-size: 0.92rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+
+  svg { flex-shrink: 0; font-size: 1.1rem; opacity: 0.75; }
+
+  &:hover { background: ${(p) => (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.03)')}; }
 `;
 
 const EntryModeSwitch = styled.div`
@@ -345,6 +379,12 @@ export default function QuickAddTransaction({ theme }) {
 
   const t = translations?.dashboard?.quickAdd || {};
 
+  /** Tapping the Fab opens this small action menu first (manual entry / CSV
+   * import outflows-income / CSV import investments) - picking "manual entry"
+   * closes it and opens `open` below, unchanged from before this menu existed. */
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [showDataImport, setShowDataImport] = useState(false);
+  const [showInvestmentImport, setShowInvestmentImport] = useState(false);
   const [open, setOpen] = useState(false);
   const [entryMode, setEntryMode] = useState('manual'); // 'manual' | 'paste'
   const [pasteText, setPasteText] = useState('');
@@ -389,7 +429,12 @@ export default function QuickAddTransaction({ theme }) {
       });
     });
     investmentHoldings.forEach((holding) => {
-      if (!holding?.assetKey) return;
+      // A "closed" holding (fully sold) is never deleted, just set to quantity
+      // 0 (see closeStaleHolding.ts) - excluded here since this is an insert-
+      // only flow (no edit/delete-existing-transaction path in this component,
+      // unlike InsertValues.tsx's getBalanceSourceEntries), so there's no
+      // historical-resolution reason to keep it selectable.
+      if (!holding?.assetKey || (holding.quantity ?? 0) <= 0) return;
       const detailLabel = holding?.instrument?.symbol || holding?.instrument?.name || holding?.notes || `#${holding?.id}`;
       addEntry({
         label: `${translations?.assets?.[holding.assetKey] || holding.assetKey} / ${detailLabel}`,
@@ -548,12 +593,71 @@ export default function QuickAddTransaction({ theme }) {
     <>
       <Fab
         type="button"
-        onClick={() => setOpen(true)}
+        onClick={() => setMenuOpen(true)}
         aria-label={t.title || 'Aggiunta rapida'}
         data-umami-event="quickAddFabOpen"
       >
         <FontAwesomeIcon icon={faPlus} />
       </Fab>
+
+      {menuOpen && (
+        <Overlay onClick={(e) => { if (e.target === e.currentTarget) setMenuOpen(false); }}>
+          <Popup theme={theme}>
+            <HeaderRow>
+              <Title theme={theme}>{t.menuTitle || 'Cosa vuoi fare?'}</Title>
+              <CloseBtn theme={theme} onClick={() => setMenuOpen(false)} aria-label={translations?.general?.close || 'Chiudi'}>
+                <FontAwesomeIcon icon={faTimes} />
+              </CloseBtn>
+            </HeaderRow>
+            <MenuList>
+              <MenuItemButton type="button" theme={theme} onClick={() => { setMenuOpen(false); setOpen(true); }}>
+                <FontAwesomeIcon icon={faPencil} />
+                {t.menuManual || 'Inserisci manualmente'}
+              </MenuItemButton>
+              <MenuItemButton type="button" theme={theme} onClick={() => { setMenuOpen(false); setShowDataImport(true); }}>
+                <FontAwesomeIcon icon={faFileImport} />
+                {t.menuImportOutflowsIncome || 'Importa CSV — spese/entrate'}
+              </MenuItemButton>
+              <MenuItemButton type="button" theme={theme} onClick={() => { setMenuOpen(false); setShowInvestmentImport(true); }}>
+                <FontAwesomeIcon icon={faChartLine} />
+                {t.menuImportInvestments || 'Importa investimenti da CSV'}
+              </MenuItemButton>
+            </MenuList>
+          </Popup>
+        </Overlay>
+      )}
+
+      {showDataImport && (
+        <Suspense fallback={null}>
+          <ModalOverlay theme={theme} onClick={() => setShowDataImport(false)}>
+            <ModalContainer theme={theme} $maxWidth="960px" onClick={(e) => e.stopPropagation()}>
+              <ModalHeader theme={theme}>
+                <ModalTitle theme={theme}>
+                  <h2>{t.menuImportOutflowsIncome || 'Importa CSV — spese/entrate'}</h2>
+                </ModalTitle>
+                <CloseButton theme={theme} onClick={() => setShowDataImport(false)}>
+                  <FontAwesomeIcon icon={faTimes} />
+                </CloseButton>
+              </ModalHeader>
+              <ModalBody theme={theme}>
+                <DataImportWizard
+                  onClose={() => setShowDataImport(false)}
+                  onImportComplete={() => { setShowDataImport(false); handleSetIsUpdated?.(false); }}
+                />
+              </ModalBody>
+            </ModalContainer>
+          </ModalOverlay>
+        </Suspense>
+      )}
+
+      {showInvestmentImport && (
+        <Suspense fallback={null}>
+          <InvestmentImportWizard
+            onClose={() => setShowInvestmentImport(false)}
+            onImported={async () => { setShowInvestmentImport(false); handleSetIsUpdated?.(false); }}
+          />
+        </Suspense>
+      )}
 
       {open && (
         <Overlay onClick={(e) => { if (e.target === e.currentTarget) resetAndClose(); }}>

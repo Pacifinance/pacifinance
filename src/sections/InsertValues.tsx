@@ -1075,8 +1075,21 @@ export default function InsertValue({
     commodities: [commoditiesValue, setCommoditiesValue],
   };
 
+  // A "closed" holding (fully sold) is never deleted, just set to quantity 0
+  // (see closeStaleHolding.ts) - excluded here (the "pick a target" dropdown)
+  // so it can't be picked for a new transaction, but getBalanceSourceEntries/
+  // getBalanceSourceMeta themselves stay unfiltered above: they're also used
+  // to resolve an EXISTING transaction's original balance source when it's
+  // edited or deleted (applyCurrentDetailSourceDelta, findSourceLabelForTransaction),
+  // and filtering there would silently break that reconciliation the moment
+  // the holding it once pointed to gets closed.
+  const closedHoldingIds = new Set(
+    investmentHoldings.filter((h) => (h.quantity ?? 0) <= 0).map((h) => h.id)
+  );
   const options = Object.fromEntries(
-    getBalanceSourceEntries().map((entry) => [entry.label, balanceSourceValueMap[entry.assetKey]])
+    getBalanceSourceEntries()
+      .filter((entry) => !(entry.detailType === 'investment' && closedHoldingIds.has(entry.detailId)))
+      .map((entry) => [entry.label, balanceSourceValueMap[entry.assetKey]])
   );
 
   const fetchData = async () => {

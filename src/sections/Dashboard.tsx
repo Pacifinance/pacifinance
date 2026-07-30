@@ -137,6 +137,19 @@ const Dashboard = ({ theme, userData, isHidden }) => {
         return map;
     }, [investmentHoldings]);
 
+    // A "closed" holding (fully sold) is never deleted, just set to quantity 0
+    // (see closeStaleHolding.ts) - filtered out here so it doesn't show as
+    // 0,00€ noise in the compact/card overview views. InvestmentHoldingsPanel
+    // still gets the unfiltered holdingsByAssetKey above (it needs both, for
+    // its own "current"/"past" tabs).
+    const activeHoldingsByAssetKey = useMemo(() => {
+        const map = {};
+        for (const key of Object.keys(holdingsByAssetKey)) {
+            map[key] = holdingsByAssetKey[key].filter((h) => (h.quantity ?? 0) > 0);
+        }
+        return map;
+    }, [holdingsByAssetKey]);
+
     const liquidityAccountsByAssetKey = useMemo(() => {
         const map = {};
         for (const account of liquidityAccounts) {
@@ -545,7 +558,7 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                         totalEmergencySecurity={totalEmergencySecurity}
                         formatCurrency={formatCurrency}
                         formatPercentage={formatPercentage}
-                        holdingsByAssetKey={holdingsByAssetKey}
+                        holdingsByAssetKey={activeHoldingsByAssetKey}
                         liquidityAccountsByAssetKey={liquidityAccountsByAssetKey}
                         categoryPreMonthTotals={categoryPreMonthTotals}
                     />
@@ -711,7 +724,7 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                                 <PortfolioGrid>
                                     {investments.map((investment) => {
                                         const IconComponent = investment.icon;
-                                        const subEntries = (holdingsByAssetKey[investment.key] || [])
+                                        const subEntries = (activeHoldingsByAssetKey[investment.key] || [])
                                             .slice()
                                             .sort((a, b) => (b.currentValue ?? b.investedAmount ?? 0) - (a.currentValue ?? a.investedAmount ?? 0));
                                         return (

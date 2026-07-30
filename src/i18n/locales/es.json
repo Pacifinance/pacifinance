@@ -569,6 +569,10 @@
     "dashboard": {
         "quickAdd": {
             "title": "Añadir rápido",
+            "menuTitle": "¿Qué quieres hacer?",
+            "menuManual": "Añadir manualmente",
+            "menuImportOutflowsIncome": "Importar CSV — gastos/ingresos",
+            "menuImportInvestments": "Importar inversiones desde CSV",
             "outflow": "Salida",
             "income": "Ingreso",
             "amountLabel": "Importe",
@@ -2761,9 +2765,12 @@
         },
         "holdings": {
             "title": "Posiciones detalladas",
+            "currentTabLabel": "Actuales",
+            "addTabLabel": "Añadir",
+            "pastTabLabel": "Pasadas",
             "positionsListTitle": "Tus posiciones",
             "addSectionTitle": "Añadir una posición",
-            "emptyState": "Aún no hay posiciones verificadas para este activo. Añade una a continuación.",
+            "emptyState": "Aún no hay posiciones activas para este activo. Usa la pestaña \"Añadir\" para añadir una.",
             "addTitle": "Añadir posición",
             "editTitle": "Editar posición",
             "quantity": "Cantidad",

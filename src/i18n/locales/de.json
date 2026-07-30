@@ -567,6 +567,10 @@
     "dashboard": {
         "quickAdd": {
             "title": "Schnell hinzufügen",
+            "menuTitle": "Was möchtest du tun?",
+            "menuManual": "Manuell eingeben",
+            "menuImportOutflowsIncome": "CSV importieren — Ausgaben/Einnahmen",
+            "menuImportInvestments": "Investitionen aus CSV importieren",
             "outflow": "Ausgabe",
             "income": "Einnahme",
             "amountLabel": "Betrag",
@@ -2759,9 +2763,12 @@
         },
         "holdings": {
             "title": "Detaillierte Bestände",
+            "currentTabLabel": "Aktuell",
+            "addTabLabel": "Hinzufügen",
+            "pastTabLabel": "Vergangen",
             "positionsListTitle": "Deine Positionen",
             "addSectionTitle": "Position hinzufügen",
-            "emptyState": "Noch keine verifizierten Bestände für dieses Asset. Füge unten einen hinzu.",
+            "emptyState": "Noch keine aktiven Bestände für dieses Asset. Nutze den Tab \"Hinzufügen\", um einen hinzuzufügen.",
             "addTitle": "Bestand hinzufügen",
             "editTitle": "Bestand bearbeiten",
             "quantity": "Menge",

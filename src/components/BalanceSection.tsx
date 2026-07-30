@@ -349,6 +349,19 @@ export default function BalanceSection({
     return map;
   }, [investmentHoldings]);
 
+  // A "closed" holding (fully sold) is never deleted, just set to quantity 0
+  // (see closeStaleHolding.ts) - filtered out here so it doesn't show as
+  // 0,00€ noise in this page's own asset-breakdown list. InvestmentHoldingsPanel
+  // still gets the unfiltered holdingsByAssetKey above (it needs both, for
+  // its own "current"/"past" tabs).
+  const activeHoldingsByAssetKey = useMemo(() => {
+    const map = {};
+    for (const key of Object.keys(holdingsByAssetKey)) {
+      map[key] = holdingsByAssetKey[key].filter((h) => (h.quantity ?? 0) > 0);
+    }
+    return map;
+  }, [holdingsByAssetKey]);
+
   const liquidityAccountsByAssetKey = useMemo(() => {
     const map = {};
     for (const account of liquidityAccounts) {
@@ -500,7 +513,7 @@ export default function BalanceSection({
     const subEntries = isLiquidityKey
       ? (isCurrentMonth ? liquidityAccountsByAssetKey[asset.key] : liquidityAccountHistoryByAssetKey[asset.key]) || []
       : isInvestmentKey
-        ? (isCurrentMonth ? holdingsByAssetKey[asset.key] : holdingHistoryByAssetKey[asset.key]) || []
+        ? (isCurrentMonth ? activeHoldingsByAssetKey[asset.key] : holdingHistoryByAssetKey[asset.key]) || []
         : [];
     const hasHoldings = subEntries.length > 0;
     const t = isLiquidityKey ? translations.liquidityAccounts : translations.investments?.holdings;

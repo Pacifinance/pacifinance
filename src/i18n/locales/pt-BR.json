@@ -2824,6 +2824,8 @@
             "closedPositionsRetry": "Tentar novamente",
             "orphanSellsTitle": "Venda sem compra correspondente",
             "orphanSellsNote": "{ticker} — este arquivo mostra uma venda, mas nenhuma compra correspondente foi encontrada (nesta importação ou na sua conta) — a compra correspondente provavelmente está em outro arquivo que você ainda não enviou.",
+            "orphanSellsWillSave": "Ela será registrada mesmo assim ao importar, então enviar o arquivo que falta mais tarde vai reconciliá-la automaticamente.",
+            "orphanSellsUnresolved": "Não foi possível identificar este ativo, então desta vez ele não será registrado.",
             "kinds": {
                         "stock": "Ação",
                         "etf": "ETF",

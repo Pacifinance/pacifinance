@@ -105,6 +105,15 @@ interface OrphanSellWarning {
   isin: string | null;
   /** Negative — units sold beyond what was ever bought, as far as we know. */
   quantity: number;
+  /** The underlying sell (and any other) transactions behind this position -
+   * saved to the ledger on import even though there's no holding to attach
+   * them to, so a LATER file with the missing buy can reconcile against them
+   * instead of the sell being lost the moment this session ends. */
+  transactions: ImportedTransaction[];
+  /** Resolved the same way an open row's instrument is (ISIN batch lookup) -
+   * null when it couldn't be resolved, in which case the transactions are
+   * simply not saved (nothing to link them to yet). */
+  instrument: InvestmentInstrumentDto | null;
 }
 
 interface InvestmentImportWizardProps {
@@ -483,7 +492,28 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
     // buy uploaded yet, in this file or any other) would otherwise be
     // silently dropped with no trace, instead of flagging that something is
     // likely still missing from the account's transaction history.
-    setOrphanSells(closed.filter((p) => p.quantity < 0 && !existingKeys.has(p.key)));
+    const orphanPositions = closed.filter((p) => p.quantity < 0 && !existingKeys.has(p.key));
+    // Resolved the same way open rows are (ISIN batch lookup) - needed so the
+    // sell can actually be saved to the ledger below (saveTransaction requires
+    // a real instrument_id), even though there's no holding to attach it to.
+    // Without this, importing now would leave the sell exactly as unrecorded
+    // as it already is, and a later file with the missing buy would have
+    // nothing to reconcile against - the warning above would have said
+    // something without actually fixing it.
+    const orphanIsins = Array.from(new Set(orphanPositions.map((p) => p.isin).filter((v): v is string => Boolean(v))));
+    let orphanIsinMatches: Record<string, InvestmentInstrumentDto | null> = {};
+    if (orphanIsins.length > 0) {
+      try {
+        orphanIsinMatches = await investmentService.searchInstrumentsByIsins(orphanIsins);
+      } catch {
+        orphanIsinMatches = {};
+      }
+    }
+    setOrphanSells(orphanPositions.map((p) => ({
+      key: p.key, ticker: p.ticker, name: p.name, isin: p.isin, quantity: p.quantity,
+      transactions: transactionsByKey.get(p.key) ?? [],
+      instrument: p.isin ? (orphanIsinMatches[p.isin.toUpperCase()] ?? null) : null,
+    })));
 
     void resolveInstruments(initialRows);
   };
@@ -730,7 +760,7 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
   // backend upserts on (instrument, external_id) when the broker provided one
   // (see upsertTransaction in the model), so an already-recorded transaction
   // is never double-counted, just re-confirmed.
-  const saveTransactions = async (transactions: ImportedTransaction[], instrumentId: number, holdingId: number) => {
+  const saveTransactions = async (transactions: ImportedTransaction[], instrumentId: number, holdingId: number | null) => {
     for (const tx of transactions) {
       if (!tx.date || tx.quantity == null) continue;
       try {
@@ -787,6 +817,15 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
             setRows((prev) => prev.map((r, idx) => (idx === i ? { ...r, status: 'error' } : r)));
           }
         }
+      }
+      // Orphan sells (see orphanSells above) never become a "row" - there's no
+      // holding to save/replace, just the transactions themselves, so a later
+      // file with the missing buy can reconcile against them instead of the
+      // sell being lost the moment this session ends. holding_id is null:
+      // nothing to attach it to yet.
+      for (const orphan of orphanSells) {
+        if (!orphan.instrument) continue;
+        await saveTransactions(orphan.transactions, orphan.instrument.id, null);
       }
       setImportDone(true);
       await onImported();
@@ -1031,6 +1070,10 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
                 <OrphanRow key={orphan.key} theme={theme}>
                   {(t.orphanSellsNote || "{ticker} — this file shows a sell, but no buy for it was found (in this import or in your account) — the matching purchase is probably in another file you haven't uploaded yet.")
                     .replace('{ticker}', orphan.ticker || orphan.name || orphan.isin || '?')}
+                  {' '}
+                  {orphan.instrument
+                    ? (t.orphanSellsWillSave || "It will be recorded when you import, so uploading the missing file later will reconcile it automatically.")
+                    : (t.orphanSellsUnresolved || "Couldn't identify this instrument, so it won't be recorded this time.")}
                 </OrphanRow>
               ))}
             </OrphanSection>

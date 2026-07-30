@@ -2850,6 +2850,8 @@
             "closedPositionsRetry": "Retry",
             "orphanSellsTitle": "Sell with no matching buy found",
             "orphanSellsNote": "{ticker} — this file shows a sell, but no buy for it was found (in this import or in your account) — the matching purchase is probably in another file you haven't uploaded yet.",
+            "orphanSellsWillSave": "It will be recorded when you import, so uploading the missing file later will reconcile it automatically.",
+            "orphanSellsUnresolved": "Couldn't identify this instrument, so it won't be recorded this time.",
             "kinds": {
                         "stock": "Stock",
                         "etf": "ETF",

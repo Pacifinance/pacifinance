@@ -2824,6 +2824,8 @@
             "closedPositionsRetry": "Réessayer",
             "orphanSellsTitle": "Vente sans achat correspondant",
             "orphanSellsNote": "{ticker} — ce fichier montre une vente, mais aucun achat correspondant n'a été trouvé (ni dans cet import, ni dans votre compte) — l'achat correspondant se trouve probablement dans un autre fichier que vous n'avez pas encore chargé.",
+            "orphanSellsWillSave": "Elle sera quand même enregistrée lors de l'import, afin que le chargement ultérieur du fichier manquant la réconcilie automatiquement.",
+            "orphanSellsUnresolved": "Impossible d'identifier cet instrument, il ne sera donc pas enregistré cette fois.",
             "kinds": {
                         "stock": "Action",
                         "etf": "ETF",

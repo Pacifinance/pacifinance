@@ -2824,6 +2824,8 @@
             "closedPositionsRetry": "Erneut versuchen",
             "orphanSellsTitle": "Verkauf ohne passenden Kauf gefunden",
             "orphanSellsNote": "{ticker} — diese Datei zeigt einen Verkauf, aber es wurde kein passender Kauf gefunden (weder in diesem Import noch in deinem Konto) — der zugehörige Kauf befindet sich wahrscheinlich in einer noch nicht hochgeladenen Datei.",
+            "orphanSellsWillSave": "Er wird beim Import trotzdem erfasst, sodass er beim späteren Hochladen der fehlenden Datei automatisch abgeglichen wird.",
+            "orphanSellsUnresolved": "Dieses Instrument konnte nicht identifiziert werden, daher wird es diesmal nicht erfasst.",
             "kinds": {
                         "stock": "Aktie",
                         "etf": "ETF",

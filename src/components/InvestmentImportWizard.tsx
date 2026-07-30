@@ -331,48 +331,46 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
    * closed automatically: the user confirms each one explicitly below. */
   const [closedCandidates, setClosedCandidates] = useState<ClosedHoldingCandidate[]>([]);
 
+  const [loadingSavedTransactions, setLoadingSavedTransactions] = useState(false);
+
   /**
-   * Recomputes everything (positions, closed-position detection, dividends)
-   * from the FULL set of transactions accumulated so far this session - never
-   * from a single just-uploaded file in isolation. Brokers cap a single
-   * export (Trading 212: 365 days), so a multi-year portfolio is necessarily
-   * spread across several files; computing per-file used to make "closed
-   * position" detection depend on the order files were uploaded in (a buy
-   * living in one file and its matching sell in another would net to a false
-   * "still open"/"already closed" signal depending on which file happened to
-   * be processed - and cross-referenced against the DB - first). Recomputing
-   * from the complete merged history every time removes that dependency
-   * entirely: aggregatePositions/closedPositions always see the whole
-   * picture, so the true net position is correct regardless of upload order.
+   * Recomputes everything (which rows to show, their quantity/invested
+   * amount, monthly history, closed-position detection) from the COMPLETE
+   * transaction history - this session's files merged with every transaction
+   * ever persisted server-side (see saveTransactions), not just from
+   * whatever's been dropped in this session. Brokers cap a single export
+   * (Trading 212: 365 days), so a multi-year portfolio is necessarily spread
+   * across several files, uploaded in however many separate sessions, in
+   * whatever order the user happens to have them in. Computing anything -
+   * which rows are open, their true quantity, whether a position is now
+   * closed - from only session-scoped transactions made every one of those
+   * things depend on upload order: a buy living in one file and its matching
+   * sell in another would silently net to whichever partial view happened to
+   * be computed first. Fetching and merging the full ledger before computing
+   * ANYTHING removes that dependency entirely - the true net position (and
+   * its complete monthly timeline) is always correct, regardless of which
+   * files were uploaded when, in which sessions, in which order.
+   *
+   * Rows shown are still scoped to instruments THIS session's files actually
+   * mention (`sessionKeys`) - a file only about AAPL shouldn't surface a row
+   * for some unrelated stock just because it exists in server history - but
+   * each shown row's quantity/transactions/history come from the complete
+   * merged set, so the numbers themselves are always the true total.
    */
   const recomputeFromMerged = async (transactions: ImportedTransaction[], dividends: ImportedDividend[]) => {
     const deduped = dedupeTransactions(transactions);
-    const positions = aggregatePositions(deduped);
-    const transactionsByKey = groupTransactionsByPositionKey(deduped);
+    const sessionKeys = new Set(groupTransactionsByPositionKey(deduped).keys());
     const dividendsByKey = groupDividendsByPositionKey(dedupeDividends(dividends));
-    const initialRows: ImportRowState[] = positions.map((position) => {
-      const positionTransactions = transactionsByKey.get(position.key) ?? [];
-      // Every distinct month present in this position's own history - what will
-      // get an automatic backfilled snapshot (shown to the user up front below).
-      const historyMonths = buildMonthlyPositionTimeline(positionTransactions).map((s) => s.monthKey);
-      const positionDividends = dividendsByKey.get(position.key) ?? [];
-      return {
-        position, transactions: positionTransactions, dividends: positionDividends, instrument: null,
-        status: 'pending', selected: true, historyMonths, manualKind: 'stock', conflictExisting: null,
-      };
-    });
-    setRows(initialRows);
-    // Fetched (and awaited) *before* instrument resolution starts marking rows
-    // 'resolved' - resolveMergeStrategy/describeExistingImpact must never see a
-    // row go 'resolved' (importable) while these maps are still empty, or a
-    // genuine month-overlap could be missed and wrongly treated as "add".
+
+    setLoadingSavedTransactions(true);
+    let merged = deduped;
+    const holdingMap = new Map<number, InvestmentHoldingDto>();
     try {
       const [holdings, history, savedTransactions] = await Promise.all([
         investmentService.getHoldings(),
         investmentService.getHoldingHistory({}),
         investmentService.getTransactions(),
       ]);
-      const holdingMap = new Map<number, InvestmentHoldingDto>();
       for (const holding of holdings) if (holding.instrument) holdingMap.set(holding.instrument.id, holding);
       setExistingByInstrumentId(holdingMap);
 
@@ -390,39 +388,48 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
       setRecordedHistoryByInstrumentId(historyMap);
       setRecordedQuantityByInstrumentId(quantityMap);
 
-      // Cross-reference against already-held instruments: a position the merged
-      // history shows fully sold (dropped by aggregatePositions above) that
-      // matches an existing, still-nonzero holding means that holding is stale
-      // and needs the user's explicit confirmation to close.
-      //
-      // This check specifically merges in every transaction already persisted
-      // server-side (see saveTransactions below), not just this session's own
-      // `deduped` - a file uploaded in an earlier, separate session already
-      // saved its transactions there, so a later session importing files in a
-      // different order (or just one file alone) can still see the complete
-      // history instead of only what happens to be loaded right now. The
-      // session-scoped `deduped`/`transactionsByKey` above are deliberately
-      // left untouched for the actual "rows to import" list - that must only
-      // ever reflect files loaded in THIS session, not every instrument ever
-      // saved historically.
-      const savedAsImported = savedTransactions.map(toImportedTransaction);
-      const mergedForClosedCheck = dedupeTransactions([...deduped, ...savedAsImported]);
-      const transactionsByKeyForClosed = groupTransactionsByPositionKey(mergedForClosedCheck);
-      const closed = closedPositions(mergedForClosedCheck);
-      const candidates: ClosedHoldingCandidate[] = [];
-      for (const holding of holdingMap.values()) {
-        if (!holding.instrument || (holding.quantity ?? 0) <= 0) continue;
-        const key = positionKeyFor({isin: holding.instrument.isin, ticker: holding.instrument.symbol, name: holding.instrument.name});
-        const match = key ? closed.find((p) => p.key === key) : undefined;
-        if (match) candidates.push({holding, lastTransactionDate: match.lastTransactionDate, status: 'pending', transactions: key ? (transactionsByKeyForClosed.get(key) ?? []) : []});
-      }
-      setClosedCandidates(candidates);
+      // Every transaction already persisted server-side, from ANY session,
+      // in ANY order - merged with this session's own before anything else
+      // gets computed below.
+      merged = dedupeTransactions([...deduped, ...savedTransactions.map(toImportedTransaction)]);
     } catch {
       setExistingByInstrumentId(new Map());
       setRecordedHistoryByInstrumentId(new Map());
       setRecordedQuantityByInstrumentId(new Map());
-      setClosedCandidates([]);
+    } finally {
+      setLoadingSavedTransactions(false);
     }
+
+    const transactionsByKey = groupTransactionsByPositionKey(merged);
+    const positions = aggregatePositions(merged).filter((p) => sessionKeys.has(p.key));
+    const initialRows: ImportRowState[] = positions.map((position) => {
+      const positionTransactions = transactionsByKey.get(position.key) ?? [];
+      // Every distinct month present in this position's COMPLETE history
+      // (every session merged) - what will get an automatic backfilled
+      // snapshot (shown to the user up front below).
+      const historyMonths = buildMonthlyPositionTimeline(positionTransactions).map((s) => s.monthKey);
+      const positionDividends = dividendsByKey.get(position.key) ?? [];
+      return {
+        position, transactions: positionTransactions, dividends: positionDividends, instrument: null,
+        status: 'pending', selected: true, historyMonths, manualKind: 'stock', conflictExisting: null,
+      };
+    });
+    setRows(initialRows);
+
+    // Cross-reference against already-held instruments: a position the
+    // complete merged history shows fully sold (dropped by aggregatePositions
+    // above) that matches an existing, still-nonzero holding means that
+    // holding is stale and needs the user's explicit confirmation to close.
+    const closed = closedPositions(merged);
+    const candidates: ClosedHoldingCandidate[] = [];
+    for (const holding of holdingMap.values()) {
+      if (!holding.instrument || (holding.quantity ?? 0) <= 0) continue;
+      const key = positionKeyFor({isin: holding.instrument.isin, ticker: holding.instrument.symbol, name: holding.instrument.name});
+      const match = key ? closed.find((p) => p.key === key) : undefined;
+      if (match) candidates.push({holding, lastTransactionDate: match.lastTransactionDate, status: 'pending', transactions: key ? (transactionsByKey.get(key) ?? []) : []});
+    }
+    setClosedCandidates(candidates);
+
     void resolveInstruments(initialRows);
   };
 
@@ -891,6 +898,13 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
               <FontAwesomeIcon icon={faTriangleExclamation} />
               {t.unrecognized}
             </ErrorLine>
+          )}
+
+          {loadingSavedTransactions && rows.length === 0 && (
+            <SummaryLine theme={theme}>
+              <FontAwesomeIcon icon={faSpinner} spin style={{ marginRight: 6 }} />
+              {t.loadingHistory || 'Checking your complete transaction history…'}
+            </SummaryLine>
           )}
 
           {platform && (

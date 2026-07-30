@@ -48,9 +48,19 @@ create table if not exists public.user_investment_transactions (
 create index if not exists user_investment_transactions_user_idx
   on public.user_investment_transactions (user_id, instrument_id, trade_date desc);
 
+-- NOT partial (no "where external_id is not null"): a partial unique index
+-- cannot be inferred by a plain `ON CONFLICT (columns)` clause (which is all
+-- the Supabase JS client's `.upsert(..., {onConflict: "..."})` can express),
+-- so every upsert against a partial version of this index fails with
+-- Postgres error 42P10 - the exact bug already root-caused and fixed for
+-- user_investment_holding_history (see add-holdings-history-uniqueness.sql).
+-- A plain unique index doesn't need the predicate anyway: Postgres already
+-- treats every NULL as distinct from every other NULL, so any number of rows
+-- with external_id NULL for the same user/instrument coexist without
+-- conflicting - the partial predicate was solving a problem plain SQL NULL
+-- semantics already solve.
 create unique index if not exists user_investment_transactions_external_id_uidx
-  on public.user_investment_transactions (user_id, instrument_id, external_id)
-  where external_id is not null;
+  on public.user_investment_transactions (user_id, instrument_id, external_id);
 
 alter table public.user_investment_transactions enable row level security;
 

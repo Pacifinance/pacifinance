@@ -2818,6 +2818,7 @@
             "existingWillAdd": "Ya en cartera: {quantity} unidades, {amount} — este archivo cubre meses distintos que aún no tienes, así que se SUMARÁ, quedando en {newQuantity} unidades, {newAmount}",
             "existingWillUpdate": "Ya en cartera: {quantity} unidades, {amount} — se SUSTITUIRÁ (no se sumará) por {newQuantity} unidades, {newAmount} de este archivo",
             "existingDifferentSource": "Ya en cartera: {quantity} unidades, {amount} — registradas desde otra fuente, se te preguntará si sumarlas o sustituirlas",
+            "loadingHistory": "Comprobando tu historial completo de transacciones…",
             "closedPositionsTitle": "Posiciones cerradas detectadas",
             "closedPositionsNote": "Ya está en tus posiciones, pero este archivo muestra que se vendió por completo.",
             "closedPositionsAction": "Marcar como vendida",

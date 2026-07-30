@@ -2842,6 +2842,7 @@
             "existingWillAdd": "Già presente: {quantity} unità, {amount} — questo file copre mesi diversi che non hai ancora, verrà quindi SOMMATO, portandolo a {newQuantity} unità, {newAmount}",
             "existingWillUpdate": "Già presente: {quantity} unità, {amount} — verrà SOSTITUITO (non sommato) con {newQuantity} unità, {newAmount} da questo file",
             "existingDifferentSource": "Già presente: {quantity} unità, {amount} — tracciati da un'altra fonte, ti verrà chiesto se sommarli o sostituirli",
+            "loadingHistory": "Verifica dello storico completo delle transazioni…",
             "closedPositionsTitle": "Posizioni chiuse rilevate",
             "closedPositionsNote": "Già presente nei tuoi holding, ma questo file mostra che è stata venduta completamente.",
             "closedPositionsAction": "Segna come venduta",

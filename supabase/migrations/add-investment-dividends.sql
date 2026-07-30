@@ -31,12 +31,17 @@ create table if not exists public.user_investment_dividends (
 create index if not exists user_investment_dividends_user_idx
   on public.user_investment_dividends (user_id, instrument_id, paid_date desc);
 
--- Only enforced when the broker actually provided an id — rows without one
--- (see above) rely on the CSV-side dedupeTransactions-style pass instead,
--- same tradeoff already accepted for buy/sell rows without an externalId.
+-- NOT partial (no "where external_id is not null"): a partial unique index
+-- cannot be inferred by a plain `ON CONFLICT (columns)` clause (all the
+-- Supabase JS client's `.upsert(..., {onConflict: "..."})` can express), so
+-- every upsert against a partial version of this index fails with Postgres
+-- error 42P10 - the exact bug already root-caused and fixed for
+-- user_investment_holding_history (see add-holdings-history-uniqueness.sql).
+-- A plain unique index doesn't need the predicate anyway: Postgres already
+-- treats every NULL as distinct from every other NULL, so rows without an
+-- external_id (see above) coexist without conflicting regardless.
 create unique index if not exists user_investment_dividends_external_id_uidx
-  on public.user_investment_dividends (user_id, instrument_id, external_id)
-  where external_id is not null;
+  on public.user_investment_dividends (user_id, instrument_id, external_id);
 
 alter table public.user_investment_dividends enable row level security;
 

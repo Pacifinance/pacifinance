@@ -38,7 +38,15 @@ app.use((req, res, next) => {
         res.status(400).send()
     }
 })
-app.use(express.json())
+// Default (100kb) is too small for the investment CSV import wizard's batch
+// save endpoints (holdings/history/save-batch, dividends/save-batch,
+// transactions/save-batch) - a portfolio with hundreds of transactions spread
+// over many years easily exceeds it in one request (see saveTransactionsBatch
+// and friends in server/src/db/models/investments.ts, and the batch routes in
+// server/src/routes/private/investments.ts). Kept under Vercel's own ~4.5MB
+// serverless function body limit, so an oversized request still gets our own
+// readable 413 instead of being rejected by the platform first.
+app.use(express.json({limit: "4mb"}))
 
 /* ============================ Express.js routes ============================ */
 

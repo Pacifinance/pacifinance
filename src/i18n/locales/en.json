@@ -733,6 +733,7 @@
             "overweightWarning": "Overweight position",
             "historyTitle": "Value over time",
             "historyDescription": "Your holdings' value, month by month",
+            "closedTag": "closed",
             "sparseHistoryTitle": "Building your history",
             "sparseHistoryDescription": "Keep updating your balance every month to build your holdings' history.",
             "noHoldingsTitle": "No investments recorded",

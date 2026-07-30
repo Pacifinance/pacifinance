@@ -731,6 +731,7 @@
             "overweightWarning": "Übergewichtete Position",
             "historyTitle": "Wertentwicklung im Zeitverlauf",
             "historyDescription": "Der Wert deiner Positionen, Monat für Monat",
+            "closedTag": "geschlossen",
             "sparseHistoryTitle": "Verlauf wird aufgebaut",
             "sparseHistoryDescription": "Aktualisiere dein Guthaben weiterhin jeden Monat, um den Verlauf deiner Investitionen aufzubauen.",
             "noHoldingsTitle": "Keine Investitionen erfasst",

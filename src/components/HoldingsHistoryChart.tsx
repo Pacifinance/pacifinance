@@ -69,6 +69,18 @@ const LegendItem = styled.button`
   }
 `;
 
+const ClosedTag = styled.span`
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  padding: 0.05rem 0.35rem;
+  border-radius: 20px;
+  background: rgba(148, 163, 184, 0.18);
+  color: ${(p) => p.theme.textColor};
+  opacity: 0.75;
+`;
+
 const CategoryHeader = styled.div`
   flex-basis: 100%;
   font-size: 0.68rem;
@@ -163,6 +175,20 @@ export default function HoldingsHistoryChart({ theme, history, assetKey, isHidde
   const labelFor = (holdingId: string) => {
     const entry = byHolding[holdingId]?.[0];
     return entry?.symbol || entry?.name || `#${holdingId}`;
+  };
+
+  // A holding whose most recent recorded month has quantity 0 was fully sold
+  // (see InvestmentImportWizard's handleCloseHolding) - it's excluded from
+  // the current breakdown/totals since it's no longer active, but its past
+  // trajectory (backfilled the same way an open position's is) is still real
+  // history worth showing when the user chooses to look at it. Distinguished
+  // in the legend so "unchecked because it ranked low" (still held) and
+  // "unchecked because it's closed" aren't visually identical.
+  const isClosed = (holdingId: string) => {
+    const entries = byHolding[holdingId];
+    if (!entries || entries.length === 0) return false;
+    const latest = entries.reduce((a, b) => (a.userDate > b.userDate ? a : b));
+    return latest.quantity === 0;
   };
 
   const rows = useMemo(() => distinctMonths.map((month) => {
@@ -263,6 +289,7 @@ export default function HoldingsHistoryChart({ theme, history, assetKey, isHidde
               <LegendItem theme={theme} $active={lineVisibility[id]} onClick={() => handleLegendClick(id)} type="button">
                 <span className="dot" style={{ backgroundColor: paletteColor(rankedIds.indexOf(id)) }} />
                 {isHidden ? '****' : labelFor(id)}
+                {!isHidden && isClosed(id) && <ClosedTag>{t.closedTag || 'closed'}</ClosedTag>}
               </LegendItem>
             </React.Fragment>
           );

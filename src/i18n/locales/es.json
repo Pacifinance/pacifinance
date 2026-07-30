@@ -733,6 +733,7 @@
             "overweightWarning": "Posición sobreponderada",
             "historyTitle": "Evolución en el tiempo",
             "historyDescription": "El valor de tus posiciones, mes a mes",
+            "closedTag": "cerrada",
             "sparseHistoryTitle": "Historial en construcción",
             "sparseHistoryDescription": "Sigue actualizando tu balance cada mes para construir el historial de tus inversiones.",
             "noHoldingsTitle": "Sin inversiones registradas",

@@ -733,6 +733,7 @@
             "overweightWarning": "Posizione sovrappesata",
             "historyTitle": "Andamento nel tempo",
             "historyDescription": "Valore dei tuoi holding mese per mese",
+            "closedTag": "chiusa",
             "sparseHistoryTitle": "Storico in costruzione",
             "sparseHistoryDescription": "Continua ad aggiornare il bilancio ogni mese per costruire lo storico dei tuoi investimenti.",
             "noHoldingsTitle": "Nessun investimento registrato",

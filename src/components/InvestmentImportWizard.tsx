@@ -591,8 +591,14 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
   // itself gets corrected by insertHolding's own add/replace merge - meaning
   // the recorded history for those months stays permanently wrong even
   // though the current, most-recent total looks right.
-  const backfillHistory = async (row: ImportRowState, holdingId: number, instrumentId: number) => {
-    const timeline = buildMonthlyPositionTimeline(row.transactions);
+  // Takes the raw ingredients (not a full ImportRowState) so the exact same
+  // backfill logic covers both an open row (importSelected/resolveConflict)
+  // and a position about to be closed (handleCloseHolding) - a closed
+  // position's pre-closure months are just as real a part of "value over
+  // time" as an open one's, they just happen to end at zero instead of
+  // continuing to grow.
+  const backfillHistory = async (transactions: ImportedTransaction[], positionKey: string, holdingId: number, instrumentId: number) => {
+    const timeline = buildMonthlyPositionTimeline(transactions);
     const recorded = recordedHistoryByInstrumentId.get(instrumentId);
     const recordedQuantity = recordedQuantityByInstrumentId.get(instrumentId);
     const earliestMonth = timeline[0]?.monthKey;
@@ -600,7 +606,7 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
     const quantityBaseline = earliestMonth ? lastRecordedValueBefore(recordedQuantity, earliestMonth) : 0;
 
     for (const snapshot of timeline) {
-      const snapshotPosition = snapshot.positions.find((p) => p.key === row.position.key);
+      const snapshotPosition = snapshot.positions.find((p) => p.key === positionKey);
       if (!snapshotPosition || snapshotPosition.investedAmount == null) continue;
       const investedAmountEUR = baseline + convertAmountToEUR(snapshotPosition.investedAmount, snapshotPosition.investedAmountCurrency);
       // Quantity actually held that month — for the "quantity bought per
@@ -706,7 +712,7 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
             import_source: platform,
             merge_strategy: resolveMergeStrategy(row),
           });
-          await backfillHistory(row, saved.id, row.instrument.id);
+          await backfillHistory(row.transactions, row.position.key, saved.id, row.instrument.id);
           await saveDividends(row, saved.id);
           await saveTransactions(row.transactions, row.instrument.id, saved.id);
           setRows((prev) => prev.map((r, idx) => (idx === i ? { ...r, status: 'saved' } : r)));
@@ -748,7 +754,7 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
         import_source: platform,
         merge_strategy: strategy,
       });
-      await backfillHistory(row, saved.id, row.instrument.id);
+      await backfillHistory(row.transactions, row.position.key, saved.id, row.instrument.id);
       await saveDividends(row, saved.id);
       await saveTransactions(row.transactions, row.instrument.id, saved.id);
       setRows((prev) => prev.map((r, idx) => (idx === index ? { ...r, status: 'saved' } : r)));
@@ -766,11 +772,12 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
   const handleCloseHolding = async (index: number) => {
     const candidate = closedCandidates[index];
     if (!candidate || candidate.status === 'closing' || !candidate.holding.instrument) return;
+    const instrument = candidate.holding.instrument;
     setClosedCandidates((prev) => prev.map((c, i) => (i === index ? { ...c, status: 'closing' } : c)));
     try {
       await investmentService.saveHolding({
         id: candidate.holding.id,
-        instrument_id: candidate.holding.instrument.id,
+        instrument_id: instrument.id,
         asset_key: candidate.holding.assetKey,
         quantity: 0,
         average_price: candidate.holding.averagePrice,
@@ -778,6 +785,18 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
         invested_amount: candidate.holding.investedAmount,
         notes: candidate.holding.notes,
       });
+      // Backfills every pre-closure month's cost-basis buildup (same as an
+      // open position - see backfillHistory), not just a single zero point at
+      // closing: a position that grew for two years before being fully sold
+      // still has a real "value over time" trajectory worth keeping, for
+      // whoever chooses to look at it (it's excluded from the default
+      // breakdown/totals since it's no longer active, but its own line in the
+      // history chart should still show what actually happened). This never
+      // touches the closing month itself - buildMonthlyPositionTimeline
+      // excludes a month whose net quantity is already zero-or-less, so the
+      // explicit zero-value write below is what covers that one.
+      const key = positionKeyFor({isin: instrument.isin ?? null, ticker: instrument.symbol ?? null, name: instrument.name ?? null});
+      if (key) await backfillHistory(candidate.transactions, key, candidate.holding.id, instrument.id);
       if (candidate.lastTransactionDate) {
         try {
           await investmentService.saveHoldingHistory({
@@ -791,7 +810,7 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
           // the "andamento nel tempo" chart's final drop-to-zero point is missing.
         }
       }
-      await saveTransactions(candidate.transactions, candidate.holding.instrument.id, candidate.holding.id);
+      await saveTransactions(candidate.transactions, instrument.id, candidate.holding.id);
       setClosedCandidates((prev) => prev.map((c, i) => (i === index ? { ...c, status: 'closed' } : c)));
       await onImported();
     } catch {

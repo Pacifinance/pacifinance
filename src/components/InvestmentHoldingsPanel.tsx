@@ -261,6 +261,14 @@ const HistoryMonthRow = styled.div`
   }
 `;
 
+/** Marks whether a month's quantity grew (bought, green) or shrank (sold,
+ * red) vs. the previous recorded month - see the quantityDelta computed
+ * alongside each HistoryMonthRow above. */
+const HistoryQuantityDelta = styled.span<{ $positive: boolean }>`
+  font-weight: 700;
+  color: ${(p) => (p.$positive ? '#10b981' : '#ef4444')};
+`;
+
 const HistoryMonthEditRow = styled.div`
   display: flex;
   align-items: center;
@@ -422,6 +430,16 @@ const SecondaryButton = styled.button`
   cursor: pointer;
 `;
 
+/** Save/Cancel for the inline per-row edit form (see renderHoldingRow) -
+ * unlike the "add new holding" form, there's no shared ModalFooter to put
+ * these in, since the form itself lives next to whichever specific row is
+ * being edited, not at a fixed position in the modal. */
+const InlineEditActions = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+`;
+
 export default function InvestmentHoldingsPanel({
   assetKey, holdings, onClose, onChanged, isCurrentMonth = true, userDate, historyByEntityId = {},
 }: InvestmentHoldingsPanelProps) {
@@ -522,10 +540,12 @@ export default function InvestmentHoldingsPanel({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Opens the edit form INLINE, right under this specific row (see
+  // renderHoldingRow) - not the "add new" form in the Aggiungi tab, which
+  // has nothing to do with editing an already-existing holding.
   const startEdit = (holding: InvestmentHoldingDto) => {
     setEditingId(holding.id);
     setIsDefaultPrefilled(false);
-    setShowForm(true);
     setForm({
       instrument: holding.instrument,
       quantity: holding.quantity != null ? String(holding.quantity) : '',
@@ -662,14 +682,82 @@ export default function InvestmentHoldingsPanel({
     return sum + (entry?.totalAmount ?? 0);
   }, 0);
 
-  // One holding's row (+ its history drawer / historical-edit block) - shared
-  // by every list that shows holdings (the current-holdings tab, the
-  // past-holdings tab, and the single unified list past-month mode still
-  // uses) so there's exactly one place that knows how to render a holding,
-  // not three slightly-drifting copies.
+  // Instrument search/selected-instrument + quantity/price/value/invested
+  // fields + notes - shared by the "add new holding" form (Aggiungi tab) and
+  // the "edit this holding" form (inline, right under its row - see
+  // renderHoldingRow below), since both edit the exact same fields, just for
+  // a new vs. an already-existing holding.
+  const renderFormFields = () => (
+    <>
+      {form.instrument ? (
+        <>
+          <SelectedInstrument theme={theme}>
+            <span>
+              {form.instrument.symbol} — {form.instrument.name}
+              {formatInstrumentDetails(form.instrument) !== '' && (
+                <em style={{ display: 'block', fontSize: '0.72rem', fontWeight: 400, opacity: 0.6, fontStyle: 'normal' }}>
+                  {formatInstrumentDetails(form.instrument)}
+                </em>
+              )}
+            </span>
+            <button
+              type="button"
+              onClick={() => {
+                setForm((f) => ({ ...f, instrument: null }));
+                setIsDefaultPrefilled(false);
+              }}
+            >
+              <FontAwesomeIcon icon={faTimes} />
+            </button>
+          </SelectedInstrument>
+          {isDefaultPrefilled && (
+            <DefaultInstrumentHint theme={theme}>{t.defaultInstrumentHint}</DefaultInstrumentHint>
+          )}
+        </>
+      ) : (
+        <InstrumentSearchAutocomplete
+          assetKey={assetKey}
+          onSelect={(instrument) => setForm((f) => ({ ...f, instrument }))}
+        />
+      )}
+
+      <FieldsGrid theme={theme}>
+        <label>
+          {t.quantity}
+          <input type="number" value={form.quantity} onChange={(e) => setForm((f) => ({ ...f, quantity: e.target.value }))} />
+        </label>
+        <label>
+          {t.averagePrice}
+          <input type="number" value={form.averagePrice} onChange={(e) => setForm((f) => ({ ...f, averagePrice: e.target.value }))} />
+        </label>
+        <label>
+          {t.currentValue}
+          <input type="number" value={form.currentValue} onChange={(e) => setForm((f) => ({ ...f, currentValue: e.target.value }))} />
+        </label>
+        <label>
+          {t.investedAmount}
+          <input type="number" value={form.investedAmount} onChange={(e) => setForm((f) => ({ ...f, investedAmount: e.target.value }))} />
+        </label>
+      </FieldsGrid>
+
+      <NotesInput
+        theme={theme}
+        placeholder={t.notesPlaceholder}
+        value={form.notes}
+        onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
+      />
+    </>
+  );
+
+  // One holding's row (+ its history drawer / historical-edit block / inline
+  // edit form) - shared by every list that shows holdings (the current-
+  // holdings tab, the past-holdings tab, and the single unified list
+  // past-month mode still uses) so there's exactly one place that knows how
+  // to render a holding, not three slightly-drifting copies.
   const renderHoldingRow = (holding: InvestmentHoldingDto) => {
     const historicalEntry = historyByEntityId[holding.id];
     const isEditingHistorical = historicalEditingId === holding.id;
+    const isEditingCurrent = editingId === holding.id;
     return (
       <React.Fragment key={holding.id}>
         <HoldingRow theme={theme}>
@@ -747,6 +835,17 @@ export default function InvestmentHoldingsPanel({
             )}
           </HoldingActions>
         </HoldingRow>
+        {isEditingCurrent && (
+          <FormSection theme={theme}>
+            {renderFormFields()}
+            <InlineEditActions>
+              <SecondaryButton theme={theme} onClick={resetForm}>{t.cancelEdit}</SecondaryButton>
+              <ModernActionButton theme={theme} onClick={handleSave} disabled={!form.instrument || saving}>
+                {t.saveButton}
+              </ModernActionButton>
+            </InlineEditActions>
+          </FormSection>
+        )}
         {isCurrentMonth && expandedHistoryHoldingId === holding.id && (
           <HistoryDrawer theme={theme}>
             {loadingHistory && <span style={{ fontSize: '0.78rem', opacity: 0.6 }}>{t.historyLoading || 'Caricamento storico…'}</span>}
@@ -757,8 +856,15 @@ export default function InvestmentHoldingsPanel({
               if (monthsForHolding.length === 0) {
                 return <span style={{ fontSize: '0.78rem', opacity: 0.6 }}>{t.historyEmptyState || 'Nessuno storico registrato per questo titolo.'}</span>;
               }
-              return monthsForHolding.map((entry) => (
-                editingHistoryMonthKey === entry.userDate ? (
+              return monthsForHolding.map((entry, idx) => {
+                // Whether this month's quantity grew (bought that month) or
+                // shrank (sold) vs. the previous recorded month - the numbers
+                // alone don't make that obvious at a glance, so it's called
+                // out with a colored +/- delta (green/red).
+                const prevQuantity = idx > 0 ? (monthsForHolding[idx - 1].quantity ?? 0) : 0;
+                const quantityDelta = entry.quantity != null ? entry.quantity - prevQuantity : null;
+                const locale = language === 'it' ? 'it-IT' : 'en-US';
+                return editingHistoryMonthKey === entry.userDate ? (
                   <HistoryMonthEditRow key={entry.userDate} theme={theme}>
                     <input
                       type="number"
@@ -796,14 +902,19 @@ export default function InvestmentHoldingsPanel({
                     <span className="month">{formatHistoryMonthLabel(entry.userDate)}</span>
                     <span className="values">
                       {formatAmount(entry.currentValue ?? entry.investedAmount ?? 0)}
-                      {entry.quantity != null && ` · ${entry.quantity.toLocaleString(language === 'it' ? 'it-IT' : 'en-US', { maximumFractionDigits: 6 })}`}
+                      {entry.quantity != null && ` · ${entry.quantity.toLocaleString(locale, { maximumFractionDigits: 6 })}`}
+                      {quantityDelta != null && Math.abs(quantityDelta) > 0.0000001 && (
+                        <HistoryQuantityDelta theme={theme} $positive={quantityDelta > 0}>
+                          {' '}({quantityDelta > 0 ? '+' : ''}{quantityDelta.toLocaleString(locale, { maximumFractionDigits: 6 })})
+                        </HistoryQuantityDelta>
+                      )}
                     </span>
                     <button type="button" onClick={() => startHistoryMonthEdit(entry)} aria-label={t.editTitle}>
                       <FontAwesomeIcon icon={faPen} />
                     </button>
                   </HistoryMonthRow>
-                )
-              ));
+                );
+              });
             })()}
           </HistoryDrawer>
         )}
@@ -892,65 +1003,8 @@ export default function InvestmentHoldingsPanel({
 
             {isCurrentMonth && (showForm ? (
               <FormSection theme={theme} style={{ marginTop: 0, paddingTop: 0, borderTop: 'none' }}>
-                <FormTitle theme={theme}>{editingId ? t.editTitle : t.addTitle}</FormTitle>
-
-                {form.instrument ? (
-                  <>
-                    <SelectedInstrument theme={theme}>
-                      <span>
-                        {form.instrument.symbol} — {form.instrument.name}
-                        {formatInstrumentDetails(form.instrument) !== '' && (
-                          <em style={{ display: 'block', fontSize: '0.72rem', fontWeight: 400, opacity: 0.6, fontStyle: 'normal' }}>
-                            {formatInstrumentDetails(form.instrument)}
-                          </em>
-                        )}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setForm((f) => ({ ...f, instrument: null }));
-                          setIsDefaultPrefilled(false);
-                        }}
-                      >
-                        <FontAwesomeIcon icon={faTimes} />
-                      </button>
-                    </SelectedInstrument>
-                    {isDefaultPrefilled && (
-                      <DefaultInstrumentHint theme={theme}>{t.defaultInstrumentHint}</DefaultInstrumentHint>
-                    )}
-                  </>
-                ) : (
-                  <InstrumentSearchAutocomplete
-                    assetKey={assetKey}
-                    onSelect={(instrument) => setForm((f) => ({ ...f, instrument }))}
-                  />
-                )}
-
-                <FieldsGrid theme={theme}>
-                  <label>
-                    {t.quantity}
-                    <input type="number" value={form.quantity} onChange={(e) => setForm((f) => ({ ...f, quantity: e.target.value }))} />
-                  </label>
-                  <label>
-                    {t.averagePrice}
-                    <input type="number" value={form.averagePrice} onChange={(e) => setForm((f) => ({ ...f, averagePrice: e.target.value }))} />
-                  </label>
-                  <label>
-                    {t.currentValue}
-                    <input type="number" value={form.currentValue} onChange={(e) => setForm((f) => ({ ...f, currentValue: e.target.value }))} />
-                  </label>
-                  <label>
-                    {t.investedAmount}
-                    <input type="number" value={form.investedAmount} onChange={(e) => setForm((f) => ({ ...f, investedAmount: e.target.value }))} />
-                  </label>
-                </FieldsGrid>
-
-                <NotesInput
-                  theme={theme}
-                  placeholder={t.notesPlaceholder}
-                  value={form.notes}
-                  onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
-                />
+                <FormTitle theme={theme}>{t.addTitle}</FormTitle>
+                {renderFormFields()}
               </FormSection>
             ) : (
               <AddTriggerButton type="button" theme={theme} onClick={() => setShowForm(true)} style={{ marginTop: 0 }}>
@@ -981,9 +1035,8 @@ export default function InvestmentHoldingsPanel({
 
         {isCurrentMonth && activeTab === 'add' && showForm && (
           <ModalFooter theme={theme}>
-            {editingId && <SecondaryButton theme={theme} onClick={resetForm}>{t.cancelEdit}</SecondaryButton>}
             <ModernActionButton theme={theme} onClick={handleSave} disabled={!form.instrument || saving}>
-              {editingId ? t.saveButton : t.addButton}
+              {t.addButton}
             </ModernActionButton>
           </ModalFooter>
         )}

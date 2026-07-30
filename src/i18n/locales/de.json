@@ -2781,7 +2781,22 @@
         "unverifiedHint": "Nicht verifiziert — zählt nicht bei Vergleichen mit anderen Nutzern.",
         "dividendsReceivedTotal": "Erhaltene Dividenden: {amount}",
         "dividendsReceived": "Dividenden: {amount}{ratio}",
-        "dividendsOfInvested": "des investierten Betrags"
+        "dividendsOfInvested": "des investierten Betrags",
+        "reconciliationButton": "Transaktionen analysieren",
+        "reconciliationTitle": "Transaktionen analysieren",
+        "reconciliationSubtitle": "Überprüft deine bereits gespeicherten Daten auf Unstimmigkeiten, ohne dass du eine Datei erneut hochladen musst.",
+        "reconciliationAnalyzing": "Analyse läuft…",
+        "reconciliationError": "Analyse konnte nicht abgeschlossen werden. Versuche es später erneut.",
+        "reconciliationNoIssues": "Keine Unstimmigkeiten gefunden.",
+        "reconciliationStaleClosedTitle": "Geschlossene Positionen erkannt",
+        "reconciliationStaleClosedNote": "Bereits in deinen Beständen, aber deine erfassten Transaktionen zeigen, dass sie vollständig verkauft wurde.",
+        "reconciliationMarkSold": "Als verkauft markieren",
+        "reconciliationRetry": "Erneut versuchen",
+        "reconciliationOrphanTitle": "Verkauf ohne passenden Kauf gefunden",
+        "reconciliationOrphanNote": "{ticker} — du hast noch einen Verkauf erfasst, ohne passenden Kauf. Der Kauf befindet sich wahrscheinlich in einer noch nicht hochgeladenen Datei — lade sie hoch, um dies automatisch abzugleichen.",
+        "historyTitle": "Verlauf",
+        "historyLoading": "Verlauf wird geladen…",
+        "historyEmptyState": "Für dieses Instrument ist noch kein Verlauf erfasst."
         },
         "attribution": {
             "coingecko": "Daten bereitgestellt von CoinGecko",

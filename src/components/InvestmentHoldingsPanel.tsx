@@ -1,9 +1,12 @@
 import React, { useContext, useEffect, useState, lazy, Suspense } from 'react';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash, faPen, faTimes, faPlus, faCheck, faFileImport } from '@fortawesome/free-solid-svg-icons';
+import {
+  faTrash, faPen, faTimes, faPlus, faCheck, faFileImport, faClockRotateLeft, faMagnifyingGlassChart,
+} from '@fortawesome/free-solid-svg-icons';
 
 const InvestmentImportWizard = lazy(() => import('./InvestmentImportWizard'));
+const InvestmentReconciliationPanel = lazy(() => import('./InvestmentReconciliationPanel'));
 import { ThemeContext } from '../contexts/ThemeContext';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
@@ -194,6 +197,84 @@ const HistoricalEditRow = styled.div`
   }
 `;
 
+/** Wraps a single holding's full monthly history (see expandedHistoryHoldingId
+ * below) - visually nested under its HoldingRow, one month per HistoryMonthRow. */
+const HistoryDrawer = styled.div`
+  margin: -0.3rem 0 0.3rem;
+  padding: 0.5rem 0.7rem 0.2rem;
+  border-radius: 0 0 10px 10px;
+  background: ${(p) => (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.015)')};
+  border: 1px solid ${(p) => (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)')};
+  border-top: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+`;
+
+const HistoryMonthRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.3rem 0.1rem;
+  font-size: 0.78rem;
+  color: ${(p) => p.theme.textColor};
+
+  span.month { flex-shrink: 0; opacity: 0.65; min-width: 4.5rem; }
+  span.values { flex: 1; text-align: right; }
+
+  button {
+    width: 26px;
+    height: 26px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
+    background: ${(p) => (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)')};
+    color: ${(p) => p.theme.textColor};
+    &:hover { opacity: 0.8; }
+  }
+`;
+
+const HistoryMonthEditRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.1rem;
+
+  input {
+    flex: 1;
+    min-width: 0;
+    padding: 0.4rem 0.5rem;
+    border-radius: 7px;
+    border: 1px solid ${(p) => (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : '#e2e8f0')};
+    background: ${(p) => (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.04)' : 'white')};
+    color: ${(p) => p.theme.textColor};
+    font-size: 0.78rem;
+    outline: none;
+    &:focus { border-color: ${(p) => p.theme.buttonBackgroundColor}; }
+  }
+
+  button {
+    width: 26px;
+    height: 26px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
+    background: ${(p) => (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)')};
+    color: ${(p) => p.theme.textColor};
+    &:disabled { opacity: 0.4; cursor: not-allowed; }
+    &:hover:not(:disabled) { opacity: 0.8; }
+  }
+`;
+
 const AddTriggerButton = styled.button`
   display: flex;
   align-items: center;
@@ -337,6 +418,20 @@ export default function InvestmentHoldingsPanel({
   const [historicalValueInput, setHistoricalValueInput] = useState('');
   const [savingHistorical, setSavingHistorical] = useState(false);
   const [showImportWizard, setShowImportWizard] = useState(false);
+  const [showReconciliation, setShowReconciliation] = useState(false);
+  /** Which holding's full monthly history drawer is expanded, if any - only
+   * one open at a time (see HoldingActions below, current-month view only;
+   * the past-month-scoped historicalEditingId flow above is untouched). */
+  const [expandedHistoryHoldingId, setExpandedHistoryHoldingId] = useState<number | null>(null);
+  /** Every recorded history row across every holding - fetched lazily on the
+   * first history drawer expansion (not eagerly on panel mount, so a user who
+   * never opens a drawer never pays for this request), then filtered
+   * client-side per holding. */
+  const [allHistory, setAllHistory] = useState<InvestmentHoldingHistoryDto[] | null>(null);
+  const [loadingHistory, setLoadingHistory] = useState(false);
+  const [editingHistoryMonthKey, setEditingHistoryMonthKey] = useState<string | null>(null);
+  const [historyMonthInputs, setHistoryMonthInputs] = useState({ currentValue: '', investedAmount: '', quantity: '' });
+  const [savingHistoryMonth, setSavingHistoryMonth] = useState(false);
   /** Per-instrument dividend totals (see server/src/db/models/investments.ts
    * getDividendsSummaryByUserId) — fetched once per panel open, keyed by
    * instrument id so each holding row can show its own total and compare it
@@ -460,6 +555,66 @@ export default function InvestmentHoldingsPanel({
     }
   };
 
+  // Toggles a holding's full monthly history drawer (current-month view
+  // only - see expandedHistoryHoldingId above). Fetches every recorded
+  // history row once, lazily, on the first expansion of ANY holding's
+  // drawer - getHoldingHistory({}) already returns every holding's rows in
+  // one call, so there's nothing instrument-specific to ask the server for.
+  const toggleHistoryDrawer = async (holdingId: number) => {
+    if (expandedHistoryHoldingId === holdingId) {
+      setExpandedHistoryHoldingId(null);
+      setEditingHistoryMonthKey(null);
+      return;
+    }
+    setExpandedHistoryHoldingId(holdingId);
+    setEditingHistoryMonthKey(null);
+    if (allHistory !== null) return;
+    setLoadingHistory(true);
+    try {
+      const history = await investmentService.getHoldingHistory({});
+      setAllHistory(history);
+    } catch (error) {
+      console.error('InvestmentHoldingsPanel: failed to load holding history', error);
+      setAllHistory([]);
+    } finally {
+      setLoadingHistory(false);
+    }
+  };
+
+  const startHistoryMonthEdit = (entry: InvestmentHoldingHistoryDto) => {
+    setEditingHistoryMonthKey(entry.userDate);
+    setHistoryMonthInputs({
+      currentValue: entry.currentValue != null ? String(fromEUR(entry.currentValue)) : '',
+      investedAmount: entry.investedAmount != null ? String(fromEUR(entry.investedAmount)) : '',
+      quantity: entry.quantity != null ? String(entry.quantity) : '',
+    });
+  };
+
+  const saveHistoryMonth = async (holdingId: number, userDateForMonth: string) => {
+    if (savingHistoryMonth) return;
+    setSavingHistoryMonth(true);
+    try {
+      const saved = await investmentService.saveHoldingHistory({
+        holding_id: holdingId,
+        user_date: userDateForMonth,
+        current_value: historyMonthInputs.currentValue !== '' ? toEUR(Number(historyMonthInputs.currentValue)) : null,
+        invested_amount: historyMonthInputs.investedAmount !== '' ? toEUR(Number(historyMonthInputs.investedAmount)) : null,
+        quantity: historyMonthInputs.quantity !== '' ? Number(historyMonthInputs.quantity) : null,
+      });
+      setAllHistory((prev) => (prev ? prev.map((e) => (e.holdingId === holdingId && e.userDate === userDateForMonth ? saved : e)) : prev));
+      setEditingHistoryMonthKey(null);
+      await onChanged();
+    } finally {
+      setSavingHistoryMonth(false);
+    }
+  };
+
+  const formatHistoryMonthLabel = (dateStr: string) => {
+    const [year, month] = dateStr.split('-').map(Number);
+    const locale = language === 'it' ? 'it-IT' : 'en-US';
+    return new Date(Date.UTC(year, month - 1, 1)).toLocaleDateString(locale, { month: 'short', year: 'numeric', timeZone: 'UTC' });
+  };
+
   // Total dividends received across the instruments actually shown in this
   // panel (this asset key's holdings) - not every dividend the user has ever
   // received across every asset key, which would be a different, larger number.
@@ -554,6 +709,9 @@ export default function InvestmentHoldingsPanel({
                   <HoldingActions theme={theme}>
                     {isCurrentMonth ? (
                       <>
+                        <button type="button" onClick={() => toggleHistoryDrawer(holding.id)} aria-label={t.historyTitle || 'Storico'}>
+                          <FontAwesomeIcon icon={faClockRotateLeft} />
+                        </button>
                         <button type="button" onClick={() => startEdit(holding)} aria-label={t.editTitle}>
                           <FontAwesomeIcon icon={faPen} />
                         </button>
@@ -568,6 +726,66 @@ export default function InvestmentHoldingsPanel({
                     )}
                   </HoldingActions>
                 </HoldingRow>
+                {isCurrentMonth && expandedHistoryHoldingId === holding.id && (
+                  <HistoryDrawer theme={theme}>
+                    {loadingHistory && <span style={{ fontSize: '0.78rem', opacity: 0.6 }}>{t.historyLoading || 'Caricamento storico…'}</span>}
+                    {!loadingHistory && (() => {
+                      const monthsForHolding = (allHistory ?? [])
+                        .filter((entry) => entry.holdingId === holding.id)
+                        .sort((a, b) => a.userDate.localeCompare(b.userDate));
+                      if (monthsForHolding.length === 0) {
+                        return <span style={{ fontSize: '0.78rem', opacity: 0.6 }}>{t.historyEmptyState || 'Nessuno storico registrato per questo titolo.'}</span>;
+                      }
+                      return monthsForHolding.map((entry) => (
+                        editingHistoryMonthKey === entry.userDate ? (
+                          <HistoryMonthEditRow key={entry.userDate} theme={theme}>
+                            <input
+                              type="number"
+                              autoFocus
+                              value={historyMonthInputs.currentValue}
+                              onChange={(e) => setHistoryMonthInputs((f) => ({ ...f, currentValue: e.target.value }))}
+                              placeholder={t.currentValue}
+                            />
+                            <input
+                              type="number"
+                              value={historyMonthInputs.investedAmount}
+                              onChange={(e) => setHistoryMonthInputs((f) => ({ ...f, investedAmount: e.target.value }))}
+                              placeholder={t.investedAmount}
+                            />
+                            <input
+                              type="number"
+                              value={historyMonthInputs.quantity}
+                              onChange={(e) => setHistoryMonthInputs((f) => ({ ...f, quantity: e.target.value }))}
+                              placeholder={t.quantity}
+                            />
+                            <button type="button" onClick={() => setEditingHistoryMonthKey(null)} aria-label={translations.general.cancel}>
+                              <FontAwesomeIcon icon={faTimes} />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => saveHistoryMonth(holding.id, entry.userDate)}
+                              disabled={savingHistoryMonth}
+                              aria-label={t.saveButton}
+                            >
+                              <FontAwesomeIcon icon={faCheck} />
+                            </button>
+                          </HistoryMonthEditRow>
+                        ) : (
+                          <HistoryMonthRow key={entry.userDate} theme={theme}>
+                            <span className="month">{formatHistoryMonthLabel(entry.userDate)}</span>
+                            <span className="values">
+                              {formatAmount(entry.currentValue ?? entry.investedAmount ?? 0)}
+                              {entry.quantity != null && ` · ${entry.quantity.toLocaleString(language === 'it' ? 'it-IT' : 'en-US', { maximumFractionDigits: 6 })}`}
+                            </span>
+                            <button type="button" onClick={() => startHistoryMonthEdit(entry)} aria-label={t.editTitle}>
+                              <FontAwesomeIcon icon={faPen} />
+                            </button>
+                          </HistoryMonthRow>
+                        )
+                      ));
+                    })()}
+                  </HistoryDrawer>
+                )}
                 {isEditingHistorical && (
                   <HistoricalEditRow theme={theme}>
                     <input
@@ -670,6 +888,12 @@ export default function InvestmentHoldingsPanel({
               <FontAwesomeIcon icon={faFileImport} />
               {translations.investments.importWizard?.button || 'Importa da CSV'}
             </AddTriggerButton>
+            {isCurrentMonth && (
+              <AddTriggerButton type="button" theme={theme} onClick={() => setShowReconciliation(true)} data-umami-event="investment-reconciliation-opened">
+                <FontAwesomeIcon icon={faMagnifyingGlassChart} />
+                {t.reconciliationButton || 'Analizza le tue transazioni'}
+              </AddTriggerButton>
+            )}
             {!isCurrentMonth && (
               <DefaultInstrumentHint theme={theme}>
                 {translations.investments.importWizard?.pastMonthNote
@@ -693,6 +917,15 @@ export default function InvestmentHoldingsPanel({
             <InvestmentImportWizard
               onClose={() => setShowImportWizard(false)}
               onImported={async () => { await onChanged(); }}
+            />
+          </Suspense>
+        )}
+
+        {showReconciliation && (
+          <Suspense fallback={null}>
+            <InvestmentReconciliationPanel
+              onClose={() => setShowReconciliation(false)}
+              onChanged={async () => { await onChanged(); }}
             />
           </Suspense>
         )}

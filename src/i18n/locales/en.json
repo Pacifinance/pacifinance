@@ -2807,7 +2807,22 @@
         "unverifiedHint": "Not verified — won't count toward comparisons with other users.",
         "dividendsReceivedTotal": "Dividends received: {amount}",
         "dividendsReceived": "Dividends: {amount}{ratio}",
-        "dividendsOfInvested": "of invested"
+        "dividendsOfInvested": "of invested",
+        "reconciliationButton": "Analyze your transactions",
+        "reconciliationTitle": "Analyze your transactions",
+        "reconciliationSubtitle": "Checks your already-saved data for inconsistencies, without needing to re-upload any file.",
+        "reconciliationAnalyzing": "Analyzing…",
+        "reconciliationError": "Couldn't complete the analysis. Try again later.",
+        "reconciliationNoIssues": "No inconsistencies found.",
+        "reconciliationStaleClosedTitle": "Closed positions detected",
+        "reconciliationStaleClosedNote": "Already in your holdings, but your recorded transactions show it was fully sold.",
+        "reconciliationMarkSold": "Mark as sold",
+        "reconciliationRetry": "Retry",
+        "reconciliationOrphanTitle": "Sell with no matching buy found",
+        "reconciliationOrphanNote": "{ticker} — you still have a sell recorded with no matching buy. The purchase is probably in a file you haven't uploaded yet — upload it to reconcile this automatically.",
+        "historyTitle": "History",
+        "historyLoading": "Loading history…",
+        "historyEmptyState": "No history recorded for this instrument yet."
         },
         "attribution": {
             "coingecko": "Data provided by CoinGecko",

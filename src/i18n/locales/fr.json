@@ -2781,7 +2781,22 @@
         "unverifiedHint": "Non vérifié — ne compte pas dans les comparaisons avec les autres utilisateurs.",
         "dividendsReceivedTotal": "Dividendes reçus : {amount}",
         "dividendsReceived": "Dividendes : {amount}{ratio}",
-        "dividendsOfInvested": "du montant investi"
+        "dividendsOfInvested": "du montant investi",
+        "reconciliationButton": "Analyser vos transactions",
+        "reconciliationTitle": "Analyser vos transactions",
+        "reconciliationSubtitle": "Vérifie vos données déjà enregistrées à la recherche d'incohérences, sans avoir besoin de recharger aucun fichier.",
+        "reconciliationAnalyzing": "Analyse en cours…",
+        "reconciliationError": "Impossible de terminer l'analyse. Réessayez plus tard.",
+        "reconciliationNoIssues": "Aucune incohérence trouvée.",
+        "reconciliationStaleClosedTitle": "Positions clôturées détectées",
+        "reconciliationStaleClosedNote": "Déjà dans vos positions, mais vos transactions enregistrées montrent qu'elle a été entièrement vendue.",
+        "reconciliationMarkSold": "Marquer comme vendue",
+        "reconciliationRetry": "Réessayer",
+        "reconciliationOrphanTitle": "Vente sans achat correspondant",
+        "reconciliationOrphanNote": "{ticker} — vous avez encore une vente enregistrée sans achat correspondant. L'achat se trouve probablement dans un fichier que vous n'avez pas encore chargé — chargez-le pour réconcilier cela automatiquement.",
+        "historyTitle": "Historique",
+        "historyLoading": "Chargement de l'historique…",
+        "historyEmptyState": "Aucun historique enregistré pour cet instrument pour l'instant."
         },
         "attribution": {
             "coingecko": "Données fournies par CoinGecko",

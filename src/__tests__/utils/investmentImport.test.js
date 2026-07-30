@@ -8,6 +8,8 @@ import {
   groupTransactionsByPositionKey, lastRecordedValueBefore, closedPositions,
   dedupeDividends, groupDividendsByPositionKey, aggregateDividends, reconcileImportPositions,
 } from '../../utils/investmentImport/aggregate';
+import { findReconciliationIssues } from '../../utils/investmentImport/reconciliation';
+import { toImportedTransaction, buildHistoryEntries, buildTransactionEntries } from '../../utils/investmentImport/entryBuilders';
 
 describe('parseImportNumber', () => {
   it('parses plain anglo numbers', () => {
@@ -606,5 +608,165 @@ describe('reconcileImportPositions', () => {
     const { positions } = reconcileImportPositions(sessionTransactions, serverTransactions);
 
     expect(positions.map((p) => p.key)).toEqual(['US0378331005']); // AAPL only, not MSFT
+  });
+});
+
+describe('findReconciliationIssues', () => {
+  const tx = (over) => ({
+    side: 'buy', isin: 'US0378331005', ticker: 'AAPL', name: 'Apple', date: '2024-01-01',
+    quantity: 1, price: 100, total: 100, currency: 'EUR', totalCurrency: 'EUR', externalId: null, ...over,
+  });
+  const holding = (over) => ({
+    id: 1, assetKey: 'stocks', positionType: 'single', quantity: 10, averagePrice: 100,
+    currentValue: null, investedAmount: 1000, currency: 'EUR', notes: '', updatedAt: '2024-01-01',
+    importSource: 'trading212',
+    instrument: { id: 1, isin: 'US0378331005', symbol: 'AAPL', name: 'Apple', kind: 'stock' },
+    ...over,
+  });
+
+  it('flags a currently-held, non-zero holding whose complete transaction ledger shows it was fully sold', () => {
+    const transactions = [
+      tx({ quantity: 10, total: 1000, date: '2022-01-01' }),
+      tx({ side: 'sell', quantity: 10, total: 1200, date: '2023-06-15' }),
+    ];
+    const holdings = [holding({ quantity: 10 })]; // never actually zeroed out
+
+    const { staleClosedHoldings, standingOrphans } = findReconciliationIssues(transactions, holdings);
+
+    expect(staleClosedHoldings).toHaveLength(1);
+    expect(staleClosedHoldings[0]).toMatchObject({ holding: holdings[0], lastTransactionDate: '2023-06-15' });
+    expect(staleClosedHoldings[0].transactions).toHaveLength(2);
+    expect(standingOrphans).toEqual([]);
+  });
+
+  it('does not flag a holding that was already correctly marked as sold (quantity 0)', () => {
+    const transactions = [
+      tx({ quantity: 10, total: 1000, date: '2022-01-01' }),
+      tx({ side: 'sell', quantity: 10, total: 1200, date: '2023-06-15' }),
+    ];
+    const holdings = [holding({ quantity: 0 })];
+
+    const { staleClosedHoldings } = findReconciliationIssues(transactions, holdings);
+
+    expect(staleClosedHoldings).toEqual([]);
+  });
+
+  it('flags a standing orphan sell with no matching buy anywhere and no existing holding for it', () => {
+    const transactions = [
+      tx({ isin: 'US5949181045', ticker: 'MSFT', name: 'Microsoft', side: 'sell', quantity: 1, total: 50, date: '2023-01-01' }),
+    ];
+
+    const { staleClosedHoldings, standingOrphans } = findReconciliationIssues(transactions, []);
+
+    expect(staleClosedHoldings).toEqual([]);
+    expect(standingOrphans).toHaveLength(1);
+    expect(standingOrphans[0]).toMatchObject({ key: 'US5949181045', ticker: 'MSFT', quantity: -1 });
+  });
+
+  it('does not double-flag a negative (oversold) position as a standing orphan when it actually matches an existing stale holding', () => {
+    // Net quantity -3 (sold more than bought) would normally qualify as a
+    // potential orphan, but the key still matches a currently-held (stale)
+    // holding - this belongs in staleClosedHoldings only, not as an orphan.
+    const transactions = [
+      tx({ quantity: 5, total: 500, date: '2022-01-01' }),
+      tx({ side: 'sell', quantity: 8, total: 900, date: '2023-06-15' }),
+    ];
+    const holdings = [holding({ quantity: 5 })]; // never zeroed out
+
+    const { staleClosedHoldings, standingOrphans } = findReconciliationIssues(transactions, holdings);
+
+    expect(staleClosedHoldings).toHaveLength(1);
+    expect(standingOrphans).toEqual([]);
+  });
+
+  it('reports no issues for a normal open position matching a normal holding', () => {
+    const transactions = [tx({ quantity: 10, total: 1000 })];
+    const holdings = [holding({ quantity: 10 })];
+
+    const result = findReconciliationIssues(transactions, holdings);
+
+    expect(result).toEqual({ staleClosedHoldings: [], standingOrphans: [] });
+  });
+});
+
+describe('toImportedTransaction', () => {
+  it('maps a persisted transaction row back into the CSV-parser shape, treating total as already EUR-converted', () => {
+    const row = {
+      instrumentId: 1, isin: 'US0378331005', symbol: 'AAPL', name: 'Apple', side: 'buy', quantity: 2,
+      price: 150, currency: 'USD', total: 279.5, totalCurrency: 'USD', tradeDate: '2022-01-13', externalId: 'EXT-9',
+    };
+
+    const result = toImportedTransaction(row);
+
+    expect(result).toMatchObject({
+      side: 'buy', isin: 'US0378331005', ticker: 'AAPL', name: 'Apple', date: '2022-01-13',
+      quantity: 2, price: 150, total: 279.5, currency: 'USD', externalId: 'EXT-9',
+    });
+    // total is already EUR-converted at save time (see buildTransactionEntries) -
+    // totalCurrency must say EUR here too, not the original 'USD' label, or a
+    // round-tripped transaction fed back through buildTransactionEntries would
+    // silently double-convert it.
+    expect(result.totalCurrency).toBe('EUR');
+  });
+});
+
+describe('buildHistoryEntries', () => {
+  const tx = (over) => ({
+    side: 'buy', isin: 'US0378331005', ticker: 'AAPL', name: 'Apple', date: '2024-01-01',
+    quantity: 1, price: 100, total: 100, currency: 'EUR', totalCurrency: 'EUR', externalId: null, ...over,
+  });
+  const convertAmountToEUR = (amount) => amount; // already EUR in these fixtures
+
+  it('builds one entry per month present in the transactions, skipping months already recorded with the same value', () => {
+    const transactions = [
+      tx({ date: '2024-01-15', total: 100 }),
+      tx({ date: '2024-02-15', total: 100 }),
+    ];
+    const recordedHistoryByInstrumentId = new Map([[1, new Map([['2024-01', 100]])]]); // already recorded, unchanged
+    const recordedQuantityByInstrumentId = new Map();
+
+    const entries = buildHistoryEntries(
+      transactions, 'US0378331005', 16, 1, recordedHistoryByInstrumentId, recordedQuantityByInstrumentId, convertAmountToEUR,
+    );
+
+    expect(entries).toHaveLength(1); // January skipped (unchanged), only February is new
+    expect(entries[0]).toMatchObject({ holding_id: 16, user_date: '2024-02-01', invested_amount: 200, quantity: 2 });
+  });
+
+  it('carries forward a baseline from months recorded before the earliest transaction month', () => {
+    const transactions = [tx({ date: '2024-03-15', total: 100 })];
+    const recordedHistoryByInstrumentId = new Map([[1, new Map([['2024-01', 500]])]]);
+    const recordedQuantityByInstrumentId = new Map([[1, new Map([['2024-01', 5]])]]);
+
+    const entries = buildHistoryEntries(
+      transactions, 'US0378331005', 16, 1, recordedHistoryByInstrumentId, recordedQuantityByInstrumentId, convertAmountToEUR,
+    );
+
+    expect(entries).toHaveLength(1);
+    expect(entries[0]).toMatchObject({ user_date: '2024-03-01', invested_amount: 600, quantity: 6 });
+  });
+});
+
+describe('buildTransactionEntries', () => {
+  const tx = (over) => ({
+    side: 'buy', isin: 'US0378331005', ticker: 'AAPL', name: 'Apple', date: '2024-01-01',
+    quantity: 2, price: 100, total: 200, currency: 'USD', totalCurrency: 'USD', externalId: 'EXT-1', ...over,
+  });
+
+  it('builds a request row per transaction, converting total to EUR and tagging the given source', () => {
+    const entries = buildTransactionEntries([tx()], 1, 16, 'trading212', (amount) => amount * 0.9);
+
+    expect(entries).toEqual([{
+      instrument_id: 1, holding_id: 16, side: 'buy', quantity: 2, price: 100, currency: 'USD',
+      total: 180, total_currency: 'USD', trade_date: '2024-01-01', external_id: 'EXT-1', source: 'trading212',
+    }]);
+  });
+
+  it('skips rows with no date or no quantity', () => {
+    const entries = buildTransactionEntries(
+      [tx({ date: null }), tx({ quantity: null })], 1, 16, 'trading212', (amount) => amount,
+    );
+
+    expect(entries).toEqual([]);
   });
 });

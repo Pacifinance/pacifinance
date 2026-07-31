@@ -269,6 +269,36 @@ const ManualResolveBlock = styled.div`
   margin-top: 0.35rem;
 `;
 
+const ConflictPanel = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+  padding: 0.75rem;
+  border-radius: 10px;
+  border: 1px solid ${(p) => (p.theme.mode === 'dark' ? 'rgba(59,130,246,0.3)' : 'rgba(37,99,235,0.22)')};
+  background: ${(p) => (p.theme.mode === 'dark' ? 'rgba(59,130,246,0.08)' : 'rgba(59,130,246,0.05)')};
+  color: ${(p) => p.theme.textColor};
+
+  strong { font-size: 0.78rem; }
+  > span { font-size: 0.72rem; line-height: 1.45; opacity: 0.82; white-space: normal; }
+`;
+
+const SourceComparison = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.4rem;
+
+  span {
+    padding: 0.45rem;
+    border-radius: 7px;
+    background: ${(p) => (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.75)')};
+    font-size: 0.68rem;
+    line-height: 1.35;
+    white-space: normal;
+  }
+`;
+
 const ManualAddRow = styled.div`
   display: flex;
   align-items: center;
@@ -319,6 +349,16 @@ const ConflictButton = styled.button`
   font-size: 0.72rem;
   font-weight: 600;
   cursor: pointer;
+  text-align: left;
+
+  strong, span { display: block; white-space: normal; }
+  strong { font-size: 0.74rem; }
+  span { margin-top: 0.2rem; font-size: 0.65rem; font-weight: 400; line-height: 1.35; opacity: 0.72; }
+
+  &[data-recommended='true'] {
+    border-color: ${(p) => p.theme.buttonBackgroundColor};
+    background: ${(p) => (p.theme.mode === 'dark' ? 'rgba(16,185,129,0.1)' : 'rgba(16,185,129,0.07)')};
+  }
 
   &:hover { opacity: 0.85; }
 `;
@@ -382,6 +422,19 @@ const OverrideFields = styled.div`
   border-radius: 8px;
   background: ${(p) => (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)')};
 
+  > strong {
+    color: ${(p) => p.theme.textColor};
+    font-size: 0.76rem;
+  }
+
+  > span {
+    color: ${(p) => p.theme.textColor};
+    font-size: 0.68rem;
+    line-height: 1.4;
+    opacity: 0.68;
+    white-space: normal;
+  }
+
   label {
     display: flex;
     flex-direction: column;
@@ -389,6 +442,13 @@ const OverrideFields = styled.div`
     font-size: 0.68rem;
     color: ${(p) => p.theme.textColor};
     opacity: 0.7;
+  }
+
+  label > span {
+    font-size: 0.64rem;
+    line-height: 1.35;
+    opacity: 0.78;
+    white-space: normal;
   }
 
   input {
@@ -1226,21 +1286,28 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
                       </button>
                     </MergeChoiceLine>
                   ) : (
-                    <ManualResolveBlock theme={theme}>
+                    <ConflictPanel theme={theme}>
+                      <strong>{t.conflictTitle || 'This instrument is already in your portfolio'}</strong>
                       <span>
                         {(t.conflictMessage || "The current (today's, not a specific month's) position for this instrument already has {quantity} units totaling {amount}, tracked from a different source. Sum both totals, or replace the existing one with this file?")
                           .replace('{quantity}', formatNumber(existingByInstrumentId.get(row.instrument.id)!.quantity ?? 0))
                           .replace('{amount}', `${formatNumber(existingByInstrumentId.get(row.instrument.id)!.investedAmount ?? 0)} ${currencySymbol}`)}
                       </span>
+                      <SourceComparison theme={theme}>
+                        <span>{(t.conflictExistingSource || 'Already saved: {source}').replace('{source}', existingByInstrumentId.get(row.instrument.id)!.importSource || (t.unknownSource || 'source not specified'))}</span>
+                        <span>{(t.conflictNewSource || 'This file: {source}').replace('{source}', effectiveImportSource)}</span>
+                      </SourceComparison>
                       <ConflictActions>
-                        <ConflictButton theme={theme} type="button" onClick={() => setRows((prev) => prev.map((r, idx) => (idx === index ? { ...r, mergeStrategy: 'add' } : r)))}>
-                          {t.conflictAdd || 'Add to existing'}
+                        <ConflictButton theme={theme} data-recommended="true" type="button" onClick={() => setRows((prev) => prev.map((r, idx) => (idx === index ? { ...r, mergeStrategy: 'add' } : r)))}>
+                          <strong>{t.conflictAdd || 'Add to existing'}</strong>
+                          <span>{t.conflictAddHelp || 'Recommended for two brokers: creates one combined position while transactions retain their source.'}</span>
                         </ConflictButton>
                         <ConflictButton theme={theme} type="button" onClick={() => setRows((prev) => prev.map((r, idx) => (idx === index ? { ...r, mergeStrategy: 'replace' } : r)))}>
-                          {t.conflictReplace || 'Replace'}
+                          <strong>{t.conflictReplace || 'Replace'}</strong>
+                          <span>{t.conflictReplaceHelp || 'Use only when this file must become the new current total.'}</span>
                         </ConflictButton>
                       </ConflictActions>
-                    </ManualResolveBlock>
+                    </ConflictPanel>
                   )
                 )}
                 {row.status === 'error' && (
@@ -1249,11 +1316,18 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
                 {row.status === 'resolved' && (
                   editingOverridesFor === row.position.key ? (
                     <OverrideFields theme={theme}>
+                      <strong>{t.overrideTitle || 'Correct the imported data'}</strong>
+                      <span>{t.overrideIntro || 'Only fill in values you want to change. Empty fields keep the data calculated from the CSV.'}</span>
                       <label>
                         {t.overrideAveragePrice || 'Average price'}
+                        <span>{t.overrideAveragePriceHelp || 'Price paid per unit, in the currency shown in the file.'}</span>
                         <input
                           type="number"
+                          inputMode="decimal"
+                          min="0"
+                          step="any"
                           value={row.overrides.averagePrice ?? ''}
+                          placeholder={getEffectiveAveragePrice(row) != null ? formatNumber(getEffectiveAveragePrice(row)!) : (t.overrideOptional || 'Optional')}
                           onChange={(e) => setRows((prev) => prev.map((r, idx) => (idx === index
                             ? { ...r, overrides: { ...r.overrides, averagePrice: e.target.value === '' ? undefined : Number(e.target.value) } }
                             : r)))}
@@ -1261,9 +1335,14 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
                       </label>
                       <label>
                         {t.overrideCurrentValue || 'Current value'}
+                        <span>{t.overrideCurrentValueHelp || 'Total market value of the entire position today, not the unit price.'}</span>
                         <input
                           type="number"
+                          inputMode="decimal"
+                          min="0"
+                          step="any"
                           value={row.overrides.currentValue ?? ''}
+                          placeholder={t.overrideOptional || 'Optional'}
                           onChange={(e) => setRows((prev) => prev.map((r, idx) => (idx === index
                             ? { ...r, overrides: { ...r.overrides, currentValue: e.target.value === '' ? undefined : Number(e.target.value) } }
                             : r)))}
@@ -1271,9 +1350,11 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
                       </label>
                       <label>
                         {t.overrideNotes || 'Notes'}
+                        <span>{t.overrideNotesHelp || 'Optional details useful for recognizing this position or import.'}</span>
                         <input
                           type="text"
                           value={row.overrides.notes ?? ''}
+                          placeholder={t.overrideNotesPlaceholder || 'E.g. account name or import details'}
                           onChange={(e) => setRows((prev) => prev.map((r, idx) => (idx === index
                             ? { ...r, overrides: { ...r.overrides, notes: e.target.value } }
                             : r)))}

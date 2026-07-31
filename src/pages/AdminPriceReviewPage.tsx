@@ -167,7 +167,7 @@ function AdminPriceReviewPage() {
               <span className="instrument">
                 {submission.instrument ? `${submission.instrument.symbol} — ${submission.instrument.name}` : `#${submission.instrumentId}`}
               </span>
-              <span className="month">{t.monthLabel}: {submission.monthKey}</span>
+              <span className="month">{t.monthLabel}: {submission.referenceDate || submission.monthKey}</span>
             </SubmissionHeader>
             <SubmissionMeta theme={theme}>
               <span>{t.rawPriceLabel}: {submission.rawPrice.toLocaleString()} {submission.rawCurrency}</span>

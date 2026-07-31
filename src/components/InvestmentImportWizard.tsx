@@ -160,6 +160,29 @@ const SummaryLine = styled.p`
   opacity: 0.7;
 `;
 
+const SourceEditor = styled.label`
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.75rem;
+  border-radius: 10px;
+  border: 1px solid ${(p) => (p.theme.mode === 'dark' ? 'rgba(16,185,129,0.28)' : 'rgba(5,150,105,0.25)')};
+  background: ${(p) => (p.theme.mode === 'dark' ? 'rgba(16,185,129,0.07)' : 'rgba(16,185,129,0.05)')};
+  color: ${(p) => p.theme.textColor};
+  font-size: 0.76rem;
+  font-weight: 600;
+
+  span { opacity: 0.7; font-weight: 400; line-height: 1.35; }
+  input {
+    padding: 0.5rem 0.6rem;
+    border-radius: 8px;
+    border: 1px solid ${(p) => (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.16)' : '#cbd5e1')};
+    background: ${(p) => (p.theme.mode === 'dark' ? '#1a1f2e' : 'white')};
+    color: ${(p) => p.theme.textColor};
+    font-size: 0.82rem;
+  }
+`;
+
 const ImportProgressBlock = styled.div`
   display: flex;
   flex-direction: column;
@@ -393,6 +416,10 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
   const [allTransactions, setAllTransactions] = useState<ImportedTransaction[]>([]);
   const [allDividends, setAllDividends] = useState<ImportedDividend[]>([]);
   const [platform, setPlatform] = useState<string | null>(null);
+  const [manualSource, setManualSource] = useState('');
+  const effectiveImportSource = platform === 'generic'
+    ? (manualSource.trim() || 'generic')
+    : (platform ?? 'generic');
   const [skippedRows, setSkippedRows] = useState(0);
   const [parseError, setParseError] = useState(false);
   const [importing, setImporting] = useState(false);
@@ -615,6 +642,9 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
     setAllDividends(mergedDividends);
     setSkippedRows((prev) => prev + newSkipped);
     setPlatform(lastPlatform);
+    setManualSource((previous) => lastPlatform === 'generic'
+      ? (platform === 'generic' ? previous : '')
+      : lastPlatform);
 
     await recomputeFromMerged(mergedTransactions, mergedDividends);
   };
@@ -660,7 +690,7 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
     const amountUnchanged = Math.abs((existing.investedAmount ?? 0) - rowInvestedEUR) < 0.01;
     if (allMonthsAlreadyRecorded && quantityUnchanged && amountUnchanged) return 'up-to-date';
 
-    const willAutoReplace = existing.importSource === platform || existing.importSource == null;
+    const willAutoReplace = existing.importSource === effectiveImportSource || existing.importSource == null;
     return willAutoReplace ? 'auto-replace' : 'conflict';
   };
 
@@ -804,7 +834,7 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
         gross_amount: dividend.amount,
         paid_date: dividend.date,
         external_id: dividend.externalId,
-        source: platform ?? 'generic',
+        source: effectiveImportSource,
       });
     }
     return entries;
@@ -848,7 +878,7 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
             current_value: row.overrides.currentValue != null ? convertAmountToEUR(row.overrides.currentValue, row.position.investedAmountCurrency) : null,
             invested_amount: row.position.investedAmount != null ? convertAmountToEUR(row.position.investedAmount, row.position.investedAmountCurrency) : null,
             notes: row.overrides.notes ?? '',
-            import_source: platform,
+            import_source: effectiveImportSource,
             merge_strategy: resolveMergeStrategy(row) ?? row.mergeStrategy ?? undefined,
           });
           historyEntries.push(...buildHistoryEntries(
@@ -856,7 +886,7 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
             recordedHistoryByInstrumentId, recordedQuantityByInstrumentId, convertAmountToEUR,
           ));
           dividendEntries.push(...buildDividendEntries(row, saved.id));
-          transactionEntries.push(...buildTransactionEntries(row.transactions, row.instrument.id, saved.id, platform ?? 'generic', convertAmountToEUR));
+          transactionEntries.push(...buildTransactionEntries(row.transactions, row.instrument.id, saved.id, effectiveImportSource, convertAmountToEUR));
           setRows((prev) => prev.map((r, idx) => (idx === i ? { ...r, status: 'saved' } : r)));
         } catch {
           // See the function-level comment above — this should be rare.
@@ -872,7 +902,7 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
       // review) are skipped entirely.
       for (const orphan of orphanSells) {
         if (!orphan.instrument || excludedOrphanKeys.has(orphan.key)) continue;
-        transactionEntries.push(...buildTransactionEntries(orphan.transactions, orphan.instrument.id, null, platform ?? 'generic', convertAmountToEUR));
+        transactionEntries.push(...buildTransactionEntries(orphan.transactions, orphan.instrument.id, null, effectiveImportSource, convertAmountToEUR));
       }
 
       setImportPhase('finalizing');
@@ -910,7 +940,7 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
         // This file just revealed these transactions - re-confirm them (safe,
         // idempotent upsert), unlike the reconciliation panel's equivalent
         // action where every transaction already exists server-side verbatim.
-        transactionEntries: buildTransactionEntries(candidate.transactions, instrument.id, candidate.holding.id, platform ?? 'generic', convertAmountToEUR),
+        transactionEntries: buildTransactionEntries(candidate.transactions, instrument.id, candidate.holding.id, effectiveImportSource, convertAmountToEUR),
       });
       setClosedCandidates((prev) => prev.map((c, i) => (i === index ? { ...c, status: 'closed' } : c)));
       await onImported();
@@ -1039,10 +1069,24 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
 
           {platform && (
             <SummaryLine theme={theme}>
-              {t.detected.replace('{platform}', t.platforms[platform] || platform)}
+              {t.detected.replace('{platform}', platform === 'generic' && manualSource.trim() ? manualSource.trim() : (t.platforms[platform] || platform))}
               {' — '}{rows.length} {t.positions}
               {skippedRows > 0 && ` (${skippedRows} ${t.skippedNote})`}
             </SummaryLine>
+          )}
+
+          {platform === 'generic' && (
+            <SourceEditor theme={theme}>
+              {t.sourceLabel || 'Fonte / broker'}
+              <span>{t.sourceHint || 'Il formato non identifica il provider. Indica il broker prima di importare, ad esempio TradeRepublic.'}</span>
+              <input
+                type="text"
+                value={manualSource}
+                maxLength={80}
+                onChange={(e) => setManualSource(e.target.value)}
+                placeholder={t.sourcePlaceholder || 'Es. TradeRepublic'}
+              />
+            </SourceEditor>
           )}
 
           {rows.some((r) => r.historyMonths.length > 1) && (

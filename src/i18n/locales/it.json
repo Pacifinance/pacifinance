@@ -2153,6 +2153,11 @@
             "enabled": "Ora contribuisci ai benchmark della community con dati aggregati anonimi.",
             "disabled": "Il contributo ai benchmark della community è stato revocato.",
             "error": "Non è stato possibile aggiornare il consenso ai benchmark."
+        },
+        "admin": {
+            "title": "Area amministrazione",
+            "description": "Controlla e approva i prezzi di mercato proposti dalla community.",
+            "button": "Rivedi prezzi proposti"
         }
     },
     "avatar": {
@@ -2833,6 +2838,8 @@
         "historyAllYears": "Tutti gli anni",
         "communityPrice": {
             "pricePlaceholder": "Prezzo",
+            "currencyLabel": "Valuta",
+            "dateLabel": "Data di riferimento",
             "contributeButton": "Contribuisci il prezzo di mercato",
             "statusPending": "Il tuo prezzo è in attesa di verifica",
             "statusVerified": "Il tuo prezzo è stato verificato",
@@ -2863,6 +2870,9 @@
                         "dropHint": "Trascina qui uno o più file CSV o clicca per selezionarli — se il tuo broker limita l'export a un periodo, carica tutti i file insieme per ricostruire lo storico completo",
                         "unrecognized": "Formato non riconosciuto. Prova con un export di Trading 212, DEGIRO o Directa.",
                         "detected": "Rilevato: {platform}",
+                        "sourceLabel": "Fonte / broker",
+                        "sourceHint": "Il formato generico non identifica il provider. Indica il broker corretto prima di importare.",
+                        "sourcePlaceholder": "Es. TradeRepublic",
                         "positions": "posizioni trovate",
                         "skippedNote": "righe ignorate: depositi/commissioni/altri movimenti non di acquisto, vendita o dividendo",
                         "notFound": "Strumento non trovato automaticamente — cercalo qui sotto per ISIN, simbolo o nome",

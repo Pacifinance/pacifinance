@@ -714,6 +714,8 @@ export interface CommunityPriceDto {
   instrumentId: number;
   /** "YYYY-MM" */
   monthKey: string;
+  /** Exact market-date supplied by the user (YYYY-MM-DD). */
+  referenceDate?: string;
   /** EUR (DB is always EUR). */
   priceEur: number;
   /** As typed by the submitter, for reference only — what an admin checks against a real quote. */
@@ -735,6 +737,7 @@ export interface CommunityPriceWithInstrumentDto extends CommunityPriceDto {
 export interface CommunityPriceSubmitRequest {
   instrument_id: number;
   month_key: string;
+  reference_date: string;
   raw_price: number;
   raw_currency: string;
 }

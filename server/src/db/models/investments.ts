@@ -1462,6 +1462,7 @@ type CommunityPriceRow = {
     id: number
     instrument_id: number
     month_key: string
+    reference_date: string
     price_eur: number
     raw_price: number
     raw_currency: string
@@ -1474,7 +1475,7 @@ type CommunityPriceRow = {
 }
 
 const COMMUNITY_PRICE_SELECT = [
-    "id", "instrument_id", "month_key", "price_eur", "raw_price", "raw_currency",
+    "id", "instrument_id", "month_key", "reference_date", "price_eur", "raw_price", "raw_currency",
     "status", "submitted_by", "submitted_at", "verified_by", "verified_at", "rejection_note",
 ].join(", ")
 
@@ -1483,6 +1484,7 @@ function toCommunityPrice(row: CommunityPriceRow) {
         id: row.id,
         instrumentId: row.instrument_id,
         monthKey: row.month_key,
+        ...(row.reference_date ? {referenceDate: row.reference_date} : {}),
         priceEur: row.price_eur,
         rawPrice: row.raw_price,
         rawCurrency: row.raw_currency,
@@ -1518,6 +1520,7 @@ async function hasHeldInstrument(user_id: string, instrument_id: number): Promis
 export type CommunityPriceInput = {
     instrumentId: number
     monthKey: string // "YYYY-MM"
+    referenceDate?: string // "YYYY-MM-DD", within monthKey
     rawPrice: number
     rawCurrency: string
 }
@@ -1550,9 +1553,13 @@ async function submitCommunityPrice(user_id: string, input: CommunityPriceInput,
     if (!rate) return {status: "unknown_currency"}
     const priceEur = roundCurrency(input.rawPrice / rate)
 
+    const [year, month] = input.monthKey.split("-").map(Number)
+    const referenceDate = input.referenceDate
+        ?? `${input.monthKey}-${String(new Date(Date.UTC(year, month, 0)).getUTCDate()).padStart(2, "0")}`
     const payload = {
         instrument_id: input.instrumentId,
         month_key: input.monthKey,
+        reference_date: referenceDate,
         price_eur: priceEur,
         raw_price: input.rawPrice,
         raw_currency: input.rawCurrency,

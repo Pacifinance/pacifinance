@@ -10,6 +10,7 @@ create table if not exists public.instrument_historical_prices (
     id bigint generated always as identity primary key,
     instrument_id bigint not null references public.investment_instruments(id) on delete cascade,
     month_key text not null, -- "YYYY-MM"
+    reference_date date not null, -- exact trading date supplied by the user
     price_eur numeric not null, -- authoritative, DB-canonical EUR (CLAUDE.md: "DB sempre EUR")
     raw_price numeric not null, -- as typed by the submitter - what the admin actually checks against a real quote
     raw_currency text not null,

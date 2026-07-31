@@ -460,10 +460,16 @@ function isValidMonthKey(value: string): boolean {
 investmentsRouter.post("/community-prices/submit", async (req, res) => {
     const instrumentId = Number(req.body.instrument_id ?? req.body.instrumentId)
     const monthKey = common.sanitizeInput(req.body.month_key ?? req.body.monthKey)
+    const suppliedReferenceDate = common.sanitizeInput(req.body.reference_date ?? req.body.referenceDate)
+    const [referenceYear, referenceMonth] = monthKey.split("-").map(Number)
+    const referenceDate = suppliedReferenceDate || `${monthKey}-${String(new Date(Date.UTC(referenceYear, referenceMonth, 0)).getUTCDate()).padStart(2, "0")}`
     const rawPrice = Number(req.body.raw_price ?? req.body.rawPrice)
     const rawCurrency = normalizeCurrency(req.body.raw_currency ?? req.body.rawCurrency)
 
-    if (!Number.isFinite(instrumentId) || !isValidMonthKey(monthKey) || !Number.isFinite(rawPrice) || rawPrice <= 0) {
+    const validReferenceDate = /^\d{4}-\d{2}-\d{2}$/.test(referenceDate)
+        && referenceDate.slice(0, 7) === monthKey
+        && !Number.isNaN(Date.parse(`${referenceDate}T00:00:00.000Z`))
+    if (!Number.isFinite(instrumentId) || !isValidMonthKey(monthKey) || !validReferenceDate || !Number.isFinite(rawPrice) || rawPrice <= 0) {
         res.status(400).send()
         return
     }
@@ -482,7 +488,7 @@ investmentsRouter.post("/community-prices/submit", async (req, res) => {
     }
 
     const result = await db.investments.submitCommunityPrice(
-        req.userId as string, {instrumentId, monthKey, rawPrice, rawCurrency}, eurRates,
+        req.userId as string, {instrumentId, monthKey, referenceDate, rawPrice, rawCurrency}, eurRates,
     )
     if (result === null) {
         res.status(500).send()

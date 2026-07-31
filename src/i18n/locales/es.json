@@ -2129,7 +2129,8 @@
         "achievementsTab": "Logros",
         "notSpecified": "No especificado",
         "updateSuccess": "¡Perfil actualizado correctamente!",
-        "benchmark": {"title": "Benchmarks anónimos de la comunidad", "description": "Contribuye opcionalmente con métricas agregadas y por rangos; las transacciones, notas e identidad no se comparten.", "toggle": "Contribuir a benchmarks alojados", "active": "Contribución activa y revocable en cualquier momento.", "enabled": "Ahora contribuyes con datos agregados anónimos.", "disabled": "La contribución a benchmarks se ha revocado.", "error": "No se pudo actualizar el consentimiento."}
+        "benchmark": {"title": "Benchmarks anónimos de la comunidad", "description": "Contribuye opcionalmente con métricas agregadas y por rangos; las transacciones, notas e identidad no se comparten.", "toggle": "Contribuir a benchmarks alojados", "active": "Contribución activa y revocable en cualquier momento.", "enabled": "Ahora contribuyes con datos agregados anónimos.", "disabled": "La contribución a benchmarks se ha revocado.", "error": "No se pudo actualizar el consentimiento."},
+        "admin": {"title": "Administración", "description": "Revisa y aprueba los precios de mercado propuestos por la comunidad.", "button": "Revisar precios propuestos"}
     },
     "avatar": {
         "regenerate": "Generar nuevo avatar",
@@ -2809,6 +2810,8 @@
         "historyAllYears": "Todos los años",
         "communityPrice": {
             "pricePlaceholder": "Precio",
+            "currencyLabel": "Moneda",
+            "dateLabel": "Fecha de referencia",
             "contributeButton": "Aporta el precio de mercado",
             "statusPending": "Tu precio está pendiente de verificación",
             "statusVerified": "Tu precio ha sido verificado",
@@ -2839,6 +2842,9 @@
                         "dropHint": "Arrastra aquí uno o más archivos CSV o haz clic para seleccionarlos — si tu bróker limita la exportación a un período, sube todos los archivos juntos para reconstruir el historial completo",
                         "unrecognized": "Formato no reconocido. Prueba con una exportación de Trading 212, DEGIRO o Directa.",
                         "detected": "Detectado: {platform}",
+                        "sourceLabel": "Fuente / bróker",
+                        "sourceHint": "El formato genérico no identifica al proveedor. Indica el bróker correcto antes de importar.",
+                        "sourcePlaceholder": "Ej. TradeRepublic",
                         "positions": "posiciones encontradas",
                         "skippedNote": "filas omitidas: depósitos/comisiones/otros movimientos que no son compra, venta o dividendo",
                         "notFound": "No encontrado automáticamente — búscalo abajo por ISIN, símbolo o nombre",

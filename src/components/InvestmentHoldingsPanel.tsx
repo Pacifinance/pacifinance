@@ -297,10 +297,16 @@ const HistoryQuantityDelta = styled.span<{ $positive: boolean }>`
 `;
 
 const HistoryMonthEditRow = styled.div`
-  display: flex;
-  align-items: center;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+  align-items: end;
   gap: 0.35rem;
-  padding: 0.2rem 0.1rem;
+  padding: 0.65rem;
+  border-radius: 9px;
+  background: ${(p) => (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.035)' : 'rgba(15,23,42,0.025)')};
+
+  label { display: flex; flex-direction: column; gap: 0.25rem; min-width: 0; font-size: 0.66rem; opacity: 0.7; }
+  .actions { display: flex; gap: 0.3rem; }
 
   input {
     flex: 1;
@@ -329,6 +335,11 @@ const HistoryMonthEditRow = styled.div`
     color: ${(p) => p.theme.textColor};
     &:disabled { opacity: 0.4; cursor: not-allowed; }
     &:hover:not(:disabled) { opacity: 0.8; }
+  }
+
+  @media (max-width: 520px) {
+    grid-template-columns: 1fr;
+    .actions { justify-content: flex-end; }
   }
 `;
 
@@ -369,10 +380,18 @@ const CommunityPriceLine = styled.div`
 `;
 
 const CommunityPriceEditRow = styled.div`
-  display: flex;
-  align-items: center;
+  display: grid;
+  grid-template-columns: 1fr 5rem 9rem auto;
+  align-items: end;
   gap: 0.35rem;
-  padding: 0 0.1rem 0.35rem;
+  margin: 0.15rem 0 0.45rem;
+  padding: 0.65rem;
+  border-radius: 9px;
+  border: 1px solid ${(p) => (p.theme.mode === 'dark' ? 'rgba(16,185,129,0.2)' : 'rgba(5,150,105,0.18)')};
+  background: ${(p) => (p.theme.mode === 'dark' ? 'rgba(16,185,129,0.055)' : 'rgba(16,185,129,0.04)')};
+
+  label { display: flex; flex-direction: column; gap: 0.25rem; min-width: 0; font-size: 0.66rem; color: ${(p) => p.theme.textColor}; opacity: 0.75; }
+  .actions { display: flex; gap: 0.3rem; }
 
   input {
     flex: 1;
@@ -402,6 +421,12 @@ const CommunityPriceEditRow = styled.div`
     color: ${(p) => p.theme.textColor};
     &:disabled { opacity: 0.4; cursor: not-allowed; }
     &:hover:not(:disabled) { opacity: 0.8; }
+  }
+
+  @media (max-width: 560px) {
+    grid-template-columns: 1fr 5rem;
+    label.date { grid-column: 1 / -1; }
+    .actions { grid-column: 1 / -1; justify-content: flex-end; }
   }
 `;
 
@@ -606,7 +631,7 @@ export default function InvestmentHoldingsPanel({
    * editingHistoryMonthKey since contributing a community price and editing
    * this user's own private monthly value are two different actions. */
   const [communityPriceEditingKey, setCommunityPriceEditingKey] = useState<string | null>(null);
-  const [communityPriceInputs, setCommunityPriceInputs] = useState({ price: '', currency: 'EUR' });
+  const [communityPriceInputs, setCommunityPriceInputs] = useState({ price: '', currency: 'EUR', date: '' });
   const [submittingCommunityPrice, setSubmittingCommunityPrice] = useState(false);
   /** Set when a submission 409s because an active (pending or verified)
    * submission for that instrument+month already exists - possibly from
@@ -802,7 +827,13 @@ export default function InvestmentHoldingsPanel({
 
   const startCommunityPriceEdit = (holding: InvestmentHoldingDto, entry: InvestmentHoldingHistoryDto) => {
     setCommunityPriceEditingKey(`${holding.id}-${entry.userDate}`);
-    setCommunityPriceInputs({ price: '', currency: holding.instrument?.currency ?? 'EUR' });
+    const [year, month] = entry.userDate.slice(0, 7).split('-').map(Number);
+    const lastDay = new Date(Date.UTC(year, month, 0)).getUTCDate();
+    setCommunityPriceInputs({
+      price: '',
+      currency: holding.instrument?.currency ?? 'EUR',
+      date: `${year}-${String(month).padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`,
+    });
     setCommunityPriceConflict(null);
   };
 
@@ -815,7 +846,8 @@ export default function InvestmentHoldingsPanel({
     try {
       const submission = await investmentService.submitCommunityPrice({
         instrument_id: entry.instrumentId,
-        month_key: entry.userDate.slice(0, 7),
+        month_key: (communityPriceInputs.date || entry.userDate).slice(0, 7),
+        reference_date: communityPriceInputs.date,
         raw_price: rawPrice,
         raw_currency: communityPriceInputs.currency || 'EUR',
       });
@@ -1073,42 +1105,21 @@ export default function InvestmentHoldingsPanel({
                     if (editingHistoryMonthKey === entry.userDate) {
                       return (
                         <HistoryMonthEditRow key={entry.userDate} theme={theme}>
-                          <input
-                            type="number"
-                            autoFocus
-                            value={historyMonthInputs.currentValue}
-                            onChange={(e) => setHistoryMonthInputs((f) => ({ ...f, currentValue: e.target.value }))}
-                            placeholder={t.currentValue}
-                          />
-                          <input
-                            type="number"
-                            value={historyMonthInputs.investedAmount}
-                            onChange={(e) => setHistoryMonthInputs((f) => ({ ...f, investedAmount: e.target.value }))}
-                            placeholder={t.investedAmount}
-                          />
-                          <input
-                            type="number"
-                            value={historyMonthInputs.quantity}
-                            onChange={(e) => setHistoryMonthInputs((f) => ({ ...f, quantity: e.target.value }))}
-                            placeholder={t.quantity}
-                          />
-                          <button type="button" onClick={() => setEditingHistoryMonthKey(null)} aria-label={translations.general.cancel}>
-                            <FontAwesomeIcon icon={faTimes} />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => saveHistoryMonth(holding.id, entry.userDate)}
-                            disabled={savingHistoryMonth}
-                            aria-label={t.saveButton}
-                          >
-                            <FontAwesomeIcon icon={faCheck} />
-                          </button>
+                          <label>{t.currentValue}<input type="number" autoFocus value={historyMonthInputs.currentValue} onChange={(e) => setHistoryMonthInputs((f) => ({ ...f, currentValue: e.target.value }))} /></label>
+                          <label>{t.investedAmount}<input type="number" value={historyMonthInputs.investedAmount} onChange={(e) => setHistoryMonthInputs((f) => ({ ...f, investedAmount: e.target.value }))} /></label>
+                          <label>{t.quantity}<input type="number" value={historyMonthInputs.quantity} onChange={(e) => setHistoryMonthInputs((f) => ({ ...f, quantity: e.target.value }))} /></label>
+                          <div className="actions">
+                            <button type="button" onClick={() => setEditingHistoryMonthKey(null)} aria-label={translations.general.cancel}><FontAwesomeIcon icon={faTimes} /></button>
+                            <button type="button" onClick={() => saveHistoryMonth(holding.id, entry.userDate)} disabled={savingHistoryMonth} aria-label={t.saveButton}><FontAwesomeIcon icon={faCheck} /></button>
+                          </div>
                         </HistoryMonthEditRow>
                       );
                     }
 
                     const communityKey = `${holding.id}-${entry.userDate}`;
                     const monthKey = entry.userDate.slice(0, 7);
+                    const [entryYear, entryMonth] = monthKey.split('-').map(Number);
+                    const monthLastDate = `${monthKey}-${String(new Date(Date.UTC(entryYear, entryMonth, 0)).getUTCDate()).padStart(2, '0')}`;
                     const myCommunitySubmission = (myCommunityPrices ?? [])
                       .find((s) => s.instrumentId === entry.instrumentId && s.monthKey === monthKey);
                     const communityEligible = holding.instrument !== null && COMMUNITY_PRICE_KINDS.has(holding.instrument.kind);
@@ -1134,32 +1145,13 @@ export default function InvestmentHoldingsPanel({
                         {communityEligible && (
                           communityPriceEditingKey === communityKey ? (
                             <CommunityPriceEditRow theme={theme}>
-                              <input
-                                type="number"
-                                autoFocus
-                                value={communityPriceInputs.price}
-                                onChange={(e) => setCommunityPriceInputs((f) => ({ ...f, price: e.target.value }))}
-                                placeholder={t.communityPrice?.pricePlaceholder || 'Prezzo'}
-                              />
-                              <input
-                                type="text"
-                                className="currency"
-                                maxLength={3}
-                                value={communityPriceInputs.currency}
-                                onChange={(e) => setCommunityPriceInputs((f) => ({ ...f, currency: e.target.value.toUpperCase() }))}
-                                placeholder="EUR"
-                              />
-                              <button type="button" onClick={() => setCommunityPriceEditingKey(null)} aria-label={translations.general.cancel}>
-                                <FontAwesomeIcon icon={faTimes} />
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => submitCommunityPriceForMonth(holding, entry)}
-                                disabled={submittingCommunityPrice}
-                                aria-label={t.saveButton}
-                              >
-                                <FontAwesomeIcon icon={faCheck} />
-                              </button>
+                              <label>{t.communityPrice?.pricePlaceholder || 'Prezzo'}<input type="number" autoFocus value={communityPriceInputs.price} onChange={(e) => setCommunityPriceInputs((f) => ({ ...f, price: e.target.value }))} /></label>
+                              <label>{t.communityPrice?.currencyLabel || 'Valuta'}<input type="text" className="currency" maxLength={3} value={communityPriceInputs.currency} onChange={(e) => setCommunityPriceInputs((f) => ({ ...f, currency: e.target.value.toUpperCase() }))} placeholder="EUR" /></label>
+                              <label className="date">{t.communityPrice?.dateLabel || 'Data di riferimento'}<input type="date" min={`${monthKey}-01`} max={monthLastDate} value={communityPriceInputs.date} onChange={(e) => setCommunityPriceInputs((f) => ({ ...f, date: e.target.value }))} /></label>
+                              <div className="actions">
+                                <button type="button" onClick={() => setCommunityPriceEditingKey(null)} aria-label={translations.general.cancel}><FontAwesomeIcon icon={faTimes} /></button>
+                                <button type="button" onClick={() => submitCommunityPriceForMonth(holding, entry)} disabled={submittingCommunityPrice || !communityPriceInputs.date} aria-label={t.saveButton}><FontAwesomeIcon icon={faCheck} /></button>
+                              </div>
                             </CommunityPriceEditRow>
                           ) : (
                             <CommunityPriceLine theme={theme}>

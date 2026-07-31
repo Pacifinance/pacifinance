@@ -19,6 +19,11 @@
 npm run lint && npm test && npm run build
 ```
 
+After each finished update, include a concise, imperative,
+open-source-friendly English commit message as the very last line of the
+assistant response. Never run `git commit` or `git push` autonomously: the user
+will perform both operations.
+
 **Do not start `npm run dev` / the dev server on your own initiative for extra verification (screenshots, browser checks, Playwright).** It slows development down significantly and the user can verify most things themselves. `lint && test && build` is the standard, sufficient verification — only start the dev server if the user explicitly asks for it.
 
 ---

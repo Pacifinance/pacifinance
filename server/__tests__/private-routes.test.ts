@@ -1032,13 +1032,13 @@ describe("private backend routes", () => {
         const response = await request(app, "/api/investments/community-prices/submit", {
             method: "POST",
             headers: {cookie: authCookie},
-            body: {instrument_id: 1, month_key: "2020-01", raw_price: 150, raw_currency: "USD"}
+            body: {instrument_id: 1, month_key: "2020-01", reference_date: "2020-01-31", raw_price: 150, raw_currency: "USD"}
         })
 
         expect(response.status).toBe(200)
         expect(response.json).toMatchObject({status: "pending", rawPrice: 150})
         expect(mockDb.investments.submitCommunityPrice).toHaveBeenCalledWith(
-            "user-uuid", {instrumentId: 1, monthKey: "2020-01", rawPrice: 150, rawCurrency: "USD"}, {EUR: 1, USD: 1.1},
+            "user-uuid", {instrumentId: 1, monthKey: "2020-01", referenceDate: "2020-01-31", rawPrice: 150, rawCurrency: "USD"}, {EUR: 1, USD: 1.1},
         )
     })
 

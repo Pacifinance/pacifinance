@@ -150,14 +150,22 @@ async function getMonthlyExpensesByUserId(user_id: string, reference_date: ExtDa
  * @param months Number of months to include, current month included
  * @returns List of monthly Expense arrays (newest month first), or null if the read failed
  */
-async function getRecentMonthlyExpensesByUserId(user_id: string, months: number) {
-    const reference_months = []
-    const now = ExtDate.fromNow()
+/** Calendar-month anchors, newest first. Exported for the end-of-month regression test. */
+export function buildRecentMonthReferences(now: Date, months: number): ExtDate[] {
+    const reference_months: ExtDate[] = []
     for (let i = 0; i < months; i++) {
-        const ref = now.copy()
-        ref.moveByMonths(-i)
-        reference_months.push(ref)
+        // Never subtract months from today's day-of-month. On the 29th-31st,
+        // Date#setUTCMonth overflows shorter months (31 Jan - 1 month, for
+        // example, can land back in January), duplicating one chart bucket and
+        // skipping another. A first-of-month anchor represents every month
+        // exactly once regardless of when this request runs.
+        reference_months.push(new ExtDate(ExtDate.UTC(now.getUTCFullYear(), now.getUTCMonth() - i, 1)))
     }
+    return reference_months
+}
+
+async function getRecentMonthlyExpensesByUserId(user_id: string, months: number) {
+    const reference_months = buildRecentMonthReferences(ExtDate.fromNow(), months)
 
     const oldest = reference_months[reference_months.length - 1]
     const range_start = ExtDate.fromReferenceMonthStart(oldest)

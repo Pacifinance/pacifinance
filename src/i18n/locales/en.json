@@ -2153,6 +2153,11 @@
             "enabled": "You are now contributing anonymous aggregate data to community benchmarks.",
             "disabled": "Community benchmark contribution has been revoked.",
             "error": "Unable to update benchmark consent."
+        },
+        "admin": {
+            "title": "Administration",
+            "description": "Review and approve market prices submitted by the community.",
+            "button": "Review submitted prices"
         }
     },
     "avatar": {
@@ -2833,6 +2838,8 @@
         "historyAllYears": "All years",
         "communityPrice": {
             "pricePlaceholder": "Price",
+            "currencyLabel": "Currency",
+            "dateLabel": "Reference date",
             "contributeButton": "Contribute market price",
             "statusPending": "Your price is awaiting verification",
             "statusVerified": "Your price has been verified",
@@ -2863,6 +2870,9 @@
                         "dropHint": "Drop one or more CSV files here or click to select them — if your broker caps exports to one period, upload all the files together to rebuild the full history",
                         "unrecognized": "Unrecognized format. Try an export from Trading 212, DEGIRO or Directa.",
                         "detected": "Detected: {platform}",
+                        "sourceLabel": "Source / broker",
+                        "sourceHint": "The generic format does not identify its provider. Enter the correct broker before importing.",
+                        "sourcePlaceholder": "E.g. TradeRepublic",
                         "positions": "positions found",
                         "skippedNote": "rows skipped: deposits/fees/other non buy-sell-dividend movements",
                         "notFound": "Not found automatically — search below by ISIN, symbol or name",

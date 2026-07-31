@@ -18,7 +18,8 @@ import {
     User,
     RefreshCw,
     Coins,
-    ShieldCheck
+    ShieldCheck,
+    ShieldAlert
 } from 'lucide-react';
 import styled from 'styled-components';
 
@@ -47,8 +48,10 @@ import {
     getChildrenTags,
     getYearsOfExperienceTags,
     getCurrencyTags,
-    getProfileCompletionPercentage
+    getProfileCompletionPercentage,
+    getIsAdmin
 } from '../utils/userDataSelectors';
+import { LocalizedLink } from '../components/LocalizedLink';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { PrivacyContext } from '../contexts/PrivacyContext';
 import { LanguageContext } from '../contexts/LanguageContext';
@@ -430,6 +433,34 @@ const BenchmarkConsentPanel = styled.div`
   label { align-items: center; color: ${props => props.theme.textColor}; cursor: pointer; display: flex; font-size: 0.84rem; font-weight: 700; gap: 0.5rem; margin-top: 0.8rem; }
   input { accent-color: ${props => props.theme.buttonBackgroundColor}; height: 1rem; width: 1rem; }
   .consent-status { color: ${props => props.theme.mode === 'dark' ? '#86efac' : '#15803d'}; font-size: 0.75rem; margin-top: 0.5rem; }
+`;
+
+const AdminPanel = styled.div`
+  background: ${props => props.theme.mode === 'dark' ? 'rgba(217,119,6,0.10)' : '#fffbeb'};
+  border: 1px solid ${props => props.theme.mode === 'dark' ? 'rgba(251,191,36,0.25)' : '#fde68a'};
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  padding: 1rem;
+
+  .admin-row { align-items: flex-start; display: flex; gap: 0.75rem; }
+  h3 { color: ${props => props.theme.textColor}; font-size: 0.95rem; margin: 0 0 0.3rem; }
+  p { color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.72)' : '#475569'}; font-size: 0.82rem; line-height: 1.45; margin: 0 0 0.7rem; }
+`;
+
+const AdminPanelButton = styled(LocalizedLink)`
+  align-items: center;
+  background: ${props => props.theme.mode === 'dark' ? 'rgba(251,191,36,0.15)' : 'white'};
+  border: 1px solid ${props => props.theme.mode === 'dark' ? 'rgba(251,191,36,0.4)' : '#fbbf24'};
+  border-radius: 7px;
+  color: ${props => props.theme.mode === 'dark' ? '#fbbf24' : '#92400e'};
+  display: inline-flex;
+  font-size: 0.82rem;
+  font-weight: 700;
+  gap: 0.4rem;
+  padding: 0.5rem 0.9rem;
+  text-decoration: none;
+  transition: opacity 0.15s;
+  &:hover { opacity: 0.8; }
 `;
 
 // ─── Main Component ──────────────────────────────────────────────────
@@ -878,6 +909,21 @@ const ProfilePage = () => {
                     </div>
                 </div>
             </BenchmarkConsentPanel>
+
+            {getIsAdmin(userData) && (
+                <AdminPanel theme={theme}>
+                    <div className="admin-row">
+                        <ShieldAlert size={20} color={theme.mode === 'dark' ? '#fbbf24' : '#92400e'} />
+                        <div>
+                            <h3>{translations.profile?.admin?.title || 'Admin'}</h3>
+                            <p>{translations.profile?.admin?.description || 'You have admin access. Review and verify community-submitted historical prices.'}</p>
+                            <AdminPanelButton theme={theme} to="/admin/price-review">
+                                {translations.profile?.admin?.button || 'Review community prices'}
+                            </AdminPanelButton>
+                        </div>
+                    </div>
+                </AdminPanel>
+            )}
 
             {/* View / Edit Mode */}
             {!isEditMode ? (

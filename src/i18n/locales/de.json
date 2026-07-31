@@ -2127,7 +2127,8 @@
         "achievementsTab": "Erfolge",
         "notSpecified": "Nicht angegeben",
         "updateSuccess": "Profil erfolgreich aktualisiert!",
-        "benchmark": {"title": "Anonyme Community-Benchmarks", "description": "Trage optional nur aggregierte, gruppierte Kennzahlen bei; Transaktionen, Notizen und Identität werden nicht geteilt.", "toggle": "Zu gehosteten Benchmarks beitragen", "active": "Beitrag aktiv und jederzeit widerrufbar.", "enabled": "Du trägst jetzt anonyme aggregierte Daten bei.", "disabled": "Der Benchmark-Beitrag wurde widerrufen.", "error": "Die Einwilligung konnte nicht aktualisiert werden."}
+        "benchmark": {"title": "Anonyme Community-Benchmarks", "description": "Trage optional nur aggregierte, gruppierte Kennzahlen bei; Transaktionen, Notizen und Identität werden nicht geteilt.", "toggle": "Zu gehosteten Benchmarks beitragen", "active": "Beitrag aktiv und jederzeit widerrufbar.", "enabled": "Du trägst jetzt anonyme aggregierte Daten bei.", "disabled": "Der Benchmark-Beitrag wurde widerrufen.", "error": "Die Einwilligung konnte nicht aktualisiert werden."},
+        "admin": {"title": "Administration", "description": "Von der Community eingereichte Marktpreise prüfen und genehmigen.", "button": "Preisvorschläge prüfen"}
     },
     "avatar": {
         "regenerate": "Neuen Avatar generieren",
@@ -2807,6 +2808,8 @@
         "historyAllYears": "Alle Jahre",
         "communityPrice": {
             "pricePlaceholder": "Preis",
+            "currencyLabel": "Währung",
+            "dateLabel": "Referenzdatum",
             "contributeButton": "Marktpreis beitragen",
             "statusPending": "Dein Preis wartet auf Überprüfung",
             "statusVerified": "Dein Preis wurde verifiziert",
@@ -2837,6 +2840,9 @@
                         "dropHint": "Eine oder mehrere CSV-Dateien hier ablegen oder klicken zum Auswählen — wenn dein Broker den Export auf einen Zeitraum begrenzt, lade alle Dateien zusammen hoch, um den vollständigen Verlauf zu rekonstruieren",
                         "unrecognized": "Format nicht erkannt. Versuchen Sie einen Export von Trading 212, DEGIRO oder Directa.",
                         "detected": "Erkannt: {platform}",
+                        "sourceLabel": "Quelle / Broker",
+                        "sourceHint": "Das generische Format identifiziert den Anbieter nicht. Gib vor dem Import den richtigen Broker ein.",
+                        "sourcePlaceholder": "Z. B. TradeRepublic",
                         "positions": "Positionen gefunden",
                         "skippedNote": "Zeilen übersprungen: Einzahlungen/Gebühren/andere Bewegungen ohne Kauf, Verkauf oder Dividende",
                         "notFound": "Nicht automatisch gefunden — unten nach ISIN, Symbol oder Name suchen",

@@ -202,6 +202,35 @@ describe("investments model", () => {
         })
     })
 
+    describe("getHoldingsByUserId", () => {
+        const holdingRow = {
+            id: 10, user_id: "user-1", instrument_id: 42, asset_key: "etf", position_type: "single",
+            quantity: 63.001192, average_price: 98.17, current_value: 6185.07, invested_amount: 6185.07,
+            currency: "EUR", notes: "", updated_at: "2026-07-31", import_source: null,
+            instrument: {id: 42, kind: "etf", symbol: "IWDA", isin: "IE00B4L5Y983", exchange: "AMS", name: "IWDA", currency: "EUR", country: null, sector: null, industry: null, figi: null, coingecko_id: null, provider: "openfigi", verified: true, active: true, metadata: {}, owner_user_id: null},
+        }
+
+        it("uses a verified current-month price for the live holding value", async () => {
+            mockSupabase.from
+                .mockReturnValueOnce(makeChain({data: [holdingRow], error: null}))
+                .mockReturnValueOnce(makeChain({data: [{instrument_id: 42, price_eur: 124.62}], error: null}))
+
+            const result = await investments.getHoldingsByUserId("user-1")
+
+            expect(result[0].currentValue).toBe(7851.2)
+        })
+
+        it("keeps the persisted fallback when no verified current-month price exists", async () => {
+            mockSupabase.from
+                .mockReturnValueOnce(makeChain({data: [holdingRow], error: null}))
+                .mockReturnValueOnce(makeChain({data: [], error: null}))
+
+            const result = await investments.getHoldingsByUserId("user-1")
+
+            expect(result[0].currentValue).toBe(6185.07)
+        })
+    })
+
     describe("insertHolding", () => {
         const holdingInput = {
             instrumentId: 42, assetKey: "stocks" as const, positionType: "single" as const,

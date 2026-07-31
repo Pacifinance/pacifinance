@@ -470,14 +470,47 @@ async function getInstrumentById(id: number, user_id: string) {
 /**
  * Lists the user's detailed investment holdings.
  */
-async function getHoldingsByUserId(user_id: string) {
+async function getHoldingsByUserId(user_id: string, applyCurrentVerifiedPrice = true) {
     const {data, error} = await supabase.from("user_investment_holdings")
         .select(HOLDING_SELECT)
         .eq("user_id", user_id)
         .order("updated_at", {ascending: false})
     if (error) console.error("investments.getHoldingsByUserId: failed to read holdings", error)
     if (error || !data) return []
-    return (data as unknown as HoldingRow[]).map(toHolding)
+
+    const holdings = (data as unknown as HoldingRow[]).map(toHolding)
+    if (!applyCurrentVerifiedPrice) return holdings
+    const instrumentIds = Array.from(new Set(holdings
+        .map((holding) => holding.instrument?.id)
+        .filter((id): id is number => id !== undefined)))
+    if (instrumentIds.length === 0) return holdings
+
+    // A verified price for the current month is the best available live value.
+    // History already used it, but the dashboard kept reading the stale manual
+    // current_value from user_investment_holdings. Overlay it at read time so
+    // every balance consumer agrees, without destroying the user's fallback.
+    const now = new Date()
+    const currentMonthKey = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, "0")}`
+    const {data: verifiedRows, error: verifiedError} = await supabase.from("instrument_historical_prices")
+        .select("instrument_id, price_eur")
+        .eq("status", "verified")
+        .eq("month_key", currentMonthKey)
+        .in("instrument_id", instrumentIds)
+    if (verifiedError) {
+        console.error("investments.getHoldingsByUserId: failed to read current verified prices", verifiedError)
+        return holdings
+    }
+
+    const verifiedPriceByInstrument = new Map(
+        ((verifiedRows ?? []) as unknown as {instrument_id: number; price_eur: number}[])
+            .map((row) => [row.instrument_id, row.price_eur] as const),
+    )
+    return holdings.map((holding) => {
+        const instrumentId = holding.instrument?.id
+        const verifiedPrice = instrumentId === undefined ? undefined : verifiedPriceByInstrument.get(instrumentId)
+        if (verifiedPrice === undefined || holding.quantity === null || holding.quantity <= 0) return holding
+        return {...holding, currentValue: roundCurrency(holding.quantity * verifiedPrice)}
+    })
 }
 
 /**
@@ -524,7 +557,7 @@ async function resolveFallbackFinnhubSymbol(isin: string | null): Promise<string
 }
 
 async function refreshHoldingPrices(user_id: string, eurRates: Record<string, number>) {
-    const holdings = await getHoldingsByUserId(user_id)
+    const holdings = await getHoldingsByUserId(user_id, false)
     const refreshable = holdings.filter((h) =>
         h.instrument !== null && (h.instrument.kind === "stock" || h.instrument.kind === "etf") && h.quantity != null)
 
@@ -706,7 +739,7 @@ async function deleteHolding(user_id: string, holding_id: number) {
  * Best-effort: logs on failure but never throws, so it can't break /balances/add.
  */
 async function snapshotHoldingsForUser(user_id: string, user_date: Date) {
-    const holdings = await getHoldingsByUserId(user_id)
+    const holdings = await getHoldingsByUserId(user_id, false)
     const rows = holdings
         .filter((h) => h.instrument !== null)
         .map((h) => ({
@@ -973,7 +1006,7 @@ export interface HistoricalPriceBackfillResult {
  * previous refresh) - only fills genuine gaps.
  */
 async function backfillHistoricalPrices(user_id: string, eurRates: Record<string, number>): Promise<HistoricalPriceBackfillResult[]> {
-    const holdings = await getHoldingsByUserId(user_id)
+    const holdings = await getHoldingsByUserId(user_id, false)
     const backfillable = holdings.filter((h) =>
         h.instrument !== null
         && (h.instrument.kind === "stock" || h.instrument.kind === "etf" || h.instrument.kind === "crypto")

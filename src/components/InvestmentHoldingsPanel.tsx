@@ -23,6 +23,8 @@ import type {
   CommunityPriceDto, InvestmentAssetKey, InvestmentDividendSummaryDto, InvestmentHoldingDto, InvestmentHoldingHistoryDto,
   InvestmentInstrumentDto, InvestmentTransactionSummaryDto,
 } from '../types/api';
+import type { PacifinanceTheme } from '../types/theme';
+import type enTranslations from '../i18n/locales/en.json';
 
 const COMMUNITY_PRICE_KINDS = new Set(['stock', 'etf', 'crypto']);
 
@@ -568,9 +570,16 @@ const InlineEditActions = styled.div`
 export default function InvestmentHoldingsPanel({
   assetKey, holdings, onClose, onChanged, isCurrentMonth = true, userDate, historyByEntityId = {},
 }: InvestmentHoldingsPanelProps) {
-  const { theme } = useContext(ThemeContext);
-  const { translations, language } = useContext(LanguageContext);
-  const { fromEUR, toEUR, formatAmount } = useContext(CurrencyContext);
+  const { theme } = useContext(ThemeContext) as { theme: PacifinanceTheme };
+  const { translations, language } = useContext(LanguageContext) as {
+    translations: typeof enTranslations;
+    language: string;
+  };
+  const { fromEUR, toEUR, formatAmount } = useContext(CurrencyContext) as {
+    fromEUR: (value: number) => number;
+    toEUR: (value: number) => number;
+    formatAmount: (value: number, options?: Intl.NumberFormatOptions) => string;
+  };
   const { investmentService } = useDemoServices();
   const t = translations.investments.holdings;
 

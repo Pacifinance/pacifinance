@@ -110,10 +110,10 @@ const TabBar = styled.div`
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.75rem;
   
   @media (max-width: 768px) {
-    margin-bottom: 1rem;
+    margin-bottom: 0.65rem;
     gap: 0;
   }
 `;
@@ -201,12 +201,46 @@ const TabButton = styled.button`
   }
 `;
 
-/* ── Import CTA ── */
-const ImportLink = styled.button`
+/* ── Secondary tools ── */
+const ToolsBar = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.35rem;
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto 1rem;
+
+  @media (max-width: 768px) {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.4rem;
+    margin-bottom: 0.75rem;
+  }
+`;
+
+const ToolsLabel = styled.span`
+  margin-right: 0.25rem;
+  color: ${(props) => props.theme.textColor};
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  opacity: 0.45;
+
+  @media (max-width: 768px) {
+    grid-column: 1 / -1;
+    margin: 0 0 0.05rem;
+  }
+`;
+
+const ToolButton = styled.button`
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.35rem;
-  padding: 0.4rem 0.85rem;
+  min-height: 34px;
+  padding: 0.35rem 0.65rem;
   border-radius: 8px;
   border: 1px solid ${(props) => props.theme.mode === 'dark'
     ? 'rgba(255,255,255,0.12)'
@@ -215,7 +249,7 @@ const ImportLink = styled.button`
   color: ${(props) => props.theme.buttonBackgroundColor};
   font-family: inherit;
   font-weight: 500;
-  font-size: 0.8rem;
+  font-size: 0.74rem;
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
@@ -231,42 +265,18 @@ const ImportLink = styled.button`
   }
 
   @media (max-width: 768px) {
-    display: none;
-  }
-`;
-
-const ImportLinkMobile = styled.button`
-  display: none;
-  
-  @media (max-width: 768px) {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.4rem;
     width: 100%;
-    padding: 0.6rem;
-    margin-bottom: 1rem;
-    border-radius: 10px;
-    border: 1px solid ${(props) => props.theme.mode === 'dark'
-      ? 'rgba(255,255,255,0.1)'
-      : 'rgba(0,0,0,0.08)'};
-    background: ${(props) => props.theme.mode === 'dark'
-      ? 'rgba(255,255,255,0.03)'
-      : 'rgba(0,0,0,0.02)'};
-    color: ${(props) => props.theme.buttonBackgroundColor};
-    font-family: inherit;
-    font-weight: 500;
-    font-size: 0.82rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    
-    & > svg {
-      font-size: 1rem;
-    }
-    
-    &:hover {
-      background: ${(props) => props.theme.buttonBackgroundColor}10;
-    }
+    min-width: 0;
+    padding: 0.4rem 0.3rem;
+    font-size: 0.7rem;
+    white-space: normal;
+    line-height: 1.15;
+  }
+
+  @media (max-width: 420px) {
+    flex-direction: column;
+    gap: 0.15rem;
+    min-height: 48px;
   }
 `;
 
@@ -2364,69 +2374,42 @@ export default function InsertValue({
             </TabButton>
           </TabGroup>
           
-          {/* Import + recurring buttons — desktop: inline next to tabs */}
-          {activePage !== "bilancio" && (
-            <>
-              <ImportLink
-                theme={theme}
-                onClick={() => setShowImportWizard(true)}
-                data-umami-event="insert-import-csv-open"
-              >
-                <UploadFileIcon />
-                {translations.insert.importFromFile || 'CSV / Excel'}
-              </ImportLink>
-              <ImportLink
-                theme={theme}
-                onClick={() => { setShowRecurringPanel(true); refreshRecurringItems(); }}
-                data-umami-event="insert-recurring-open"
-              >
-                <RepeatIcon />
-                {translations.recurringTransactions?.navLabel || 'Ricorrenti'}
-              </ImportLink>
-              {activePage === "outflows" && (
-                <ImportLink
-                  theme={theme}
-                  onClick={() => { setShowSharedExpensesPanel(true); refreshSharedReceivables(); }}
-                  data-umami-event="insert-shared-expenses-open"
-                >
-                  <GroupsIcon />
-                  {translations.insert.sharedExpensesPanel?.navLabel || 'Spese condivise'}
-                </ImportLink>
-              )}
-            </>
-          )}
         </TabBar>
 
-        {/* Import + recurring buttons — mobile: full-width below tabs */}
+        {/* Secondary workflows stay visually separate from the primary page tabs. */}
         {activePage !== "bilancio" && (
-          <>
-            <ImportLinkMobile
+          <ToolsBar>
+            <ToolsLabel theme={theme}>{translations.insert.toolsLabel || 'Strumenti'}</ToolsLabel>
+            <ToolButton
+              type="button"
               theme={theme}
               onClick={() => setShowImportWizard(true)}
-              data-umami-event="insert-import-csv-open-mobile"
+              data-umami-event="insert-import-csv-open"
             >
               <UploadFileIcon />
-              {translations.insert.importFromFile || (language === 'it' ? 'Importa da CSV / Excel' : 'Import from CSV / Excel')}
-            </ImportLinkMobile>
-            <ImportLinkMobile
+              {translations.insert.importToolLabel || 'CSV / Excel'}
+            </ToolButton>
+            <ToolButton
+              type="button"
               theme={theme}
               onClick={() => { setShowRecurringPanel(true); refreshRecurringItems(); }}
-              data-umami-event="insert-recurring-open-mobile"
+              data-umami-event="insert-recurring-open"
             >
               <RepeatIcon />
               {translations.recurringTransactions?.navLabel || 'Ricorrenti'}
-            </ImportLinkMobile>
+            </ToolButton>
             {activePage === "outflows" && (
-              <ImportLinkMobile
+              <ToolButton
+                type="button"
                 theme={theme}
                 onClick={() => { setShowSharedExpensesPanel(true); refreshSharedReceivables(); }}
-                data-umami-event="insert-shared-expenses-open-mobile"
+                data-umami-event="insert-shared-expenses-open"
               >
                 <GroupsIcon />
                 {translations.insert.sharedExpensesPanel?.navLabel || 'Spese condivise'}
-              </ImportLinkMobile>
+              </ToolButton>
             )}
-          </>
+          </ToolsBar>
         )}
 
         {renderPage()}

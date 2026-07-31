@@ -863,6 +863,8 @@
         "buttonOutflow": "Añadir gasto",
         "buttonInvestment": "Añadir inversión",
         "importFromFile": "Importar desde CSV / Excel",
+        "toolsLabel": "Más herramientas",
+        "importToolLabel": "CSV / Excel",
         "balanceSection": {
             "titleLiquidity": "Liquidez",
             "titleInvestments": "Inversiones",

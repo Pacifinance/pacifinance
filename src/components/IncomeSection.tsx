@@ -207,6 +207,28 @@ const FormFooter = styled.div`
   padding-top: 0.25rem;
 `;
 
+const SecondaryFormAction = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.65rem;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: ${(p) => p.theme.textColor};
+  opacity: 0.58;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.74rem;
+  font-weight: 600;
+  transition: opacity 0.2s, background 0.2s;
+
+  &:hover {
+    opacity: 0.9;
+    background: ${(p) => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)'};
+  }
+`;
+
 const TableSection = styled.div`
   width: 100%;
   border: 1px solid ${(p) => p.theme.mode === 'dark'
@@ -1086,27 +1108,15 @@ export default function IncomeSection({
           {translations.insert.incomeSection.updateButton}
         </ModernActionButton>
         {onOpenMultiInsert && (
-          <button
+          <SecondaryFormAction
+            type="button"
+            theme={theme}
             onClick={onOpenMultiInsert}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              padding: '10px 18px',
-              borderRadius: '12px',
-              border: `1.5px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.15)' : '#cbd5e1'}`,
-              background: 'transparent',
-              color: theme.mode === 'dark' ? 'rgba(255,255,255,0.6)' : '#64748b',
-              cursor: 'pointer',
-              fontSize: '0.88rem',
-              fontWeight: '500',
-              transition: 'all 0.2s',
-            }}
             data-umami-event="multi-insert-income-opened"
           >
             <FontAwesomeIcon icon={faLayerGroup} />
             {translations.insert.incomeSection.multiInsert?.toggle || 'Multi-insert'}
-          </button>
+          </SecondaryFormAction>
         )}
       </FormFooter>
 

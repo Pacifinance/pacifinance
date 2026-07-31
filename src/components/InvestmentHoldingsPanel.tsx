@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState, lazy, Suspense } from 'react';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { ShieldCheck, Users } from 'lucide-react';
 import {
   faTrash, faPen, faTimes, faPlus, faCheck, faFileImport, faClockRotateLeft, faMagnifyingGlassChart,
 } from '@fortawesome/free-solid-svg-icons';
@@ -307,7 +308,7 @@ const HistoryMonthEditRow = styled.div`
   border-radius: 9px;
   background: ${(p) => (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.035)' : 'rgba(15,23,42,0.025)')};
 
-  label { display: flex; flex-direction: column; gap: 0.25rem; min-width: 0; font-size: 0.66rem; opacity: 0.7; }
+  label { display: flex; flex-direction: column; gap: 0.25rem; min-width: 0; font-size: 0.66rem; color: ${(p) => p.theme.textColor}; opacity: 0.78; }
   .actions { display: flex; gap: 0.3rem; }
 
   input {
@@ -379,6 +380,21 @@ const CommunityPriceLine = styled.div`
     cursor: pointer;
     &:hover { opacity: 0.7; }
   }
+`;
+
+const CommunityExplainer = styled.div`
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.6rem;
+  margin: 0.1rem 0 0.45rem;
+  padding: 0.65rem;
+  border-radius: 9px;
+  border: 1px solid ${(p) => (p.theme.mode === 'dark' ? 'rgba(16,185,129,0.2)' : 'rgba(5,150,105,0.18)')};
+  background: ${(p) => (p.theme.mode === 'dark' ? 'rgba(16,185,129,0.055)' : 'rgba(16,185,129,0.04)')};
+  color: ${(p) => p.theme.textColor};
+
+  strong { display: flex; align-items: center; gap: 0.35rem; font-size: 0.75rem; margin-bottom: 0.15rem; }
+  p { margin: 0; font-size: 0.68rem; line-height: 1.45; opacity: 0.72; }
 `;
 
 const CommunityPriceEditRow = styled.div`
@@ -1099,6 +1115,13 @@ export default function InvestmentHoldingsPanel({
 
               return (
                 <>
+                  <CommunityExplainer theme={theme}>
+                    <Users size={18} color={theme.buttonBackgroundColor} />
+                    <div>
+                      <strong><ShieldCheck size={13} />{t.communityPrice.explainerTitle}</strong>
+                      <p>{t.communityPrice.explainerDescription}</p>
+                    </div>
+                  </CommunityExplainer>
                   {years.length > 1 && (
                     <HistoryYearFilter theme={theme}>
                       <select

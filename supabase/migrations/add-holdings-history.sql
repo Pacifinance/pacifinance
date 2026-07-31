@@ -20,7 +20,8 @@ create table if not exists public.user_investment_holding_history (
   invested_amount numeric,
   currency text not null default 'EUR',
   user_date date not null,
-  recorded_at timestamptz not null default now()
+  recorded_at timestamptz not null default now(),
+  price_source text check (price_source in ('provider', 'community', 'manual', 'imported'))
 );
 
 create index if not exists user_investment_holding_history_user_idx

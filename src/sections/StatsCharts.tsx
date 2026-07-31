@@ -18,6 +18,7 @@ import HoldingsBreakdownChart from '../components/HoldingsBreakdownChart';
 import HoldingsHistoryChart from '../components/HoldingsHistoryChart';
 import PortfolioInsights from '../components/PortfolioInsights';
 import { getIncomesArray, getOutflowsArray, getBalanceChartData } from '../utils/userDataSelectors';
+import { useLocalizedNavigate } from '../hooks/useLocalizedNavigate';
 
 /** Every investment-holdings asset key that can appear in the category selector (excludes liquidity/bank/cash). */
 const HOLDING_ASSET_KEYS = ['stocks', 'etf', 'bitcoin', 'crypto', 'bonds', 'funds', 'commodities'];
@@ -486,6 +487,7 @@ const GlobalAnimations = styled.div`
 
 
 export default function StatsCharts() {
+    const navigate = useLocalizedNavigate();
     const auth = useAuth();
     const { userData } = auth;
     const { theme } = useContext(ThemeContext);
@@ -882,6 +884,7 @@ export default function StatsCharts() {
                                 assetKey={availableAssetKeys.length > 1 ? selectedHoldingAssetKey : availableAssetKeys[0]}
                                 isHidden={isHidden}
                                 type="area"
+                                onContribute={() => navigate('/dashboard')}
                             />
                         </ChartCard>
                     </ChartGrid>

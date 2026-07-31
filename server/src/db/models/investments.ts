@@ -542,7 +542,7 @@ async function refreshHoldingPrices(user_id: string, eurRates: Record<string, nu
         updated.push(result)
 
         const historyResult = await upsertHoldingHistoryEntry(user_id, holding.id, currentMonthStart, {
-            currentValue, investedAmount: holding.investedAmount,
+            currentValue, investedAmount: holding.investedAmount, priceSource: "provider",
         })
         if (historyResult.status !== "ok") {
             console.error(`investments.refreshHoldingPrices: failed to backfill history for holding ${holding.id}`, historyResult)
@@ -721,12 +721,13 @@ type HoldingHistoryRow = {
     currency: string
     user_date: string
     recorded_at: string
+    price_source: "provider" | "community" | "manual" | "imported" | null
 }
 
 const HOLDING_HISTORY_SELECT = [
     "id", "holding_id", "instrument_id", "asset_key", "symbol", "name",
     "quantity", "average_price", "current_value", "invested_amount", "currency",
-    "user_date", "recorded_at",
+    "user_date", "recorded_at", "price_source",
 ].join(", ")
 
 function toHoldingHistory(row: HoldingHistoryRow) {
@@ -744,6 +745,7 @@ function toHoldingHistory(row: HoldingHistoryRow) {
         currency: row.currency,
         userDate: row.user_date,
         recordedAt: row.recorded_at,
+        ...(row.price_source ? {priceSource: row.price_source} : {}),
     }
 }
 
@@ -781,7 +783,12 @@ async function getHoldingHistoryByUserId(user_id: string, months?: number, userD
 // actually held then, making a genuine "quantity owned this month" figure
 // impossible and silently overstating how much of a historical price move
 // applied to the position at the time.
-export type HoldingHistoryEntryInput = { currentValue: number | null, investedAmount: number | null, quantity?: number | null }
+export type HoldingHistoryEntryInput = {
+    currentValue: number | null
+    investedAmount: number | null
+    quantity?: number | null
+    priceSource?: "provider" | "community" | "manual" | "imported"
+}
 
 // "not_found": the holding truly doesn't exist / isn't owned by this user - a
 // client-side problem (stale id, wrong account). "db_error": the query itself
@@ -835,6 +842,7 @@ async function upsertHoldingHistoryEntry(user_id: string, holding_id: number, us
         invested_amount: input.investedAmount,
         currency: holding.currency,
         user_date: toDateOnly(user_date),
+        price_source: input.currentValue == null ? null : (input.priceSource ?? "manual"),
     }
 
     const {data, error} = await supabase.from("user_investment_holding_history")
@@ -902,6 +910,7 @@ async function upsertHoldingHistoryBatch(user_id: string, entries: HoldingHistor
             invested_amount: entry.investedAmount,
             currency: holding.currency,
             user_date: toDateOnly(entry.userDate),
+            price_source: "imported",
         })
     }
     if (rows.length === 0) return {savedCount: 0, errors}
@@ -998,6 +1007,7 @@ async function backfillHistoricalPrices(user_id: string, eurRates: Record<string
 
             const result = await upsertHoldingHistoryEntry(user_id, holding.id, new Date(gap.userDate), {
                 currentValue, investedAmount: gap.investedAmount, quantity: gap.quantity,
+                priceSource: price != null ? "provider" : "community",
             })
             if (result.status === "ok") monthsFilled++
         }

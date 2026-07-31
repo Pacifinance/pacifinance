@@ -568,6 +568,8 @@ export interface InvestmentHoldingHistoryDto {
   currency: string;
   userDate: string;
   recordedAt: string;
+  /** Origin of the market value; provider/community values are verified. */
+  priceSource?: 'provider' | 'community' | 'manual' | 'imported' | null;
 }
 
 export interface InvestmentHoldingHistoryRequest { months?: number; user_date?: string; }

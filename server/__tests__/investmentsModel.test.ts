@@ -356,7 +356,22 @@ describe("investments model", () => {
             await investments.upsertHoldingHistoryEntry("user-1", 16, new Date("2026-07-01"), {currentValue: 2000, investedAmount: 1500})
 
             expect(upsertChain.upsert).toHaveBeenCalledWith(
-                expect.objectContaining({quantity: 15}),
+                expect.objectContaining({quantity: 15, price_source: "manual"}),
+                expect.anything(),
+            )
+        })
+
+        it("records provider/community provenance for a verified historical price", async () => {
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: holdingRow, error: null}))
+            const upsertChain = makeChain({data: {...holdingRow, price_source: "community"}, error: null})
+            mockSupabase.from.mockReturnValueOnce(upsertChain)
+
+            await investments.upsertHoldingHistoryEntry("user-1", 16, new Date("2024-01-01"), {
+                currentValue: 1400, investedAmount: 1000, priceSource: "community",
+            })
+
+            expect(upsertChain.upsert).toHaveBeenCalledWith(
+                expect.objectContaining({price_source: "community"}),
                 expect.anything(),
             )
         })
@@ -391,7 +406,7 @@ describe("investments model", () => {
             expect(upsertChain.upsert).toHaveBeenCalledWith(
                 [
                     expect.objectContaining({holding_id: 16, quantity: 10, invested_amount: 1000}),
-                    expect.objectContaining({holding_id: 16, quantity: 12, invested_amount: 1200}),
+                    expect.objectContaining({holding_id: 16, quantity: 12, invested_amount: 1200, price_source: "imported"}),
                 ],
                 {onConflict: "user_id,holding_id,user_date"},
             )

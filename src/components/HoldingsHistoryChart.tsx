@@ -14,6 +14,7 @@ import { CurrencyContext } from '../contexts/CurrencyContext';
 import { MediaQueryContext } from '../contexts/MediaQueryContext';
 import { CustomTick, compactNumber } from '../utils/customGraphsInfo';
 import { getHoldingValue, paletteColor, ASSET_CATEGORY_ORDER } from '../utils/holdingsChartHelpers';
+import { Info, ShieldCheck, Users } from 'lucide-react';
 import type { InvestmentHoldingHistoryDto, InvestmentAssetKey } from '../types/api';
 
 interface HoldingsHistoryChartProps {
@@ -22,6 +23,7 @@ interface HoldingsHistoryChartProps {
   assetKey: InvestmentAssetKey | null;
   isHidden: boolean;
   type?: 'area' | 'bar';
+  onContribute?: () => void;
 }
 
 const Title = styled.h4`
@@ -38,6 +40,55 @@ const Description = styled.p`
   opacity: 0.6;
   text-align: center;
   color: ${(p) => p.theme.textColor};
+`;
+
+const PriceTrustCard = styled.div`
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 0.7rem;
+  align-items: center;
+  margin: 0 0 1rem;
+  padding: 0.75rem;
+  border: 1px solid ${(p) => (p.theme.mode === 'dark' ? 'rgba(16,185,129,0.24)' : 'rgba(5,150,105,0.2)')};
+  border-radius: 12px;
+  background: ${(p) => (p.theme.mode === 'dark' ? 'rgba(16,185,129,0.07)' : 'rgba(16,185,129,0.045)')};
+  color: ${(p) => p.theme.textColor};
+
+  .copy { min-width: 0; }
+  strong { display: block; font-size: 0.78rem; margin-bottom: 0.15rem; }
+  p { margin: 0; font-size: 0.7rem; line-height: 1.4; opacity: 0.72; }
+  button {
+    border: none;
+    border-radius: 8px;
+    padding: 0.45rem 0.65rem;
+    background: ${(p) => p.theme.buttonBackgroundColor};
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 520px) {
+    grid-template-columns: auto 1fr;
+    button { grid-column: 1 / -1; width: 100%; }
+  }
+`;
+
+const TrustLegend = styled.div`
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  margin: 0.45rem 0 0;
+  color: ${(p) => p.theme.textColor};
+  font-size: 0.68rem;
+  opacity: 0.78;
+
+  span { display: inline-flex; align-items: center; gap: 0.35rem; }
+  i { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+  i.verified { background: #10b981; }
+  i.unverified { background: transparent; border: 2px solid #94a3b8; }
 `;
 
 const Legend = styled.div`
@@ -117,7 +168,7 @@ const EmptyState = styled.div`
 
 const DEFAULT_VISIBLE_COUNT = 6;
 
-export default function HoldingsHistoryChart({ theme, history, assetKey, isHidden, type = 'area' }: HoldingsHistoryChartProps) {
+export default function HoldingsHistoryChart({ theme, history, assetKey, isHidden, type = 'area', onContribute }: HoldingsHistoryChartProps) {
   const { translations } = useContext(LanguageContext);
   const { formatAmount, fromEUR } = useContext(CurrencyContext);
   const { isMobileScreen } = useContext(MediaQueryContext);
@@ -196,6 +247,7 @@ export default function HoldingsHistoryChart({ theme, history, assetKey, isHidde
     for (const holdingId of rankedIds) {
       const entry = byHolding[holdingId].find((e) => e.userDate.slice(0, 7) === month);
       row[holdingId] = entry ? fromEUR(getHoldingValue(entry)) : null;
+      row[`${holdingId}Source`] = entry?.priceSource ?? null;
     }
     return row;
   }), [distinctMonths, rankedIds, byHolding, fromEUR]);
@@ -204,10 +256,22 @@ export default function HoldingsHistoryChart({ theme, history, assetKey, isHidde
     setLineVisibility((prev) => ({ ...prev, [holdingId]: !prev[holdingId] }));
   };
 
+  const trustCard = (
+    <PriceTrustCard theme={theme}>
+      <Users size={19} color={theme.buttonBackgroundColor} />
+      <div className="copy">
+        <strong>{t.communityDataTitle}</strong>
+        <p>{t.communityDataDescription}</p>
+      </div>
+      {onContribute && <button type="button" onClick={onContribute} data-umami-event="holdings-history-contribute-price">{t.communityDataAction}</button>}
+    </PriceTrustCard>
+  );
+
   if (distinctMonths.length <= 1) {
     return (
       <>
         <Title theme={theme}>{t.historyTitle}</Title>
+        {trustCard}
         <EmptyState theme={theme}>
           <h5>{t.sparseHistoryTitle}</h5>
           <p>{t.sparseHistoryDescription}</p>
@@ -228,10 +292,12 @@ export default function HoldingsHistoryChart({ theme, history, assetKey, isHidde
         {rankedIds.filter((id) => lineVisibility[id]).map((id) => {
           const entry = payload.find((p: any) => p.dataKey === id);
           if (!entry || entry.value === null || entry.value === undefined) return null;
+          const source = entry.payload?.[`${id}Source`];
+          const verified = source === 'provider' || source === 'community';
           return (
             <div key={id} style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}>
               <span style={{ color: paletteColor(rankedIds.indexOf(id)) }}>{isHidden ? '****' : labelFor(id)}</span>
-              <span>{isHidden ? '****' : formatAmount(entry.value, { minimumFractionDigits: 0 })}</span>
+              <span>{isHidden ? '****' : `${formatAmount(entry.value, { minimumFractionDigits: 0 })} · ${verified ? t.verifiedShort : t.unverifiedShort}`}</span>
             </div>
           );
         })}
@@ -245,6 +311,7 @@ export default function HoldingsHistoryChart({ theme, history, assetKey, isHidde
     <>
       <Title theme={theme}>{t.historyTitle}</Title>
       <Description theme={theme}>{t.historyDescription}</Description>
+      {trustCard}
       <ResponsiveContainer width="100%" height={isMobileScreen ? 220 : 320}>
         <ChartComponent data={rows} margin={{ top: 8, right: 12, left: 0, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke={theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'} />
@@ -269,7 +336,12 @@ export default function HoldingsHistoryChart({ theme, history, assetKey, isHidde
                   name={labelFor(id)}
                   stroke={isHidden ? '#999' : paletteColor(index)}
                   strokeWidth={2}
-                  dot={{ r: 3 }}
+                  dot={(props: { cx?: number; cy?: number; payload?: Record<string, number | string | null> }) => {
+                    if (props.cx == null || props.cy == null) return <></>;
+                    const source = props.payload?.[`${id}Source`];
+                    const verified = source === 'provider' || source === 'community';
+                    return <circle cx={props.cx} cy={props.cy} r={verified ? 4 : 3.5} fill={verified ? '#10b981' : theme.backgroundColor} stroke={verified ? '#10b981' : '#94a3b8'} strokeWidth={verified ? 1 : 2} />;
+                  }}
                   connectNulls={false}
                 />
               )
@@ -277,6 +349,10 @@ export default function HoldingsHistoryChart({ theme, history, assetKey, isHidde
           ))}
         </ChartComponent>
       </ResponsiveContainer>
+      <TrustLegend theme={theme}>
+        <span><i className="verified" /><ShieldCheck size={12} />{t.verifiedPoint}</span>
+        <span><i className="unverified" /><Info size={12} />{t.unverifiedPoint}</span>
+      </TrustLegend>
       <Legend theme={theme}>
         {legendOrder.map((id, i) => {
           const prevId = legendOrder[i - 1];

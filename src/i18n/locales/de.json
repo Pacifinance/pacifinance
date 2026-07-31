@@ -2981,7 +2981,8 @@
         "manualOption": "Manuell",
         "linkedCurrentHint": "Automatisch aus dem aktuellen Kontostand berechnet — nicht bearbeitbar.",
         "linkedHint": "Verknüpftes Ziel: der Wert aktualisiert sich automatisch",
-        "financialControls": {
+    "financialControls": {
+      "inChecks": "Einbeziehen",
             "spendingGroup": "Monatliche Ausgaben", "savingsGroup": "Monatliches Sparen", "emergencyGroup": "Notgroschen", "fixedAmount": "Betrag", "savingsPercent": "Prozent des Einkommens", "useFixedAmount": "Betrag in Prüfungen einbeziehen", "usePercentage": "Prozentsatz in Prüfungen einbeziehen", "toggleExplanation": "Deaktivierte Schwellen bleiben gespeichert, werden aber nicht geprüft oder analysiert.", "selectCategory": "Kategorie auswählen", "notifications": "Limit-Benachrichtigungen", "enabled": "Aktiv", "disabled": "Deaktiviert", "spendingPercent": "Spending limit as income (%)", "savingsAmount": "Minimum monthly savings", "emergencyMonths": "Minimum coverage (months of spending)",
             "currentSpending": "This month: {amount}, {percent} of income", "currentSavings": "Monthly savings: {amount}, {percent} of income", "currentEmergency": "Current fund: {amount}, {months} months covered", "currentFixedExpenses": "Recurring fixed expenses: {percent} of income",
             "advancedTitle": "Advanced controls", "advancedHint": "Leave a control empty to disable it.", "fixedExpensesPercent": "Maximum fixed expenses as income (%)", "debtReduction": "Monthly debt reduction", "positionConcentration": "Maximum position concentration (%)", "categoryConcentration": "Maximum asset-category concentration (%)", "passiveIncome": "Annual passive-income goal", "categorySpending": "Monthly category limits", "categoryName": "Category", "categoryAmount": "Limit",

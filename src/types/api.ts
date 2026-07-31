@@ -289,8 +289,11 @@ export interface UserGoalsRequest {
   savings_percent?: number;
   emergency_fund_goal?: number;
   expenses_limit_percent?: number | null;
+  expenses_limit_percent_enabled?: boolean;
   savings_amount_goal?: number | null;
+  savings_amount_goal_enabled?: boolean;
   emergency_fund_months?: number | null;
+  emergency_fund_months_enabled?: boolean;
   fixed_expenses_percent?: number | null;
   category_spending_limits?: Record<string, number>;
   debt_reduction_goal?: number | null;

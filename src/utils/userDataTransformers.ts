@@ -63,8 +63,11 @@ interface RawGoals {
   savingsPercent?: number | null;
   emergencyFundGoal?: number | null;
   expensesLimitPercent?: number | null;
+  expensesLimitPercentEnabled?: boolean;
   savingsAmountGoal?: number | null;
+  savingsAmountGoalEnabled?: boolean;
   emergencyFundMonths?: number | null;
+  emergencyFundMonthsEnabled?: boolean;
   fixedExpensesPercent?: number | null;
   categorySpendingLimits?: Record<string, number> | null;
   debtReductionGoal?: number | null;
@@ -254,8 +257,11 @@ export interface GoalsAndLimits {
     emergencyFundTargetEnabled: boolean;
     notificationsEnabled: boolean;
     expensesLimitPercent: number | null;
+    expensesLimitPercentEnabled: boolean;
     savingsAmountGoal: number | null;
+    savingsAmountGoalEnabled: boolean;
     emergencyFundMonths: number | null;
+    emergencyFundMonthsEnabled: boolean;
     fixedExpensesPercent: number | null;
     categorySpendingLimits: Record<string, number>;
     debtReductionGoal: number | null;
@@ -278,8 +284,11 @@ export const buildGoalsAndLimits = (userGoals: RawGoals | null | undefined): Goa
       emergencyFundTarget: (g.emergencyFundGoal != null && g.emergencyFundGoal !== -1) ? g.emergencyFundGoal : DEFAULT_EMERGENCY_FUND_TARGET,
       emergencyFundTargetEnabled: g.emergencyFundGoal !== -1,
       expensesLimitPercent: g.expensesLimitPercent ?? null,
+      expensesLimitPercentEnabled: g.expensesLimitPercentEnabled ?? true,
       savingsAmountGoal: g.savingsAmountGoal ?? null,
+      savingsAmountGoalEnabled: g.savingsAmountGoalEnabled ?? true,
       emergencyFundMonths: g.emergencyFundMonths ?? null,
+      emergencyFundMonthsEnabled: g.emergencyFundMonthsEnabled ?? true,
       fixedExpensesPercent: g.fixedExpensesPercent ?? null,
       categorySpendingLimits: g.categorySpendingLimits ?? {},
       debtReductionGoal: g.debtReductionGoal ?? null,

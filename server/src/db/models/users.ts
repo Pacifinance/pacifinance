@@ -223,7 +223,7 @@ async function getPublicInfoByUserId(user_id: string) {
         .select(`
             user_code, nickname, account_type, created_at,
             expenses_limit, savings_percent, emergency_fund_goal,
-            expenses_limit_percent, savings_amount_goal, emergency_fund_months,
+            expenses_limit_percent, expenses_limit_percent_enabled, savings_amount_goal, savings_amount_goal_enabled, emergency_fund_months, emergency_fund_months_enabled,
             fixed_expenses_percent, category_spending_limits, debt_reduction_goal,
             position_concentration_limit, asset_category_concentration_limit, annual_passive_income_goal,
             benchmark_consent, seen_badges, is_admin,
@@ -263,8 +263,11 @@ async function getPublicInfoByUserId(user_id: string) {
             savingsPercent: d.savings_percent as number,
             emergencyFundGoal: d.emergency_fund_goal as number,
             expensesLimitPercent: d.expenses_limit_percent as number | null,
+            expensesLimitPercentEnabled: d.expenses_limit_percent_enabled !== false,
             savingsAmountGoal: d.savings_amount_goal as number | null,
+            savingsAmountGoalEnabled: d.savings_amount_goal_enabled !== false,
             emergencyFundMonths: d.emergency_fund_months as number | null,
+            emergencyFundMonthsEnabled: d.emergency_fund_months_enabled !== false,
             fixedExpensesPercent: d.fixed_expenses_percent as number | null,
             categorySpendingLimits: (d.category_spending_limits ?? {}) as Record<string, number>,
             debtReductionGoal: d.debt_reduction_goal as number | null,
@@ -376,8 +379,11 @@ export type FinancialControlsInput = {
     savingsPercent: number
     emergencyFundGoal: number
     expensesLimitPercent: number | null
+    expensesLimitPercentEnabled: boolean
     savingsAmountGoal: number | null
+    savingsAmountGoalEnabled: boolean
     emergencyFundMonths: number | null
+    emergencyFundMonthsEnabled: boolean
     fixedExpensesPercent: number | null
     categorySpendingLimits: Record<string, number>
     debtReductionGoal: number | null
@@ -393,8 +399,11 @@ async function setGoalsOfUserId(user_id: string, controls: FinancialControlsInpu
             savings_percent: controls.savingsPercent,
             emergency_fund_goal: controls.emergencyFundGoal,
             expenses_limit_percent: controls.expensesLimitPercent,
+            expenses_limit_percent_enabled: controls.expensesLimitPercentEnabled,
             savings_amount_goal: controls.savingsAmountGoal,
+            savings_amount_goal_enabled: controls.savingsAmountGoalEnabled,
             emergency_fund_months: controls.emergencyFundMonths,
+            emergency_fund_months_enabled: controls.emergencyFundMonthsEnabled,
             fixed_expenses_percent: controls.fixedExpensesPercent,
             category_spending_limits: controls.categorySpendingLimits,
             debt_reduction_goal: controls.debtReductionGoal,

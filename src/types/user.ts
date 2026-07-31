@@ -104,8 +104,11 @@ export interface Limits {
   emergencyFundTargetEnabled: boolean;
   notificationsEnabled: boolean;
   expensesLimitPercent: number | null;
+  expensesLimitPercentEnabled: boolean;
   savingsAmountGoal: number | null;
+  savingsAmountGoalEnabled: boolean;
   emergencyFundMonths: number | null;
+  emergencyFundMonthsEnabled: boolean;
   fixedExpensesPercent: number | null;
   categorySpendingLimits: Record<string, number>;
   debtReductionGoal: number | null;

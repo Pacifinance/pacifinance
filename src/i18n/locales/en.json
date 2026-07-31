@@ -3015,7 +3015,8 @@
         "manualOption": "Manual",
         "linkedCurrentHint": "Calculated automatically from the current balance — not editable.",
        "linkedHint": "Linked goal: the value updates automatically",
-        "financialControls": {
+    "financialControls": {
+      "inChecks": "Include",
             "spendingGroup": "Monthly spending", "savingsGroup": "Monthly savings", "emergencyGroup": "Emergency fund", "fixedAmount": "Amount", "savingsPercent": "Percentage of income", "useFixedAmount": "Include amount in checks", "usePercentage": "Include percentage in checks", "toggleExplanation": "When a threshold is disabled, its value stays saved but is not checked or included in analyses.", "selectCategory": "Select a category", "notifications": "Limit notifications", "enabled": "Enabled", "disabled": "Disabled", "spendingPercent": "Spending limit as income (%)", "savingsAmount": "Minimum monthly savings", "emergencyMonths": "Minimum coverage (months of spending)",
             "currentSpending": "This month: {amount}, {percent} of income", "currentSavings": "Monthly savings: {amount}, {percent} of income", "currentEmergency": "Current fund: {amount}, {months} months covered", "currentFixedExpenses": "Recurring fixed expenses: {percent} of income",
             "advancedTitle": "Advanced controls", "advancedHint": "Leave a control empty to disable it.", "fixedExpensesPercent": "Maximum fixed expenses as income (%)", "debtReduction": "Monthly debt reduction", "positionConcentration": "Maximum position concentration (%)", "categoryConcentration": "Maximum asset-category concentration (%)", "passiveIncome": "Annual passive-income goal", "categorySpending": "Monthly category limits", "categoryName": "Category", "categoryAmount": "Limit",

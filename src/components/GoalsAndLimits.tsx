@@ -17,7 +17,7 @@ import {
   getOutflowsTags,
   getCustomCategories
 } from '../utils/userDataSelectors';
-import { translateTag } from '../data/tagTranslations';
+import CategoryPicker from './CategoryPicker';
 import {
     FaBullseye, 
     FaChartLine, 
@@ -218,6 +218,12 @@ const SwitchLabel = styled.label`
   input:focus-visible + span { outline: 2px solid ${(p) => p.theme.secondaryColor}; outline-offset: 2px; }
 `;
 
+const FieldHeading = styled.div`
+  display: flex; align-items: flex-start; justify-content: space-between; gap: .5rem; margin-bottom: .5rem;
+  > label { margin: 0 !important; }
+  ${SwitchLabel} { font-size: .68rem !important; flex-shrink: 0; }
+`;
+
 const ControlCard = styled.div`
   padding: 1rem;
   margin-bottom: 1rem;
@@ -252,6 +258,7 @@ const CategoryLimitRow = styled.div`
   margin-bottom: .5rem;
   align-items: stretch;
   input, select { min-height: 43px; }
+  > button { padding: 0; justify-content: center; min-height: 43px; font-size: 1rem; }
   @media (max-width: 520px) { grid-template-columns: minmax(0, 1fr) 100px 38px; }
 `;
 
@@ -483,7 +490,7 @@ const ProfileSettings = ({ theme }) => {
   const { language, translations } = useContext(LanguageContext);
   const { currencySymbol, formatAmount, toEUR, fromEUR } = useContext(CurrencyContext);
   useContext(MediaQueryContext);
-  const { userData, setUserData } = useContext(UserContext);
+  const { userData, setUserData, addCustomCategory } = useContext(UserContext);
   const { showSuccess, showError } = useToast();
   const { userService, goalService, investmentService, recurringTransactionService } = useDemoServices();
   
@@ -492,12 +499,15 @@ const ProfileSettings = ({ theme }) => {
     monthlySpendingLimit: 2000,
     monthlySpendingLimitEnabled: true,
     expensesLimitPercent: '',
+    expensesLimitPercentEnabled: true,
     savingsAmountGoal: '',
+    savingsAmountGoalEnabled: true,
     savingsGoalPercentage: 20,
     savingsGoalPercentageEnabled: true,
     emergencyFundTarget: 10000,
     emergencyFundTargetEnabled: true,
     emergencyFundMonths: '',
+    emergencyFundMonthsEnabled: true,
     fixedExpensesPercent: '',
     categorySpendingLimits: {},
     debtReductionGoal: '',
@@ -551,12 +561,15 @@ const ProfileSettings = ({ theme }) => {
         monthlySpendingLimit: fromEUR(getMonthlySpendingLimit(userData)),
         monthlySpendingLimitEnabled: userData?.limits?.monthlySpendingLimitEnabled ?? true,
         expensesLimitPercent: userData?.limits?.expensesLimitPercent ?? '',
+        expensesLimitPercentEnabled: userData?.limits?.expensesLimitPercentEnabled ?? true,
         savingsAmountGoal: userData?.limits?.savingsAmountGoal == null ? '' : fromEUR(userData.limits.savingsAmountGoal),
+        savingsAmountGoalEnabled: userData?.limits?.savingsAmountGoalEnabled ?? true,
         savingsGoalPercentage: getSavingsGoalPercentage(userData),
         savingsGoalPercentageEnabled: userData?.limits?.savingsGoalPercentageEnabled ?? true,
         emergencyFundTarget: fromEUR(getEmergencyFundTarget(userData)),
         emergencyFundTargetEnabled: userData?.limits?.emergencyFundTargetEnabled ?? true,
         emergencyFundMonths: userData?.limits?.emergencyFundMonths ?? '',
+        emergencyFundMonthsEnabled: userData?.limits?.emergencyFundMonthsEnabled ?? true,
         fixedExpensesPercent: userData?.limits?.fixedExpensesPercent ?? '',
         categorySpendingLimits: Object.fromEntries(Object.entries(userData?.limits?.categorySpendingLimits ?? {}).map(([key, value]) => [key, fromEUR(Number(value))])),
         debtReductionGoal: userData?.limits?.debtReductionGoal == null ? '' : fromEUR(userData.limits.debtReductionGoal),
@@ -630,8 +643,11 @@ const ProfileSettings = ({ theme }) => {
         savings_percent: savingsPercent,
         emergency_fund_goal: emergencyFundGoal,
         expenses_limit_percent: settings.expensesLimitPercent === '' ? null : Number(settings.expensesLimitPercent),
+        expenses_limit_percent_enabled: settings.expensesLimitPercentEnabled,
         savings_amount_goal: settings.savingsAmountGoal === '' ? null : toEUR(Number(settings.savingsAmountGoal)),
+        savings_amount_goal_enabled: settings.savingsAmountGoalEnabled,
         emergency_fund_months: settings.emergencyFundMonths === '' ? null : Number(settings.emergencyFundMonths),
+        emergency_fund_months_enabled: settings.emergencyFundMonthsEnabled,
         fixed_expenses_percent: settings.fixedExpensesPercent === '' ? null : Number(settings.fixedExpensesPercent),
         category_spending_limits: Object.fromEntries(Object.entries(settings.categorySpendingLimits).map(([key, value]) => [key, toEUR(Number(value))])),
         debt_reduction_goal: settings.debtReductionGoal === '' ? null : toEUR(Number(settings.debtReductionGoal)),
@@ -651,8 +667,11 @@ const ProfileSettings = ({ theme }) => {
           emergencyFundTarget: emergencyFundGoal !== -1 ? emergencyFundGoal : 10000,
           emergencyFundTargetEnabled: emergencyFundGoal !== -1,
           expensesLimitPercent: settings.expensesLimitPercent === '' ? null : Number(settings.expensesLimitPercent),
+          expensesLimitPercentEnabled: settings.expensesLimitPercentEnabled,
           savingsAmountGoal: settings.savingsAmountGoal === '' ? null : toEUR(Number(settings.savingsAmountGoal)),
+          savingsAmountGoalEnabled: settings.savingsAmountGoalEnabled,
           emergencyFundMonths: settings.emergencyFundMonths === '' ? null : Number(settings.emergencyFundMonths),
+          emergencyFundMonthsEnabled: settings.emergencyFundMonthsEnabled,
           fixedExpensesPercent: settings.fixedExpensesPercent === '' ? null : Number(settings.fixedExpensesPercent),
           categorySpendingLimits: Object.fromEntries(Object.entries(settings.categorySpendingLimits).map(([key, value]) => [key, toEUR(Number(value))])),
           debtReductionGoal: settings.debtReductionGoal === '' ? null : toEUR(Number(settings.debtReductionGoal)),
@@ -750,14 +769,24 @@ const ProfileSettings = ({ theme }) => {
   const spendingPercent = currentIncome > 0 ? (currentSpending / currentIncome) * 100 : null;
   const savingsPercent = currentIncome > 0 ? (currentSavings / currentIncome) * 100 : null;
   const emergencyMonths = currentSpending > 0 ? emergencyFundValue / currentSpending : null;
-  const categoryOptions = [
-    ...getOutflowsTags(userData)
-      .filter((tag) => tag?.label && tag.label !== 'none')
-      .map((tag) => ({ value: String(tag.label), label: translateTag(tag.label, language, 'expense') })),
-    ...getCustomCategories(userData)
-      .filter((category) => category?.label)
-      .map((category) => ({ value: String(category.label), label: category.label })),
-  ].filter((option, index, options) => options.findIndex((candidate) => candidate.value === option.value) === index);
+  const outflowTags = getOutflowsTags(userData).filter((tag) => tag?.label && tag.label !== 'none');
+  const customExpenseCategories = getCustomCategories(userData);
+  const decodeCategoryLimitKey = (key) => {
+    const [kind, rawId] = String(key).split(':');
+    if (kind === 'off') return { categoryKey: Number(rawId), userCategoryId: null };
+    if (kind === 'cus') {
+      const custom = customExpenseCategories.find((category) => category.id === Number(rawId));
+      return { categoryKey: custom?.parentIndex ?? '', userCategoryId: custom?.id ?? null };
+    }
+    const custom = customExpenseCategories.find((category) => category.label === key);
+    if (custom) return { categoryKey: custom.parentIndex, userCategoryId: custom.id };
+    const official = outflowTags.find((tag) => tag.label === key);
+    return { categoryKey: official?.index ?? '', userCategoryId: null };
+  };
+  const encodeCategoryLimitSelection = (selection) => selection.userCategoryId != null
+    ? `cus:${selection.userCategoryId}`
+    : `off:${selection.categoryKey}`;
+  const createExpenseCategory = (parentIndex, label) => addCustomCategory({ label, parent_index: parentIndex, is_expense: true });
 
   return (
     <ProfileContainer theme={theme}>
@@ -784,35 +813,35 @@ const ProfileSettings = ({ theme }) => {
           <ControlExplanation theme={theme}>{controlsT.toggleExplanation}</ControlExplanation>
           
           <ControlGroup theme={theme}>
-            <ControlTitle theme={theme}><strong>{controlsT.spendingGroup}</strong><SwitchLabel theme={theme} $checked={settings.monthlySpendingLimitEnabled}><input type="checkbox" checked={settings.monthlySpendingLimitEnabled} onChange={(e) => handleSettingChange('monthlySpendingLimitEnabled', e.target.checked)} /><span />{controlsT.useFixedAmount}</SwitchLabel></ControlTitle>
+            <ControlTitle theme={theme}><strong>{controlsT.spendingGroup}</strong></ControlTitle>
             <ThresholdGrid>
-              <FormGroup theme={theme}><label>{controlsT.fixedAmount}</label><InputWithIcon theme={theme}><span className="input-icon">{currencySymbol}</span><input type="number" value={settings.monthlySpendingLimit} onChange={(e) => handleSettingChange('monthlySpendingLimit', parseInt(e.target.value))} min="0" disabled={!settings.monthlySpendingLimitEnabled} /></InputWithIcon></FormGroup>
-              <FormGroup theme={theme}><label>{controlsT.spendingPercent}</label><InputWithIcon theme={theme}><BsPercent className="input-icon" /><input type="number" min="0" max="100" value={settings.expensesLimitPercent} onChange={(e) => handleSettingChange('expensesLimitPercent', e.target.value)} /></InputWithIcon></FormGroup>
+              <FormGroup theme={theme}><FieldHeading><label>{controlsT.fixedAmount}</label><SwitchLabel theme={theme} $checked={settings.monthlySpendingLimitEnabled}><input type="checkbox" checked={settings.monthlySpendingLimitEnabled} onChange={(e) => handleSettingChange('monthlySpendingLimitEnabled', e.target.checked)} /><span />{controlsT.inChecks}</SwitchLabel></FieldHeading><InputWithIcon theme={theme}><span className="input-icon">{currencySymbol}</span><input type="number" value={settings.monthlySpendingLimit} onChange={(e) => handleSettingChange('monthlySpendingLimit', parseInt(e.target.value))} min="0" disabled={!settings.monthlySpendingLimitEnabled} /></InputWithIcon></FormGroup>
+              <FormGroup theme={theme}><FieldHeading><label>{controlsT.spendingPercent}</label><SwitchLabel theme={theme} $checked={settings.expensesLimitPercentEnabled}><input type="checkbox" checked={settings.expensesLimitPercentEnabled} onChange={(e) => handleSettingChange('expensesLimitPercentEnabled', e.target.checked)} /><span />{controlsT.inChecks}</SwitchLabel></FieldHeading><InputWithIcon theme={theme}><BsPercent className="input-icon" /><input type="number" min="0" max="100" value={settings.expensesLimitPercent} disabled={!settings.expensesLimitPercentEnabled} onChange={(e) => handleSettingChange('expensesLimitPercent', e.target.value)} /></InputWithIcon></FormGroup>
             </ThresholdGrid>
           </ControlGroup>
-          <StatusLine $ok={(!settings.monthlySpendingLimitEnabled || currentSpending <= toEUR(settings.monthlySpendingLimit)) && (settings.expensesLimitPercent === '' || (spendingPercent !== null && spendingPercent <= Number(settings.expensesLimitPercent)))}>
+          <StatusLine $ok={(!settings.monthlySpendingLimitEnabled || currentSpending <= toEUR(settings.monthlySpendingLimit)) && (!settings.expensesLimitPercentEnabled || settings.expensesLimitPercent === '' || (spendingPercent !== null && spendingPercent <= Number(settings.expensesLimitPercent)))}>
             {controlsT.currentSpending.replace('{amount}', `${currencySymbol}${fromEUR(currentSpending).toFixed(0)}`).replace('{percent}', spendingPercent === null ? '—' : `${spendingPercent.toFixed(1)}%`)}
           </StatusLine>
 
           <ControlGroup theme={theme}>
-            <ControlTitle theme={theme}><strong>{controlsT.savingsGroup}</strong><SwitchLabel theme={theme} $checked={settings.savingsGoalPercentageEnabled}><input type="checkbox" checked={settings.savingsGoalPercentageEnabled} onChange={(e) => handleSettingChange('savingsGoalPercentageEnabled', e.target.checked)} /><span />{controlsT.usePercentage}</SwitchLabel></ControlTitle>
+            <ControlTitle theme={theme}><strong>{controlsT.savingsGroup}</strong></ControlTitle>
             <ThresholdGrid>
-              <FormGroup theme={theme}><label>{controlsT.savingsAmount}</label><InputWithIcon theme={theme}><span className="input-icon">{currencySymbol}</span><input type="number" min="0" value={settings.savingsAmountGoal} onChange={(e) => handleSettingChange('savingsAmountGoal', e.target.value)} /></InputWithIcon></FormGroup>
-              <FormGroup theme={theme}><label>{controlsT.savingsPercent}</label><InputWithIcon theme={theme}><BsPercent className="input-icon" /><input type="number" value={settings.savingsGoalPercentage} onChange={(e) => handleSettingChange('savingsGoalPercentage', parseInt(e.target.value))} min="0" max="100" disabled={!settings.savingsGoalPercentageEnabled} /></InputWithIcon></FormGroup>
+              <FormGroup theme={theme}><FieldHeading><label>{controlsT.savingsAmount}</label><SwitchLabel theme={theme} $checked={settings.savingsAmountGoalEnabled}><input type="checkbox" checked={settings.savingsAmountGoalEnabled} onChange={(e) => handleSettingChange('savingsAmountGoalEnabled', e.target.checked)} /><span />{controlsT.inChecks}</SwitchLabel></FieldHeading><InputWithIcon theme={theme}><span className="input-icon">{currencySymbol}</span><input type="number" min="0" value={settings.savingsAmountGoal} disabled={!settings.savingsAmountGoalEnabled} onChange={(e) => handleSettingChange('savingsAmountGoal', e.target.value)} /></InputWithIcon></FormGroup>
+              <FormGroup theme={theme}><FieldHeading><label>{controlsT.savingsPercent}</label><SwitchLabel theme={theme} $checked={settings.savingsGoalPercentageEnabled}><input type="checkbox" checked={settings.savingsGoalPercentageEnabled} onChange={(e) => handleSettingChange('savingsGoalPercentageEnabled', e.target.checked)} /><span />{controlsT.inChecks}</SwitchLabel></FieldHeading><InputWithIcon theme={theme}><BsPercent className="input-icon" /><input type="number" value={settings.savingsGoalPercentage} onChange={(e) => handleSettingChange('savingsGoalPercentage', parseInt(e.target.value))} min="0" max="100" disabled={!settings.savingsGoalPercentageEnabled} /></InputWithIcon></FormGroup>
             </ThresholdGrid>
           </ControlGroup>
-          <StatusLine $ok={(settings.savingsAmountGoal === '' || currentSavings >= toEUR(Number(settings.savingsAmountGoal))) && (!settings.savingsGoalPercentageEnabled || (savingsPercent !== null && savingsPercent >= settings.savingsGoalPercentage))}>
+          <StatusLine $ok={(!settings.savingsAmountGoalEnabled || settings.savingsAmountGoal === '' || currentSavings >= toEUR(Number(settings.savingsAmountGoal))) && (!settings.savingsGoalPercentageEnabled || (savingsPercent !== null && savingsPercent >= settings.savingsGoalPercentage))}>
             {controlsT.currentSavings.replace('{amount}', `${currencySymbol}${fromEUR(currentSavings).toFixed(0)}`).replace('{percent}', savingsPercent === null ? '—' : `${savingsPercent.toFixed(1)}%`)}
           </StatusLine>
 
           <ControlGroup theme={theme}>
-            <ControlTitle theme={theme}><strong>{controlsT.emergencyGroup}</strong><SwitchLabel theme={theme} $checked={settings.emergencyFundTargetEnabled}><input type="checkbox" checked={settings.emergencyFundTargetEnabled} onChange={(e) => handleSettingChange('emergencyFundTargetEnabled', e.target.checked)} /><span />{controlsT.useFixedAmount}</SwitchLabel></ControlTitle>
+            <ControlTitle theme={theme}><strong>{controlsT.emergencyGroup}</strong></ControlTitle>
             <ThresholdGrid>
-              <FormGroup theme={theme}><label>{controlsT.fixedAmount}</label><InputWithIcon theme={theme}><span className="input-icon">{currencySymbol}</span><input type="number" value={settings.emergencyFundTarget} onChange={(e) => handleSettingChange('emergencyFundTarget', parseInt(e.target.value))} min="0" disabled={!settings.emergencyFundTargetEnabled} /></InputWithIcon></FormGroup>
-              <FormGroup theme={theme}><label>{controlsT.emergencyMonths}</label><input type="number" min="0" step="0.5" value={settings.emergencyFundMonths} onChange={(e) => handleSettingChange('emergencyFundMonths', e.target.value)} /></FormGroup>
+              <FormGroup theme={theme}><FieldHeading><label>{controlsT.fixedAmount}</label><SwitchLabel theme={theme} $checked={settings.emergencyFundTargetEnabled}><input type="checkbox" checked={settings.emergencyFundTargetEnabled} onChange={(e) => handleSettingChange('emergencyFundTargetEnabled', e.target.checked)} /><span />{controlsT.inChecks}</SwitchLabel></FieldHeading><InputWithIcon theme={theme}><span className="input-icon">{currencySymbol}</span><input type="number" value={settings.emergencyFundTarget} onChange={(e) => handleSettingChange('emergencyFundTarget', parseInt(e.target.value))} min="0" disabled={!settings.emergencyFundTargetEnabled} /></InputWithIcon></FormGroup>
+              <FormGroup theme={theme}><FieldHeading><label>{controlsT.emergencyMonths}</label><SwitchLabel theme={theme} $checked={settings.emergencyFundMonthsEnabled}><input type="checkbox" checked={settings.emergencyFundMonthsEnabled} onChange={(e) => handleSettingChange('emergencyFundMonthsEnabled', e.target.checked)} /><span />{controlsT.inChecks}</SwitchLabel></FieldHeading><input type="number" min="0" step="0.5" value={settings.emergencyFundMonths} disabled={!settings.emergencyFundMonthsEnabled} onChange={(e) => handleSettingChange('emergencyFundMonths', e.target.value)} /></FormGroup>
             </ThresholdGrid>
           </ControlGroup>
-          <StatusLine $ok={(!settings.emergencyFundTargetEnabled || emergencyFundValue >= toEUR(settings.emergencyFundTarget)) && (settings.emergencyFundMonths === '' || (emergencyMonths !== null && emergencyMonths >= Number(settings.emergencyFundMonths)))}>
+          <StatusLine $ok={(!settings.emergencyFundTargetEnabled || emergencyFundValue >= toEUR(settings.emergencyFundTarget)) && (!settings.emergencyFundMonthsEnabled || settings.emergencyFundMonths === '' || (emergencyMonths !== null && emergencyMonths >= Number(settings.emergencyFundMonths)))}>
             {controlsT.currentEmergency.replace('{amount}', `${currencySymbol}${fromEUR(emergencyFundValue).toFixed(0)}`).replace('{months}', emergencyMonths === null ? '—' : emergencyMonths.toFixed(1))}
           </StatusLine>
 
@@ -830,23 +859,19 @@ const ProfileSettings = ({ theme }) => {
             {settings.fixedExpensesPercent !== '' && <StatusLine $ok={currentIncome > 0 && monthlyFixedExpenses / currentIncome * 100 <= Number(settings.fixedExpensesPercent)}>{controlsT.currentFixedExpenses.replace('{percent}', currentIncome > 0 ? `${(monthlyFixedExpenses / currentIncome * 100).toFixed(1)}%` : '—')}</StatusLine>}
             <FormGroup theme={theme}>
               <label>{controlsT.categorySpending}</label>
-              {Object.entries(settings.categorySpendingLimits).map(([name, value]) => (
+              {Object.entries(settings.categorySpendingLimits).map(([name, value]) => {
+                const selection = decodeCategoryLimitKey(name);
+                return (
                 <CategoryLimitRow key={name}>
-                  <select value={name} onChange={(e) => { const nextName = e.target.value; if (!nextName || nextName === name || settings.categorySpendingLimits[nextName] !== undefined) return; const next = { ...settings.categorySpendingLimits }; delete next[name]; next[nextName] = value; handleSettingChange('categorySpendingLimits', next); }} aria-label={controlsT.categoryName}>
-                    {!categoryOptions.some((option) => option.value === name) && <option value={name}>{name}</option>}
-                    {categoryOptions.map((option) => <option key={option.value} value={option.value} disabled={option.value !== name && settings.categorySpendingLimits[option.value] !== undefined}>{option.label}</option>)}
-                  </select>
+                  <CategoryPicker theme={theme} officialTags={outflowTags} customCategories={customExpenseCategories} categoryType="expense" categoryKey={selection.categoryKey} userCategoryId={selection.userCategoryId} placeholder={controlsT.selectCategory} onCreateCategory={createExpenseCategory} onSelect={(nextSelection) => { const nextName = encodeCategoryLimitSelection(nextSelection); if (nextName === name || settings.categorySpendingLimits[nextName] !== undefined) return; const next = { ...settings.categorySpendingLimits }; delete next[name]; next[nextName] = value; handleSettingChange('categorySpendingLimits', next); }} />
                   <input type="number" min="0" value={value} onChange={(e) => handleSettingChange('categorySpendingLimits', { ...settings.categorySpendingLimits, [name]: e.target.value })} aria-label={controlsT.categoryAmount} />
-                  <ActionButton type="button" variant="danger" theme={theme} onClick={() => { const next = { ...settings.categorySpendingLimits }; delete next[name]; handleSettingChange('categorySpendingLimits', next); }}><FaTrash /></ActionButton>
+                  <ActionButton type="button" variant="danger" theme={theme} title={translations.general.delete} aria-label={translations.general.delete} onClick={() => { const next = { ...settings.categorySpendingLimits }; delete next[name]; handleSettingChange('categorySpendingLimits', next); }}><FaTrash /></ActionButton>
                 </CategoryLimitRow>
-              ))}
+              );})}
               <CategoryLimitRow>
-                <select value={newCategoryLimit.name} onChange={(e) => setNewCategoryLimit((current) => ({ ...current, name: e.target.value }))} aria-label={controlsT.categoryName}>
-                  <option value="">{controlsT.selectCategory}</option>
-                  {categoryOptions.map((option) => <option key={option.value} value={option.value} disabled={settings.categorySpendingLimits[option.value] !== undefined}>{option.label}</option>)}
-                </select>
+                {(() => { const selection = decodeCategoryLimitKey(newCategoryLimit.name); return <CategoryPicker theme={theme} officialTags={outflowTags} customCategories={customExpenseCategories} categoryType="expense" categoryKey={selection.categoryKey} userCategoryId={selection.userCategoryId} placeholder={controlsT.selectCategory} onCreateCategory={createExpenseCategory} onSelect={(nextSelection) => setNewCategoryLimit((current) => ({ ...current, name: encodeCategoryLimitSelection(nextSelection) }))} />; })()}
                 <input type="number" min="0" value={newCategoryLimit.value} onChange={(e) => setNewCategoryLimit((current) => ({ ...current, value: e.target.value }))} placeholder={controlsT.categoryAmount} />
-                <ActionButton type="button" theme={theme} onClick={() => { if (!newCategoryLimit.name.trim() || newCategoryLimit.value === '') return; handleSettingChange('categorySpendingLimits', { ...settings.categorySpendingLimits, [newCategoryLimit.name.trim()]: newCategoryLimit.value }); setNewCategoryLimit({ name: '', value: '' }); }}><FaPlus /></ActionButton>
+                <ActionButton type="button" theme={theme} title={translations.general.add} aria-label={translations.general.add} onClick={() => { if (!newCategoryLimit.name.trim() || newCategoryLimit.value === '' || settings.categorySpendingLimits[newCategoryLimit.name] !== undefined) return; handleSettingChange('categorySpendingLimits', { ...settings.categorySpendingLimits, [newCategoryLimit.name.trim()]: newCategoryLimit.value }); setNewCategoryLimit({ name: '', value: '' }); }}><FaPlus /></ActionButton>
               </CategoryLimitRow>
             </FormGroup>
             </div>

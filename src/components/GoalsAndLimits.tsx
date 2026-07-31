@@ -13,8 +13,11 @@ import {
   getTotalIncomesCurrentMonth,
   getTotalOutflowsCurrentMonth,
   getEmergencyFund,
-  getTotalValue
+  getTotalValue,
+  getOutflowsTags,
+  getCustomCategories
 } from '../utils/userDataSelectors';
+import { translateTag } from '../data/tagTranslations';
 import {
     FaBullseye, 
     FaChartLine, 
@@ -147,10 +150,18 @@ const FormGroup = styled.div`
     color: ${props => props.theme.textColor};
     font-size: 0.9rem;
     color-scheme: ${props => props.theme.mode === 'dark' ? 'dark' : 'light'};
+    transition: opacity .2s, background .2s, border-color .2s;
     
     &:focus {
       outline: none;
       border-color: ${props => props.theme.secondaryColor};
+    }
+
+    &:disabled {
+      opacity: .48;
+      cursor: not-allowed;
+      background: ${props => props.theme.mode === 'dark' ? 'rgba(100,116,139,.18)' : 'rgba(148,163,184,.16)'};
+      border-color: ${props => props.theme.mode === 'dark' ? 'rgba(148,163,184,.16)' : 'rgba(71,85,105,.14)'};
     }
   }
 
@@ -190,6 +201,14 @@ const ControlTitle = styled.div`
   strong { color: ${(p) => p.theme.textColor}; font-size: .95rem; }
 `;
 
+const ControlExplanation = styled.p`
+  margin: -1rem 0 1rem;
+  color: ${(p) => p.theme.textColor};
+  opacity: .68;
+  font-size: .78rem;
+  line-height: 1.45;
+`;
+
 const SwitchLabel = styled.label`
   display: inline-flex !important; align-items: center; gap: .55rem; margin: 0 !important;
   color: ${(p) => p.theme.textColor} !important; font-size: .76rem !important; cursor: pointer;
@@ -206,14 +225,15 @@ const ControlCard = styled.div`
   border: 1px solid ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,.1)' : 'rgba(0,0,0,.1)'};
   background: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,.035)' : 'rgba(0,0,0,.02)'};
   h4 { margin: 0 0 .35rem; color: ${props => props.theme.textColor}; }
-  p { margin: 0 0 .85rem; opacity: .7; font-size: .8rem; line-height: 1.45; }
+  p { margin: 0 0 .85rem; color: ${props => props.theme.textColor}; opacity: .72; font-size: .8rem; line-height: 1.45; }
 `;
 
 const ThresholdGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: .75rem;
-  ${FormGroup} { margin: 0; }
+  ${FormGroup} { margin: 0; display: flex; flex-direction: column; }
+  ${FormGroup} > ${InputWithIcon}, ${FormGroup} > input { margin-top: auto; }
   @media (max-width: 520px) { grid-template-columns: 1fr; }
 `;
 
@@ -223,6 +243,16 @@ const AdvancedDetails = styled.details`
   summary::after { content: '+'; color: ${(p) => p.theme.secondaryColor}; font-size: 1.25rem; }
   &[open] summary::after { content: '−'; }
   .advanced-content { margin-top: 1rem; }
+`;
+
+const CategoryLimitRow = styled.div`
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 120px 38px;
+  gap: .5rem;
+  margin-bottom: .5rem;
+  align-items: stretch;
+  input, select { min-height: 43px; }
+  @media (max-width: 520px) { grid-template-columns: minmax(0, 1fr) 100px 38px; }
 `;
 
 const StatusLine = styled.div`
@@ -720,6 +750,14 @@ const ProfileSettings = ({ theme }) => {
   const spendingPercent = currentIncome > 0 ? (currentSpending / currentIncome) * 100 : null;
   const savingsPercent = currentIncome > 0 ? (currentSavings / currentIncome) * 100 : null;
   const emergencyMonths = currentSpending > 0 ? emergencyFundValue / currentSpending : null;
+  const categoryOptions = [
+    ...getOutflowsTags(userData)
+      .filter((tag) => tag?.label && tag.label !== 'none')
+      .map((tag) => ({ value: String(tag.label), label: translateTag(tag.label, language, 'expense') })),
+    ...getCustomCategories(userData)
+      .filter((category) => category?.label)
+      .map((category) => ({ value: String(category.label), label: category.label })),
+  ].filter((option, index, options) => options.findIndex((candidate) => candidate.value === option.value) === index);
 
   return (
     <ProfileContainer theme={theme}>
@@ -743,6 +781,7 @@ const ProfileSettings = ({ theme }) => {
             <FaExclamationTriangle className="section-icon" />
             <h3>{language === 'it' ? 'Limiti e Controlli' : 'Limits & Controls'}</h3>
           </SectionHeader>
+          <ControlExplanation theme={theme}>{controlsT.toggleExplanation}</ControlExplanation>
           
           <ControlGroup theme={theme}>
             <ControlTitle theme={theme}><strong>{controlsT.spendingGroup}</strong><SwitchLabel theme={theme} $checked={settings.monthlySpendingLimitEnabled}><input type="checkbox" checked={settings.monthlySpendingLimitEnabled} onChange={(e) => handleSettingChange('monthlySpendingLimitEnabled', e.target.checked)} /><span />{controlsT.useFixedAmount}</SwitchLabel></ControlTitle>
@@ -792,17 +831,23 @@ const ProfileSettings = ({ theme }) => {
             <FormGroup theme={theme}>
               <label>{controlsT.categorySpending}</label>
               {Object.entries(settings.categorySpendingLimits).map(([name, value]) => (
-                <div key={name} style={{ display: 'grid', gridTemplateColumns: '1fr 110px 36px', gap: '.5rem', marginBottom: '.5rem' }}>
-                  <input value={name} readOnly aria-label={controlsT.categoryName} />
+                <CategoryLimitRow key={name}>
+                  <select value={name} onChange={(e) => { const nextName = e.target.value; if (!nextName || nextName === name || settings.categorySpendingLimits[nextName] !== undefined) return; const next = { ...settings.categorySpendingLimits }; delete next[name]; next[nextName] = value; handleSettingChange('categorySpendingLimits', next); }} aria-label={controlsT.categoryName}>
+                    {!categoryOptions.some((option) => option.value === name) && <option value={name}>{name}</option>}
+                    {categoryOptions.map((option) => <option key={option.value} value={option.value} disabled={option.value !== name && settings.categorySpendingLimits[option.value] !== undefined}>{option.label}</option>)}
+                  </select>
                   <input type="number" min="0" value={value} onChange={(e) => handleSettingChange('categorySpendingLimits', { ...settings.categorySpendingLimits, [name]: e.target.value })} aria-label={controlsT.categoryAmount} />
                   <ActionButton type="button" variant="danger" theme={theme} onClick={() => { const next = { ...settings.categorySpendingLimits }; delete next[name]; handleSettingChange('categorySpendingLimits', next); }}><FaTrash /></ActionButton>
-                </div>
+                </CategoryLimitRow>
               ))}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 110px 36px', gap: '.5rem' }}>
-                <input value={newCategoryLimit.name} onChange={(e) => setNewCategoryLimit((current) => ({ ...current, name: e.target.value }))} placeholder={controlsT.categoryName} />
+              <CategoryLimitRow>
+                <select value={newCategoryLimit.name} onChange={(e) => setNewCategoryLimit((current) => ({ ...current, name: e.target.value }))} aria-label={controlsT.categoryName}>
+                  <option value="">{controlsT.selectCategory}</option>
+                  {categoryOptions.map((option) => <option key={option.value} value={option.value} disabled={settings.categorySpendingLimits[option.value] !== undefined}>{option.label}</option>)}
+                </select>
                 <input type="number" min="0" value={newCategoryLimit.value} onChange={(e) => setNewCategoryLimit((current) => ({ ...current, value: e.target.value }))} placeholder={controlsT.categoryAmount} />
                 <ActionButton type="button" theme={theme} onClick={() => { if (!newCategoryLimit.name.trim() || newCategoryLimit.value === '') return; handleSettingChange('categorySpendingLimits', { ...settings.categorySpendingLimits, [newCategoryLimit.name.trim()]: newCategoryLimit.value }); setNewCategoryLimit({ name: '', value: '' }); }}><FaPlus /></ActionButton>
-              </div>
+              </CategoryLimitRow>
             </FormGroup>
             </div>
             </AdvancedDetails>

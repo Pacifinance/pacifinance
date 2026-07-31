@@ -12,7 +12,7 @@ import { RenderCustomizedLabel } from '../utils/customGraphsInfo';
 import { getHoldingValue, getHoldingLabel, paletteColor, OTHER_SLICE_COLOR, ASSET_CATEGORY_ORDER } from '../utils/holdingsChartHelpers';
 import { getRandomGrayscaleColor } from '../utils/colorUtils';
 import HoldingAssetDetails from './HoldingAssetDetails';
-import { Info } from 'lucide-react';
+import { Eye, EyeOff, Info } from 'lucide-react';
 import type { InvestmentDividendSummaryDto, InvestmentHoldingDto, InvestmentAssetKey } from '../types/api';
 
 interface HoldingsBreakdownChartProps {
@@ -69,11 +69,11 @@ const CategoryDetails = styled.details`
     gap: 0.5rem;
   }
   summary::-webkit-details-marker { display: none; }
-  summary::after { content: '›'; margin-left: auto; transition: transform 0.2s ease; }
+  summary::after { content: '›'; margin-left: auto; transition: transform 0.2s ease; color: ${(p) => p.theme.buttonBackgroundColor}; }
   &[open] summary::after { transform: rotate(90deg); }
 
   .category-items { display: flex; flex-direction: column; gap: 0.35rem; padding: 0.45rem 0.2rem 0.25rem; }
-  .category-toggle { border: 0; background: transparent; color: inherit; cursor: pointer; padding: .2rem; font-weight: 700; }
+  .category-toggle { border: 0; background: transparent; color: ${(p) => p.theme.buttonBackgroundColor}; cursor: pointer; padding: .2rem; display: inline-flex; }
 `;
 
 const LegendItem = styled.div`
@@ -110,6 +110,7 @@ const LegendItem = styled.div`
     flex-shrink: 0;
   }
   button { border: 0; background: transparent; color: inherit; cursor: pointer; padding: 2px; display: inline-flex; }
+  button.info { color: ${(p) => p.theme.buttonBackgroundColor}; margin-left: .15rem; padding-left: .45rem; border-left: 1px solid ${(p) => p.theme.mode === 'dark' ? 'rgba(255,255,255,.16)' : 'rgba(15,23,42,.14)'}; }
   &.inactive { opacity: .4; text-decoration: line-through; }
 `;
 
@@ -220,7 +221,7 @@ export default function HoldingsBreakdownChart({ theme, holdings, assetKey, isHi
         <button className="label" type="button" onClick={() => setHiddenIds((previous) => { const next = new Set(previous); if (next.has(row.id)) next.delete(row.id); else next.add(row.id); return next; })}>{isHidden ? '****' : row.label}</button>
         {pct > overweightThreshold && <span className="overweight" title={t.overweightWarning}>⚠</span>}
         <span className="pct">{isHidden ? '****' : `${pct.toFixed(1)}%`}</span>
-        {!isHidden && <button type="button" aria-label={t.assetDetails} onClick={() => setDetailId(row.id)}><Info size={14} /></button>}
+        {!isHidden && <button className="info" type="button" aria-label={t.assetDetails} onClick={() => setDetailId(row.id)}><Info size={14} /></button>}
       </LegendItem>
     );
   };
@@ -298,7 +299,7 @@ export default function HoldingsBreakdownChart({ theme, holdings, assetKey, isHi
               return (
                 <CategoryDetails key={category} theme={theme}>
                   <summary>
-                    <button type="button" className="category-toggle" onClick={toggleCategory} aria-label={t.toggleCategory}>{categoryEnabled ? '✓' : '○'}</button>
+                    <button type="button" className="category-toggle" onClick={toggleCategory} aria-label={t.toggleCategory}>{categoryEnabled ? <Eye size={16} /> : <EyeOff size={16} />}</button>
                     <CategoryHeader theme={theme}>
                       <span>{translations.assets[category]}</span>
                       <span className="category-meta">

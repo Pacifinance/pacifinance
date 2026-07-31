@@ -14,7 +14,7 @@ import { CurrencyContext } from '../contexts/CurrencyContext';
 import { MediaQueryContext } from '../contexts/MediaQueryContext';
 import { CustomTick, compactNumber } from '../utils/customGraphsInfo';
 import { getHoldingValue, paletteColor, ASSET_CATEGORY_ORDER } from '../utils/holdingsChartHelpers';
-import { Info, ShieldCheck, Users } from 'lucide-react';
+import { Eye, EyeOff, Info, ShieldCheck, Users } from 'lucide-react';
 import HoldingAssetDetails from './HoldingAssetDetails';
 import type { InvestmentDividendSummaryDto, InvestmentHoldingDto, InvestmentHoldingHistoryDto, InvestmentAssetKey } from '../types/api';
 
@@ -130,11 +130,19 @@ const CategoryDetails = styled.details`
   padding: .35rem 0;
   summary { display: flex; align-items: center; cursor: pointer; list-style: none; }
   summary::-webkit-details-marker { display: none; }
-  summary::after { content: '›'; margin-left: auto; transition: transform .2s; }
+  summary::after { content: '›'; margin-left: auto; transition: transform .2s; color: ${(p) => p.theme.buttonBackgroundColor}; }
   &[open] summary::after { transform: rotate(90deg); }
   .items { display: flex; flex-wrap: wrap; justify-content: center; gap: .5rem .9rem; padding: .5rem; }
-  .toggle { border: 0; background: transparent; color: inherit; cursor: pointer; margin-right: .35rem; }
-  .info { border: 0; background: transparent; color: inherit; cursor: pointer; padding: 0; display: inline-flex; }
+  .toggle { border: 0; background: transparent; color: ${(p) => p.theme.buttonBackgroundColor}; cursor: pointer; margin-right: .35rem; display: inline-flex; }
+`;
+
+const AssetLegendControl = styled.div`
+  display: inline-flex; align-items: center; gap: .2rem;
+  padding: .15rem .45rem;
+  border-right: 1px solid ${(p) => p.theme.mode === 'dark' ? 'rgba(255,255,255,.14)' : 'rgba(15,23,42,.12)'};
+  &:last-child { border-right: 0; }
+  .info { border: 0; background: transparent; color: ${(p) => p.theme.buttonBackgroundColor}; cursor: pointer; padding: .15rem; display: inline-flex; border-radius: 50%; }
+  .info:hover { background: ${(p) => p.theme.buttonBackgroundColor}18; }
 `;
 
 const ClosedTag = styled.span`
@@ -390,18 +398,18 @@ export default function HoldingsHistoryChart({ theme, history, assetKey, isHidde
           const enabled = categoryIds.some((id) => lineVisibility[id]);
           return <CategoryDetails key={category} theme={theme} open={Boolean(assetKey)}>
             <summary>
-              <button type="button" className="toggle" onClick={(event) => { event.preventDefault(); toggleCategory(categoryIds); }} aria-label={t.toggleCategory}>{enabled ? '✓' : '○'}</button>
+              <button type="button" className="toggle" onClick={(event) => { event.preventDefault(); toggleCategory(categoryIds); }} aria-label={t.toggleCategory}>{enabled ? <Eye size={16} /> : <EyeOff size={16} />}</button>
               <CategoryHeader theme={theme}>{translations.assets[category]} · {categoryIds.length}</CategoryHeader>
             </summary>
             <div className="items">{categoryIds.map((id) => (
-              <React.Fragment key={id}>
+              <AssetLegendControl key={id} theme={theme}>
                 <LegendItem theme={theme} $active={lineVisibility[id]} onClick={() => handleLegendClick(id)} type="button">
                   <span className="dot" style={{ backgroundColor: paletteColor(rankedIds.indexOf(id)) }} />
                   {isHidden ? '****' : labelFor(id)}
                   {!isHidden && isClosed(id) && <ClosedTag>{t.closedTag || 'closed'}</ClosedTag>}
                 </LegendItem>
                 {!isHidden && <button type="button" className="info" aria-label={t.assetDetails} onClick={() => setDetailHoldingId(Number(id))}><Info size={13} /></button>}
-              </React.Fragment>
+              </AssetLegendControl>
             ))}</div>
           </CategoryDetails>;
         })}

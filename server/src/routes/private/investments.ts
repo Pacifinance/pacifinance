@@ -454,7 +454,10 @@ function isValidMonthKey(value: string): boolean {
     if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(value)) return false
     const now = new Date()
     const currentMonthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`
-    return value <= currentMonthKey
+    // Monthly community prices represent a stable month-end observation.
+    // The current month remains editable in the user's private portfolio, but
+    // cannot enter the moderation queue until the month has fully closed.
+    return value < currentMonthKey
 }
 
 investmentsRouter.post("/community-prices/submit", async (req, res) => {
@@ -537,6 +540,10 @@ investmentsRouter.post("/community-prices/verify", async (req, res) => {
 
     if (!Number.isFinite(id) || !isOneOf(action, ["approve", "reject"] as const)) {
         res.status(400).send()
+        return
+    }
+    if (action === "reject" && !rejectionNote) {
+        res.status(400).json({error: "rejection_note_required"})
         return
     }
 

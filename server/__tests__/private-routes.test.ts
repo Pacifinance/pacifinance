@@ -1053,6 +1053,19 @@ describe("private backend routes", () => {
         expect(mockDb.investments.submitCommunityPrice).not.toHaveBeenCalled()
     })
 
+    it("rejects a community price submission until the current month has closed", async () => {
+        const now = new Date()
+        const currentMonthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`
+        const response = await request(app, "/api/investments/community-prices/submit", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {instrument_id: 1, month_key: currentMonthKey, raw_price: 150, raw_currency: "USD"}
+        })
+
+        expect(response.status).toBe(400)
+        expect(mockDb.investments.submitCommunityPrice).not.toHaveBeenCalled()
+    })
+
     it("rejects a community price submission for a kind backfillHistoricalPrices doesn't cover (e.g. bond)", async () => {
         mockDb.investments.getInstrumentById.mockResolvedValue({id: 2, kind: "bond", symbol: "BND", name: "Some Bond", currency: "EUR"})
 
@@ -1168,6 +1181,20 @@ describe("private backend routes", () => {
 
         expect(response.status).toBe(200)
         expect(mockDb.investments.verifyCommunityPrice).toHaveBeenCalledWith("user-uuid", 1, "approve", null)
+    })
+
+    it("requires an explanation when an admin rejects a community price", async () => {
+        mockDb.users.isAdmin.mockResolvedValue(true)
+
+        const response = await request(app, "/api/investments/community-prices/verify", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {id: 1, action: "reject", rejection_note: ""}
+        })
+
+        expect(response.status).toBe(400)
+        expect(response.json).toEqual({error: "rejection_note_required"})
+        expect(mockDb.investments.verifyCommunityPrice).not.toHaveBeenCalled()
     })
 
     it("rejects an invalid action for community price verification", async () => {

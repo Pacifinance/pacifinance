@@ -2832,7 +2832,7 @@
             "currencyLabel": "Währung",
             "dateLabel": "Referenzdatum",
             "explainerTitle": "Zur Community-Preisdatenbank beitragen",
-            "explainerDescription": "Reiche einen echten Preis für einen fehlenden Monat ein. Nach der Admin-Prüfung kann er die Historie aller mit demselben Wertpapier vervollständigen.",
+            "explainerDescription": "Reiche den letzten verfügbaren Kurs eines abgeschlossenen Monats ein. Ab dem ersten Tag des Folgemonats kann ein Admin ihn prüfen und die Historie aller mit demselben Wertpapier vervollständigen.",
             "contributeButton": "Marktpreis beitragen",
             "statusPending": "Dein Preis wartet auf Überprüfung",
             "statusVerified": "Dein Preis wurde verifiziert",
@@ -2846,12 +2846,15 @@
             "subtitle": "Überprüfe von Nutzern eingereichte Preise anhand eines echten Marktanbieters, bevor du sie genehmigst.",
             "loading": "Wird geladen...",
             "emptyState": "Keine Einreichungen zur Überprüfung.",
+            "emptyTitle": "Alles geprüft",
+            "emptyDescription": "Es warten keine Preise auf eine Prüfung. Neue Vorschläge der Nutzer erscheinen hier zur Überprüfung.",
             "approveButton": "Genehmigen",
             "rejectButton": "Ablehnen",
-            "rejectionNotePlaceholder": "Ablehnungsgrund (optional)",
+            "rejectionNotePlaceholder": "Ablehnungsgrund (erforderlich)",
             "submittedOn": "Eingereicht am",
             "rawPriceLabel": "Angegebener Preis",
-            "monthLabel": "Monat"
+            "monthLabel": "Monat",
+            "referenceDateLabel": "Zu prüfendes Datum"
         },
         "attribution": {
             "coingecko": "Daten bereitgestellt von CoinGecko",

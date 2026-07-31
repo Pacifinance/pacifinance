@@ -8,6 +8,7 @@ import { useAuth } from '../hooks/useAuth';
 import SEOHead from '../components/SEOHead';
 import Sidebar from '../sections/Sidebar';
 import type { CommunityPriceWithInstrumentDto } from '../types/api';
+import { CalendarCheck2, CheckCircle2 } from 'lucide-react';
 
 const ContentWrapper = styled.div`
   background-color: ${(props) => props.theme.backgroundColor};
@@ -39,10 +40,27 @@ const PageSubtitle = styled.p`
   max-width: 40rem;
 `;
 
-const EmptyState = styled.p`
+const PageContent = styled.div`
+  width: 100%;
+  max-width: 70rem;
+`;
+
+const EmptyState = styled.div`
+  min-height: 18rem;
+  border-radius: 18px;
+  border: 1px solid ${(p) => (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : '#e2e8f0')};
+  background: ${(p) => (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.025)' : 'rgba(255,255,255,0.8)')};
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
   color: ${(p) => p.theme.textColor};
-  opacity: 0.6;
-  font-size: 0.9rem;
+
+  svg { width: 2rem; height: 2rem; color: #10b981; margin-bottom: 1rem; }
+  strong { font-size: 1.05rem; }
+  p { max-width: 30rem; margin: 0.5rem 0 0; opacity: 0.62; font-size: 0.88rem; }
 `;
 
 const SubmissionCard = styled.div`
@@ -59,12 +77,27 @@ const SubmissionCard = styled.div`
 const SubmissionHeader = styled.div`
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
+  align-items: flex-start;
   flex-wrap: wrap;
   gap: 0.5rem;
 
   .instrument { font-weight: 600; color: ${(p) => p.theme.textColor}; }
-  .month { opacity: 0.65; font-size: 0.8rem; color: ${(p) => p.theme.textColor}; }
+`;
+
+const ReferenceDate = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.65rem;
+  border-radius: 9px;
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.22);
+  font-size: 0.8rem;
+  font-weight: 700;
+  white-space: nowrap;
+
+  svg { width: 0.9rem; height: 0.9rem; }
 `;
 
 const SubmissionMeta = styled.div`
@@ -74,6 +107,10 @@ const SubmissionMeta = styled.div`
   font-size: 0.82rem;
   color: ${(p) => p.theme.textColor};
   opacity: 0.8;
+`;
+
+const SubmittedAt = styled.span`
+  opacity: 0.62;
 `;
 
 const NoteInput = styled.input`
@@ -156,23 +193,33 @@ function AdminPriceReviewPage() {
       <SEOHead title={`${t.title} | Pacifinance`} noindex={true} />
       <Sidebar userData={userData} handleSetIsUpdated={handleSetIsUpdated} handleSetIsAuthenticated={handleSetIsAuthenticated} />
       <ContentWrapper theme={theme}>
-        <PageTitle theme={theme}>{t.title}</PageTitle>
-        <PageSubtitle theme={theme}>{t.subtitle}</PageSubtitle>
+        <PageContent>
+          <PageTitle theme={theme}>{t.title}</PageTitle>
+          <PageSubtitle theme={theme}>{t.subtitle}</PageSubtitle>
 
-        {submissions === null && <EmptyState theme={theme}>{t.loading}</EmptyState>}
-        {submissions !== null && submissions.length === 0 && <EmptyState theme={theme}>{t.emptyState}</EmptyState>}
-        {submissions?.map((submission) => (
+          {submissions === null && <EmptyState theme={theme}><p>{t.loading}</p></EmptyState>}
+          {submissions !== null && submissions.length === 0 && (
+            <EmptyState theme={theme}>
+              <CheckCircle2 aria-hidden="true" />
+              <strong>{t.emptyTitle}</strong>
+              <p>{t.emptyDescription}</p>
+            </EmptyState>
+          )}
+          {submissions?.map((submission) => (
           <SubmissionCard key={submission.id} theme={theme}>
             <SubmissionHeader theme={theme}>
               <span className="instrument">
                 {submission.instrument ? `${submission.instrument.symbol} — ${submission.instrument.name}` : `#${submission.instrumentId}`}
               </span>
-              <span className="month">{t.monthLabel}: {submission.referenceDate || submission.monthKey}</span>
+              <ReferenceDate>
+                <CalendarCheck2 aria-hidden="true" />
+                {t.referenceDateLabel}: {submission.referenceDate || submission.monthKey}
+              </ReferenceDate>
             </SubmissionHeader>
             <SubmissionMeta theme={theme}>
               <span>{t.rawPriceLabel}: {submission.rawPrice.toLocaleString()} {submission.rawCurrency}</span>
               <span>≈ {formatAmount(submission.priceEur)}</span>
-              <span>{t.submittedOn} {new Date(submission.submittedAt).toLocaleDateString()}</span>
+              <SubmittedAt>{t.submittedOn} {new Date(submission.submittedAt).toLocaleDateString()}</SubmittedAt>
             </SubmissionMeta>
             <ActionsRow>
               <NoteInput
@@ -184,12 +231,13 @@ function AdminPriceReviewPage() {
               <ActionButton $variant="approve" disabled={processingId === submission.id} onClick={() => resolve(submission.id, 'approve')}>
                 {t.approveButton}
               </ActionButton>
-              <ActionButton $variant="reject" disabled={processingId === submission.id} onClick={() => resolve(submission.id, 'reject')}>
+              <ActionButton $variant="reject" disabled={processingId === submission.id || !(notes[submission.id] ?? '').trim()} onClick={() => resolve(submission.id, 'reject')}>
                 {t.rejectButton}
               </ActionButton>
             </ActionsRow>
           </SubmissionCard>
-        ))}
+          ))}
+        </PageContent>
       </ContentWrapper>
     </>
   );

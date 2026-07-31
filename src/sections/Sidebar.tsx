@@ -386,6 +386,8 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                 padding: '3px',
                                 boxSizing: 'border-box',
                                 borderRadius: '50%',
+                                aspectRatio: '1',
+                                flexShrink: 0,
                                 background: `conic-gradient(${levelColor} ${levelProgress}%, ${theme.mode === 'dark' ? 'rgba(255,255,255,0.14)' : 'rgba(15,23,42,0.14)'} 0)`,
                                 boxShadow: `0 2px 8px ${levelColor}30`,
                             }}
@@ -394,7 +396,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                 size={36}
                                 theme={theme}
                                 title={levelTitle}
-                                style={{ border: `2px solid ${theme.backgroundColor}`, boxSizing: 'border-box' }}
+                                style={{ display: 'block' }}
                                 onClick={() => navigate('/profile')}
                             />
                             <span style={{
@@ -552,7 +554,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                     title={levelTitle}
                                     style={{
                                         position: 'relative', width: '46px', height: '46px', padding: '3px',
-                                        boxSizing: 'border-box', borderRadius: '50%',
+                                        boxSizing: 'border-box', borderRadius: '50%', aspectRatio: '1', flexShrink: 0,
                                         background: `conic-gradient(${levelColor} ${levelProgress}%, ${theme.mode === 'dark' ? 'rgba(255,255,255,0.14)' : 'rgba(15,23,42,0.14)'} 0)`,
                                     }}
                                 >
@@ -560,7 +562,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                         size={40}
                                         theme={theme}
                                         title={levelTitle}
-                                        style={{ border: `2px solid ${theme.backgroundColor}`, boxSizing: 'border-box' }}
+                                        style={{ display: 'block' }}
                                         onClick={() => setShowDropdown(!showDropdown)}
                                     />
                                     <span style={{

@@ -367,7 +367,8 @@ const CommunityPriceLine = styled.div`
     &:hover { opacity: 1; }
   }
 
-  span.status { opacity: 0.55; }
+  span.status { color: ${(p) => p.theme.textColor}; opacity: 0.75; }
+  span.status-pending { color: ${(p) => (p.theme.mode === 'dark' ? '#fbbf24' : '#b45309')}; opacity: 1; }
   span.status-verified { color: #10b981; opacity: 0.85; }
   span.status-rejected { color: #ef4444; opacity: 0.85; }
 
@@ -1155,6 +1156,9 @@ export default function InvestmentHoldingsPanel({
                     const myCommunitySubmission = (myCommunityPrices ?? [])
                       .find((s) => s.instrumentId === entry.instrumentId && s.monthKey === monthKey);
                     const communityEligible = holding.instrument !== null && COMMUNITY_PRICE_KINDS.has(holding.instrument.kind);
+                    const now = new Date();
+                    const currentMonthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+                    const communityContributionAvailable = monthKey < currentMonthKey;
 
                     return (
                       <React.Fragment key={entry.userDate}>
@@ -1174,7 +1178,7 @@ export default function InvestmentHoldingsPanel({
                             <FontAwesomeIcon icon={faPen} />
                           </button>
                         </HistoryMonthRow>
-                        {communityEligible && (
+                        {communityEligible && (communityContributionAvailable || myCommunitySubmission) && (
                           communityPriceEditingKey === communityKey ? (
                             <CommunityPriceEditRow theme={theme}>
                               <label>{t.communityPrice?.pricePlaceholder || 'Prezzo'}<input type="number" autoFocus value={communityPriceInputs.price} onChange={(e) => setCommunityPriceInputs((f) => ({ ...f, price: e.target.value }))} /></label>

@@ -2832,7 +2832,7 @@
             "currencyLabel": "Moeda",
             "dateLabel": "Data de referência",
             "explainerTitle": "Contribua para a base de preços da comunidade",
-            "explainerDescription": "Envie um preço real para um mês sem dados. Um administrador irá revisá-lo e ele poderá completar o histórico de todos com o mesmo ativo.",
+            "explainerDescription": "Envie a última cotação disponível de um mês encerrado. A partir do primeiro dia do mês seguinte, um administrador poderá verificá-la e completar o histórico de todos com o mesmo ativo.",
             "contributeButton": "Contribuir com o preço de mercado",
             "statusPending": "Seu preço está aguardando verificação",
             "statusVerified": "Seu preço foi verificado",
@@ -2846,12 +2846,15 @@
             "subtitle": "Verifique os preços enviados pelos usuários com um provedor de mercado real antes de aprová-los.",
             "loading": "Carregando...",
             "emptyState": "Nenhuma proposta aguardando revisão.",
+            "emptyTitle": "Tudo verificado",
+            "emptyDescription": "Não há preços aguardando revisão. Novas propostas dos usuários aparecerão aqui para verificação.",
             "approveButton": "Aprovar",
             "rejectButton": "Rejeitar",
-            "rejectionNotePlaceholder": "Motivo da rejeição (opcional)",
+            "rejectionNotePlaceholder": "Motivo da rejeição (obrigatório)",
             "submittedOn": "Enviado em",
             "rawPriceLabel": "Preço informado",
-            "monthLabel": "Mês"
+            "monthLabel": "Mês",
+            "referenceDateLabel": "Data a verificar"
         },
         "attribution": {
             "coingecko": "Dados fornecidos pelo CoinGecko",

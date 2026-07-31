@@ -2862,7 +2862,7 @@
             "currencyLabel": "Currency",
             "dateLabel": "Reference date",
             "explainerTitle": "Contribute to the community price database",
-            "explainerDescription": "Submit a real price for a missing month. An admin will review it and, once verified, it can complete the history of everyone holding the same instrument.",
+            "explainerDescription": "Submit the last available quote for a completed month. From the first day of the following month, an admin can verify it and complete the history of everyone holding the same instrument.",
             "contributeButton": "Contribute market price",
             "statusPending": "Your price is awaiting verification",
             "statusVerified": "Your price has been verified",
@@ -2876,12 +2876,15 @@
             "subtitle": "Check user-submitted prices against a real market provider before approving them.",
             "loading": "Loading...",
             "emptyState": "No submissions awaiting review.",
+            "emptyTitle": "You're all caught up",
+            "emptyDescription": "There are no prices awaiting review. New user submissions will appear here for verification.",
             "approveButton": "Approve",
             "rejectButton": "Reject",
-            "rejectionNotePlaceholder": "Rejection reason (optional)",
+            "rejectionNotePlaceholder": "Rejection reason (required)",
             "submittedOn": "Submitted on",
             "rawPriceLabel": "Submitted price",
-            "monthLabel": "Month"
+            "monthLabel": "Month",
+            "referenceDateLabel": "Date to verify"
         },
         "attribution": {
             "coingecko": "Data provided by CoinGecko",

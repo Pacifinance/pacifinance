@@ -15,6 +15,7 @@ import { useAuthenticatedPreloading, usePublicPreloading } from "./hooks/useSimp
 import { addLanguageToPath, availableLanguages, getInitialLanguage } from "./utils/i18nRouting";
 import { useGamification } from "./hooks/useGamification";
 import { useAchievementNotifications } from "./hooks/useAchievementNotifications";
+import { getIsAdmin } from "./utils/userDataSelectors";
 
 // Componente di loading semplice e affidabile
 const SimpleLoader = () => (
@@ -47,6 +48,7 @@ const Info = React.lazy(() => import("./pages/InfoPage"));
 const AccountPage = React.lazy(() => import("./pages/ProfilePage"));
 const SettingsPage = React.lazy(() => import("./pages/SettingsPage"));
 const GoalsSettingsPage = React.lazy(() => import("./pages/GoalsAndLimitsPage"));
+const AdminPriceReviewPage = React.lazy(() => import("./pages/AdminPriceReviewPage"));
 
 // Lazy loading per pagine legali/info (raramente visitate)
 const FAQPage = React.lazy(() => import("./pages/FAQPage"));
@@ -73,6 +75,24 @@ const ProtectedRoute = ({ children }) => {
     return <Navigate to={addLanguageToPath("/", language)} replace />;
   }
   
+  return children;
+};
+
+// Admin Route Component - protected, and additionally requires isAdmin (community price moderation).
+// The frontend guard is convenience only - every admin-gated API route re-checks
+// db.users.isAdmin server-side, so this never has to be the actual security boundary.
+const AdminRoute = ({ children }) => {
+  const auth = useAuth();
+  const { language } = useContext(LanguageContext);
+
+  if (!auth.isAuthenticated) {
+    return <Navigate to={addLanguageToPath("/", language)} replace />;
+  }
+
+  if (!getIsAdmin(auth.userData)) {
+    return <Navigate to={addLanguageToPath("/dashboard", language)} replace />;
+  }
+
   return children;
 };
 
@@ -300,6 +320,14 @@ const LanguageRoutes = () => {
           <ProtectedRoute>
             <GoalsSettingsPage />
           </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/price-review"
+        element={
+          <AdminRoute>
+            <AdminPriceReviewPage />
+          </AdminRoute>
         }
       />
 

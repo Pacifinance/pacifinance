@@ -15,6 +15,7 @@ import { useMemo } from 'react';
 import { useServices } from '../contexts/ServiceContext';
 import { useAuth } from './useAuth';
 import type {
+  CommunityPriceDto, CommunityPricesMineResponse, CommunityPricesPendingResponse,
   InvestmentInstrumentDto, InvestmentHoldingDto, InvestmentHoldingHistoryDto, InvestmentHoldingSaveRequest,
   InvestmentSettingsDto, InvestmentDividendDto, InvestmentDividendSummaryResponse,
   InvestmentTransactionDto, InvestmentTransactionsGetResponse,
@@ -197,6 +198,25 @@ export const useDemoServices = () => {
         saveTransactionsBatch: async (data) => ({ savedCount: data.entries.length, errors: [] }),
         // Demo mode has no persisted transaction history to reconcile against.
         getTransactions: async (): Promise<InvestmentTransactionsGetResponse> => [],
+        // No session-backed community-price queue in demo mode - simulate an
+        // immediate pending submission without persisting or requiring review.
+        submitCommunityPrice: async (data): Promise<CommunityPriceDto> => ({
+          id: -Date.now(),
+          instrumentId: data.instrument_id,
+          monthKey: data.month_key,
+          priceEur: data.raw_price,
+          rawPrice: data.raw_price,
+          rawCurrency: data.raw_currency,
+          status: 'pending',
+          submittedBy: 'demo-user',
+          submittedAt: new Date().toISOString(),
+          verifiedBy: null,
+          verifiedAt: null,
+          rejectionNote: null,
+        }),
+        getMyCommunityPriceSubmissions: async (): Promise<CommunityPricesMineResponse> => [],
+        getPendingCommunityPrices: async (): Promise<CommunityPricesPendingResponse> => [],
+        verifyCommunityPrice: async () => { throw new Error('Not available in demo mode'); },
       },
       liquidityAccountService: {
         ...services.liquidityAccountService,

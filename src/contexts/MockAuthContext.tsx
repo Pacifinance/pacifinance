@@ -68,6 +68,9 @@ export const mockUserData = {
     // Badge IDs already notified — see useAchievementNotifications
     seenBadges: [],
 
+    // Elevated permission to moderate community-submitted historical prices — see getIsAdmin
+    isAdmin: false,
+
     // User profile data (come UserContext) — values from i18n
     profile: {
         nationality: { key: 107, value: it.tags.country?.['italy'] || 'Italia' },

@@ -12,6 +12,12 @@
  */
 import axios, { type AxiosInstance, type AxiosResponse } from 'axios';
 import type {
+  CommunityPriceConflict,
+  CommunityPriceDto,
+  CommunityPriceSubmitRequest,
+  CommunityPriceVerifyRequest,
+  CommunityPricesMineResponse,
+  CommunityPricesPendingResponse,
   InvestmentBatchSaveResponse,
   InvestmentDividendDto,
   InvestmentDividendSaveBatchRequest,
@@ -58,6 +64,23 @@ export class HoldingConflictError extends Error {
   }
 }
 
+/**
+ * Thrown by submitCommunityPrice when the server responds 409 — an active
+ * (pending or verified) submission already exists for this instrument+month
+ * (see server/src/db/models/investments.ts submitCommunityPrice). Callers
+ * catch this specifically to show the existing submission instead of
+ * treating it like any other failed save.
+ */
+export class CommunityPriceConflictError extends Error {
+  existing: CommunityPriceDto;
+
+  constructor(existing: CommunityPriceDto) {
+    super('An active submission for this instrument and month already exists');
+    this.name = 'CommunityPriceConflictError';
+    this.existing = existing;
+  }
+}
+
 export interface InvestmentService {
   searchInstruments(params: InvestmentInstrumentSearchRequest): Promise<InvestmentInstrumentSearchResponse>;
   searchInstrumentsByIsins(isins: string[]): Promise<InvestmentInstrumentSearchByIsinsResponse>;
@@ -78,6 +101,10 @@ export interface InvestmentService {
   saveTransaction(data: InvestmentTransactionSaveRequest): Promise<InvestmentTransactionDto>;
   saveTransactionsBatch(data: InvestmentTransactionSaveBatchRequest): Promise<InvestmentBatchSaveResponse>;
   getTransactions(): Promise<InvestmentTransactionsGetResponse>;
+  submitCommunityPrice(data: CommunityPriceSubmitRequest): Promise<CommunityPriceDto>;
+  getMyCommunityPriceSubmissions(): Promise<CommunityPricesMineResponse>;
+  getPendingCommunityPrices(): Promise<CommunityPricesPendingResponse>;
+  verifyCommunityPrice(data: CommunityPriceVerifyRequest): Promise<CommunityPriceDto>;
 }
 
 export const createInvestmentService = (apiClient: AxiosInstance): InvestmentService => ({
@@ -181,6 +208,33 @@ export const createInvestmentService = (apiClient: AxiosInstance): InvestmentSer
   async getTransactions() {
     const res = await apiClient.post<InvestmentTransactionsGetResponse>('/api/investments/transactions/get', {});
     return Array.isArray(res.data) ? res.data : [];
+  },
+
+  async submitCommunityPrice(data) {
+    try {
+      const res = await apiClient.post<CommunityPriceDto>('/api/investments/community-prices/submit', data);
+      return res.data;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.status === 409) {
+        throw new CommunityPriceConflictError((error.response.data as CommunityPriceConflict).existing);
+      }
+      throw error;
+    }
+  },
+
+  async getMyCommunityPriceSubmissions() {
+    const res = await apiClient.post<CommunityPricesMineResponse>('/api/investments/community-prices/mine', {});
+    return Array.isArray(res.data) ? res.data : [];
+  },
+
+  async getPendingCommunityPrices() {
+    const res = await apiClient.post<CommunityPricesPendingResponse>('/api/investments/community-prices/pending', {});
+    return Array.isArray(res.data) ? res.data : [];
+  },
+
+  async verifyCommunityPrice(data) {
+    const res = await apiClient.post<CommunityPriceDto>('/api/investments/community-prices/verify', data);
+    return res.data;
   },
 });
 

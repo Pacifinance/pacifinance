@@ -222,7 +222,7 @@ async function getPublicInfoByUserId(user_id: string) {
     const {data, error} = await supabase.from("profiles")
         .select(`
             user_code, nickname, account_type, created_at,
-            expenses_limit, savings_percent, emergency_fund_goal, benchmark_consent, seen_badges,
+            expenses_limit, savings_percent, emergency_fund_goal, benchmark_consent, seen_badges, is_admin,
             ${TAG_JOIN_FIELDS}
         `)
         .eq("id", user_id)
@@ -253,6 +253,7 @@ async function getPublicInfoByUserId(user_id: string) {
         preferredCurrency: mapTagRow(d.preferred_currency),
         benchmarkConsent: d.benchmark_consent as boolean,
         seenBadges: Array.isArray(d.seen_badges) ? d.seen_badges as string[] : [],
+        isAdmin: d.is_admin === true,
         goals: {
             expensesLimit: d.expenses_limit as number,
             savingsPercent: d.savings_percent as number,
@@ -374,6 +375,21 @@ async function setGoalsOfUserId(user_id: string, expensesLimit: number,
 }
 
 /**
+ * Checks whether a user has elevated (admin) permissions - e.g. to moderate
+ * community-submitted historical prices. Re-queried server-side by every
+ * admin-gated route rather than trusted from the client.
+ * @param user_id uuid of the user
+ */
+async function isAdmin(user_id: string): Promise<boolean> {
+    const {data, error} = await supabase.from("profiles")
+        .select("is_admin")
+        .eq("id", user_id)
+        .maybeSingle()
+    if (error) console.error("users.isAdmin: lookup failed", error)
+    return data?.is_admin === true
+}
+
+/**
  * Deletes a user via the Supabase Auth Admin API. Cascades automatically to
  * profile/balances/expenses/deletion-queue rows (all FK on delete cascade).
  * @param user_id uuid of the user
@@ -402,5 +418,6 @@ export default {
     setSeenBadgesByUserId,
     setPublicInfoOfUserId,
     setGoalsOfUserId,
+    isAdmin,
     deleteUserById
 };

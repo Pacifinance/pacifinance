@@ -37,6 +37,7 @@ interface RawUserInfoData {
   preferredCurrency?: unknown;
   benchmarkConsent?: unknown;
   seenBadges?: unknown;
+  isAdmin?: unknown;
   country?: RawTagObject | null;
   jobCountry?: RawTagObject | null;
   job?: RawTagObject | null;
@@ -78,6 +79,7 @@ export interface TransformedProfile {
   preferredCurrencyKey: number;
   benchmarkConsent: boolean;
   seenBadges: string[];
+  isAdmin: boolean;
   profile: Record<string, ProfileField | number | { key: number; value: string }> & {
     completionPercentage: number;
     preferredCurrency: { key: number; value: string };
@@ -212,6 +214,7 @@ export const transformUserProfile = (
     preferredCurrencyKey,
     benchmarkConsent: infoData.benchmarkConsent === true,
     seenBadges: Array.isArray(infoData.seenBadges) ? infoData.seenBadges as string[] : [],
+    isAdmin: infoData.isAdmin === true,
     profile: {
       ...fields,
       completionPercentage,

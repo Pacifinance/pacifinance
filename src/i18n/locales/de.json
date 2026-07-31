@@ -2804,7 +2804,28 @@
         "historyTitle": "Verlauf",
         "historyLoading": "Verlauf wird geladen…",
         "historyEmptyState": "Für dieses Instrument ist noch kein Verlauf erfasst.",
-        "historyAllYears": "Alle Jahre"
+        "historyAllYears": "Alle Jahre",
+        "communityPrice": {
+            "pricePlaceholder": "Preis",
+            "contributeButton": "Marktpreis beitragen",
+            "statusPending": "Dein Preis wartet auf Überprüfung",
+            "statusVerified": "Dein Preis wurde verifiziert",
+            "statusRejected": "Dein Preis wurde nicht akzeptiert",
+            "conflictPending": "Für diesen Monat liegt bereits ein Vorschlag zur Überprüfung vor.",
+            "conflictVerified": "Für diesen Monat gibt es bereits einen von der Community verifizierten Preis."
+        }
+        },
+        "adminPriceReview": {
+            "title": "Community-Preisprüfung",
+            "subtitle": "Überprüfe von Nutzern eingereichte Preise anhand eines echten Marktanbieters, bevor du sie genehmigst.",
+            "loading": "Wird geladen...",
+            "emptyState": "Keine Einreichungen zur Überprüfung.",
+            "approveButton": "Genehmigen",
+            "rejectButton": "Ablehnen",
+            "rejectionNotePlaceholder": "Ablehnungsgrund (optional)",
+            "submittedOn": "Eingereicht am",
+            "rawPriceLabel": "Angegebener Preis",
+            "monthLabel": "Monat"
         },
         "attribution": {
             "coingecko": "Daten bereitgestellt von CoinGecko",

@@ -2830,7 +2830,28 @@
         "historyTitle": "Storico",
         "historyLoading": "Caricamento storico…",
         "historyEmptyState": "Nessuno storico registrato per questo titolo.",
-        "historyAllYears": "Tutti gli anni"
+        "historyAllYears": "Tutti gli anni",
+        "communityPrice": {
+            "pricePlaceholder": "Prezzo",
+            "contributeButton": "Contribuisci il prezzo di mercato",
+            "statusPending": "Il tuo prezzo è in attesa di verifica",
+            "statusVerified": "Il tuo prezzo è stato verificato",
+            "statusRejected": "Il tuo prezzo non è stato accettato",
+            "conflictPending": "Questo mese ha già una proposta in attesa di verifica.",
+            "conflictVerified": "Questo mese ha già un prezzo verificato dalla community."
+        }
+        },
+        "adminPriceReview": {
+            "title": "Verifica prezzi community",
+            "subtitle": "Controlla i prezzi proposti dagli utenti confrontandoli con un provider di mercato reale prima di approvarli.",
+            "loading": "Caricamento...",
+            "emptyState": "Nessuna proposta in attesa di verifica.",
+            "approveButton": "Approva",
+            "rejectButton": "Rifiuta",
+            "rejectionNotePlaceholder": "Motivo del rifiuto (opzionale)",
+            "submittedOn": "Proposto il",
+            "rawPriceLabel": "Prezzo indicato",
+            "monthLabel": "Mese"
         },
         "attribution": {
             "coingecko": "Dati forniti da CoinGecko",

@@ -701,6 +701,59 @@ export interface InvestmentTransactionSummaryDto {
 export type InvestmentTransactionsGetResponse = InvestmentTransactionSummaryDto[];
 
 /* ═══════════════════════════════════════════════════════════════════════════
+ * /investments/community-prices — free, human-verified alternative to paid
+ * provider historical candles: a user who actually held an instrument in a
+ * given month submits the price they know; once an admin verifies it against
+ * a real quote it feeds backfillHistoricalPrices for every user.
+ * ═══════════════════════════════════════════════════════════════════════════*/
+
+export type CommunityPriceStatus = 'pending' | 'verified' | 'rejected';
+
+export interface CommunityPriceDto {
+  id: number;
+  instrumentId: number;
+  /** "YYYY-MM" */
+  monthKey: string;
+  /** EUR (DB is always EUR). */
+  priceEur: number;
+  /** As typed by the submitter, for reference only — what an admin checks against a real quote. */
+  rawPrice: number;
+  rawCurrency: string;
+  status: CommunityPriceStatus;
+  submittedBy: string;
+  submittedAt: string;
+  verifiedBy: string | null;
+  verifiedAt: string | null;
+  rejectionNote: string | null;
+}
+
+/** Returned by /community-prices/pending and /community-prices/mine, which join instrument details for display. */
+export interface CommunityPriceWithInstrumentDto extends CommunityPriceDto {
+  instrument: {id: number; kind: InvestmentKind; symbol: string; name: string; currency: string | null} | null;
+}
+
+export interface CommunityPriceSubmitRequest {
+  instrument_id: number;
+  month_key: string;
+  raw_price: number;
+  raw_currency: string;
+}
+
+/** Body of the 409 response /community-prices/submit returns when an active (pending or verified) submission already exists for this instrument+month. */
+export interface CommunityPriceConflict {
+  existing: CommunityPriceDto;
+}
+
+export type CommunityPricesPendingResponse = CommunityPriceWithInstrumentDto[];
+export type CommunityPricesMineResponse = CommunityPriceWithInstrumentDto[];
+
+export interface CommunityPriceVerifyRequest {
+  id: number;
+  action: 'approve' | 'reject';
+  rejection_note?: string | null;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
  * /liquidity-accounts
  * ═══════════════════════════════════════════════════════════════════════════*/
 

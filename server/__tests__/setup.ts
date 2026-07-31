@@ -39,6 +39,7 @@ const mocks = vi.hoisted(() => {
             setSeenBadgesByUserId: vi.fn(),
             setPublicInfoOfUserId: vi.fn(),
             setGoalsOfUserId: vi.fn(),
+            isAdmin: vi.fn(),
             deleteUserById: vi.fn()
         },
         balances: {
@@ -108,7 +109,12 @@ const mocks = vi.hoisted(() => {
             getDividendsSummaryByUserId: vi.fn(),
             upsertTransaction: vi.fn(),
             saveTransactionsBatch: vi.fn(),
-            getTransactionsByUserId: vi.fn()
+            getTransactionsByUserId: vi.fn(),
+            submitCommunityPrice: vi.fn(),
+            getPendingCommunityPrices: vi.fn(),
+            getMyCommunityPriceSubmissions: vi.fn(),
+            verifyCommunityPrice: vi.fn(),
+            getVerifiedCommunityPricesForInstrument: vi.fn()
         },
         liquidityAccounts: {
             LIQUIDITY_ACCOUNT_ASSET_KEYS: ["bank", "cash", "digitalServices", "emergencyFund"],

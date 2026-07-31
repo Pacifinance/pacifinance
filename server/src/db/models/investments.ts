@@ -932,12 +932,13 @@ export interface HistoricalPriceBackfillResult {
  * months before the user started using "Refresh prices" regularly.
  *
  * One provider call per instrument (not per month) covers its whole history
- * range. Best-effort and partial by design: an instrument whose provider has
- * no historical data for it (unsupported plan/tier, delisted, too far back,
- * or simply an untracked kind) is silently skipped, never a hard failure -
- * see getHistoricalMonthlyPrices's own contract on both providers. Never
- * overwrites a month that already has a real current_value (from a manual
- * entry or a previous refresh) - only fills genuine gaps.
+ * range. Best-effort and partial by design: months the provider has no data
+ * for (unsupported plan/tier, delisted, too far back, or simply an untracked
+ * kind) fall back to verified community submissions for that same
+ * instrument+month (see getVerifiedCommunityPricesForInstrument), and only
+ * then are silently left unfilled - never a hard failure. Never overwrites a
+ * month that already has a real current_value (from a manual entry or a
+ * previous refresh) - only fills genuine gaps.
  */
 async function backfillHistoricalPrices(user_id: string, eurRates: Record<string, number>): Promise<HistoricalPriceBackfillResult[]> {
     const holdings = await getHoldingsByUserId(user_id)
@@ -968,23 +969,33 @@ async function backfillHistoricalPrices(user_id: string, eurRates: Record<string
         const toUnix = Math.floor(Date.now() / 1000)
 
         const isCrypto = instrument.kind === "crypto"
-        if (isCrypto && !instrument.coingeckoId) continue
-        const priceByMonth = isCrypto
-            ? await coingeckoProvider.getHistoricalMonthlyPrices(instrument.coingeckoId as string, fromUnix, toUnix)
-            : await finnhubProvider.getHistoricalMonthlyPrices(instrument.symbol, fromUnix, toUnix)
-        if (!priceByMonth) continue
+        const priceByMonth = (!isCrypto || instrument.coingeckoId)
+            ? (isCrypto
+                ? await coingeckoProvider.getHistoricalMonthlyPrices(instrument.coingeckoId as string, fromUnix, toUnix)
+                : await finnhubProvider.getHistoricalMonthlyPrices(instrument.symbol, fromUnix, toUnix))
+            : null
 
         const priceCurrency = isCrypto ? "EUR" : (instrument.currency ?? "USD")
         const rate = priceCurrency === "EUR" ? 1 : eurRates[priceCurrency]
-        if (!rate) continue
+
+        // Free, human-verified fallback for whatever the paid provider can't
+        // cover (no data for this range, or gated behind a paid tier) - see
+        // getVerifiedCommunityPricesForInstrument. Already EUR, so it's never
+        // divided by `rate` below, unlike the provider's native-currency price.
+        const communityByMonth = await getVerifiedCommunityPricesForInstrument(instrument.id)
+        if (!priceByMonth && communityByMonth.size === 0) continue
 
         let monthsFilled = 0
         for (const gap of gaps) {
             const monthKey = gap.userDate.slice(0, 7)
-            const price = priceByMonth.get(monthKey)
-            if (price == null) continue
+            const price = priceByMonth?.get(monthKey)
+            const communityPriceEUR = communityByMonth.get(monthKey)
 
-            const currentValue = roundCurrency((price / rate) * (gap.quantity as number))
+            let currentValue: number | null = null
+            if (price != null && rate) currentValue = roundCurrency((price / rate) * (gap.quantity as number))
+            else if (communityPriceEUR != null) currentValue = roundCurrency(communityPriceEUR * (gap.quantity as number))
+            if (currentValue == null) continue
+
             const result = await upsertHoldingHistoryEntry(user_id, holding.id, new Date(gap.userDate), {
                 currentValue, investedAmount: gap.investedAmount, quantity: gap.quantity,
             })
@@ -1436,6 +1447,219 @@ async function getTransactionsByUserId(user_id: string): Promise<TransactionSumm
         .filter((entry): entry is TransactionSummaryEntry => entry !== null)
 }
 
+// ---------- Community-verified historical prices ----------
+// Finnhub/CoinGecko gate historical candle data behind a paid tier for most
+// users/date-ranges, so backfillHistoricalPrices often finds nothing to fill.
+// This is a free, human-verified alternative: a user who actually held an
+// instrument in a given month can submit the price they know; it sits as
+// 'pending' until an admin checks it against a real quote, at which point it
+// becomes visible to every user (see getVerifiedCommunityPricesForInstrument,
+// consumed by backfillHistoricalPrices) - not just the submitter.
+
+type CommunityPriceStatus = "pending" | "verified" | "rejected"
+
+type CommunityPriceRow = {
+    id: number
+    instrument_id: number
+    month_key: string
+    price_eur: number
+    raw_price: number
+    raw_currency: string
+    status: CommunityPriceStatus
+    submitted_by: string
+    submitted_at: string
+    verified_by: string | null
+    verified_at: string | null
+    rejection_note: string | null
+}
+
+const COMMUNITY_PRICE_SELECT = [
+    "id", "instrument_id", "month_key", "price_eur", "raw_price", "raw_currency",
+    "status", "submitted_by", "submitted_at", "verified_by", "verified_at", "rejection_note",
+].join(", ")
+
+function toCommunityPrice(row: CommunityPriceRow) {
+    return {
+        id: row.id,
+        instrumentId: row.instrument_id,
+        monthKey: row.month_key,
+        priceEur: row.price_eur,
+        rawPrice: row.raw_price,
+        rawCurrency: row.raw_currency,
+        status: row.status,
+        submittedBy: row.submitted_by,
+        submittedAt: row.submitted_at,
+        verifiedBy: row.verified_by,
+        verifiedAt: row.verified_at,
+        rejectionNote: row.rejection_note,
+    }
+}
+export type CommunityPrice = ReturnType<typeof toCommunityPrice>
+export type CommunityPriceWithInstrument = CommunityPrice & {
+    instrument: {id: number; kind: InvestmentKind; symbol: string; name: string; currency: string | null} | null
+}
+
+/**
+ * Whether the user has ever actually held this instrument - checked against
+ * both live holdings AND holding history (holding_id is "on delete set null",
+ * not cascade, so a manually-added holding's history can outlive the holding
+ * itself being deleted) so a real past position is never wrongly rejected.
+ */
+async function hasHeldInstrument(user_id: string, instrument_id: number): Promise<boolean> {
+    const [holdingResult, historyResult] = await Promise.all([
+        supabase.from("user_investment_holdings").select("id").eq("user_id", user_id).eq("instrument_id", instrument_id).limit(1).maybeSingle(),
+        supabase.from("user_investment_holding_history").select("id").eq("user_id", user_id).eq("instrument_id", instrument_id).limit(1).maybeSingle(),
+    ])
+    if (holdingResult.error) console.error("investments.hasHeldInstrument: failed to check holdings", holdingResult.error)
+    if (historyResult.error) console.error("investments.hasHeldInstrument: failed to check holding history", historyResult.error)
+    return holdingResult.data !== null || historyResult.data !== null
+}
+
+export type CommunityPriceInput = {
+    instrumentId: number
+    monthKey: string // "YYYY-MM"
+    rawPrice: number
+    rawCurrency: string
+}
+
+export type CommunityPriceSubmissionResult =
+    | {status: "ok"; submission: CommunityPrice}
+    // An active (pending or verified) submission already exists for this
+    // instrument+month - same partial-unique-index shape as insertHolding,
+    // caller surfaces it instead of silently overwriting someone else's entry.
+    | {status: "conflict"; existing: CommunityPrice}
+    // The user never actually held this instrument - see hasHeldInstrument.
+    | {status: "not_eligible"}
+    // rawCurrency isn't a known exchange rate (eurRates lookup miss).
+    | {status: "unknown_currency"}
+
+/**
+ * Records a user's proposed historical price for an instrument+month they
+ * actually held. Converts to EUR immediately at submission time (CLAUDE.md:
+ * "DB sempre EUR") using the same eurRates cache already used by
+ * refresh-prices/backfill-historical-prices - price_eur is the authoritative
+ * value, raw_price/raw_currency are kept only as the admin's reference point
+ * when checking the submission against a real quote (same shape as
+ * user_investment_dividends' amount vs gross_amount/currency).
+ */
+async function submitCommunityPrice(user_id: string, input: CommunityPriceInput, eurRates: Record<string, number>): Promise<CommunityPriceSubmissionResult | null> {
+    const eligible = await hasHeldInstrument(user_id, input.instrumentId)
+    if (!eligible) return {status: "not_eligible"}
+
+    const rate = input.rawCurrency === "EUR" ? 1 : eurRates[input.rawCurrency]
+    if (!rate) return {status: "unknown_currency"}
+    const priceEur = roundCurrency(input.rawPrice / rate)
+
+    const payload = {
+        instrument_id: input.instrumentId,
+        month_key: input.monthKey,
+        price_eur: priceEur,
+        raw_price: input.rawPrice,
+        raw_currency: input.rawCurrency,
+        submitted_by: user_id,
+    }
+
+    const {data, error} = await supabase.from("instrument_historical_prices")
+        .insert(payload).select(COMMUNITY_PRICE_SELECT).single()
+    if (!error && data) return {status: "ok", submission: toCommunityPrice(data as unknown as CommunityPriceRow)}
+
+    if (error?.code === "23505") { // unique violation: an active submission already exists for this instrument+month
+        const {data: existingRow, error: existingErr} = await supabase.from("instrument_historical_prices")
+            .select(COMMUNITY_PRICE_SELECT)
+            .eq("instrument_id", input.instrumentId).eq("month_key", input.monthKey)
+            .neq("status", "rejected").maybeSingle()
+        if (existingErr) console.error("investments.submitCommunityPrice: failed to look up conflicting submission", existingErr)
+        if (existingRow) return {status: "conflict", existing: toCommunityPrice(existingRow as unknown as CommunityPriceRow)}
+    }
+
+    console.error("investments.submitCommunityPrice: failed to insert submission", error)
+    return null
+}
+
+/** All pending submissions awaiting admin review, oldest first (fair queue), with instrument details for display. */
+async function getPendingCommunityPrices(): Promise<CommunityPriceWithInstrument[]> {
+    const {data, error} = await supabase.from("instrument_historical_prices")
+        .select(`${COMMUNITY_PRICE_SELECT}, instrument:investment_instruments(id, kind, symbol, name, currency)`)
+        .eq("status", "pending")
+        .order("submitted_at", {ascending: true})
+    if (error) console.error("investments.getPendingCommunityPrices: failed to read pending submissions", error)
+    if (error || !data) return []
+
+    type Row = CommunityPriceRow & {instrument: CommunityPriceWithInstrument["instrument"] | CommunityPriceWithInstrument["instrument"][] | null}
+    return (data as unknown as Row[]).map((row) => {
+        const instrument = Array.isArray(row.instrument) ? row.instrument[0] ?? null : row.instrument
+        return {...toCommunityPrice(row), instrument}
+    })
+}
+
+/** A single user's own submissions across all statuses (pending/verified/rejected), for transparency. */
+async function getMyCommunityPriceSubmissions(user_id: string): Promise<CommunityPriceWithInstrument[]> {
+    const {data, error} = await supabase.from("instrument_historical_prices")
+        .select(`${COMMUNITY_PRICE_SELECT}, instrument:investment_instruments(id, kind, symbol, name, currency)`)
+        .eq("submitted_by", user_id)
+        .order("submitted_at", {ascending: false})
+    if (error) console.error("investments.getMyCommunityPriceSubmissions: failed to read submissions", error)
+    if (error || !data) return []
+
+    type Row = CommunityPriceRow & {instrument: CommunityPriceWithInstrument["instrument"] | CommunityPriceWithInstrument["instrument"][] | null}
+    return (data as unknown as Row[]).map((row) => {
+        const instrument = Array.isArray(row.instrument) ? row.instrument[0] ?? null : row.instrument
+        return {...toCommunityPrice(row), instrument}
+    })
+}
+
+export type VerifyCommunityPriceResult =
+    | {status: "ok"; submission: CommunityPrice}
+    | {status: "not_found"}
+    | {status: "already_resolved"; submission: CommunityPrice}
+
+/**
+ * Approves or rejects a pending submission. Admin-only - callers must
+ * re-check users.isAdmin server-side before calling this, never trust the
+ * frontend route guard alone. Approving makes it visible to every user
+ * holding that instrument for that month (see getVerifiedCommunityPricesForInstrument).
+ */
+async function verifyCommunityPrice(admin_user_id: string, id: number, action: "approve" | "reject", rejectionNote: string | null): Promise<VerifyCommunityPriceResult> {
+    const {data: existingRow, error: existingErr} = await supabase.from("instrument_historical_prices")
+        .select(COMMUNITY_PRICE_SELECT).eq("id", id).maybeSingle()
+    if (existingErr) console.error("investments.verifyCommunityPrice: failed to look up submission", existingErr)
+    if (!existingRow) return {status: "not_found"}
+
+    const existing = toCommunityPrice(existingRow as unknown as CommunityPriceRow)
+    if (existing.status !== "pending") return {status: "already_resolved", submission: existing}
+
+    const {data, error} = await supabase.from("instrument_historical_prices")
+        .update({
+            status: action === "approve" ? "verified" : "rejected",
+            verified_by: admin_user_id,
+            verified_at: new Date().toISOString(),
+            rejection_note: action === "reject" ? rejectionNote : null,
+        })
+        .eq("id", id).eq("status", "pending") // guards against a concurrent double-resolve
+        .select(COMMUNITY_PRICE_SELECT).maybeSingle()
+    if (error) console.error("investments.verifyCommunityPrice: failed to update submission", error)
+    if (error || !data) return {status: "not_found"}
+    return {status: "ok", submission: toCommunityPrice(data as unknown as CommunityPriceRow)}
+}
+
+/**
+ * Verified community EUR-prices for one instrument, keyed by month - used
+ * only by backfillHistoricalPrices as a fallback when the paid provider has
+ * no data for a gap month. One query per instrument (not per month), same
+ * efficiency backfillHistoricalPrices already applies to its provider calls.
+ * Already EUR (see submitCommunityPrice), so callers must NOT apply the
+ * provider branch's eurRates division to these values.
+ */
+async function getVerifiedCommunityPricesForInstrument(instrument_id: number): Promise<Map<string, number>> {
+    const {data, error} = await supabase.from("instrument_historical_prices")
+        .select("month_key, price_eur")
+        .eq("instrument_id", instrument_id)
+        .eq("status", "verified")
+    if (error) console.error("investments.getVerifiedCommunityPricesForInstrument: failed to read verified prices", error)
+    if (error || !data) return new Map()
+    return new Map((data as unknown as {month_key: string; price_eur: number}[]).map((row) => [row.month_key, row.price_eur]))
+}
+
 export default {
     INVESTMENT_KINDS,
     INVESTMENT_ASSET_KEYS,
@@ -1464,4 +1688,9 @@ export default {
     upsertTransaction,
     saveTransactionsBatch,
     getTransactionsByUserId,
+    submitCommunityPrice,
+    getPendingCommunityPrices,
+    getMyCommunityPriceSubmissions,
+    verifyCommunityPrice,
+    getVerifiedCommunityPricesForInstrument,
 }

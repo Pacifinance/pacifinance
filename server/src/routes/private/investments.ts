@@ -441,4 +441,109 @@ investmentsRouter.post("/settings/save", async (req, res) => {
     res.status(200).json(result)
 })
 
+// ---------- /community-prices/* ----------
+// Free, human-verified alternative to paid provider historical candles - see
+// db.investments' "Community-verified historical prices" section for the
+// full model. Every write here is gated by re-checking db.users.isAdmin
+// server-side; the frontend's AdminRoute guard is convenience only, never
+// trusted as the actual permission check.
+
+const COMMUNITY_PRICE_KINDS = ["stock", "etf", "crypto"] as const
+
+function isValidMonthKey(value: string): boolean {
+    if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(value)) return false
+    const now = new Date()
+    const currentMonthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`
+    return value <= currentMonthKey
+}
+
+investmentsRouter.post("/community-prices/submit", async (req, res) => {
+    const instrumentId = Number(req.body.instrument_id ?? req.body.instrumentId)
+    const monthKey = common.sanitizeInput(req.body.month_key ?? req.body.monthKey)
+    const rawPrice = Number(req.body.raw_price ?? req.body.rawPrice)
+    const rawCurrency = normalizeCurrency(req.body.raw_currency ?? req.body.rawCurrency)
+
+    if (!Number.isFinite(instrumentId) || !isValidMonthKey(monthKey) || !Number.isFinite(rawPrice) || rawPrice <= 0) {
+        res.status(400).send()
+        return
+    }
+
+    const instrument = await db.investments.getInstrumentById(instrumentId, req.userId as string)
+    if (instrument === null || !isOneOf(instrument.kind, COMMUNITY_PRICE_KINDS)) {
+        res.status(400).send()
+        return
+    }
+
+    if (await cache.valueExpired("exchangeRates")) await cache.invalidate("exchangeRates")
+    const eurRates = await cache.get("exchangeRates")
+    if (!eurRates) {
+        res.status(503).send()
+        return
+    }
+
+    const result = await db.investments.submitCommunityPrice(
+        req.userId as string, {instrumentId, monthKey, rawPrice, rawCurrency}, eurRates,
+    )
+    if (result === null) {
+        res.status(500).send()
+        return
+    }
+    if (result.status === "not_eligible") {
+        res.status(403).send()
+        return
+    }
+    if (result.status === "unknown_currency") {
+        res.status(400).send()
+        return
+    }
+    if (result.status === "conflict") {
+        // Ambiguous, same shape as /holdings/save's conflict: an active submission for
+        // this instrument+month already exists - the client shows it, doesn't overwrite it.
+        res.status(409).json({existing: result.existing})
+        return
+    }
+    res.status(200).json(result.submission)
+})
+
+investmentsRouter.post("/community-prices/mine", async (req, res) => {
+    const submissions = await db.investments.getMyCommunityPriceSubmissions(req.userId as string)
+    res.status(200).json(submissions)
+})
+
+investmentsRouter.post("/community-prices/pending", async (req, res) => {
+    if (!(await db.users.isAdmin(req.userId as string))) {
+        res.status(403).send()
+        return
+    }
+    const submissions = await db.investments.getPendingCommunityPrices()
+    res.status(200).json(submissions)
+})
+
+investmentsRouter.post("/community-prices/verify", async (req, res) => {
+    if (!(await db.users.isAdmin(req.userId as string))) {
+        res.status(403).send()
+        return
+    }
+
+    const id = Number(req.body.id)
+    const action = common.sanitizeInput(req.body.action)
+    const rejectionNote = common.sanitizeInput(req.body.rejection_note ?? req.body.rejectionNote).slice(0, 240) || null
+
+    if (!Number.isFinite(id) || !isOneOf(action, ["approve", "reject"] as const)) {
+        res.status(400).send()
+        return
+    }
+
+    const result = await db.investments.verifyCommunityPrice(req.userId as string, id, action, rejectionNote)
+    if (result.status === "not_found") {
+        res.status(404).send()
+        return
+    }
+    if (result.status === "already_resolved") {
+        res.status(409).json({submission: result.submission})
+        return
+    }
+    res.status(200).json(result.submission)
+})
+
 export default investmentsRouter

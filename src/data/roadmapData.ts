@@ -332,6 +332,18 @@ const roadmapData: RoadmapItem[] = [
     icon: '🕰️',
     completedDate: '2026-07',
   },
+  {
+    id: 'community-historical-prices',
+    title: { it: 'Prezzi Storici Verificati dalla Community', en: 'Community-Verified Historical Prices' },
+    description: {
+      it: 'Hai posseduto un titolo o una crypto in un mese passato? Proponi il prezzo che ricordi: resta tuo finché un amministratore non lo verifica confrontandolo con un provider di mercato reale — una volta approvato diventa il prezzo condiviso da tutti gli utenti per quel mese, un\'alternativa gratuita e costruita insieme ai dati storici a pagamento.',
+      en: 'Held a stock or crypto in a past month? Submit the price you remember: it stays yours until an admin verifies it against a real market provider — once approved, it becomes the shared price for every user that month, a free, community-built alternative to paid historical data.'
+    },
+    status: 'completed',
+    category: 'feature',
+    icon: '🤲',
+    completedDate: '2026-07',
+  },
   /* ──────────── IN PROGRESS ──────────── */
   {
     id: 'onboarding',

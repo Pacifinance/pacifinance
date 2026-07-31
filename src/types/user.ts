@@ -135,4 +135,6 @@ export interface UserData {
   extraMonths?: Record<string, TransactionDto[]>;
   /** Badge IDs the user has already been notified about (server-side, so it doesn't replay on a new device/browser). */
   seenBadges?: string[];
+  /** Elevated permission to moderate community-submitted historical prices — see getIsAdmin. */
+  isAdmin?: boolean;
 }

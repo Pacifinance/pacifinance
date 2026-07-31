@@ -226,6 +226,7 @@ export const UserProvider = ({ children }) => {
               currency: userProfile.preferredCurrencyCode,
               benchmarkConsent: userProfile.benchmarkConsent,
               seenBadges: userProfile.seenBadges,
+              isAdmin: userProfile.isAdmin,
             });
             setSessionUserInfo(null);
             setIsUpdated(true);

@@ -2830,7 +2830,28 @@
         "historyTitle": "History",
         "historyLoading": "Loading history…",
         "historyEmptyState": "No history recorded for this instrument yet.",
-        "historyAllYears": "All years"
+        "historyAllYears": "All years",
+        "communityPrice": {
+            "pricePlaceholder": "Price",
+            "contributeButton": "Contribute market price",
+            "statusPending": "Your price is awaiting verification",
+            "statusVerified": "Your price has been verified",
+            "statusRejected": "Your price wasn't accepted",
+            "conflictPending": "This month already has a submission awaiting verification.",
+            "conflictVerified": "This month already has a community-verified price."
+        }
+        },
+        "adminPriceReview": {
+            "title": "Community price review",
+            "subtitle": "Check user-submitted prices against a real market provider before approving them.",
+            "loading": "Loading...",
+            "emptyState": "No submissions awaiting review.",
+            "approveButton": "Approve",
+            "rejectButton": "Reject",
+            "rejectionNotePlaceholder": "Rejection reason (optional)",
+            "submittedOn": "Submitted on",
+            "rawPriceLabel": "Submitted price",
+            "monthLabel": "Month"
         },
         "attribution": {
             "coingecko": "Data provided by CoinGecko",

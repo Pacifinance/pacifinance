@@ -26,7 +26,7 @@ import quoteCache from "../src/cache/quoteCache"
  * the chain is itself awaitable (for calls with no terminal method). */
 function makeChain(result: { data: unknown; error: unknown }) {
     const chain: Record<string, unknown> = {}
-    for (const method of ["select", "eq", "in", "or", "is", "order", "limit", "insert", "update", "delete", "upsert"]) {
+    for (const method of ["select", "eq", "neq", "in", "or", "is", "order", "limit", "insert", "update", "delete", "upsert"]) {
         chain[method] = vi.fn(() => chain)
     }
     chain.single = vi.fn(() => Promise.resolve(result))
@@ -544,6 +544,8 @@ describe("investments model", () => {
                 error: null,
             }))
             vi.mocked(finnhubProvider.getHistoricalMonthlyPrices).mockResolvedValue(new Map([["2024-01", 100], ["2024-02", 110]]))
+            // getVerifiedCommunityPricesForInstrument's query - no community prices for this instrument.
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: [], error: null}))
             // upsertHoldingHistoryEntry's own holding lookup + upsert, once per gap month.
             mockSupabase.from.mockReturnValueOnce(makeChain({data: holdingRow, error: null}))
             mockSupabase.from.mockReturnValueOnce(makeChain({data: {...gapRow({quantity: 5}), current_value: 500}, error: null}))
@@ -560,10 +562,26 @@ describe("investments model", () => {
             mockSupabase.from.mockReturnValueOnce(makeChain({data: [holdingRow], error: null}))
             mockSupabase.from.mockReturnValueOnce(makeChain({data: [gapRow({quantity: 5})], error: null}))
             vi.mocked(finnhubProvider.getHistoricalMonthlyPrices).mockResolvedValue(null)
+            // getVerifiedCommunityPricesForInstrument's query - no community fallback either, so the gap stays unfilled.
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: [], error: null}))
 
             const result = await investments.backfillHistoricalPrices("user-1", {EUR: 1, USD: 1.1})
 
             expect(result).toEqual([])
+        })
+
+        it("falls back to a verified community price when the provider has no data for that month", async () => {
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: [holdingRow], error: null}))
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: [gapRow({quantity: 5, user_date: "2024-01-01"})], error: null}))
+            vi.mocked(finnhubProvider.getHistoricalMonthlyPrices).mockResolvedValue(null)
+            // getVerifiedCommunityPricesForInstrument's query - a verified community price covers the gap month.
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: [{month_key: "2024-01", price_eur: 90}], error: null}))
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: holdingRow, error: null}))
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: {...gapRow({quantity: 5}), current_value: 450}, error: null}))
+
+            const result = await investments.backfillHistoricalPrices("user-1", {EUR: 1, USD: 1.1})
+
+            expect(result).toEqual([{holdingId: 16, monthsFilled: 1}])
         })
 
         it("uses CoinGecko (already in EUR) instead of Finnhub for crypto holdings", async () => {
@@ -574,6 +592,8 @@ describe("investments model", () => {
             mockSupabase.from.mockReturnValueOnce(makeChain({data: [cryptoHolding], error: null}))
             mockSupabase.from.mockReturnValueOnce(makeChain({data: [gapRow({quantity: 1})], error: null}))
             vi.mocked(coingeckoProvider.getHistoricalMonthlyPrices).mockResolvedValue(new Map([["2024-01", 40000]]))
+            // getVerifiedCommunityPricesForInstrument's query - no community prices for this instrument.
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: [], error: null}))
             mockSupabase.from.mockReturnValueOnce(makeChain({data: cryptoHolding, error: null}))
             mockSupabase.from.mockReturnValueOnce(makeChain({data: {...gapRow({quantity: 1}), current_value: 40000}, error: null}))
 
@@ -591,6 +611,183 @@ describe("investments model", () => {
 
             expect(result).toEqual([])
             expect(finnhubProvider.getHistoricalMonthlyPrices).not.toHaveBeenCalled()
+        })
+    })
+
+    describe("submitCommunityPrice", () => {
+        const input = {instrumentId: 1, monthKey: "2024-01", rawPrice: 150, rawCurrency: "USD"}
+
+        it("returns not_eligible without inserting when the user never held the instrument", async () => {
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: null, error: null})) // holdings check
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: null, error: null})) // history check
+
+            const result = await investments.submitCommunityPrice("user-1", input, {EUR: 1, USD: 1.1})
+
+            expect(result).toEqual({status: "not_eligible"})
+            expect(mockSupabase.from).toHaveBeenCalledTimes(2)
+        })
+
+        it("still counts as eligible via holding history alone (a manually-added holding later deleted)", async () => {
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: null, error: null})) // no live holding
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: {id: 3}, error: null})) // but history exists
+            mockSupabase.from.mockReturnValueOnce(makeChain({
+                data: {id: 1, instrument_id: 1, month_key: "2024-01", price_eur: 136.36, raw_price: 150, raw_currency: "USD", status: "pending", submitted_by: "user-1", submitted_at: "2026-01-01T00:00:00Z", verified_by: null, verified_at: null, rejection_note: null},
+                error: null,
+            }))
+
+            const result = await investments.submitCommunityPrice("user-1", input, {EUR: 1, USD: 1.1})
+
+            expect(result).toMatchObject({status: "ok"})
+        })
+
+        it("returns unknown_currency when there's no exchange rate for the submitted currency", async () => {
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: {id: 5}, error: null}))
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: null, error: null}))
+
+            const result = await investments.submitCommunityPrice("user-1", {...input, rawCurrency: "GBP"}, {EUR: 1, USD: 1.1})
+
+            expect(result).toEqual({status: "unknown_currency"})
+        })
+
+        it("converts to EUR at submission time and inserts a pending submission", async () => {
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: {id: 5}, error: null}))
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: null, error: null}))
+            mockSupabase.from.mockReturnValueOnce(makeChain({
+                data: {id: 1, instrument_id: 1, month_key: "2024-01", price_eur: 136.36, raw_price: 150, raw_currency: "USD", status: "pending", submitted_by: "user-1", submitted_at: "2026-01-01T00:00:00Z", verified_by: null, verified_at: null, rejection_note: null},
+                error: null,
+            }))
+
+            const result = await investments.submitCommunityPrice("user-1", input, {EUR: 1, USD: 1.1})
+
+            expect(result).toMatchObject({status: "ok", submission: {priceEur: 136.36, rawPrice: 150, rawCurrency: "USD", status: "pending"}})
+        })
+
+        it("returns the existing active submission as a conflict instead of overwriting it", async () => {
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: {id: 5}, error: null}))
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: null, error: null}))
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: null, error: {code: "23505", message: "duplicate key"}}))
+            mockSupabase.from.mockReturnValueOnce(makeChain({
+                data: {id: 9, instrument_id: 1, month_key: "2024-01", price_eur: 100, raw_price: 100, raw_currency: "EUR", status: "verified", submitted_by: "user-2", submitted_at: "2026-01-01T00:00:00Z", verified_by: "admin-1", verified_at: "2026-01-02T00:00:00Z", rejection_note: null},
+                error: null,
+            }))
+
+            const result = await investments.submitCommunityPrice("user-1", input, {EUR: 1, USD: 1.1})
+
+            expect(result).toMatchObject({status: "conflict", existing: {id: 9, status: "verified"}})
+        })
+    })
+
+    describe("getPendingCommunityPrices", () => {
+        it("returns pending submissions joined with instrument details", async () => {
+            mockSupabase.from.mockReturnValueOnce(makeChain({
+                data: [{
+                    id: 1, instrument_id: 1, month_key: "2024-01", price_eur: 100, raw_price: 110, raw_currency: "USD",
+                    status: "pending", submitted_by: "user-1", submitted_at: "2026-01-01T00:00:00Z", verified_by: null, verified_at: null, rejection_note: null,
+                    instrument: {id: 1, kind: "stock", symbol: "AAPL", name: "Apple Inc.", currency: "USD"},
+                }],
+                error: null,
+            }))
+
+            const result = await investments.getPendingCommunityPrices()
+
+            expect(result).toEqual([{
+                id: 1, instrumentId: 1, monthKey: "2024-01", priceEur: 100, rawPrice: 110, rawCurrency: "USD",
+                status: "pending", submittedBy: "user-1", submittedAt: "2026-01-01T00:00:00Z", verifiedBy: null, verifiedAt: null, rejectionNote: null,
+                instrument: {id: 1, kind: "stock", symbol: "AAPL", name: "Apple Inc.", currency: "USD"},
+            }])
+        })
+
+        it("returns an empty array when the query fails", async () => {
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: null, error: {code: "500", message: "boom"}}))
+
+            const result = await investments.getPendingCommunityPrices()
+
+            expect(result).toEqual([])
+        })
+    })
+
+    describe("getMyCommunityPriceSubmissions", () => {
+        it("returns the user's own submissions across every status", async () => {
+            mockSupabase.from.mockReturnValueOnce(makeChain({
+                data: [{
+                    id: 2, instrument_id: 1, month_key: "2024-02", price_eur: 90, raw_price: 90, raw_currency: "EUR",
+                    status: "rejected", submitted_by: "user-1", submitted_at: "2026-01-01T00:00:00Z", verified_by: "admin-1", verified_at: "2026-01-02T00:00:00Z", rejection_note: "Doesn't match provider quote",
+                    instrument: {id: 1, kind: "stock", symbol: "AAPL", name: "Apple Inc.", currency: "USD"},
+                }],
+                error: null,
+            }))
+
+            const result = await investments.getMyCommunityPriceSubmissions("user-1")
+
+            expect(result).toMatchObject([{id: 2, status: "rejected", rejectionNote: "Doesn't match provider quote"}])
+        })
+    })
+
+    describe("verifyCommunityPrice", () => {
+        const pendingRow = {
+            id: 1, instrument_id: 1, month_key: "2024-01", price_eur: 100, raw_price: 110, raw_currency: "USD",
+            status: "pending", submitted_by: "user-1", submitted_at: "2026-01-01T00:00:00Z", verified_by: null, verified_at: null, rejection_note: null,
+        }
+
+        it("returns not_found when the submission doesn't exist", async () => {
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: null, error: null}))
+
+            const result = await investments.verifyCommunityPrice("admin-1", 999, "approve", null)
+
+            expect(result).toEqual({status: "not_found"})
+        })
+
+        it("returns already_resolved without re-updating a submission that isn't pending anymore", async () => {
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: {...pendingRow, status: "verified"}, error: null}))
+
+            const result = await investments.verifyCommunityPrice("admin-1", 1, "approve", null)
+
+            expect(result).toMatchObject({status: "already_resolved", submission: {status: "verified"}})
+        })
+
+        it("approves a pending submission", async () => {
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: pendingRow, error: null}))
+            mockSupabase.from.mockReturnValueOnce(makeChain({
+                data: {...pendingRow, status: "verified", verified_by: "admin-1", verified_at: "2026-01-02T00:00:00Z"},
+                error: null,
+            }))
+
+            const result = await investments.verifyCommunityPrice("admin-1", 1, "approve", null)
+
+            expect(result).toMatchObject({status: "ok", submission: {status: "verified", verifiedBy: "admin-1"}})
+        })
+
+        it("rejects a pending submission and stores the rejection note", async () => {
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: pendingRow, error: null}))
+            mockSupabase.from.mockReturnValueOnce(makeChain({
+                data: {...pendingRow, status: "rejected", verified_by: "admin-1", verified_at: "2026-01-02T00:00:00Z", rejection_note: "Doesn't match Yahoo Finance"},
+                error: null,
+            }))
+
+            const result = await investments.verifyCommunityPrice("admin-1", 1, "reject", "Doesn't match Yahoo Finance")
+
+            expect(result).toMatchObject({status: "ok", submission: {status: "rejected", rejectionNote: "Doesn't match Yahoo Finance"}})
+        })
+    })
+
+    describe("getVerifiedCommunityPricesForInstrument", () => {
+        it("returns a month -> EUR price map of verified submissions", async () => {
+            mockSupabase.from.mockReturnValueOnce(makeChain({
+                data: [{month_key: "2024-01", price_eur: 100}, {month_key: "2024-02", price_eur: 105}],
+                error: null,
+            }))
+
+            const result = await investments.getVerifiedCommunityPricesForInstrument(1)
+
+            expect(result).toEqual(new Map([["2024-01", 100], ["2024-02", 105]]))
+        })
+
+        it("returns an empty map when the query fails", async () => {
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: null, error: {code: "500", message: "boom"}}))
+
+            const result = await investments.getVerifiedCommunityPricesForInstrument(1)
+
+            expect(result).toEqual(new Map())
         })
     })
 

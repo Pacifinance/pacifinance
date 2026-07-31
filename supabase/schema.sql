@@ -52,6 +52,7 @@ create table public.profiles (
   benchmark_consent_at timestamptz,
   benchmark_consent_revoked_at timestamptz,
   seen_badges jsonb not null default '[]'::jsonb,
+  is_admin boolean not null default false,
 
   expenses_limit numeric not null default -1,
   savings_percent numeric not null default -1,

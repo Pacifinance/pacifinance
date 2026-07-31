@@ -1019,4 +1019,167 @@ describe("private backend routes", () => {
 
         expect(response.status).toBe(500)
     })
+
+    it("submits a community price, converting it to EUR using cached exchange rates", async () => {
+        mockDb.investments.getInstrumentById.mockResolvedValue({id: 1, kind: "stock", symbol: "AAPL", name: "Apple Inc", currency: "USD"})
+        mockCache.valueExpired.mockResolvedValueOnce(false)
+        mockCache.get.mockResolvedValueOnce({EUR: 1, USD: 1.1})
+        mockDb.investments.submitCommunityPrice.mockResolvedValue({
+            status: "ok",
+            submission: {id: 1, instrumentId: 1, monthKey: "2020-01", priceEur: 136.36, rawPrice: 150, rawCurrency: "USD", status: "pending", submittedBy: "user-uuid", submittedAt: "2026-01-01T00:00:00Z", verifiedBy: null, verifiedAt: null, rejectionNote: null},
+        })
+
+        const response = await request(app, "/api/investments/community-prices/submit", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {instrument_id: 1, month_key: "2020-01", raw_price: 150, raw_currency: "USD"}
+        })
+
+        expect(response.status).toBe(200)
+        expect(response.json).toMatchObject({status: "pending", rawPrice: 150})
+        expect(mockDb.investments.submitCommunityPrice).toHaveBeenCalledWith(
+            "user-uuid", {instrumentId: 1, monthKey: "2020-01", rawPrice: 150, rawCurrency: "USD"}, {EUR: 1, USD: 1.1},
+        )
+    })
+
+    it("rejects a community price submission for a month in the future", async () => {
+        const response = await request(app, "/api/investments/community-prices/submit", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {instrument_id: 1, month_key: "2099-01", raw_price: 150, raw_currency: "USD"}
+        })
+
+        expect(response.status).toBe(400)
+        expect(mockDb.investments.submitCommunityPrice).not.toHaveBeenCalled()
+    })
+
+    it("rejects a community price submission for a kind backfillHistoricalPrices doesn't cover (e.g. bond)", async () => {
+        mockDb.investments.getInstrumentById.mockResolvedValue({id: 2, kind: "bond", symbol: "BND", name: "Some Bond", currency: "EUR"})
+
+        const response = await request(app, "/api/investments/community-prices/submit", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {instrument_id: 2, month_key: "2020-01", raw_price: 100, raw_currency: "EUR"}
+        })
+
+        expect(response.status).toBe(400)
+        expect(mockDb.investments.submitCommunityPrice).not.toHaveBeenCalled()
+    })
+
+    it("returns 403 for a community price submission when the user never held the instrument", async () => {
+        mockDb.investments.getInstrumentById.mockResolvedValue({id: 1, kind: "stock", symbol: "AAPL", name: "Apple Inc", currency: "USD"})
+        mockCache.valueExpired.mockResolvedValueOnce(false)
+        mockCache.get.mockResolvedValueOnce({EUR: 1, USD: 1.1})
+        mockDb.investments.submitCommunityPrice.mockResolvedValue({status: "not_eligible"})
+
+        const response = await request(app, "/api/investments/community-prices/submit", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {instrument_id: 1, month_key: "2020-01", raw_price: 150, raw_currency: "USD"}
+        })
+
+        expect(response.status).toBe(403)
+    })
+
+    it("returns 409 with the existing submission when an active one already exists for that instrument+month", async () => {
+        mockDb.investments.getInstrumentById.mockResolvedValue({id: 1, kind: "stock", symbol: "AAPL", name: "Apple Inc", currency: "USD"})
+        mockCache.valueExpired.mockResolvedValueOnce(false)
+        mockCache.get.mockResolvedValueOnce({EUR: 1, USD: 1.1})
+        const existing = {id: 9, instrumentId: 1, monthKey: "2020-01", priceEur: 100, rawPrice: 100, rawCurrency: "EUR", status: "verified", submittedBy: "another-user", submittedAt: "2026-01-01T00:00:00Z", verifiedBy: "admin-1", verifiedAt: "2026-01-02T00:00:00Z", rejectionNote: null}
+        mockDb.investments.submitCommunityPrice.mockResolvedValue({status: "conflict", existing})
+
+        const response = await request(app, "/api/investments/community-prices/submit", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {instrument_id: 1, month_key: "2020-01", raw_price: 150, raw_currency: "USD"}
+        })
+
+        expect(response.status).toBe(409)
+        expect(response.json).toEqual({existing})
+    })
+
+    it("returns the current user's own community price submissions", async () => {
+        mockDb.investments.getMyCommunityPriceSubmissions.mockResolvedValue([
+            {id: 1, instrumentId: 1, monthKey: "2020-01", priceEur: 100, rawPrice: 110, rawCurrency: "USD", status: "pending", submittedBy: "user-uuid", submittedAt: "2026-01-01T00:00:00Z", verifiedBy: null, verifiedAt: null, rejectionNote: null, instrument: null},
+        ])
+
+        const response = await request(app, "/api/investments/community-prices/mine", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {}
+        })
+
+        expect(response.status).toBe(200)
+        expect(mockDb.investments.getMyCommunityPriceSubmissions).toHaveBeenCalledWith("user-uuid")
+    })
+
+    it("blocks a non-admin from listing pending community price submissions", async () => {
+        mockDb.users.isAdmin.mockResolvedValue(false)
+
+        const response = await request(app, "/api/investments/community-prices/pending", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {}
+        })
+
+        expect(response.status).toBe(403)
+        expect(mockDb.investments.getPendingCommunityPrices).not.toHaveBeenCalled()
+    })
+
+    it("lets an admin list pending community price submissions", async () => {
+        mockDb.users.isAdmin.mockResolvedValue(true)
+        mockDb.investments.getPendingCommunityPrices.mockResolvedValue([{id: 1, status: "pending"}])
+
+        const response = await request(app, "/api/investments/community-prices/pending", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {}
+        })
+
+        expect(response.status).toBe(200)
+        expect(response.json).toEqual([{id: 1, status: "pending"}])
+    })
+
+    it("blocks a non-admin from approving/rejecting a community price submission", async () => {
+        mockDb.users.isAdmin.mockResolvedValue(false)
+
+        const response = await request(app, "/api/investments/community-prices/verify", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {id: 1, action: "approve"}
+        })
+
+        expect(response.status).toBe(403)
+        expect(mockDb.investments.verifyCommunityPrice).not.toHaveBeenCalled()
+    })
+
+    it("lets an admin approve a pending community price submission", async () => {
+        mockDb.users.isAdmin.mockResolvedValue(true)
+        mockDb.investments.verifyCommunityPrice.mockResolvedValue({
+            status: "ok",
+            submission: {id: 1, status: "verified", verifiedBy: "user-uuid"},
+        })
+
+        const response = await request(app, "/api/investments/community-prices/verify", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {id: 1, action: "approve"}
+        })
+
+        expect(response.status).toBe(200)
+        expect(mockDb.investments.verifyCommunityPrice).toHaveBeenCalledWith("user-uuid", 1, "approve", null)
+    })
+
+    it("rejects an invalid action for community price verification", async () => {
+        mockDb.users.isAdmin.mockResolvedValue(true)
+
+        const response = await request(app, "/api/investments/community-prices/verify", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {id: 1, action: "delete"}
+        })
+
+        expect(response.status).toBe(400)
+        expect(mockDb.investments.verifyCommunityPrice).not.toHaveBeenCalled()
+    })
 })

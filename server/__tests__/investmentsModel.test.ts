@@ -10,16 +10,20 @@ vi.mock("../src/libs/providers/coingeckoProvider", () => ({
     default: { searchCoingecko: vi.fn(), getHistoricalMonthlyPrices: vi.fn() },
 }))
 vi.mock("../src/libs/providers/finnhubProvider", () => ({
-    default: { searchFinnhub: vi.fn(), getQuote: vi.fn(), getHistoricalMonthlyPrices: vi.fn() },
+    default: { searchFinnhub: vi.fn(), getQuote: vi.fn(), getHistoricalMonthlyPrices: vi.fn(), resolveInternationalSymbol: vi.fn() },
 }))
 vi.mock("../src/cache/quoteCache", () => ({
     default: { getCachedQuote: vi.fn(), setCachedQuote: vi.fn() },
+}))
+vi.mock("../src/cache/symbolCache", () => ({
+    default: { getCachedSymbol: vi.fn(), setCachedSymbol: vi.fn() },
 }))
 
 import openfigiProvider from "../src/libs/providers/openfigiProvider"
 import finnhubProvider from "../src/libs/providers/finnhubProvider"
 import coingeckoProvider from "../src/libs/providers/coingeckoProvider"
 import quoteCache from "../src/cache/quoteCache"
+import symbolCache from "../src/cache/symbolCache"
 
 /** Minimal chainable Supabase query-builder stub: every filter method returns
  * itself, `.single()`/`.maybeSingle()` resolve to the configured result, and
@@ -528,6 +532,77 @@ describe("investments model", () => {
             expect(result).toEqual([])
         })
 
+        it("falls back to Finnhub's exchange-suffixed symbol when the bare ticker has no quote (e.g. a European ETF)", async () => {
+            const euHolding = {
+                ...stockHoldingRow,
+                instrument: {...stockHoldingRow.instrument, kind: "etf", symbol: "IWDA", currency: "EUR", isin: "IE00B4L5Y983"},
+            }
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: [euHolding], error: null}))
+            vi.mocked(quoteCache.getCachedQuote).mockResolvedValue(null)
+            vi.mocked(finnhubProvider.getQuote)
+                .mockResolvedValueOnce(null) // bare symbol fails
+                .mockResolvedValueOnce({price: 90}) // resolved exchange-suffixed symbol succeeds
+            vi.mocked(symbolCache.getCachedSymbol).mockResolvedValue(undefined) // not cached yet
+            vi.mocked(finnhubProvider.resolveInternationalSymbol).mockResolvedValue("IWDA.AS")
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: {...euHolding, current_value: 900}, error: null}))
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: euHolding, error: null}))
+            mockSupabase.from.mockReturnValueOnce(makeChain({
+                data: {id: 50, holding_id: 16, instrument_id: 1, asset_key: "etf", symbol: "IWDA", name: "Apple Inc.", quantity: 10, average_price: 100, current_value: 900, invested_amount: 1000, currency: "EUR", user_date: "2026-07-01", recorded_at: "2026-07-01"},
+                error: null,
+            }))
+
+            const result = await investments.refreshHoldingPrices("user-1", {EUR: 1})
+
+            expect(finnhubProvider.getQuote).toHaveBeenNthCalledWith(1, "IWDA")
+            expect(finnhubProvider.resolveInternationalSymbol).toHaveBeenCalledWith("IE00B4L5Y983")
+            expect(finnhubProvider.getQuote).toHaveBeenNthCalledWith(2, "IWDA.AS")
+            expect(symbolCache.setCachedSymbol).toHaveBeenCalledWith("IE00B4L5Y983", "IWDA.AS")
+            expect(quoteCache.setCachedQuote).toHaveBeenCalledWith("IWDA", {price: 90})
+            expect(result[0]).toMatchObject({currentValue: 900})
+        })
+
+        it("reuses a cached international symbol resolution without searching Finnhub again", async () => {
+            const euHolding = {
+                ...stockHoldingRow,
+                instrument: {...stockHoldingRow.instrument, kind: "etf", symbol: "IWDA", currency: "EUR", isin: "IE00B4L5Y983"},
+            }
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: [euHolding], error: null}))
+            vi.mocked(quoteCache.getCachedQuote).mockResolvedValue(null)
+            vi.mocked(finnhubProvider.getQuote)
+                .mockResolvedValueOnce(null)
+                .mockResolvedValueOnce({price: 90})
+            vi.mocked(symbolCache.getCachedSymbol).mockResolvedValue("IWDA.AS") // already cached from a previous resolution
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: {...euHolding, current_value: 900}, error: null}))
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: euHolding, error: null}))
+            mockSupabase.from.mockReturnValueOnce(makeChain({
+                data: {id: 50, holding_id: 16, instrument_id: 1, asset_key: "etf", symbol: "IWDA", name: "Apple Inc.", quantity: 10, average_price: 100, current_value: 900, invested_amount: 1000, currency: "EUR", user_date: "2026-07-01", recorded_at: "2026-07-01"},
+                error: null,
+            }))
+
+            await investments.refreshHoldingPrices("user-1", {EUR: 1})
+
+            expect(finnhubProvider.resolveInternationalSymbol).not.toHaveBeenCalled()
+            expect(symbolCache.setCachedSymbol).not.toHaveBeenCalled()
+            expect(finnhubProvider.getQuote).toHaveBeenNthCalledWith(2, "IWDA.AS")
+        })
+
+        it("gives up (and caches the negative result) when Finnhub has no international listing for the ISIN either", async () => {
+            const euHolding = {
+                ...stockHoldingRow,
+                instrument: {...stockHoldingRow.instrument, kind: "etf", symbol: "IWDA", currency: "EUR", isin: "IE00B4L5Y983"},
+            }
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: [euHolding], error: null}))
+            vi.mocked(quoteCache.getCachedQuote).mockResolvedValue(null)
+            vi.mocked(finnhubProvider.getQuote).mockResolvedValue(null)
+            vi.mocked(symbolCache.getCachedSymbol).mockResolvedValue(undefined)
+            vi.mocked(finnhubProvider.resolveInternationalSymbol).mockResolvedValue(null)
+
+            const result = await investments.refreshHoldingPrices("user-1", {EUR: 1})
+
+            expect(symbolCache.setCachedSymbol).toHaveBeenCalledWith("IE00B4L5Y983", null)
+            expect(result).toEqual([])
+        })
+
         it("skips a holding when there's no exchange rate for its trading currency", async () => {
             mockSupabase.from.mockReturnValueOnce(makeChain({data: [stockHoldingRow], error: null}))
             vi.mocked(quoteCache.getCachedQuote).mockResolvedValue(null)
@@ -583,6 +658,31 @@ describe("investments model", () => {
             const result = await investments.backfillHistoricalPrices("user-1", {EUR: 1, USD: 1.1})
 
             expect(result).toEqual([])
+        })
+
+        it("retries with Finnhub's exchange-suffixed symbol when the bare ticker has no historical data (e.g. a European ETF)", async () => {
+            const euHoldingRow = {
+                ...holdingRow,
+                instrument: {...holdingRow.instrument, kind: "etf", symbol: "IWDA", currency: "EUR", isin: "IE00B4L5Y983"},
+            }
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: [euHoldingRow], error: null}))
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: [gapRow({quantity: 5, user_date: "2024-01-01"})], error: null}))
+            vi.mocked(finnhubProvider.getHistoricalMonthlyPrices)
+                .mockResolvedValueOnce(null) // bare symbol fails
+                .mockResolvedValueOnce(new Map([["2024-01", 90]])) // resolved exchange-suffixed symbol succeeds
+            vi.mocked(symbolCache.getCachedSymbol).mockResolvedValue(undefined)
+            vi.mocked(finnhubProvider.resolveInternationalSymbol).mockResolvedValue("IWDA.AS")
+            // getVerifiedCommunityPricesForInstrument's query - not reached for this month since the fallback already filled it.
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: [], error: null}))
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: euHoldingRow, error: null}))
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: {...gapRow({quantity: 5}), current_value: 450}, error: null}))
+
+            const result = await investments.backfillHistoricalPrices("user-1", {EUR: 1})
+
+            expect(finnhubProvider.getHistoricalMonthlyPrices).toHaveBeenNthCalledWith(1, "IWDA", expect.any(Number), expect.any(Number))
+            expect(finnhubProvider.resolveInternationalSymbol).toHaveBeenCalledWith("IE00B4L5Y983")
+            expect(finnhubProvider.getHistoricalMonthlyPrices).toHaveBeenNthCalledWith(2, "IWDA.AS", expect.any(Number), expect.any(Number))
+            expect(result).toEqual([{holdingId: 16, monthsFilled: 1}])
         })
 
         it("falls back to a verified community price when the provider has no data for that month", async () => {

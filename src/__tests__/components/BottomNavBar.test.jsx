@@ -100,6 +100,18 @@ describe('BottomNavBar', () => {
     expect(screen.getByText('Info')).toBeInTheDocument();
   });
 
+  it('anchors the More popup without a competing horizontal transform', () => {
+    renderBottomNavBar();
+
+    fireEvent.click(screen.getByText('Altro').closest('button'));
+
+    const popup = screen.getByTestId('bottom-nav-more-popup');
+    expect(popup.style.left).toBe('12px');
+    expect(popup.style.right).toBe('12px');
+    expect(popup.style.margin).toBe('0px auto');
+    expect(popup.style.transform).toBe('');
+  });
+
   it('should open Account menu on click', () => {
     renderBottomNavBar();
     

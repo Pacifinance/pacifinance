@@ -99,6 +99,59 @@ export async function searchFinnhub(query: string, kind: InvestmentKind = "stock
     }
 }
 
+/**
+ * Resolves the exchange-suffixed Finnhub symbol for an instrument that
+ * doesn't trade on a plain US listing (e.g. "IWDA.AS" for Euronext
+ * Amsterdam) - getQuote/getHistoricalMonthlyPrices need this exact form,
+ * not the bare ticker OpenFIGI returns (searchInstruments only ever stores
+ * `result.ticker`, with no exchange suffix - see openfigiProvider.toUpsertInput).
+ * Reuses /search with the ISIN as query (same trick searchFinnhub's own
+ * docstring notes), but instead of filtering out dotted/cross-listing
+ * symbols as noise, picks exactly one of them - the ISIN already narrows the
+ * match to one instrument, so any suffixed result is a real, specific
+ * listing. Only called as a fallback when the bare symbol's own quote call
+ * has already come back empty - callers are expected to cache the result
+ * (a listing's Finnhub symbol essentially never changes) so this search
+ * doesn't repeat on every refresh/backfill for instruments Finnhub simply
+ * doesn't cover under any symbol.
+ */
+export async function resolveInternationalSymbol(isin: string): Promise<string | null> {
+    const apiKey = process.env.FINNHUB_KEY
+    if (!apiKey) return null
+
+    const allowed = await checkAndConsumeRateLimit("finnhub-search", FINNHUB_SEARCH_LIMIT_PER_MIN)
+    if (!allowed) return null
+
+    const controller = new AbortController()
+    const timeoutMs = getTimeoutMs("FINNHUB_TIMEOUT_MS", 6000)
+    const timeout = setTimeout(() => controller.abort(), timeoutMs)
+
+    try {
+        const url = `${FINNHUB_SEARCH_URL}?q=${encodeURIComponent(isin)}&token=${apiKey}`
+        const response = await withTimeout(
+            fetch(url, { signal: controller.signal }),
+            timeoutMs,
+            "Finnhub ISIN search request",
+        )
+        if (response.status !== 200) {
+            console.error(`finnhubProvider.resolveInternationalSymbol: request failed with status ${response.status} for ${isin}`)
+            return null
+        }
+
+        const body = await response.json() as FinnhubSearchResponse
+        if (!Array.isArray(body.result)) return null
+
+        const match = body.result.find((r): r is Required<Pick<FinnhubSearchResult, "symbol">> & FinnhubSearchResult =>
+            Boolean(r.symbol) && r.symbol!.includes("."))
+        return match?.symbol ?? null
+    } catch (error) {
+        console.error(`finnhubProvider.resolveInternationalSymbol: request failed for ${isin}`, error)
+        return null
+    } finally {
+        clearTimeout(timeout)
+    }
+}
+
 const FINNHUB_QUOTE_URL = "https://finnhub.io/api/v1/quote"
 // Separate bucket from search: refreshing a whole portfolio's prices (one
 // quote call per holding) must never compete with, or be starved by, ordinary
@@ -234,4 +287,4 @@ export async function getHistoricalMonthlyPrices(symbol: string, fromUnix: numbe
     }
 }
 
-export default { searchFinnhub, getQuote, getHistoricalMonthlyPrices }
+export default { searchFinnhub, getQuote, getHistoricalMonthlyPrices, resolveInternationalSymbol }

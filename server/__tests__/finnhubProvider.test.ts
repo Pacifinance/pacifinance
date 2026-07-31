@@ -3,7 +3,7 @@ import { describe, expect, it, vi, beforeEach, afterEach } from "vitest"
 const { checkAndConsumeRateLimit } = vi.hoisted(() => ({ checkAndConsumeRateLimit: vi.fn() }))
 vi.mock("../src/libs/rateLimiter", () => ({ checkAndConsumeRateLimit, default: { checkAndConsumeRateLimit } }))
 
-import { getQuote, getHistoricalMonthlyPrices } from "../src/libs/providers/finnhubProvider"
+import { getQuote, getHistoricalMonthlyPrices, resolveInternationalSymbol } from "../src/libs/providers/finnhubProvider"
 
 describe("finnhubProvider.getQuote", () => {
     const originalKey = process.env.FINNHUB_KEY
@@ -114,6 +114,69 @@ describe("finnhubProvider.getHistoricalMonthlyPrices", () => {
         checkAndConsumeRateLimit.mockResolvedValue(false)
 
         const result = await getHistoricalMonthlyPrices("AAPL", 1704067200, 1706745600)
+
+        expect(fetch).not.toHaveBeenCalled()
+        expect(result).toBeNull()
+    })
+})
+
+describe("finnhubProvider.resolveInternationalSymbol", () => {
+    beforeEach(() => {
+        vi.clearAllMocks()
+        checkAndConsumeRateLimit.mockResolvedValue(true)
+        process.env.FINNHUB_KEY = "test-key"
+    })
+
+    afterEach(() => {
+        process.env.FINNHUB_KEY = undefined
+    })
+
+    it("returns null without calling fetch when no API key is configured", async () => {
+        delete process.env.FINNHUB_KEY
+        const result = await resolveInternationalSymbol("IE00B4L5Y983")
+        expect(result).toBeNull()
+        expect(fetch).not.toHaveBeenCalled()
+    })
+
+    it("picks the exchange-suffixed listing, ignoring plain unsuffixed cross-listings", async () => {
+        vi.mocked(fetch).mockResolvedValue(new Response(JSON.stringify({
+            count: 2,
+            result: [
+                { symbol: "IWDA", description: "ISHARES CORE MSCI WORLD", type: "ETP" },
+                { symbol: "IWDA.AS", description: "ISHARES CORE MSCI WORLD - EURONEXT AMSTERDAM", type: "ETP" },
+            ],
+        }), { status: 200 }))
+
+        const result = await resolveInternationalSymbol("IE00B4L5Y983")
+
+        expect(result).toBe("IWDA.AS")
+        const [url] = vi.mocked(fetch).mock.calls[0]
+        expect(url).toContain("q=IE00B4L5Y983")
+    })
+
+    it("returns null when Finnhub has no dotted (exchange-suffixed) listing at all", async () => {
+        vi.mocked(fetch).mockResolvedValue(new Response(JSON.stringify({
+            count: 1,
+            result: [{ symbol: "IWDA", description: "ISHARES CORE MSCI WORLD", type: "ETP" }],
+        }), { status: 200 }))
+
+        const result = await resolveInternationalSymbol("IE00B4L5Y983")
+
+        expect(result).toBeNull()
+    })
+
+    it("returns null (not a throw) on a non-200 response", async () => {
+        vi.mocked(fetch).mockResolvedValue(new Response("rate limited", { status: 429 }))
+
+        const result = await resolveInternationalSymbol("IE00B4L5Y983")
+
+        expect(result).toBeNull()
+    })
+
+    it("returns null without calling fetch when rate-limited", async () => {
+        checkAndConsumeRateLimit.mockResolvedValue(false)
+
+        const result = await resolveInternationalSymbol("IE00B4L5Y983")
 
         expect(fetch).not.toHaveBeenCalled()
         expect(result).toBeNull()

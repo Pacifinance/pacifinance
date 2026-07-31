@@ -5,6 +5,7 @@ import finnhubProvider from "../../libs/providers/finnhubProvider"
 import { ExtDate, toDateOnly } from "../../libs/datelib"
 import { roundCurrency } from "../../libs/money"
 import quoteCache from "../../cache/quoteCache"
+import symbolCache from "../../cache/symbolCache"
 
 export const INVESTMENT_KINDS = ["stock", "etf", "crypto", "bond", "fund", "commodity", "other"] as const
 export const INVESTMENT_ASSET_KEYS = ["stocks", "etf", "bitcoin", "crypto", "bonds", "funds", "commodities"] as const
@@ -504,6 +505,24 @@ async function getHoldingsByUserId(user_id: string) {
  * never actually built up real history. Best-effort: a failed history
  * upsert doesn't undo the holding's own price update.
  */
+/**
+ * Finds the Finnhub-usable symbol for a stock/ETF instrument whose bare
+ * (OpenFIGI) ticker didn't resolve - e.g. a European listing that needs an
+ * exchange suffix Finnhub's own /search exposes but OpenFIGI never stores
+ * (see finnhubProvider.resolveInternationalSymbol). Cached per ISIN, so this
+ * fallback search only ever runs once per instrument across every user and
+ * every future refresh/backfill - including the "no dotted listing found"
+ * case, which then fails fast instead of re-searching every time.
+ */
+async function resolveFallbackFinnhubSymbol(isin: string | null): Promise<string | null> {
+    if (!isin) return null
+    const cached = await symbolCache.getCachedSymbol(isin)
+    if (cached !== undefined) return cached
+    const resolved = await finnhubProvider.resolveInternationalSymbol(isin)
+    await symbolCache.setCachedSymbol(isin, resolved)
+    return resolved
+}
+
 async function refreshHoldingPrices(user_id: string, eurRates: Record<string, number>) {
     const holdings = await getHoldingsByUserId(user_id)
     const refreshable = holdings.filter((h) =>
@@ -517,6 +536,10 @@ async function refreshHoldingPrices(user_id: string, eurRates: Record<string, nu
         let quote = await quoteCache.getCachedQuote(instrument.symbol)
         if (!quote) {
             quote = await finnhubProvider.getQuote(instrument.symbol)
+            if (!quote) {
+                const fallbackSymbol = await resolveFallbackFinnhubSymbol(instrument.isin)
+                if (fallbackSymbol) quote = await finnhubProvider.getQuote(fallbackSymbol)
+            }
             if (quote) await quoteCache.setCachedQuote(instrument.symbol, quote)
         }
         if (!quote) continue
@@ -978,11 +1001,15 @@ async function backfillHistoricalPrices(user_id: string, eurRates: Record<string
         const toUnix = Math.floor(Date.now() / 1000)
 
         const isCrypto = instrument.kind === "crypto"
-        const priceByMonth = (!isCrypto || instrument.coingeckoId)
+        let priceByMonth = (!isCrypto || instrument.coingeckoId)
             ? (isCrypto
                 ? await coingeckoProvider.getHistoricalMonthlyPrices(instrument.coingeckoId as string, fromUnix, toUnix)
                 : await finnhubProvider.getHistoricalMonthlyPrices(instrument.symbol, fromUnix, toUnix))
             : null
+        if (!priceByMonth && !isCrypto) {
+            const fallbackSymbol = await resolveFallbackFinnhubSymbol(instrument.isin)
+            if (fallbackSymbol) priceByMonth = await finnhubProvider.getHistoricalMonthlyPrices(fallbackSymbol, fromUnix, toUnix)
+        }
 
         const priceCurrency = isCrypto ? "EUR" : (instrument.currency ?? "USD")
         const rate = priceCurrency === "EUR" ? 1 : eurRates[priceCurrency]

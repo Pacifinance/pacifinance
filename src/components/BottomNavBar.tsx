@@ -109,13 +109,15 @@ const BottomNavBar = ({ handleLogout }) => {
         backgroundColor: theme.mode === 'dark' ? theme.backgroundColor : '#ffffff',
         borderRadius: '16px',
         padding: '8px',
-        minWidth: '200px',
+        width: 'calc(100vw - 24px)',
+        maxWidth: '220px',
+        boxSizing: 'border-box',
         border: `1px solid ${theme.mode === 'dark' ? theme.buttonBackgroundColor + '30' : '#e2e8f0'}`,
         boxShadow: theme.mode === 'dark'
             ? '0 -8px 30px rgba(0, 0, 0, 0.4)'
             : '0 -8px 30px rgba(0, 0, 0, 0.12)',
         zIndex: 10001,
-        animation: 'slideUp 0.2s ease-out',
+        animation: 'bottomNavPopupIn 0.18s ease-out',
     };
 
     const popupItemStyle = (active) => ({
@@ -139,9 +141,9 @@ const BottomNavBar = ({ handleLogout }) => {
         <>
             {/* CSS animation for popup */}
             <style>{`
-                @keyframes slideUp {
-                    from { opacity: 0; transform: translateY(10px); }
-                    to { opacity: 1; transform: translateY(0); }
+                @keyframes bottomNavPopupIn {
+                    from { opacity: 0; }
+                    to { opacity: 1; }
                 }
             `}</style>
 
@@ -167,10 +169,12 @@ const BottomNavBar = ({ handleLogout }) => {
             {showMoreMenu && (
                 <div
                     className="bottom-nav-popup"
+                    data-testid="bottom-nav-more-popup"
                     style={{
                         ...popupMenuStyle,
-                        left: '50%',
-                        transform: 'translateX(-50%)',
+                        left: '12px',
+                        right: '12px',
+                        margin: '0 auto',
                     }}
                 >
                     {morePages.map((page) => (
@@ -204,9 +208,12 @@ const BottomNavBar = ({ handleLogout }) => {
             {showAccountMenu && (
                 <div
                     className="bottom-nav-popup"
+                    data-testid="bottom-nav-account-popup"
                     style={{
                         ...popupMenuStyle,
+                        left: 'auto',
                         right: '8px',
+                        margin: 0,
                     }}
                 >
                     {accountPages.map((page) => (

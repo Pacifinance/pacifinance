@@ -28,6 +28,7 @@ import { LanguageContext } from "../contexts/LanguageContext";
 import { MediaQueryContext } from "../contexts/MediaQueryContext";
 import { sortTagsByLanguage } from '../utils/sortingUtils';
 import { useGamification } from '../hooks/useGamification';
+import { getLevelColor, getLevelProgress } from '../utils/gamificationLevel';
 import {
     SidebarPrivacyToggleModeButton,
     SidebarSection,
@@ -113,12 +114,8 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
     const navigate = useLocalizedNavigate();
     const { showSuccess, showError } = useToast();
     const gamification = useGamification(userData);
-    const levelStartPoints = (gamification.level - 1) * 30;
-    const levelProgress = Math.max(0, Math.min(100,
-        Math.round(((gamification.points - levelStartPoints) / 30) * 100),
-    ));
-    const levelColors = ['#22c55e', '#06b6d4', '#3b82f6', '#8b5cf6', '#f59e0b', '#ef4444'];
-    const levelColor = levelColors[Math.min(gamification.level - 1, levelColors.length - 1)];
+    const levelProgress = getLevelProgress(gamification.points, gamification.level);
+    const levelColor = getLevelColor(gamification.level);
     const levelTitle = (translations?.gamification?.levelProgress || 'Level {level}: {progress}% to the next level')
         .replace('{level}', String(gamification.level))
         .replace('{progress}', String(levelProgress));
@@ -390,7 +387,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                 boxSizing: 'border-box',
                                 borderRadius: '50%',
                                 background: `conic-gradient(${levelColor} ${levelProgress}%, ${theme.mode === 'dark' ? 'rgba(255,255,255,0.14)' : 'rgba(15,23,42,0.14)'} 0)`,
-                                boxShadow: `0 0 14px ${levelColor}45`,
+                                boxShadow: `0 2px 8px ${levelColor}30`,
                             }}
                         >
                             <AvatarIcon
@@ -550,13 +547,30 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
 
                         <Notification theme={theme}>
                             <div className="account-container">
-                                <div className="account-image-wrapper">
+                                <div
+                                    className="account-image-wrapper"
+                                    title={levelTitle}
+                                    style={{
+                                        position: 'relative', width: '46px', height: '46px', padding: '3px',
+                                        boxSizing: 'border-box', borderRadius: '50%',
+                                        background: `conic-gradient(${levelColor} ${levelProgress}%, ${theme.mode === 'dark' ? 'rgba(255,255,255,0.14)' : 'rgba(15,23,42,0.14)'} 0)`,
+                                    }}
+                                >
                                     <AvatarIcon
                                         size={40}
                                         theme={theme}
-                                        title={translations.sidebar.account.title}
+                                        title={levelTitle}
+                                        style={{ border: `2px solid ${theme.backgroundColor}`, boxSizing: 'border-box' }}
                                         onClick={() => setShowDropdown(!showDropdown)}
                                     />
+                                    <span style={{
+                                        position: 'absolute', right: '-3px', bottom: '-3px', minWidth: '20px', height: '15px',
+                                        padding: '0 3px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                        background: levelColor, color: '#fff', border: `2px solid ${theme.backgroundColor}`,
+                                        fontSize: '8px', lineHeight: 1, fontWeight: 800, boxSizing: 'content-box',
+                                    }}>
+                                        {translations?.gamification?.levelShort} {gamification.level}
+                                    </span>
                                 </div>
                             </div>
                             <DropdownContainer theme={theme}>

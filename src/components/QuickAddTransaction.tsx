@@ -102,6 +102,11 @@ const Popup = styled.div`
   padding: 1.1rem 1.25rem 1.4rem;
   box-shadow: 0 -8px 30px rgba(0,0,0,0.25);
 
+  @media (max-width: 639px) {
+    max-height: calc(85vh - 66px - env(safe-area-inset-bottom, 0px));
+    margin-bottom: calc(66px + env(safe-area-inset-bottom, 0px));
+  }
+
   @media (min-width: 640px) {
     border-radius: 1.25rem;
     margin-bottom: 2rem;
@@ -641,7 +646,7 @@ export default function QuickAddTransaction({ theme, showFab = true, menuOpen: c
         </Overlay>
       ), document.body)}
 
-      {showDataImport && (
+      {showDataImport && createPortal((
         <Suspense fallback={null}>
           <ModalOverlay theme={theme} onClick={() => setShowDataImport(false)}>
             <ModalContainer theme={theme} $maxWidth="960px" onClick={(e) => e.stopPropagation()}>
@@ -662,18 +667,18 @@ export default function QuickAddTransaction({ theme, showFab = true, menuOpen: c
             </ModalContainer>
           </ModalOverlay>
         </Suspense>
-      )}
+      ), document.body)}
 
-      {showInvestmentImport && (
+      {showInvestmentImport && createPortal((
         <Suspense fallback={null}>
           <InvestmentImportWizard
             onClose={() => setShowInvestmentImport(false)}
             onImported={async () => { setShowInvestmentImport(false); handleSetIsUpdated?.(false); }}
           />
         </Suspense>
-      )}
+      ), document.body)}
 
-      {open && (
+      {open && createPortal((
         <Overlay onClick={(e) => { if (e.target === e.currentTarget) resetAndClose(); }}>
           <Popup theme={theme}>
             <HeaderRow>
@@ -831,7 +836,7 @@ export default function QuickAddTransaction({ theme, showFab = true, menuOpen: c
             )}
           </Popup>
         </Overlay>
-      )}
+      ), document.body)}
     </>
   );
 }

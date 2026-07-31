@@ -11,6 +11,7 @@ import styled from 'styled-components';
 import { useGamification, BADGE_CATEGORY_ORDER } from '../hooks/useGamification';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { MediaQueryContext } from '../contexts/MediaQueryContext';
+import { getLevelColor, getLevelProgress } from '../utils/gamificationLevel';
 
 const GamificationContainer = styled.div`
   margin: 2rem 0;
@@ -50,10 +51,10 @@ const LevelBar = styled.div`
   margin-bottom: 1.5rem;
   padding: 1rem 1.25rem;
   background: ${props => props.theme.mode === 'dark'
-    ? 'rgba(34,197,94,0.1)'
-    : 'rgba(34,197,94,0.08)'};
+    ? `${props.$levelColor}16`
+    : `${props.$levelColor}10`};
   border-radius: 1rem;
-  border: 1px solid rgba(34,197,94,0.2);
+  border: 1px solid ${props => `${props.$levelColor}35`};
   
   @media (max-width: 768px) {
     flex-direction: column;
@@ -67,7 +68,7 @@ const LevelCircle = styled.div`
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #22c55e, #16a34a);
+  background: ${props => props.$levelColor};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -99,7 +100,7 @@ const ProgressBarTrack = styled.div`
 
 const ProgressBarFill = styled.div`
   height: 100%;
-  background: linear-gradient(90deg, #22c55e, #16a34a);
+  background: ${props => props.$levelColor};
   border-radius: 4px;
   transition: width 0.8s ease;
   width: ${props => props.$progress}%;
@@ -328,7 +329,8 @@ const GamificationSection = ({ theme, userData, gamificationData: externalGamifi
   const [activeCategory, setActiveCategory] = useState('all');
 
   const { badges = [], unlockedBadges = [], lockedBadges = [], stats, level, points = 0, nextLevelPoints = 1, categoryTranslations } = gamification || {};
-  const progressPercentage = Math.min((points / nextLevelPoints) * 100, 100);
+  const progressPercentage = getLevelProgress(points, level);
+  const levelColor = getLevelColor(level);
 
   const t = translations?.gamification || {};
 
@@ -373,15 +375,15 @@ const GamificationSection = ({ theme, userData, gamificationData: externalGamifi
       </SectionTitle>
 
       {/* Level Progress */}
-      <LevelBar theme={theme}>
-        <LevelCircle>{level}</LevelCircle>
+      <LevelBar theme={theme} $levelColor={levelColor}>
+        <LevelCircle $levelColor={levelColor}>{level}</LevelCircle>
         <ProgressBarContainer>
           <ProgressText theme={theme}>
             <span>{t.level || 'Livello'} {level}</span>
             <span>{points} / {nextLevelPoints} {t.points || 'punti'}</span>
           </ProgressText>
           <ProgressBarTrack theme={theme}>
-            <ProgressBarFill $progress={progressPercentage} />
+            <ProgressBarFill $progress={progressPercentage} $levelColor={levelColor} />
           </ProgressBarTrack>
         </ProgressBarContainer>
       </LevelBar>

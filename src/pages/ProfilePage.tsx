@@ -72,6 +72,7 @@ import AvatarIcon from '../components/AvatarIcon';
 import { canRegenerateAvatar, regenerateAvatar } from '../utils/avatarGenerator';
 import { useToast } from '../contexts/ToastContext';
 import { useDemoServices } from '../hooks/useDemoServices';
+import { getLevelColor, getLevelProgress } from '../utils/gamificationLevel';
 
 // ─── Styled Components ───────────────────────────────────────────────
 
@@ -526,6 +527,11 @@ const ProfilePage = () => {
 
     // Gamification data for achievements tab
     const gamification = useGamification(userData);
+    const levelColor = getLevelColor(gamification.level);
+    const levelProgress = getLevelProgress(gamification.points, gamification.level);
+    const levelTitle = (translations?.gamification?.levelProgress || 'Level {level}: {progress}% to the next level')
+        .replace('{level}', String(gamification.level))
+        .replace('{progress}', String(levelProgress));
 
     // Mock data for development/testing
     const mockNationalityTags = [
@@ -1176,17 +1182,17 @@ const ProfilePage = () => {
                                 width: isMobileScreen ? '80px' : '90px',
                                 height: isMobileScreen ? '80px' : '90px',
                                 borderRadius: '50%',
-                                border: `3px solid ${theme.buttonBackgroundColor}`,
-                                padding: '3px',
-                                background: theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)',
-                                boxShadow: `0 2px 12px ${theme.buttonBackgroundColor}20`,
+                                padding: '4px',
+                                boxSizing: 'border-box',
+                                background: `conic-gradient(${levelColor} ${levelProgress}%, ${theme.mode === 'dark' ? 'rgba(255,255,255,0.14)' : 'rgba(15,23,42,0.14)'} 0)`,
+                                boxShadow: `0 2px 10px ${levelColor}25`,
                             }}>
                                 <AvatarIcon
                                     key={avatarKey}
                                     size={isMobileScreen ? 74 : 84}
                                     theme={theme}
-                                    title={translations?.avatar?.tooltip || ''}
-                                    style={{ width: '100%', height: '100%' }}
+                                    title={levelTitle}
+                                    style={{ width: '100%', height: '100%', border: `2px solid ${theme.backgroundColor}`, boxSizing: 'border-box' }}
                                 />
                             </div>
                             <button
@@ -1251,9 +1257,9 @@ const ProfilePage = () => {
                         >
                             <Trophy size={16} />
                             {tProfile?.achievementsTab || (language === 'it' ? 'Traguardi' : 'Achievements')}
-                            {gamification?.stats?.unlockedCount > 0 && (
+                            {gamification?.level > 0 && (
                                 <span style={{
-                                    background: 'linear-gradient(135deg, #22c55e, #16a34a)',
+                                    background: levelColor,
                                     color: 'white',
                                     fontSize: '0.7rem',
                                     fontWeight: '700',
@@ -1261,7 +1267,7 @@ const ProfilePage = () => {
                                     borderRadius: '6px',
                                     marginLeft: '0.125rem'
                                 }}>
-                                    {gamification.stats.unlockedCount}
+                                    {translations?.gamification?.levelShort} {gamification.level}
                                 </span>
                             )}
                         </TabButton>

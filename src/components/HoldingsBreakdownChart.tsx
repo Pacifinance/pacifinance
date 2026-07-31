@@ -41,8 +41,32 @@ const Legend = styled.div`
   flex-direction: column;
   gap: 0.4rem;
   margin-top: 1rem;
-  max-height: 180px;
+  max-height: 240px;
   overflow-y: auto;
+`;
+
+const ChartStage = styled.div`
+  width: 100%;
+  height: 380px;
+  @media (max-width: 768px) { height: 240px; }
+`;
+
+const CategoryDetails = styled.details`
+  border-top: 1px solid ${(p) => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.07)'};
+  padding: 0.35rem 0;
+
+  summary {
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: '›'; margin-left: auto; transition: transform 0.2s ease; }
+  &[open] summary::after { transform: rotate(90deg); }
+
+  .category-items { display: flex; flex-direction: column; gap: 0.35rem; padding: 0.45rem 0.2rem 0.25rem; }
 `;
 
 const LegendItem = styled.div`
@@ -97,9 +121,11 @@ const CategoryHeader = styled.div`
   letter-spacing: 0.03em;
   color: ${(p) => p.theme.textColor};
   opacity: 0.55;
-  margin: 0.5rem 0 0.1rem 0;
+  margin: 0.15rem 0;
 
   &:first-child { margin-top: 0; }
+  .category-meta { display: flex; gap: 0.65rem; }
+  .count { opacity: 0.65; font-weight: 500; text-transform: none; }
 `;
 
 const MAX_SLICES = 8;
@@ -112,14 +138,18 @@ export default function HoldingsBreakdownChart({ theme, holdings, assetKey, isHi
   const { isMobileScreen } = useContext(MediaQueryContext);
   const t = translations.graphs.statsHoldings;
 
-  const rows = useMemo(() => {
+  const allRows = useMemo(() => {
     const relevant = (assetKey ? holdings.filter((h) => h.assetKey === assetKey) : holdings)
       .map((h) => ({ id: h.id, label: getHoldingLabel(h), value: getHoldingValue(h), assetKey: h.assetKey }))
       .filter((r) => r.value > 0)
       .sort((a, b) => b.value - a.value);
 
-    const top = relevant.slice(0, MAX_SLICES);
-    const rest = relevant.slice(MAX_SLICES);
+    return relevant;
+  }, [holdings, assetKey]);
+
+  const rows = useMemo(() => {
+    const top = allRows.slice(0, MAX_SLICES);
+    const rest = allRows.slice(MAX_SLICES);
     const otherValue = rest.reduce((sum, r) => sum + r.value, 0);
 
     const withOther = otherValue > 0
@@ -140,7 +170,7 @@ export default function HoldingsBreakdownChart({ theme, holdings, assetKey, isHi
       });
     }
     return withOther;
-  }, [holdings, assetKey, translations.general.other]);
+  }, [allRows, assetKey, translations.general.other]);
 
   const total = rows.reduce((sum, r) => sum + r.value, 0);
   const overweightThreshold = rows.length > 0 ? (100 / rows.length) * OVERWEIGHT_MULTIPLIER : Infinity;
@@ -148,12 +178,11 @@ export default function HoldingsBreakdownChart({ theme, holdings, assetKey, isHi
   const categoryTotals = useMemo(() => {
     if (assetKey) return null;
     const totals = new Map<InvestmentAssetKey, number>();
-    for (const row of rows) {
-      if (row.isOther || !row.assetKey) continue;
+    for (const row of allRows) {
       totals.set(row.assetKey, (totals.get(row.assetKey) ?? 0) + row.value);
     }
     return totals;
-  }, [rows, assetKey]);
+  }, [allRows, assetKey]);
 
   // Always one distinct color per position (Tableau-10, same as "all
   // investments") — shading a single asset-class hue used to be the plan for
@@ -162,11 +191,24 @@ export default function HoldingsBreakdownChart({ theme, holdings, assetKey, isHi
   // exactly when distinguishing positions matters most.
   const colorFor = (row: (typeof rows)[number], index: number): string => {
     if (row.isOther) return theme.mode === 'dark' ? OTHER_SLICE_COLOR.dark : OTHER_SLICE_COLOR.light;
-    return paletteColor(index);
+    const originalIndex = allRows.findIndex((candidate) => candidate.id === row.id);
+    return paletteColor(originalIndex >= 0 ? originalIndex : index);
   };
 
   const strokeColor = theme.mode === 'dark' ? '#1e1e2e' : '#ffffff';
   const groupBorderColor = theme.mode === 'dark' ? 'rgba(255,255,255,0.85)' : 'rgba(0,0,0,0.65)';
+
+  const renderLegendItem = (row: (typeof allRows)[number], index: number) => {
+    const pct = (row.value / total) * 100;
+    return (
+      <LegendItem key={row.id} theme={theme}>
+        <span className="dot" style={{ backgroundColor: isHidden ? getRandomGrayscaleColor() : paletteColor(index) }} />
+        <span className="label">{isHidden ? '****' : row.label}</span>
+        {pct > overweightThreshold && <span className="overweight" title={t.overweightWarning}>⚠</span>}
+        <span className="pct">{isHidden ? '****' : `${pct.toFixed(1)}%`}</span>
+      </LegendItem>
+    );
+  };
 
   if (rows.length === 0) {
     return (
@@ -181,15 +223,16 @@ export default function HoldingsBreakdownChart({ theme, holdings, assetKey, isHi
     <>
       <Title theme={theme}>{t.breakdownTitle}</Title>
       <Description theme={theme}>{t.breakdownDescription}</Description>
-      <ResponsiveContainer width="100%" height={isMobileScreen ? 200 : 280}>
-        <PieChart>
+      <ChartStage>
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart>
           <Pie
             data={rows}
             cx="50%"
             cy="50%"
             labelLine={false}
             label={RenderCustomizedLabel}
-            outerRadius={isMobileScreen ? 80 : 110}
+            outerRadius={isMobileScreen ? 88 : 155}
             dataKey="value"
           >
             {rows.map((row, index) => {
@@ -211,35 +254,33 @@ export default function HoldingsBreakdownChart({ theme, holdings, assetKey, isHi
               isHidden ? '****' : entry?.payload?.label,
             ]}
           />
-        </PieChart>
-      </ResponsiveContainer>
+          </PieChart>
+        </ResponsiveContainer>
+      </ChartStage>
       <Legend theme={theme}>
-        {rows.map((row, index) => {
-          const pct = (row.value / total) * 100;
-          const prevRow = rows[index - 1];
-          const isGroupStart = !assetKey && row.assetKey && prevRow?.assetKey !== row.assetKey;
-          const categoryPct = isGroupStart && categoryTotals && row.assetKey
-            ? (categoryTotals.get(row.assetKey)! / total) * 100
-            : null;
-          return (
-            <React.Fragment key={row.id}>
-              {categoryPct !== null && row.assetKey && (
-                <CategoryHeader theme={theme}>
-                  <span>{translations.assets[row.assetKey]}</span>
-                  <span>{isHidden ? '****' : `${categoryPct.toFixed(1)}%`}</span>
-                </CategoryHeader>
-              )}
-              <LegendItem theme={theme}>
-                <span className="dot" style={{ backgroundColor: isHidden ? getRandomGrayscaleColor() : colorFor(row, index) }} />
-                <span className="label">{isHidden ? '****' : row.label}</span>
-                {!row.isOther && pct > overweightThreshold && (
-                  <span className="overweight" title={t.overweightWarning}>⚠</span>
-                )}
-                <span className="pct">{isHidden ? '****' : `${pct.toFixed(1)}%`}</span>
-              </LegendItem>
-            </React.Fragment>
-          );
-        })}
+        {assetKey
+          ? allRows.map(renderLegendItem)
+          : ASSET_CATEGORY_ORDER.map((category) => {
+              const categoryRows = allRows.filter((row) => row.assetKey === category);
+              if (categoryRows.length === 0) return null;
+              const categoryPct = categoryTotals ? ((categoryTotals.get(category) ?? 0) / total) * 100 : 0;
+              return (
+                <CategoryDetails key={category} theme={theme}>
+                  <summary>
+                    <CategoryHeader theme={theme}>
+                      <span>{translations.assets[category]}</span>
+                      <span className="category-meta">
+                        <span className="count">{categoryRows.length}</span>
+                        <span>{isHidden ? '****' : `${categoryPct.toFixed(1)}%`}</span>
+                      </span>
+                    </CategoryHeader>
+                  </summary>
+                  <div className="category-items">
+                    {categoryRows.map((row) => renderLegendItem(row, allRows.indexOf(row)))}
+                  </div>
+                </CategoryDetails>
+              );
+            })}
       </Legend>
     </>
   );

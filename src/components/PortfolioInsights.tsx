@@ -19,6 +19,7 @@ import { CurrencyContext } from '../contexts/CurrencyContext';
 import { LocalizedLink } from './LocalizedLink';
 import {
   summarizeHoldings, estimateMonthlyContribution, estimateMonthlyGrowthRate, projectGoalETA,
+  computeMonthlyContributionSeries,
 } from '../utils/investmentAnalytics';
 import type { InvestmentHoldingDto, InvestmentHoldingHistoryDto, GoalDto, AssetKey } from '../types/api';
 
@@ -29,6 +30,7 @@ interface PortfolioInsightsProps {
   goals: GoalDto[];
   assetKey: AssetKey | null;
   isHidden: boolean;
+  monthlyTarget: number | null;
   /** Portfolio-wide (not per-category) "how much I'd like to invest each month" € target, or null if unset. */
 }
 
@@ -163,6 +165,57 @@ const MonthlyTargetLink = styled(LocalizedLink)`
   &:hover { text-decoration: underline; }
 `;
 
+const TargetOverview = styled.div`
+  display: grid;
+  grid-template-columns: minmax(150px, 0.7fr) minmax(220px, 1.3fr);
+  gap: 1rem;
+  margin-top: 0.75rem;
+  @media (max-width: 680px) { grid-template-columns: 1fr; }
+`;
+
+const TargetSummary = styled.div`
+  padding: 0.9rem;
+  border-radius: 12px;
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.18);
+  color: ${(p) => p.theme.textColor};
+  span { display: block; opacity: 0.62; font-size: 0.72rem; }
+  strong { display: block; margin: 0.2rem 0; color: #10b981; font-size: 1.25rem; }
+  small { opacity: 0.72; }
+  .success-track { height: 7px; margin: 0.75rem 0 0.55rem; border-radius: 999px; overflow: hidden; background: rgba(127,127,127,0.18); }
+  .success-fill { height: 100%; border-radius: inherit; background: #10b981; transition: width 0.3s ease; }
+  .recent-average { margin-top: 0.35rem; font-size: 0.72rem; opacity: 0.78; }
+`;
+
+const MonthResults = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.45rem;
+  @media (max-width: 480px) { grid-template-columns: 1fr; }
+`;
+
+const MonthResult = styled.div<{ $hit: boolean }>`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.55rem 0.65rem;
+  border-radius: 9px;
+  color: ${(p) => p.theme.textColor};
+  background: ${(p) => p.$hit ? 'rgba(16,185,129,0.08)' : 'rgba(239,68,68,0.07)'};
+  border-left: 3px solid ${(p) => p.$hit ? '#10b981' : '#ef4444'};
+  font-size: 0.75rem;
+  .result-copy { display: flex; flex-direction: column; align-items: flex-end; }
+  strong { color: ${(p) => p.$hit ? '#10b981' : '#ef4444'}; font-size: 0.78rem; }
+  small { opacity: 0.62; font-size: 0.66rem; }
+`;
+
+function formatMonthLabel(monthKey: string, language: string): string {
+  const [year, month] = monthKey.split('-').map(Number);
+  const locale = language === 'it' ? 'it-IT' : 'en-US';
+  return new Date(Date.UTC(year, month - 1, 1)).toLocaleDateString(locale, { month: 'short', year: 'numeric', timeZone: 'UTC' });
+}
+
 function formatMonthsHuman(months: number, t: Record<string, string>): string {
   if (months < 1) return t.lessThanAMonth || 'less than a month';
   if (months < 12) return (t.monthsCount || '{count} months').replace('{count}', String(months));
@@ -174,15 +227,16 @@ function formatMonthsHuman(months: number, t: Record<string, string>): string {
 }
 
 export default function PortfolioInsights({
-  theme, holdings, history, goals, assetKey, isHidden,
+  theme, holdings, history, goals, assetKey, isHidden, monthlyTarget,
 }: PortfolioInsightsProps) {
-  const { translations } = useContext(LanguageContext);
+  const { translations, language } = useContext(LanguageContext);
   const { formatAmount } = useContext(CurrencyContext);
   const t = translations.graphs.statsHoldings.insights || {};
 
   const summary = useMemo(() => summarizeHoldings(holdings, assetKey), [holdings, assetKey]);
   const contribution = useMemo(() => estimateMonthlyContribution(history, assetKey), [history, assetKey]);
   const growth = useMemo(() => estimateMonthlyGrowthRate(history, assetKey), [history, assetKey]);
+  const contributionSeries = useMemo(() => computeMonthlyContributionSeries(history, null), [history]);
 
   const linkedGoal = assetKey ? goals.find((g) => g.linkedAssetKey === assetKey) : undefined;
   const goalProjection = linkedGoal
@@ -267,7 +321,49 @@ export default function PortfolioInsights({
       {assetKey === null && (
         <TargetSection theme={theme}>
           <h5>{t.monthlyTargetTitle || 'Monthly investment target'}</h5>
-          <Hint theme={theme}>{t.monthlyTargetMovedHint || 'Manage this target together with your other financial goals.'}</Hint>
+          {monthlyTarget != null && contributionSeries.length > 0 ? (() => {
+            const recent = contributionSeries.slice(-8).reverse();
+            const successfulMonths = recent.filter((point) => point.amount >= monthlyTarget).length;
+            const successPercentage = recent.length > 0 ? (successfulMonths / recent.length) * 100 : 0;
+            const recentAverage = recent.reduce((sum, point) => sum + point.amount, 0) / recent.length;
+            return (
+              <TargetOverview>
+                <TargetSummary theme={theme}>
+                  <span>{t.monthlyTargetSavedLabel || 'Saved monthly target'}</span>
+                  <strong>{isHidden ? '****' : formatAmount(monthlyTarget)}</strong>
+                  <small>{(t.monthlyTargetSuccessRate || '{success}/{total} recent months reached')
+                    .replace('{success}', String(successfulMonths))
+                    .replace('{total}', String(recent.length))}</small>
+                  <div className="success-track" aria-hidden="true">
+                    <div className="success-fill" style={{ width: `${successPercentage}%` }} />
+                  </div>
+                  <div className="recent-average">
+                    {(t.monthlyTargetRecentAverage || 'Recent average: {amount}')
+                      .replace('{amount}', isHidden ? '****' : formatAmount(recentAverage))}
+                  </div>
+                </TargetSummary>
+                <MonthResults>
+                  {recent.map((point) => {
+                    const hit = point.amount >= monthlyTarget;
+                    const difference = point.amount - monthlyTarget;
+                    return (
+                      <MonthResult key={point.month} theme={theme} $hit={hit}>
+                        <span>{formatMonthLabel(point.month, language)}</span>
+                        <span className="result-copy">
+                          <strong>{isHidden ? '****' : formatAmount(point.amount)} {hit ? '✓' : '✗'}</strong>
+                          <small>{isHidden ? '****' : `${difference >= 0 ? '+' : ''}${formatAmount(difference)}`}</small>
+                        </span>
+                      </MonthResult>
+                    );
+                  })}
+                </MonthResults>
+              </TargetOverview>
+            );
+          })() : (
+            <Hint theme={theme}>{monthlyTarget != null
+              ? (t.monthlyTargetNeedsHistory || 'Keep recording history to compare recent months.')
+              : (t.monthlyTargetHint || 'Set a monthly investment target to track your consistency.')}</Hint>
+          )}
           <MonthlyTargetLink theme={theme} to="/goals-limits#monthly-investment-target">
             {t.monthlyTargetManageLink || 'Manage monthly investment target →'}
           </MonthlyTargetLink>

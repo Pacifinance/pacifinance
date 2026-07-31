@@ -27,6 +27,7 @@ import { IconContext } from "../contexts/PageContext";
 import { LanguageContext } from "../contexts/LanguageContext";
 import { MediaQueryContext } from "../contexts/MediaQueryContext";
 import { sortTagsByLanguage } from '../utils/sortingUtils';
+import { useGamification } from '../hooks/useGamification';
 import {
     SidebarPrivacyToggleModeButton,
     SidebarSection,
@@ -111,6 +112,16 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
 
     const navigate = useLocalizedNavigate();
     const { showSuccess, showError } = useToast();
+    const gamification = useGamification(userData);
+    const levelStartPoints = (gamification.level - 1) * 30;
+    const levelProgress = Math.max(0, Math.min(100,
+        Math.round(((gamification.points - levelStartPoints) / 30) * 100),
+    ));
+    const levelColors = ['#22c55e', '#06b6d4', '#3b82f6', '#8b5cf6', '#f59e0b', '#ef4444'];
+    const levelColor = levelColors[Math.min(gamification.level - 1, levelColors.length - 1)];
+    const levelTitle = (translations?.gamification?.levelProgress || 'Level {level}: {progress}% to the next level')
+        .replace('{level}', String(gamification.level))
+        .replace('{progress}', String(levelProgress));
 
     // Shared account actions via DI hook
     const accountActions = useAccountActions({
@@ -321,12 +332,12 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                           left: 0,
                           right: 0,
                           width: '100%',
-                          height: '70px',
+                          height: '58px',
                           flexDirection: 'row',
                           justifyContent: 'space-between',
                           alignItems: 'center',
-                          padding: '0 1rem',
-                          zIndex: 1001,
+                          padding: '0 0.55rem 0 0.75rem',
+                          zIndex: 9000,
                       }
                     : {}),
             }}
@@ -345,7 +356,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
             >
                 <LogoPaci />
                 {isMobileScreen ? (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginLeft: 'auto' }}>
                         <button
                             onClick={toggleHidden}
                             data-umami-event="mobile-privacy-toggle"
@@ -368,12 +379,36 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                         >
                             <FontAwesomeIcon icon={isHidden ? faEyeSlash : faEye} />
                         </button>
-                        <AvatarIcon
-                            size={36}
-                            theme={theme}
-                            title={translations.sidebar.account.title}
-                            onClick={() => navigate('/profile')}
-                        />
+                        <div
+                            title={levelTitle}
+                            aria-label={levelTitle}
+                            style={{
+                                position: 'relative',
+                                width: '42px',
+                                height: '42px',
+                                padding: '3px',
+                                boxSizing: 'border-box',
+                                borderRadius: '50%',
+                                background: `conic-gradient(${levelColor} ${levelProgress}%, ${theme.mode === 'dark' ? 'rgba(255,255,255,0.14)' : 'rgba(15,23,42,0.14)'} 0)`,
+                                boxShadow: `0 0 14px ${levelColor}45`,
+                            }}
+                        >
+                            <AvatarIcon
+                                size={36}
+                                theme={theme}
+                                title={levelTitle}
+                                style={{ border: `2px solid ${theme.backgroundColor}`, boxSizing: 'border-box' }}
+                                onClick={() => navigate('/profile')}
+                            />
+                            <span style={{
+                                position: 'absolute', right: '-2px', bottom: '-3px', minWidth: '20px', height: '15px',
+                                padding: '0 3px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                background: levelColor, color: '#fff', border: `2px solid ${theme.backgroundColor}`,
+                                fontSize: '8px', lineHeight: 1, fontWeight: 800, boxSizing: 'content-box',
+                            }}>
+                                {translations?.gamification?.levelShort} {gamification.level}
+                            </span>
+                        </div>
                     </div>
                 ) : (
                     <>

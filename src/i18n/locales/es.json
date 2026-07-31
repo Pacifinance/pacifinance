@@ -1890,6 +1890,8 @@
     "gamification": {
         "title": "Tus logros",
         "level": "Nivel",
+        "levelShort": "Nv",
+        "levelProgress": "Nivel {level}: {progress}% para el siguiente nivel",
         "points": "puntos",
         "badgesUnlocked": "Insignias desbloqueadas",
         "savingsStreak": "Meses ahorrados",
@@ -2087,6 +2089,12 @@
                 "name": "Top 10%",
                 "description": "En el top 10% de al menos una clasificación"
             },
+            "firstOutflow": { "name": "Primer gasto", "description": "Registra tu primer gasto" },
+            "transactionTracker": { "name": "Finanzas ordenadas", "description": "Registra al menos 25 gastos o ingresos" },
+            "investmentImporter": { "name": "Importador", "description": "Importa tu primera transacción de inversión desde un archivo" },
+            "investmentLedger": { "name": "Registro de inversiones", "description": "Registra al menos 25 transacciones de inversión" },
+            "priceContributor": { "name": "Colaborador del mercado", "description": "Aporta tu primer precio histórico de mercado" },
+            "priceHistorian": { "name": "Historiador del mercado", "description": "Aporta al menos 5 precios históricos de mercado" },
             "profileComplete": {
                 "name": "Perfil completo",
                 "description": "Todos los campos del perfil completados"

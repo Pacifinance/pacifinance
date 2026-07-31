@@ -1888,6 +1888,8 @@
     "gamification": {
         "title": "Deine Erfolge",
         "level": "Level",
+        "levelShort": "Lv",
+        "levelProgress": "Level {level}: {progress}% bis zum nächsten Level",
         "points": "Punkte",
         "badgesUnlocked": "Abzeichen freigeschaltet",
         "savingsStreak": "Monate gespart",
@@ -2085,6 +2087,12 @@
                 "name": "Top 10%",
                 "description": "In den Top 10% mindestens einer Rangliste"
             },
+            "firstOutflow": { "name": "Erste Ausgabe", "description": "Erfasse deine erste Ausgabe" },
+            "transactionTracker": { "name": "Geordnete Finanzen", "description": "Erfasse mindestens 25 Ausgaben oder Einnahmen" },
+            "investmentImporter": { "name": "Importeur", "description": "Importiere deine erste Anlagetransaktion aus einer Datei" },
+            "investmentLedger": { "name": "Anlageregister", "description": "Erfasse mindestens 25 Anlagetransaktionen" },
+            "priceContributor": { "name": "Marktbeitrag", "description": "Trage deinen ersten historischen Marktpreis bei" },
+            "priceHistorian": { "name": "Markthistoriker", "description": "Trage mindestens 5 historische Marktpreise bei" },
             "profileComplete": {
                 "name": "Profil vollständig",
                 "description": "Alle Profilfelder ausgefüllt"

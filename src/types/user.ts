@@ -8,7 +8,7 @@
  * @module types/user
  */
 
-import type { BalanceMonthDto, ExpenseDto, StatsAverageBucket, TagDto, TransactionDto } from './api';
+import type { BalanceMonthDto, CommunityPriceWithInstrumentDto, ExpenseDto, InvestmentTransactionSummaryDto, StatsAverageBucket, TagDto, TransactionDto } from './api';
 import type { KeyValue } from './common';
 
 // ─── Profile ─────────────────────────────────────────────────────────
@@ -137,4 +137,8 @@ export interface UserData {
   seenBadges?: string[];
   /** Elevated permission to moderate community-submitted historical prices — see getIsAdmin. */
   isAdmin?: boolean;
+  activity?: {
+    investmentTransactions: InvestmentTransactionSummaryDto[];
+    communityPriceSubmissions: CommunityPriceWithInstrumentDto[];
+  };
 }

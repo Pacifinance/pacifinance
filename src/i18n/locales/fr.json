@@ -1888,6 +1888,8 @@
     "gamification": {
         "title": "Tes succès",
         "level": "Niveau",
+        "levelShort": "Nv",
+        "levelProgress": "Niveau {level} : {progress}% vers le niveau suivant",
         "points": "points",
         "badgesUnlocked": "Badges débloqués",
         "savingsStreak": "Mois épargnés",
@@ -2085,6 +2087,12 @@
                 "name": "Top 10 %",
                 "description": "Dans le top 10 % d'au moins un classement"
             },
+            "firstOutflow": { "name": "Première dépense", "description": "Enregistrez votre première dépense" },
+            "transactionTracker": { "name": "Finances organisées", "description": "Enregistrez au moins 25 dépenses ou revenus" },
+            "investmentImporter": { "name": "Importateur", "description": "Importez votre première transaction d'investissement depuis un fichier" },
+            "investmentLedger": { "name": "Registre d'investissement", "description": "Enregistrez au moins 25 transactions d'investissement" },
+            "priceContributor": { "name": "Contributeur du marché", "description": "Ajoutez votre premier cours historique" },
+            "priceHistorian": { "name": "Historien du marché", "description": "Ajoutez au moins 5 cours historiques" },
             "profileComplete": {
                 "name": "Profil complet",
                 "description": "Tous les champs du profil remplis"

@@ -72,7 +72,7 @@ export const UserProvider = ({ children }) => {
   const isAuthenticatedRef = useRef(isAuthenticated);
 
   // Inject services from DI container
-  const { apiClient, userService, financeService, rankingService, statsService, communityBenchmarkService } = useServices();
+  const { apiClient, userService, financeService, rankingService, statsService, communityBenchmarkService, investmentService } = useServices();
 
   // Keep ref in sync with state for use in interceptor
   useEffect(() => {
@@ -227,6 +227,10 @@ export const UserProvider = ({ children }) => {
               benchmarkConsent: userProfile.benchmarkConsent,
               seenBadges: userProfile.seenBadges,
               isAdmin: userProfile.isAdmin,
+              activity: {
+                investmentTransactions: [],
+                communityPriceSubmissions: [],
+              },
             });
             setSessionUserInfo(null);
             setIsUpdated(true);
@@ -251,6 +255,22 @@ export const UserProvider = ({ children }) => {
                 };
               });
             }).catch(() => {});
+
+            Promise.allSettled([
+              investmentService?.getTransactions ? investmentService.getTransactions() : Promise.resolve([]),
+              investmentService?.getMyCommunityPriceSubmissions ? investmentService.getMyCommunityPriceSubmissions() : Promise.resolve([]),
+            ]).then(([transactionsResult, submissionsResult]) => {
+              setUserData(prev => {
+                if (!prev) return prev;
+                return {
+                  ...prev,
+                  activity: {
+                    investmentTransactions: transactionsResult.status === 'fulfilled' ? transactionsResult.value : [],
+                    communityPriceSubmissions: submissionsResult.status === 'fulfilled' ? submissionsResult.value : [],
+                  },
+                };
+              });
+            });
         }
       } catch (error) {
         console.error('Errore durante le richieste API:', error);

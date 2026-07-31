@@ -1,7 +1,7 @@
 /**
  * Tests for useGamification — Badge Check Functions
  * 
- * Tests every single badge (44) with:
+ * Tests every single badge (50) with:
  * - Positive case: data that should unlock the badge
  * - Negative case: data that should NOT unlock (especially empty/zero data)
  * - Edge cases: boundary values, fallback defaults
@@ -79,8 +79,8 @@ const activeUser = (months = 6) => {
 // ═══════════════════════════════════════════
 
 describe('useGamification — Structure', () => {
-  it('should have exactly 44 badge definitions', () => {
-    expect(Object.keys(BADGE_DEFINITIONS)).toHaveLength(44);
+  it('should have exactly 50 badge definitions', () => {
+    expect(Object.keys(BADGE_DEFINITIONS)).toHaveLength(50);
   });
 
   it('every badge should have id, icon, category, and check function', () => {
@@ -726,6 +726,50 @@ describe('Community Badges', () => {
 // ═══════════════════════════════════════════
 // PROFILE BADGE (1)
 // ═══════════════════════════════════════════
+
+describe('Recent feature badges', () => {
+  it('keeps activity badges locked when activity data is missing', () => {
+    const data = emptyUser();
+    expect(BADGE_DEFINITIONS.investmentImporter.check(data)).toBe(false);
+    expect(BADGE_DEFINITIONS.investmentLedger.check(data)).toBe(false);
+    expect(BADGE_DEFINITIONS.priceContributor.check(data)).toBe(false);
+    expect(BADGE_DEFINITIONS.priceHistorian.check(data)).toBe(false);
+  });
+
+  it('unlocks expense tracking milestones from real transactions', () => {
+    const data = emptyUser();
+    data.expenses.allOutflows = Array.from({ length: 20 }, (_, id) => ({ id }));
+    data.incomes.allIncomes = Array.from({ length: 5 }, (_, id) => ({ id }));
+    expect(BADGE_DEFINITIONS.firstOutflow.check(data)).toBe(true);
+    expect(BADGE_DEFINITIONS.transactionTracker.check(data)).toBe(true);
+  });
+
+  it('requires an external id to recognize a file-imported investment', () => {
+    const data = emptyUser();
+    data.activity = { investmentTransactions: [{ externalId: null }], communityPriceSubmissions: [] };
+    expect(BADGE_DEFINITIONS.investmentImporter.check(data)).toBe(false);
+    data.activity.investmentTransactions.push({ externalId: 'csv-row-1' });
+    expect(BADGE_DEFINITIONS.investmentImporter.check(data)).toBe(true);
+  });
+
+  it('unlocks investment ledger at exactly 25 transactions', () => {
+    const data = emptyUser();
+    data.activity = {
+      investmentTransactions: Array.from({ length: 25 }, (_, id) => ({ id, externalId: null })),
+      communityPriceSubmissions: [],
+    };
+    expect(BADGE_DEFINITIONS.investmentLedger.check(data)).toBe(true);
+  });
+
+  it('unlocks market contribution milestones at 1 and 5 submissions', () => {
+    const data = emptyUser();
+    data.activity = { investmentTransactions: [], communityPriceSubmissions: [{ id: 1 }] };
+    expect(BADGE_DEFINITIONS.priceContributor.check(data)).toBe(true);
+    expect(BADGE_DEFINITIONS.priceHistorian.check(data)).toBe(false);
+    data.activity.communityPriceSubmissions = Array.from({ length: 5 }, (_, id) => ({ id }));
+    expect(BADGE_DEFINITIONS.priceHistorian.check(data)).toBe(true);
+  });
+});
 
 describe('Profile Badge', () => {
   it('profileComplete — unlocks when all required fields have key >= 0', () => {

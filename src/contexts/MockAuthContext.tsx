@@ -71,6 +71,11 @@ export const mockUserData = {
     // Elevated permission to moderate community-submitted historical prices — see getIsAdmin
     isAdmin: false,
 
+    activity: {
+        investmentTransactions: [],
+        communityPriceSubmissions: [],
+    },
+
     // User profile data (come UserContext) — values from i18n
     profile: {
         nationality: { key: 107, value: it.tags.country?.['italy'] || 'Italia' },

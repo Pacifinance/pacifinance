@@ -55,7 +55,7 @@ export const BADGE_CATEGORY_ORDER = [
 ];
 
 // ═══════════════════════════════════════════
-// Badge Definitions (44 total)
+// Badge Definitions (50 total)
 // Exported for testing
 // ═══════════════════════════════════════════
 export const BADGE_DEFINITIONS = {
@@ -361,6 +361,18 @@ export const BADGE_DEFINITIONS = {
     category: BADGE_CATEGORIES.outflowManagement,
     check: (data) => countActiveCategories(data) >= 5,
   },
+  firstOutflow: {
+    id: 'firstOutflow',
+    icon: '🧾',
+    category: BADGE_CATEGORIES.outflowManagement,
+    check: (data) => (data.expenses?.allOutflows?.length || 0) >= 1,
+  },
+  transactionTracker: {
+    id: 'transactionTracker',
+    icon: '🗂️',
+    category: BADGE_CATEGORIES.outflowManagement,
+    check: (data) => ((data.expenses?.allOutflows?.length || 0) + (data.incomes?.allIncomes?.length || 0)) >= 25,
+  },
 
   // ─────────────────────────────────────────
   // INCOME (3 badges)
@@ -397,6 +409,19 @@ export const BADGE_DEFINITIONS = {
       }
       return count >= 3;
     },
+  },
+
+  investmentImporter: {
+    id: 'investmentImporter',
+    icon: '📄',
+    category: BADGE_CATEGORIES.diversification,
+    check: (data) => data.activity?.investmentTransactions?.some(transaction => Boolean(transaction.externalId)) || false,
+  },
+  investmentLedger: {
+    id: 'investmentLedger',
+    icon: '📊',
+    category: BADGE_CATEGORIES.diversification,
+    check: (data) => (data.activity?.investmentTransactions?.length || 0) >= 25,
   },
 
   // ─────────────────────────────────────────
@@ -445,6 +470,18 @@ export const BADGE_DEFINITIONS = {
       const r = data.rankings || {};
       return Object.values(r).some(v => typeof v === 'number' && v >= 90);
     },
+  },
+  priceContributor: {
+    id: 'priceContributor',
+    icon: '🌐',
+    category: BADGE_CATEGORIES.community,
+    check: (data) => (data.activity?.communityPriceSubmissions?.length || 0) >= 1,
+  },
+  priceHistorian: {
+    id: 'priceHistorian',
+    icon: '📜',
+    category: BADGE_CATEGORIES.community,
+    check: (data) => (data.activity?.communityPriceSubmissions?.length || 0) >= 5,
   },
 
   // ─────────────────────────────────────────

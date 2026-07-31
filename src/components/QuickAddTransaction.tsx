@@ -20,6 +20,7 @@
  * balance-delta logic.
  */
 import React, { useContext, useEffect, useMemo, useState, lazy, Suspense } from 'react';
+import { createPortal } from 'react-dom';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -609,7 +610,7 @@ export default function QuickAddTransaction({ theme, showFab = true, menuOpen: c
         </Fab>
       )}
 
-      {menuOpen && (
+      {menuOpen && createPortal((
         <Overlay onClick={(e) => { if (e.target === e.currentTarget) setMenuOpen(false); }}>
           <Popup theme={theme}>
             <HeaderRow>
@@ -638,7 +639,7 @@ export default function QuickAddTransaction({ theme, showFab = true, menuOpen: c
             </MenuList>
           </Popup>
         </Overlay>
-      )}
+      ), document.body)}
 
       {showDataImport && (
         <Suspense fallback={null}>

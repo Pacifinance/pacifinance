@@ -18,7 +18,7 @@ import WhatsNewBanner from './WhatsNewBanner';
 
 const ToolbarContainer = styled.div`
   position: relative;
-  z-index: 1200;
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: flex-end;

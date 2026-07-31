@@ -1906,6 +1906,8 @@
     "gamification": {
         "title": "Your Achievements",
         "level": "Level",
+        "levelShort": "Lv",
+        "levelProgress": "Level {level}: {progress}% to the next level",
         "points": "points",
         "badgesUnlocked": "Badges unlocked",
         "savingsStreak": "Months saved",
@@ -2103,6 +2105,12 @@
                 "name": "Top 10%",
                 "description": "In the top 10% of at least one ranking"
             },
+            "firstOutflow": { "name": "First expense", "description": "Record your first expense" },
+            "transactionTracker": { "name": "Organized finances", "description": "Record at least 25 expenses or incomes" },
+            "investmentImporter": { "name": "Importer", "description": "Import your first investment transaction from a file" },
+            "investmentLedger": { "name": "Investment ledger", "description": "Record at least 25 investment transactions" },
+            "priceContributor": { "name": "Market contributor", "description": "Contribute your first historical market price" },
+            "priceHistorian": { "name": "Market historian", "description": "Contribute at least 5 historical market prices" },
             "profileComplete": {
                 "name": "Profile Complete",
                 "description": "All profile fields filled"

@@ -1657,6 +1657,35 @@ export type VerifyCommunityPriceResult =
     | {status: "not_found"}
     | {status: "already_resolved"; submission: CommunityPrice}
 
+async function applyVerifiedCommunityPriceToHistory(submission: CommunityPrice): Promise<void> {
+    const [year, month] = submission.monthKey.split("-").map(Number)
+    const monthStart = `${submission.monthKey}-01`
+    const monthEnd = `${submission.monthKey}-${String(new Date(Date.UTC(year, month, 0)).getUTCDate()).padStart(2, "0")}`
+    const {data, error} = await supabase.from("user_investment_holding_history")
+        .select("id, quantity, price_source")
+        .eq("instrument_id", submission.instrumentId)
+        .gte("user_date", monthStart)
+        .lte("user_date", monthEnd)
+    if (error) {
+        console.error("investments.applyVerifiedCommunityPriceToHistory: failed to read matching history", error)
+        return
+    }
+
+    const rows = (data ?? []) as unknown as {id: number; quantity: number | null; price_source: string | null}[]
+    const eligible = rows.filter((row) =>
+        row.quantity != null && row.quantity > 0
+        && row.price_source !== "provider" && row.price_source !== "community")
+    await Promise.all(eligible.map(async (row) => {
+        const result = await supabase.from("user_investment_holding_history")
+            .update({
+                current_value: roundCurrency(submission.priceEur * (row.quantity as number)),
+                price_source: "community",
+            })
+            .eq("id", row.id)
+        if (result.error) console.error("investments.applyVerifiedCommunityPriceToHistory: failed to update history row", result.error)
+    }))
+}
+
 /**
  * Approves or rejects a pending submission. Admin-only - callers must
  * re-check users.isAdmin server-side before calling this, never trust the
@@ -1683,7 +1712,9 @@ async function verifyCommunityPrice(admin_user_id: string, id: number, action: "
         .select(COMMUNITY_PRICE_SELECT).maybeSingle()
     if (error) console.error("investments.verifyCommunityPrice: failed to update submission", error)
     if (error || !data) return {status: "not_found"}
-    return {status: "ok", submission: toCommunityPrice(data as unknown as CommunityPriceRow)}
+    const submission = toCommunityPrice(data as unknown as CommunityPriceRow)
+    if (action === "approve") await applyVerifiedCommunityPriceToHistory(submission)
+    return {status: "ok", submission}
 }
 
 /**

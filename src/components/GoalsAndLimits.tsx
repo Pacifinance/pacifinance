@@ -23,6 +23,7 @@ import {
 } from 'react-icons/fa';
 import { BsPercent, BsCalendar3 } from 'react-icons/bs';
 import { ASSET_KEYS } from '../constants/balanceSchema';
+import { computeMonthlyContributionSeries } from '../utils/investmentAnalytics';
 
 // Styled Components
 const ProfileContainer = styled.div`
@@ -84,6 +85,25 @@ const SectionsGrid = styled.div`
     grid-template-columns: 1fr;
     gap: 1.5rem;
   }
+`;
+
+const MonthlyProgressList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-top: 1rem;
+  max-height: 220px;
+  overflow-y: auto;
+`;
+
+const MonthlyProgressRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.82rem;
+  color: ${(p) => p.theme.textColor};
+  opacity: 0.85;
+  .hit { color: #10b981; font-weight: 700; }
+  .miss { color: #ef4444; font-weight: 700; }
 `;
 
 const Section = styled.div`
@@ -390,11 +410,11 @@ const CancelButton = styled.button`
 
 const ProfileSettings = ({ theme }) => {
   const { language, translations } = useContext(LanguageContext);
-  const { currencySymbol } = useContext(CurrencyContext);
+  const { currencySymbol, formatAmount, toEUR, fromEUR } = useContext(CurrencyContext);
   useContext(MediaQueryContext);
   const { userData, setUserData } = useContext(UserContext);
   const { showSuccess, showError } = useToast();
-  const { userService, goalService } = useDemoServices();
+  const { userService, goalService, investmentService } = useDemoServices();
   
   // Stati per i limiti e controlli
   const [settings, setSettings] = useState({
@@ -406,6 +426,10 @@ const ProfileSettings = ({ theme }) => {
 
   // Stati per gli obiettivi
   const [goals, setGoals] = useState([]);
+  const [monthlyInvestmentTarget, setMonthlyInvestmentTarget] = useState(null);
+  const [monthlyTargetInput, setMonthlyTargetInput] = useState('');
+  const [investmentHistory, setInvestmentHistory] = useState([]);
+  const [savingMonthlyTarget, setSavingMonthlyTarget] = useState(false);
   
   // Stati per il modal di modifica
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -452,6 +476,31 @@ const ProfileSettings = ({ theme }) => {
     refreshGoals();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    Promise.all([investmentService.getSettings(), investmentService.getHoldingHistory()])
+      .then(([investmentSettings, history]) => {
+        const target = investmentSettings?.monthlyTarget ?? null;
+        setMonthlyInvestmentTarget(target);
+        setMonthlyTargetInput(target == null ? '' : String(fromEUR(target)));
+        setInvestmentHistory(Array.isArray(history) ? history : []);
+      })
+      .catch((error) => console.error('GoalsAndLimits: failed to load monthly investment target', error));
+  }, [investmentService, fromEUR]);
+
+  const saveMonthlyInvestmentTarget = async () => {
+    if (savingMonthlyTarget) return;
+    setSavingMonthlyTarget(true);
+    try {
+      const value = monthlyTargetInput.trim() === '' ? null : toEUR(Number(monthlyTargetInput));
+      const saved = await investmentService.saveSettings({ monthly_target: value });
+      setMonthlyInvestmentTarget(saved?.monthlyTarget ?? null);
+    } finally {
+      setSavingMonthlyTarget(false);
+    }
+  };
+
+  const monthlyContributionSeries = computeMonthlyContributionSeries(investmentHistory, null);
 
   // Aggiorna i "limits" (expenses_limit/savings_percent/emergency_fund_goal) nel
   // UserContext locale dopo il salvataggio — invariato, non riguarda i goals.
@@ -646,6 +695,48 @@ const ProfileSettings = ({ theme }) => {
             <FaSave />
             {language === 'it' ? 'Salva Impostazioni' : 'Save Settings'}
           </SaveButton>
+        </Section>
+
+        <Section id="monthly-investment-target" theme={theme}>
+          <SectionHeader theme={theme}>
+            <FaChartLine className="section-icon" />
+            <h3>{translations.graphs.statsHoldings.insights.monthlyTargetTitle}</h3>
+          </SectionHeader>
+          <FormGroup theme={theme}>
+            <label>{translations.graphs.statsHoldings.insights.monthlyTargetHint}</label>
+            <InputWithIcon theme={theme}>
+              <span className="input-icon">{currencySymbol}</span>
+              <input
+                type="number"
+                min="0"
+                value={monthlyTargetInput}
+                onChange={(event) => setMonthlyTargetInput(event.target.value)}
+                placeholder={translations.graphs.statsHoldings.insights.monthlyTargetPlaceholder}
+              />
+            </InputWithIcon>
+          </FormGroup>
+          <SaveButton theme={theme} onClick={saveMonthlyInvestmentTarget} disabled={savingMonthlyTarget}>
+            <FaSave />
+            {translations.graphs.statsHoldings.insights.saveButton}
+          </SaveButton>
+          {monthlyInvestmentTarget != null && monthlyContributionSeries.length > 0 && (
+            <MonthlyProgressList>
+              {monthlyContributionSeries.slice(-12).reverse().map((point) => {
+                const hit = point.amount >= monthlyInvestmentTarget;
+                const [year, month] = point.month.split('-').map(Number);
+                const monthLabel = new Date(Date.UTC(year, month - 1, 1)).toLocaleDateString(
+                  language === 'it' ? 'it-IT' : 'en-US',
+                  { month: 'short', year: 'numeric', timeZone: 'UTC' }
+                );
+                return (
+                  <MonthlyProgressRow key={point.month} theme={theme}>
+                    <span>{monthLabel}</span>
+                    <span className={hit ? 'hit' : 'miss'}>{formatAmount(point.amount)} {hit ? '✓' : '✗'}</span>
+                  </MonthlyProgressRow>
+                );
+              })}
+            </MonthlyProgressList>
+          )}
         </Section>
 
         {/* Sezione Obiettivi Personalizzati */}

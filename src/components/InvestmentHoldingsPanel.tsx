@@ -347,6 +347,7 @@ const HistoryMonthEditRow = styled.div`
 `;
 
 const CommunityPriceLine = styled.div`
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -380,6 +381,33 @@ const CommunityPriceLine = styled.div`
     opacity: 0.4;
     cursor: pointer;
     &:hover { opacity: 0.7; }
+  }
+`;
+
+const CelebrateButton = styled.button`
+  border: 1px solid rgba(16, 185, 129, 0.28);
+  border-radius: 999px;
+  padding: 0.3rem 0.65rem;
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+`;
+
+const CelebrationBurst = styled.span`
+  position: absolute;
+  right: 1.5rem;
+  pointer-events: none;
+
+  i {
+    position: absolute;
+    animation: community-celebrate 900ms ease-out forwards;
+    transform: rotate(var(--rotation)) translateY(0);
+  }
+
+  @keyframes community-celebrate {
+    to { transform: rotate(var(--rotation)) translateY(-42px); opacity: 0; }
   }
 `;
 
@@ -664,11 +692,24 @@ export default function InvestmentHoldingsPanel({
    * another user, so this is shown as a neutral notice, never folded into
    * myCommunityPrices' "your submission" status line. */
   const [communityPriceConflict, setCommunityPriceConflict] = useState<{ key: string; existing: CommunityPriceDto } | null>(null);
+  const [celebratedCommunityPrices, setCelebratedCommunityPrices] = useState<Set<number>>(() => {
+    try { return new Set(JSON.parse(localStorage.getItem('celebrated-community-prices') || '[]') as number[]); }
+    catch { return new Set(); }
+  });
+  const [celebratingCommunityPriceId, setCelebratingCommunityPriceId] = useState<number | null>(null);
   /** Per-instrument dividend totals (see server/src/db/models/investments.ts
    * getDividendsSummaryByUserId) — fetched once per panel open, keyed by
    * instrument id so each holding row can show its own total and compare it
    * against invested_amount, without a per-row network call. */
   const [dividendsByInstrumentId, setDividendsByInstrumentId] = useState<Map<number, InvestmentDividendSummaryDto>>(new Map());
+
+  const celebrateCommunityPrice = (id: number) => {
+    const next = new Set(celebratedCommunityPrices).add(id);
+    setCelebratedCommunityPrices(next);
+    localStorage.setItem('celebrated-community-prices', JSON.stringify([...next]));
+    setCelebratingCommunityPriceId(id);
+    window.setTimeout(() => setCelebratingCommunityPriceId(null), 950);
+  };
 
   useEffect(() => {
     let cancelled = false;
@@ -1203,13 +1244,34 @@ export default function InvestmentHoldingsPanel({
                                   </button>
                                 </>
                               ) : myCommunitySubmission ? (
+                                <>
                                 <span className={`status status-${myCommunitySubmission.status}`}>
                                   {myCommunitySubmission.status === 'pending' && (t.communityPrice?.statusPending || 'Il tuo prezzo è in attesa di verifica')}
-                                  {myCommunitySubmission.status === 'verified' && (t.communityPrice?.statusVerified || 'Il tuo prezzo è stato verificato')}
+                                  {myCommunitySubmission.status === 'verified' && (
+                                    celebratedCommunityPrices.has(myCommunitySubmission.id) ? (
+                                      (t.communityPrice?.statusVerified || 'Il tuo prezzo è stato verificato')
+                                    ) : (
+                                      <>
+                                        {t.communityPrice?.statusVerifiedThanks || 'Prezzo accettato — grazie per il contributo alla community!'}
+                                        {' '}
+                                        <CelebrateButton type="button" onClick={() => celebrateCommunityPrice(myCommunitySubmission.id)}>
+                                          {t.communityPrice?.celebrateButton || 'Festeggia 🎉'}
+                                        </CelebrateButton>
+                                      </>
+                                    )
+                                  )}
                                   {myCommunitySubmission.status === 'rejected' && (
                                     `${t.communityPrice?.statusRejected || 'Il tuo prezzo non è stato accettato'}${myCommunitySubmission.rejectionNote ? `: ${myCommunitySubmission.rejectionNote}` : ''}`
                                   )}
                                 </span>
+                                {celebratingCommunityPriceId === myCommunitySubmission.id && (
+                                  <CelebrationBurst aria-hidden="true">
+                                    {['🎉', '✨', '●', '◆', '🎊'].map((piece, index) => (
+                                      <i key={index} style={{ '--rotation': `${index * 72}deg` } as React.CSSProperties}>{piece}</i>
+                                    ))}
+                                  </CelebrationBurst>
+                                )}
+                                </>
                               ) : (
                                 <button type="button" className="contribute" onClick={() => startCommunityPriceEdit(holding, entry)}>
                                   {t.communityPrice?.contributeButton || 'Contribuisci il prezzo di mercato'}

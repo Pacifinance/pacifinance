@@ -776,6 +776,8 @@
                 "saveButton": "Enregistrer",
                 "monthlyTargetHint": "Définissez combien vous aimeriez investir chaque mois pour vérifier automatiquement, mois après mois, si vous l'atteignez.",
                 "monthlyTargetNeedsHistory": "Continuez à enregistrer des mois d'historique pour voir si vous atteignez cet objectif au fil du temps.",
+                "monthlyTargetMovedHint": "Gérez cet objectif avec vos autres objectifs financiers.",
+                "monthlyTargetManageLink": "Gérer l’objectif mensuel →",
                 "goalTitle": "Objectif : {name}",
                 "goalReached": "Objectif atteint ! 🎉",
                 "goalETA": "Temps estimé pour l'atteindre : {time}",
@@ -2836,6 +2838,8 @@
             "contributeButton": "Contribuer au prix du marché",
             "statusPending": "Votre prix est en attente de vérification",
             "statusVerified": "Votre prix a été vérifié",
+            "statusVerifiedThanks": "Prix accepté — merci de soutenir la communauté !",
+            "celebrateButton": "Célébrer 🎉",
             "statusRejected": "Votre prix n'a pas été accepté",
             "conflictPending": "Ce mois a déjà une proposition en attente de vérification.",
             "conflictVerified": "Ce mois a déjà un prix vérifié par la communauté."

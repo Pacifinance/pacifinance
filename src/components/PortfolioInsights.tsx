@@ -12,13 +12,13 @@
  * why providing it would unlock a better estimate — nudging the user toward
  * the data entry that actually improves their own analysis.
  */
-import React, { useContext, useMemo, useState, useEffect } from 'react';
+import React, { useContext, useMemo } from 'react';
 import styled from 'styled-components';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
+import { LocalizedLink } from './LocalizedLink';
 import {
   summarizeHoldings, estimateMonthlyContribution, estimateMonthlyGrowthRate, projectGoalETA,
-  computeMonthlyContributionSeries,
 } from '../utils/investmentAnalytics';
 import type { InvestmentHoldingDto, InvestmentHoldingHistoryDto, GoalDto, AssetKey } from '../types/api';
 
@@ -30,8 +30,6 @@ interface PortfolioInsightsProps {
   assetKey: AssetKey | null;
   isHidden: boolean;
   /** Portfolio-wide (not per-category) "how much I'd like to invest each month" € target, or null if unset. */
-  monthlyTarget: number | null;
-  onSaveMonthlyTarget: (value: number | null) => Promise<void> | void;
 }
 
 const Card = styled.div`
@@ -155,62 +153,15 @@ const TargetSection = styled.div`
   }
 `;
 
-const TargetInputRow = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 0.6rem;
-
-  input {
-    width: 120px;
-    padding: 0.4rem 0.6rem;
-    border-radius: 8px;
-    border: 1px solid ${(p) => (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : '#e2e8f0')};
-    background: ${(p) => (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.04)' : 'white')};
-    color: ${(p) => p.theme.textColor};
-    font-size: 0.85rem;
-    outline: none;
-    &:focus { border-color: ${(p) => p.theme.buttonBackgroundColor}; }
-  }
-
-  button {
-    padding: 0.4rem 0.9rem;
-    border-radius: 8px;
-    border: none;
-    background: ${(p) => p.theme.buttonBackgroundColor || '#079164'};
-    color: white;
-    font-size: 0.8rem;
-    font-weight: 600;
-    cursor: pointer;
-    &:disabled { opacity: 0.5; cursor: not-allowed; }
-  }
-`;
-
-const MonthlyHistoryList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-  max-height: 220px;
-  overflow-y: auto;
-`;
-
-const MonthlyHistoryRow = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+const MonthlyTargetLink = styled(LocalizedLink)`
+  display: inline-flex;
+  margin-top: 0.45rem;
+  color: ${(p) => p.theme.buttonBackgroundColor || '#079164'};
   font-size: 0.8rem;
-  color: ${(p) => p.theme.textColor};
-  padding: 0.3rem 0;
-
-  .amount.hit { color: #10b981; font-weight: 600; }
-  .amount.miss { color: #ef4444; font-weight: 600; }
+  font-weight: 650;
+  text-decoration: none;
+  &:hover { text-decoration: underline; }
 `;
-
-function formatMonthLabel(monthKey: string, language: string): string {
-  const [year, month] = monthKey.split('-').map(Number);
-  const locale = language === 'it' ? 'it-IT' : 'en-US';
-  return new Date(Date.UTC(year, month - 1, 1)).toLocaleDateString(locale, { month: 'short', year: 'numeric', timeZone: 'UTC' });
-}
 
 function formatMonthsHuman(months: number, t: Record<string, string>): string {
   if (months < 1) return t.lessThanAMonth || 'less than a month';
@@ -223,33 +174,15 @@ function formatMonthsHuman(months: number, t: Record<string, string>): string {
 }
 
 export default function PortfolioInsights({
-  theme, holdings, history, goals, assetKey, isHidden, monthlyTarget, onSaveMonthlyTarget,
+  theme, holdings, history, goals, assetKey, isHidden,
 }: PortfolioInsightsProps) {
-  const { translations, language } = useContext(LanguageContext);
-  const { formatAmount, toEUR, fromEUR } = useContext(CurrencyContext);
+  const { translations } = useContext(LanguageContext);
+  const { formatAmount } = useContext(CurrencyContext);
   const t = translations.graphs.statsHoldings.insights || {};
 
   const summary = useMemo(() => summarizeHoldings(holdings, assetKey), [holdings, assetKey]);
   const contribution = useMemo(() => estimateMonthlyContribution(history, assetKey), [history, assetKey]);
   const growth = useMemo(() => estimateMonthlyGrowthRate(history, assetKey), [history, assetKey]);
-  const contributionSeries = useMemo(() => computeMonthlyContributionSeries(history, assetKey), [history, assetKey]);
-
-  const [targetInput, setTargetInput] = useState(monthlyTarget != null ? String(fromEUR(monthlyTarget)) : '');
-  const [savingTarget, setSavingTarget] = useState(false);
-  useEffect(() => {
-    setTargetInput(monthlyTarget != null ? String(fromEUR(monthlyTarget)) : '');
-  }, [monthlyTarget, fromEUR]);
-
-  const handleSaveTarget = async () => {
-    if (savingTarget) return;
-    setSavingTarget(true);
-    try {
-      const value = targetInput.trim() === '' ? null : toEUR(Number(targetInput));
-      await onSaveMonthlyTarget(value);
-    } finally {
-      setSavingTarget(false);
-    }
-  };
 
   const linkedGoal = assetKey ? goals.find((g) => g.linkedAssetKey === assetKey) : undefined;
   const goalProjection = linkedGoal
@@ -334,38 +267,11 @@ export default function PortfolioInsights({
       {assetKey === null && (
         <TargetSection theme={theme}>
           <h5>{t.monthlyTargetTitle || 'Monthly investment target'}</h5>
-          <TargetInputRow theme={theme}>
-            <input
-              type="number"
-              min="0"
-              value={targetInput}
-              onChange={(e) => setTargetInput(e.target.value)}
-              placeholder={t.monthlyTargetPlaceholder || 'e.g. 300'}
-            />
-            <button type="button" onClick={handleSaveTarget} disabled={savingTarget}>
-              {t.saveButton || 'Save'}
-            </button>
-          </TargetInputRow>
+          <Hint theme={theme}>{t.monthlyTargetMovedHint || 'Manage this target together with your other financial goals.'}</Hint>
+          <MonthlyTargetLink theme={theme} to="/goals-limits#monthly-investment-target">
+            {t.monthlyTargetManageLink || 'Manage monthly investment target →'}
+          </MonthlyTargetLink>
 
-          {monthlyTarget != null && contributionSeries.length > 0 ? (
-            <MonthlyHistoryList>
-              {contributionSeries.slice(-12).reverse().map((point) => {
-                const hit = point.amount >= monthlyTarget;
-                return (
-                  <MonthlyHistoryRow key={point.month} theme={theme}>
-                    <span>{formatMonthLabel(point.month, language)}</span>
-                    <span className={`amount ${hit ? 'hit' : 'miss'}`}>
-                      {isHidden ? '****' : formatAmount(point.amount)} {hit ? '✓' : '✗'}
-                    </span>
-                  </MonthlyHistoryRow>
-                );
-              })}
-            </MonthlyHistoryList>
-          ) : monthlyTarget != null ? (
-            <Hint theme={theme}>{t.monthlyTargetNeedsHistory || 'Keep recording months of history to see whether you\'re hitting this target over time.'}</Hint>
-          ) : (
-            <Hint theme={theme}>{t.monthlyTargetHint || 'Set how much you\'d like to invest each month to automatically track whether you\'re hitting it, month by month.'}</Hint>
-          )}
         </TargetSection>
       )}
 

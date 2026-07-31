@@ -30,7 +30,7 @@ import symbolCache from "../src/cache/symbolCache"
  * the chain is itself awaitable (for calls with no terminal method). */
 function makeChain(result: { data: unknown; error: unknown }) {
     const chain: Record<string, unknown> = {}
-    for (const method of ["select", "eq", "neq", "in", "or", "is", "order", "limit", "insert", "update", "delete", "upsert"]) {
+    for (const method of ["select", "eq", "neq", "in", "or", "is", "gte", "lte", "order", "limit", "insert", "update", "delete", "upsert"]) {
         chain[method] = vi.fn(() => chain)
     }
     chain.single = vi.fn(() => Promise.resolve(result))
@@ -866,10 +866,34 @@ describe("investments model", () => {
                 data: {...pendingRow, status: "verified", verified_by: "admin-1", verified_at: "2026-01-02T00:00:00Z"},
                 error: null,
             }))
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: [], error: null}))
 
             const result = await investments.verifyCommunityPrice("admin-1", 1, "approve", null)
 
             expect(result).toMatchObject({status: "ok", submission: {status: "verified", verifiedBy: "admin-1"}})
+        })
+
+        it("applies an approved community price to matching unverified history values", async () => {
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: pendingRow, error: null}))
+            mockSupabase.from.mockReturnValueOnce(makeChain({
+                data: {...pendingRow, status: "verified", verified_by: "admin-1", verified_at: "2026-01-02T00:00:00Z"},
+                error: null,
+            }))
+            mockSupabase.from.mockReturnValueOnce(makeChain({
+                data: [
+                    {id: 41, quantity: 2, price_source: "manual"},
+                    {id: 42, quantity: 3, price_source: "provider"},
+                ],
+                error: null,
+            }))
+            const updateChain = makeChain({data: null, error: null})
+            mockSupabase.from.mockReturnValueOnce(updateChain)
+
+            await investments.verifyCommunityPrice("admin-1", 1, "approve", null)
+
+            expect(updateChain.update).toHaveBeenCalledWith({current_value: 200, price_source: "community"})
+            expect(updateChain.eq).toHaveBeenCalledWith("id", 41)
+            expect(mockSupabase.from).toHaveBeenCalledTimes(4)
         })
 
         it("rejects a pending submission and stores the rejection note", async () => {

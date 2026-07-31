@@ -539,8 +539,7 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                     </ModernDashboardHeader>
                     </DashboardSectionSlot>}
 
-                {/* Quick add: record an outflow/income in seconds, both view modes */}
-                <QuickAddTransaction theme={theme} />
+                {!isMobileScreen && <QuickAddTransaction theme={theme} />}
 
                 {/* View Mode: Compact (table) vs Cards (detailed sections) */}
                 {viewMode === 'compact' ? (

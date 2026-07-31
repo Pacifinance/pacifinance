@@ -23,7 +23,7 @@ import React, { useContext, useEffect, useMemo, useState, lazy, Suspense } from 
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faPlus, faCheck, faTimes, faKeyboard, faCommentDots, faMagic, faPencil, faFileImport, faChartLine,
+  faPlus, faCheck, faTimes, faKeyboard, faCommentDots, faMagic, faPencil, faFileImport, faChartLine, faWallet,
 } from '@fortawesome/free-solid-svg-icons';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
@@ -33,6 +33,7 @@ import { useDemoServices } from '../hooks/useDemoServices';
 import { getOutflowsTags, getIncomesTags, getPaymentTags, getCustomCategories, getCurrentBalance } from '../utils/userDataSelectors';
 import { parseSmartPasteText } from '../utils/smartPasteParser';
 import { detectPlatform } from '../utils/platformDetection';
+import { useLocalizedNavigate } from '../hooks/useLocalizedNavigate';
 import { ASSET_KEYS, buildSnapshotWithDeltas } from '../constants/balanceSchema';
 import CategoryPicker from './CategoryPicker';
 import {
@@ -370,19 +371,25 @@ const todayLocalISO = () => {
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 };
 
-export default function QuickAddTransaction({ theme }) {
+export default function QuickAddTransaction({ theme, showFab = true, menuOpen: controlledMenuOpen, onMenuOpenChange }) {
   const { translations } = useContext(LanguageContext);
   const { currencySymbol, toEUR } = useContext(CurrencyContext);
   const { userData, handleSetIsUpdated, addCustomCategory } = useContext(UserContext) || {};
   const { showError, showWarning } = useToast();
   const { financeService, investmentService, liquidityAccountService } = useDemoServices();
+  const navigate = useLocalizedNavigate();
 
   const t = translations?.dashboard?.quickAdd || {};
 
   /** Tapping the Fab opens this small action menu first (manual entry / CSV
    * import outflows-income / CSV import investments) - picking "manual entry"
    * closes it and opens `open` below, unchanged from before this menu existed. */
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [internalMenuOpen, setInternalMenuOpen] = useState(false);
+  const menuOpen = controlledMenuOpen ?? internalMenuOpen;
+  const setMenuOpen = (nextOpen) => {
+    if (onMenuOpenChange) onMenuOpenChange(nextOpen);
+    else setInternalMenuOpen(nextOpen);
+  };
   const [showDataImport, setShowDataImport] = useState(false);
   const [showInvestmentImport, setShowInvestmentImport] = useState(false);
   const [open, setOpen] = useState(false);
@@ -591,14 +598,16 @@ export default function QuickAddTransaction({ theme }) {
 
   return (
     <>
-      <Fab
-        type="button"
-        onClick={() => setMenuOpen(true)}
-        aria-label={t.title || 'Aggiunta rapida'}
-        data-umami-event="quickAddFabOpen"
-      >
-        <FontAwesomeIcon icon={faPlus} />
-      </Fab>
+      {showFab && (
+        <Fab
+          type="button"
+          onClick={() => setMenuOpen(true)}
+          aria-label={t.title || 'Aggiunta rapida'}
+          data-umami-event="quickAddFabOpen"
+        >
+          <FontAwesomeIcon icon={faPlus} />
+        </Fab>
+      )}
 
       {menuOpen && (
         <Overlay onClick={(e) => { if (e.target === e.currentTarget) setMenuOpen(false); }}>
@@ -613,6 +622,10 @@ export default function QuickAddTransaction({ theme }) {
               <MenuItemButton type="button" theme={theme} onClick={() => { setMenuOpen(false); setOpen(true); }}>
                 <FontAwesomeIcon icon={faPencil} />
                 {t.menuManual || 'Inserisci manualmente'}
+              </MenuItemButton>
+              <MenuItemButton type="button" theme={theme} onClick={() => { setMenuOpen(false); navigate('/insert-values'); }}>
+                <FontAwesomeIcon icon={faWallet} />
+                {t.menuBalance || 'Aggiorna bilancio'}
               </MenuItemButton>
               <MenuItemButton type="button" theme={theme} onClick={() => { setMenuOpen(false); setShowDataImport(true); }}>
                 <FontAwesomeIcon icon={faFileImport} />

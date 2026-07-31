@@ -354,6 +354,7 @@
     "sidebar": {
         "dashboard": "Dashboard",
         "chartsStatistics": "Diagramme und Statistiken",
+        "statisticsShort": "Statistiken",
         "insert": "Einfügen",
         "check": "Preise prüfen",
         "marketPrices": "Marktpreise",
@@ -363,6 +364,8 @@
         "info": "Info",
         "more": "Mehr",
         "goalsLimits": "Ziele & Limits",
+        "goalsShort": "Ziele",
+        "mobileNavigation": "Hauptnavigation",
         "logout": "Abmelden",
         "privacy": "Datenschutz",
         "account": {
@@ -569,6 +572,7 @@
             "title": "Schnell hinzufügen",
             "menuTitle": "Was möchtest du tun?",
             "menuManual": "Manuell eingeben",
+            "menuBalance": "Bilanz aktualisieren",
             "menuImportOutflowsIncome": "CSV importieren — Ausgaben/Einnahmen",
             "menuImportInvestments": "Investitionen aus CSV importieren",
             "outflow": "Ausgabe",

@@ -19,6 +19,7 @@ import { useLocalizedNavigate } from "../hooks/useLocalizedNavigate";
 import LogoPaci from "../components/Logo";
 import SidebarMobile from "../components/SidebarMobile";
 import BottomNavBar from "../components/BottomNavBar";
+import QuickAddTransaction from "../components/QuickAddTransaction";
 import SidebarModals from "../components/SidebarModals";
 import { ThemeContext } from "../contexts/ThemeContext";
 import { PrivacyContext } from "../contexts/PrivacyContext";
@@ -99,6 +100,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
     const [showChangePWDSuccess, setShowChangePWDSuccess] = useState(false);
     const [showChangePWDError, setShowChangePWDError] = useState(false);
     const [showDropdown, setShowDropdown] = useState(false);
+    const [showMobileQuickAdd, setShowMobileQuickAdd] = useState(false);
 
     // Form states
     const [newID, setNewID] = useState("");
@@ -343,27 +345,36 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
             >
                 <LogoPaci />
                 {isMobileScreen ? (
-                    <button
-                        onClick={toggleHidden}
-                        data-umami-event="mobile-privacy-toggle"
-                        aria-label={translations?.sidebar?.settings?.privacy || 'Privacy'}
-                        style={{
-                            background: 'none',
-                            border: `1.5px solid ${isHidden ? 'rgba(239,68,68,0.4)' : (theme.mode === 'dark' ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)')}`,
-                            borderRadius: '8px',
-                            padding: '6px 8px',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            color: isHidden ? '#ef4444' : (theme.mode === 'dark' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.5)'),
-                            fontSize: '1rem',
-                            transition: 'all 0.2s ease',
-                            backgroundColor: isHidden ? 'rgba(239,68,68,0.08)' : 'transparent',
-                        }}
-                    >
-                        <FontAwesomeIcon icon={isHidden ? faEyeSlash : faEye} />
-                    </button>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem' }}>
+                        <button
+                            onClick={toggleHidden}
+                            data-umami-event="mobile-privacy-toggle"
+                            aria-label={translations?.sidebar?.settings?.privacy || 'Privacy'}
+                            style={{
+                                background: 'none',
+                                border: `1.5px solid ${isHidden ? 'rgba(239,68,68,0.4)' : (theme.mode === 'dark' ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)')}`,
+                                borderRadius: '9px',
+                                width: '36px',
+                                height: '36px',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                color: isHidden ? '#ef4444' : (theme.mode === 'dark' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.5)'),
+                                fontSize: '1rem',
+                                transition: 'all 0.2s ease',
+                                backgroundColor: isHidden ? 'rgba(239,68,68,0.08)' : 'transparent',
+                            }}
+                        >
+                            <FontAwesomeIcon icon={isHidden ? faEyeSlash : faEye} />
+                        </button>
+                        <AvatarIcon
+                            size={36}
+                            theme={theme}
+                            title={translations.sidebar.account.title}
+                            onClick={() => navigate('/profile')}
+                        />
+                    </div>
                 ) : (
                     <>
                         <div
@@ -655,7 +666,15 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
             </Top>
 
             {isMobileScreen && (
-                <BottomNavBar handleLogout={handleLogout} />
+                <>
+                    <QuickAddTransaction
+                        theme={theme}
+                        showFab={false}
+                        menuOpen={showMobileQuickAdd}
+                        onMenuOpenChange={setShowMobileQuickAdd}
+                    />
+                    <BottomNavBar onQuickAdd={() => setShowMobileQuickAdd(true)} />
+                </>
             )}
 
             <SidebarModals

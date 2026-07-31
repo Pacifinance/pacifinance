@@ -1,416 +1,155 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useLocation } from 'react-router-dom';
-import { useLocalizedNavigate } from '../hooks/useLocalizedNavigate';
+import { BiTrendingUp } from 'react-icons/bi';
+import { AiOutlineDotChart } from 'react-icons/ai';
+import { BsBook, BsGraphUp, BsInfoCircle } from 'react-icons/bs';
+import { FaBullseye } from 'react-icons/fa';
+import { IoAdd, IoGridOutline } from 'react-icons/io5';
+import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
+import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { LanguageContext } from '../contexts/LanguageContext';
+import { useLocalizedNavigate } from '../hooks/useLocalizedNavigate';
 import { removeLanguageFromPath } from '../utils/i18nRouting';
-import { BiTrendingUp } from 'react-icons/bi';
-import { HiOutlinePencilAlt } from 'react-icons/hi';
-import { AiOutlineDotChart } from 'react-icons/ai';
-import { BsBook, BsInfoCircle, BsGraphUp } from 'react-icons/bs';
-import { FaUser, FaBullseye } from 'react-icons/fa';
-import { IoGridOutline } from 'react-icons/io5';
-import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSignOutAlt, faUserCog } from '@fortawesome/free-solid-svg-icons';
 
-const BottomNavBar = ({ handleLogout }) => {
-    const navigate = useLocalizedNavigate();
-    const location = useLocation();
-    const { theme } = useContext(ThemeContext);
-    const { translations } = useContext(LanguageContext);
-    const [showMoreMenu, setShowMoreMenu] = useState(false);
-    const [showAccountMenu, setShowAccountMenu] = useState(false);
+interface BottomNavBarProps {
+  onQuickAdd: () => void;
+}
 
-    const currentPath = removeLanguageFromPath(location.pathname);
+export default function BottomNavBar({ onQuickAdd }: BottomNavBarProps) {
+  const navigate = useLocalizedNavigate();
+  const location = useLocation();
+  const { theme } = useContext(ThemeContext);
+  const { translations } = useContext(LanguageContext);
+  const [showMoreMenu, setShowMoreMenu] = useState(false);
+  const currentPath = removeLanguageFromPath(location.pathname);
+  const isActive = (path: string) => currentPath === path;
 
-    const isActive = (path) => currentPath === path;
+  const morePages = [
+    { path: '/comparison', icon: <CompareArrowsIcon style={{ fontSize: 20 }} />, label: translations?.sidebar?.comparison || 'Comparison' },
+    { path: '/market-prices', icon: <BsGraphUp size={20} />, label: translations?.sidebar?.marketPrices || 'Market Prices' },
+    { path: '/knowledge', icon: <BsBook size={20} />, label: translations?.sidebar?.knowledge || 'Knowledge' },
+    { path: '/settings', icon: <SettingsOutlinedIcon style={{ fontSize: 20 }} />, label: translations?.sidebar?.settings?.title || 'Settings' },
+    { path: '/info', icon: <BsInfoCircle size={20} />, label: translations?.sidebar?.info || 'Info' },
+  ];
+  const isMoreActive = morePages.some((page) => isActive(page.path));
 
-    const closeMenus = () => {
-        setShowMoreMenu(false);
-        setShowAccountMenu(false);
+  const closeMenu = () => setShowMoreMenu(false);
+  const navigateTo = (path: string) => {
+    if (navigator.vibrate) navigator.vibrate(8);
+    navigate(path);
+    closeMenu();
+  };
+
+  useEffect(closeMenu, [location.pathname]);
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target;
+      if (showMoreMenu && target instanceof Element
+        && !target.closest('.bottom-nav-bar') && !target.closest('.bottom-nav-popup')) closeMenu();
     };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showMoreMenu]);
 
-    const navigateTo = (path) => {
-        // Haptic feedback on supported devices
-        if (navigator.vibrate) navigator.vibrate(8);
-        navigate(path);
-        closeMenus();
-    };
+  const navItemStyle = (active: boolean) => ({
+    display: 'flex', flexDirection: 'column' as const, alignItems: 'center', justifyContent: 'center',
+    flex: 1, gap: 2, height: '100%', padding: '6px 0', cursor: 'pointer', position: 'relative' as const,
+    color: active ? theme.buttonBackgroundColor : (theme.mode === 'dark' ? '#9ca3af' : '#6b7280'),
+    background: 'none', border: 'none', WebkitTapHighlightColor: 'transparent', transition: 'color 0.2s ease',
+  });
+  const labelStyle = (active: boolean) => ({
+    fontSize: 10, fontWeight: active ? 650 : 450, lineHeight: 1, letterSpacing: '0.01em',
+  });
+  const activeMarker = <span style={{ position: 'absolute', top: 0, width: 22, height: 3, borderRadius: '0 0 4px 4px', background: theme.buttonBackgroundColor }} />;
 
-    // Close menus on route change
-    useEffect(() => {
-        closeMenus();
-    }, [location.pathname]);
-
-    // Close menus when clicking outside
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (
-                (showMoreMenu || showAccountMenu) &&
-                !event.target.closest('.bottom-nav-bar') &&
-                !event.target.closest('.bottom-nav-popup')
-            ) {
-                closeMenus();
-            }
-        };
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, [showMoreMenu, showAccountMenu]);
-
-    const morePages = [
-        { path: '/charts-statistics', icon: <AiOutlineDotChart size={20} />, label: translations?.sidebar?.chartsStatistics || 'Charts' },
-        { path: '/comparison', icon: <CompareArrowsIcon style={{ fontSize: 20 }} />, label: translations?.sidebar?.comparison || 'Comparison' },
-        { path: '/market-prices', icon: <BsGraphUp size={20} />, label: translations?.sidebar?.marketPrices || 'Market Prices' },
-        { path: '/knowledge', icon: <BsBook size={20} />, label: translations?.sidebar?.knowledge || 'Knowledge' },
-        { path: '/info', icon: <BsInfoCircle size={20} />, label: translations?.sidebar?.info || 'Info' },
-    ];
-
-    const accountPages = [
-        { path: '/profile', icon: <FaUser size={16} />, label: translations?.sidebar?.account?.title || 'Profile' },
-        { path: '/goals-limits', icon: <FaBullseye size={16} />, label: translations?.sidebar?.goalsLimits || 'Goals & Limits' },
-        { path: '/settings', icon: <FontAwesomeIcon icon={faUserCog} />, label: translations?.sidebar?.settings?.title || 'Settings' },
-    ];
-
-    const isMoreActive = morePages.some(p => isActive(p.path));
-    const isAccountActive = accountPages.some(p => isActive(p.path));
-
-    const NAV_HEIGHT = 66;
-    const SAFE_AREA = 'env(safe-area-inset-bottom, 0px)';
-
-    const navItemStyle = (active) => ({
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        flex: 1,
-        gap: '2px',
-        padding: '6px 0',
-        cursor: 'pointer',
-        color: active ? theme.buttonBackgroundColor : (theme.mode === 'dark' ? '#9ca3af' : '#6b7280'),
-        transition: 'all 0.2s ease',
-        position: 'relative',
-        background: 'none',
-        border: 'none',
-        WebkitTapHighlightColor: 'transparent',
-    });
-
-    const navLabelStyle = (active) => ({
-        fontSize: '10px',
-        fontWeight: active ? '600' : '400',
-        lineHeight: '1',
-        letterSpacing: '0.01em',
-    });
-
-    const popupMenuStyle = {
-        position: 'fixed',
-        bottom: `calc(${NAV_HEIGHT}px + ${SAFE_AREA} + 8px)`,
-        backgroundColor: theme.mode === 'dark' ? theme.backgroundColor : '#ffffff',
-        borderRadius: '16px',
-        padding: '8px',
-        width: 'calc(100vw - 24px)',
-        maxWidth: '220px',
-        boxSizing: 'border-box',
-        border: `1px solid ${theme.mode === 'dark' ? theme.buttonBackgroundColor + '30' : '#e2e8f0'}`,
-        boxShadow: theme.mode === 'dark'
-            ? '0 -8px 30px rgba(0, 0, 0, 0.4)'
-            : '0 -8px 30px rgba(0, 0, 0, 0.12)',
-        zIndex: 10001,
-        animation: 'bottomNavPopupIn 0.18s ease-out',
-    };
-
-    const popupItemStyle = (active) => ({
-        display: 'flex',
-        alignItems: 'center',
-        gap: '12px',
-        padding: '12px 16px',
-        borderRadius: '12px',
-        border: 'none',
-        width: '100%',
-        textAlign: 'left',
-        cursor: 'pointer',
-        fontSize: '14px',
-        fontWeight: active ? '600' : '400',
-        color: active ? '#ffffff' : theme.textColor,
-        backgroundColor: active ? theme.buttonBackgroundColor : 'transparent',
-        transition: 'all 0.15s ease',
-    });
-
-    return createPortal(
+  return createPortal(
+    <>
+      <style>{`@keyframes bottomNavPopupIn { from { opacity: 0; } to { opacity: 1; } }`}</style>
+      {showMoreMenu && (
         <>
-            {/* CSS animation for popup */}
-            <style>{`
-                @keyframes bottomNavPopupIn {
-                    from { opacity: 0; }
-                    to { opacity: 1; }
-                }
-            `}</style>
-
-            {/* Backdrop overlay */}
-            {(showMoreMenu || showAccountMenu) && (
-                <div
-                    data-testid="bottom-nav-backdrop"
-                    onClick={closeMenus}
-                    style={{
-                        position: 'fixed',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        backgroundColor: 'rgba(0, 0, 0, 0.25)',
-                        zIndex: 9998,
-                        backdropFilter: 'blur(2px)',
-                    }}
-                />
-            )}
-
-            {/* More Menu Popup */}
-            {showMoreMenu && (
-                <div
-                    className="bottom-nav-popup"
-                    data-testid="bottom-nav-more-popup"
-                    style={{
-                        ...popupMenuStyle,
-                        left: '12px',
-                        right: '12px',
-                        margin: '0 auto',
-                    }}
-                >
-                    {morePages.map((page) => (
-                        <button
-                            key={page.path}
-                            style={popupItemStyle(isActive(page.path))}
-                            onMouseEnter={(e) => {
-                                if (!isActive(page.path)) {
-                                    e.currentTarget.style.backgroundColor = theme.mode === 'dark'
-                                        ? `${theme.buttonBackgroundColor}15`
-                                        : '#f1f5f9';
-                                }
-                            }}
-                            onMouseLeave={(e) => {
-                                if (!isActive(page.path)) {
-                                    e.currentTarget.style.backgroundColor = 'transparent';
-                                }
-                            }}
-                            onClick={() => navigateTo(page.path)}
-                        >
-                            <span style={{ display: 'flex', alignItems: 'center', opacity: isActive(page.path) ? 1 : 0.75 }}>
-                                {page.icon}
-                            </span>
-                            {page.label}
-                        </button>
-                    ))}
-                </div>
-            )}
-
-            {/* Account Menu Popup */}
-            {showAccountMenu && (
-                <div
-                    className="bottom-nav-popup"
-                    data-testid="bottom-nav-account-popup"
-                    style={{
-                        ...popupMenuStyle,
-                        left: 'auto',
-                        right: '8px',
-                        margin: 0,
-                    }}
-                >
-                    {accountPages.map((page) => (
-                        <button
-                            key={page.path}
-                            disabled={page.disabled}
-                            style={{
-                                ...popupItemStyle(isActive(page.path)),
-                                ...(page.disabled ? { opacity: 0.5, cursor: 'default' } : {}),
-                            }}
-                            onMouseEnter={(e) => {
-                                if (!isActive(page.path) && !page.disabled) {
-                                    e.currentTarget.style.backgroundColor = theme.mode === 'dark'
-                                        ? `${theme.buttonBackgroundColor}15`
-                                        : '#f1f5f9';
-                                }
-                            }}
-                            onMouseLeave={(e) => {
-                                if (!isActive(page.path) && !page.disabled) {
-                                    e.currentTarget.style.backgroundColor = 'transparent';
-                                }
-                            }}
-                            onClick={() => !page.disabled && navigateTo(page.path)}
-                        >
-                            <span style={{ display: 'flex', alignItems: 'center' }}>
-                                {page.icon}
-                            </span>
-                            <span style={{ flex: 1 }}>{page.label}</span>
-                            {page.badge && (
-                                <span style={{
-                                    fontSize: '0.55rem',
-                                    fontWeight: '600',
-                                    background: 'linear-gradient(135deg, #f59e0b, #d97706)',
-                                    color: 'white',
-                                    padding: '1px 5px',
-                                    borderRadius: '6px',
-                                    textTransform: 'uppercase',
-                                    letterSpacing: '0.03em',
-                                    whiteSpace: 'nowrap',
-                                }}>{page.badge}</span>
-                            )}
-                        </button>
-                    ))}
-                    {/* Separator */}
-                    <div style={{
-                        height: '1px',
-                        backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : '#e2e8f0',
-                        margin: '4px 8px',
-                    }} />
-                    {/* Logout */}
-                    <button
-                        data-umami-event="logoutButton-mobile"
-                        style={{
-                            ...popupItemStyle(false),
-                            color: '#dc2626',
-                            backgroundColor: 'rgba(220, 38, 38, 0.05)',
-                            border: '1px solid rgba(220, 38, 38, 0.15)',
-                        }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.backgroundColor = '#dc2626';
-                            e.currentTarget.style.color = '#ffffff';
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.backgroundColor = 'rgba(220, 38, 38, 0.05)';
-                            e.currentTarget.style.color = '#dc2626';
-                        }}
-                        onClick={handleLogout}
-                    >
-                        <FontAwesomeIcon icon={faSignOutAlt} />
-                        {translations?.sidebar?.logout || 'Logout'}
-                    </button>
-                </div>
-            )}
-
-            {/* Bottom Navigation Bar */}
-            <nav
-                className="bottom-nav-bar"
-                aria-label="Main navigation"
-                style={{
-                    position: 'fixed',
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    height: `calc(${NAV_HEIGHT}px + ${SAFE_AREA})`,
-                    paddingBottom: SAFE_AREA,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-around',
-                    backgroundColor: theme.mode === 'dark'
-                        ? theme.backgroundColor
-                        : '#ffffff',
-                    borderTop: `1px solid ${theme.mode === 'dark' ? theme.buttonBackgroundColor + '20' : '#e2e8f0'}`,
-                    boxShadow: theme.mode === 'dark'
-                        ? '0 -2px 20px rgba(0, 0, 0, 0.3)'
-                        : '0 -2px 20px rgba(0, 0, 0, 0.06)',
-                    zIndex: 9999,
-                }}
-            >
-                {/* Dashboard */}
+          <div data-testid="bottom-nav-backdrop" onClick={closeMenu} style={{ position: 'fixed', inset: 0, zIndex: 9998, background: 'rgba(0,0,0,0.25)', backdropFilter: 'blur(2px)' }} />
+          <div
+            className="bottom-nav-popup"
+            data-testid="bottom-nav-more-popup"
+            style={{
+              position: 'fixed', bottom: 'calc(66px + env(safe-area-inset-bottom, 0px) + 10px)',
+              left: 12, right: 12, width: 'calc(100vw - 24px)', maxWidth: 240, margin: '0 auto',
+              boxSizing: 'border-box', padding: 8, borderRadius: 18, zIndex: 10001,
+              color: theme.textColor, background: theme.mode === 'dark' ? theme.backgroundColor : '#fff',
+              border: `1px solid ${theme.mode === 'dark' ? `${theme.buttonBackgroundColor}30` : '#e2e8f0'}`,
+              boxShadow: theme.mode === 'dark' ? '0 -8px 30px rgba(0,0,0,.4)' : '0 -8px 30px rgba(0,0,0,.12)',
+              animation: 'bottomNavPopupIn .18s ease-out',
+            }}
+          >
+            {morePages.map((page) => {
+              const active = isActive(page.path);
+              return (
                 <button
-                    style={navItemStyle(isActive('/dashboard'))}
-                    onClick={() => navigateTo('/dashboard')}
+                  type="button"
+                  key={page.path}
+                  onClick={() => navigateTo(page.path)}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 12, width: '100%', padding: '12px 14px',
+                    border: 0, borderRadius: 12, cursor: 'pointer', textAlign: 'left', fontSize: 14,
+                    fontWeight: active ? 650 : 450, color: active ? '#fff' : theme.textColor,
+                    background: active ? theme.buttonBackgroundColor : 'transparent',
+                  }}
                 >
-                    {isActive('/dashboard') && (
-                        <div style={{
-                            position: 'absolute',
-                            top: 0,
-                            left: '50%',
-                            transform: 'translateX(-50%)',
-                            width: '20px',
-                            height: '3px',
-                            borderRadius: '0 0 3px 3px',
-                            backgroundColor: theme.buttonBackgroundColor,
-                        }} />
-                    )}
-                    <BiTrendingUp size={22} />
-                    <span style={navLabelStyle(isActive('/dashboard'))}>Dashboard</span>
+                  <span style={{ display: 'flex', opacity: active ? 1 : 0.72 }}>{page.icon}</span>
+                  {page.label}
                 </button>
+              );
+            })}
+          </div>
+        </>
+      )}
 
-                {/* Insert Values */}
-                <button
-                    style={navItemStyle(isActive('/insert-values'))}
-                    onClick={() => navigateTo('/insert-values')}
-                >
-                    {isActive('/insert-values') && (
-                        <div style={{
-                            position: 'absolute',
-                            top: 0,
-                            left: '50%',
-                            transform: 'translateX(-50%)',
-                            width: '20px',
-                            height: '3px',
-                            borderRadius: '0 0 3px 3px',
-                            backgroundColor: theme.buttonBackgroundColor,
-                        }} />
-                    )}
-                    <HiOutlinePencilAlt size={22} />
-                    <span style={navLabelStyle(isActive('/insert-values'))}>
-                        {translations?.sidebar?.insert || 'Insert'}
-                    </span>
-                </button>
-
-                {/* More */}
-                <button
-                    style={navItemStyle(isMoreActive || showMoreMenu)}
-                    onClick={() => {
-                        if (navigator.vibrate) navigator.vibrate(8);
-                        setShowAccountMenu(false);
-                        setShowMoreMenu(!showMoreMenu);
-                    }}
-                >
-                    {isMoreActive && (
-                        <div style={{
-                            position: 'absolute',
-                            top: 0,
-                            left: '50%',
-                            transform: 'translateX(-50%)',
-                            width: '20px',
-                            height: '3px',
-                            borderRadius: '0 0 3px 3px',
-                            backgroundColor: theme.buttonBackgroundColor,
-                        }} />
-                    )}
-                    <IoGridOutline size={22} />
-                    <span style={navLabelStyle(isMoreActive || showMoreMenu)}>
-                        {translations?.sidebar?.more || 'More'}
-                    </span>
-                </button>
-
-                {/* Account */}
-                <button
-                    style={navItemStyle(isAccountActive || showAccountMenu)}
-                    onClick={() => {
-                        if (navigator.vibrate) navigator.vibrate(8);
-                        setShowMoreMenu(false);
-                        setShowAccountMenu(!showAccountMenu);
-                    }}
-                >
-                    {isAccountActive && (
-                        <div style={{
-                            position: 'absolute',
-                            top: 0,
-                            left: '50%',
-                            transform: 'translateX(-50%)',
-                            width: '20px',
-                            height: '3px',
-                            borderRadius: '0 0 3px 3px',
-                            backgroundColor: theme.buttonBackgroundColor,
-                        }} />
-                    )}
-                    <FaUser size={20} />
-                    <span style={navLabelStyle(isAccountActive || showAccountMenu)}>Account</span>
-                </button>
-            </nav>
-        </>,
-        document.body
-    );
-};
-
-export default BottomNavBar;
+      <nav
+        className="bottom-nav-bar"
+        aria-label={translations?.sidebar?.mobileNavigation || 'Main navigation'}
+        style={{
+          position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 9999,
+          height: 'calc(66px + env(safe-area-inset-bottom, 0px))', paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+          display: 'flex', alignItems: 'center', background: theme.mode === 'dark' ? theme.backgroundColor : '#fff',
+          borderTop: `1px solid ${theme.mode === 'dark' ? `${theme.buttonBackgroundColor}20` : '#e2e8f0'}`,
+          boxShadow: theme.mode === 'dark' ? '0 -2px 20px rgba(0,0,0,.3)' : '0 -2px 20px rgba(0,0,0,.06)',
+        }}
+      >
+        <button type="button" style={navItemStyle(isActive('/dashboard'))} onClick={() => navigateTo('/dashboard')}>
+          {isActive('/dashboard') && activeMarker}<BiTrendingUp size={22} />
+          <span style={labelStyle(isActive('/dashboard'))}>{translations?.sidebar?.dashboard || 'Dashboard'}</span>
+        </button>
+        <button type="button" style={navItemStyle(isActive('/charts-statistics'))} onClick={() => navigateTo('/charts-statistics')}>
+          {isActive('/charts-statistics') && activeMarker}<AiOutlineDotChart size={22} />
+          <span style={labelStyle(isActive('/charts-statistics'))}>{translations?.sidebar?.statisticsShort || 'Statistiche'}</span>
+        </button>
+        <button
+          type="button"
+          aria-label={translations?.dashboard?.quickAdd?.title || 'Quick add'}
+          data-umami-event="bottom-nav-quick-add"
+          onClick={() => { if (navigator.vibrate) navigator.vibrate(8); closeMenu(); onQuickAdd(); }}
+          style={{
+            alignSelf: 'flex-start', width: 54, height: 54, flexShrink: 0, margin: '-16px 5px 0',
+            borderRadius: '50%', border: `5px solid ${theme.mode === 'dark' ? theme.backgroundColor : '#fff'}`,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#fff',
+            background: `linear-gradient(135deg, ${theme.buttonBackgroundColor}, ${theme.buttonBackgroundColor}cc)`,
+            boxShadow: `0 7px 20px ${theme.buttonBackgroundColor}55`, WebkitTapHighlightColor: 'transparent',
+          }}
+        >
+          <IoAdd size={29} />
+        </button>
+        <button type="button" style={navItemStyle(isActive('/goals-limits'))} onClick={() => navigateTo('/goals-limits')}>
+          {isActive('/goals-limits') && activeMarker}<FaBullseye size={20} />
+          <span style={labelStyle(isActive('/goals-limits'))}>{translations?.sidebar?.goalsShort || 'Obiettivi'}</span>
+        </button>
+        <button type="button" style={navItemStyle(isMoreActive || showMoreMenu)} onClick={() => { if (navigator.vibrate) navigator.vibrate(8); setShowMoreMenu((open) => !open); }}>
+          {isMoreActive && activeMarker}<IoGridOutline size={22} />
+          <span style={labelStyle(isMoreActive || showMoreMenu)}>{translations?.sidebar?.more || 'More'}</span>
+        </button>
+      </nav>
+    </>,
+    document.body,
+  );
+}

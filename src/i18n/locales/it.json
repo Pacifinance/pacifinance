@@ -354,6 +354,7 @@
     "sidebar": {
         "dashboard": "Dashboard",
         "chartsStatistics": "Grafici e Statistiche",
+        "statisticsShort": "Statistiche",
         "insert": "Inserisci",
         "check": "Controlla Prezzi",
         "marketPrices": "Prezzi di Mercato",
@@ -363,6 +364,8 @@
         "info": "Info",
         "more": "Altro",
         "goalsLimits": "Obiettivi e Limiti",
+        "goalsShort": "Obiettivi",
+        "mobileNavigation": "Navigazione principale",
         "logout": "Esci",
         "privacy": "Privacy",
         "account": {
@@ -571,6 +574,7 @@
             "title": "Aggiunta rapida",
             "menuTitle": "Cosa vuoi fare?",
             "menuManual": "Inserisci manualmente",
+            "menuBalance": "Aggiorna bilancio",
             "menuImportOutflowsIncome": "Importa CSV — spese/entrate",
             "menuImportInvestments": "Importa investimenti da CSV",
             "outflow": "Uscita",

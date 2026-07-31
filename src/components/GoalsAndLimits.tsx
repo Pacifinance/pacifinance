@@ -22,8 +22,7 @@ import {
     FaSave,
     FaEdit,
     FaTrash,
-    FaPlus,
-    FaBell
+    FaPlus
 } from 'react-icons/fa';
 import { BsPercent, BsCalendar3 } from 'react-icons/bs';
 import { ASSET_KEYS } from '../constants/balanceSchema';
@@ -46,7 +45,7 @@ const ProfileHeader = styled.div`
   margin-bottom: 3rem;
   
   h1 {
-    color: ${props => props.theme.mode === 'dark' ? '#ffffff' : '#1a1a1a'};
+    color: ${props => props.theme.textColor};
     font-size: 2.5rem;
     font-weight: 700;
     margin-bottom: 1rem;
@@ -57,7 +56,7 @@ const ProfileHeader = styled.div`
   }
   
   p {
-    color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.8)'};
+    color: ${props => props.theme.textColor}; opacity: .78;
     font-size: 1.1rem;
     max-width: 600px;
     margin: 0 auto;
@@ -116,7 +115,7 @@ const SectionHeader = styled.div`
   margin-bottom: 2rem;
   
   h3 {
-    color: ${props => props.theme.mode === 'dark' ? '#ffffff' : '#1a1a1a'};
+    color: ${props => props.theme.textColor};
     font-size: 1.3rem;
     font-weight: 600;
     margin: 0;
@@ -133,7 +132,7 @@ const FormGroup = styled.div`
   
   label {
     display: block;
-    color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.9)'};
+    color: ${props => props.theme.textColor};
     font-weight: 500;
     margin-bottom: 0.5rem;
     font-size: 0.9rem;
@@ -145,7 +144,7 @@ const FormGroup = styled.div`
     border: 1px solid ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)'};
     border-radius: 8px;
     background: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.9)'};
-    color: ${props => props.theme.mode === 'dark' ? '#ffffff' : '#1a1a1a'};
+    color: ${props => props.theme.textColor};
     font-size: 0.9rem;
     color-scheme: ${props => props.theme.mode === 'dark' ? 'dark' : 'light'};
     
@@ -156,8 +155,8 @@ const FormGroup = styled.div`
   }
 
   select option {
-    background: ${props => props.theme.mode === 'dark' ? '#1f2937' : '#ffffff'};
-    color: ${props => props.theme.mode === 'dark' ? '#f8fafc' : '#111827'};
+    background: ${props => props.theme.mode === 'dark' ? '#263244' : '#ffffff'};
+    color: ${props => props.theme.textColor};
   }
 `;
 
@@ -178,13 +177,35 @@ const InputWithIcon = styled.div`
   }
 `;
 
+const ControlGroup = styled.div`
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 12px;
+  border: 1px solid ${(p) => p.theme.mode === 'dark' ? 'rgba(148,163,184,.22)' : 'rgba(15,23,42,.12)'};
+  background: ${(p) => p.theme.mode === 'dark' ? 'rgba(51,65,85,.3)' : 'rgba(248,250,252,.85)'};
+`;
+
+const ControlTitle = styled.div`
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: .75rem;
+  strong { color: ${(p) => p.theme.textColor}; font-size: .95rem; }
+`;
+
+const SwitchLabel = styled.label`
+  display: inline-flex !important; align-items: center; gap: .55rem; margin: 0 !important;
+  color: ${(p) => p.theme.textColor} !important; font-size: .76rem !important; cursor: pointer;
+  input { position: absolute; opacity: 0; pointer-events: none; }
+  span { width: 34px; height: 19px; border-radius: 20px; position: relative; flex: 0 0 auto; background: ${(p) => p.$checked ? p.theme.secondaryColor : (p.theme.mode === 'dark' ? '#64748b' : '#94a3b8')}; transition: .2s; }
+  span::after { content: ''; position: absolute; width: 13px; height: 13px; top: 3px; left: ${(p) => p.$checked ? '18px' : '3px'}; border-radius: 50%; background: ${(p) => p.theme.mode === 'dark' ? '#f8fafc' : '#ffffff'}; box-shadow: 0 1px 3px rgba(15,23,42,.25); transition: .2s; }
+  input:focus-visible + span { outline: 2px solid ${(p) => p.theme.secondaryColor}; outline-offset: 2px; }
+`;
+
 const ControlCard = styled.div`
   padding: 1rem;
   margin-bottom: 1rem;
   border-radius: 12px;
   border: 1px solid ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,.1)' : 'rgba(0,0,0,.1)'};
   background: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,.035)' : 'rgba(0,0,0,.02)'};
-  h4 { margin: 0 0 .35rem; color: ${props => props.theme.mode === 'dark' ? '#fff' : '#171717'}; }
+  h4 { margin: 0 0 .35rem; color: ${props => props.theme.textColor}; }
   p { margin: 0 0 .85rem; opacity: .7; font-size: .8rem; line-height: 1.45; }
 `;
 
@@ -194,6 +215,14 @@ const ThresholdGrid = styled.div`
   gap: .75rem;
   ${FormGroup} { margin: 0; }
   @media (max-width: 520px) { grid-template-columns: 1fr; }
+`;
+
+const AdvancedDetails = styled.details`
+  summary { list-style: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between; color: ${(p) => p.theme.textColor}; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: '+'; color: ${(p) => p.theme.secondaryColor}; font-size: 1.25rem; }
+  &[open] summary::after { content: '−'; }
+  .advanced-content { margin-top: 1rem; }
 `;
 
 const StatusLine = styled.div`
@@ -219,7 +248,7 @@ const GoalItem = styled.div`
     margin-bottom: 0.5rem;
     
     h4 {
-      color: ${props => props.theme.mode === 'dark' ? '#ffffff' : '#1a1a1a'};
+      color: ${props => props.theme.textColor};
       font-size: 1rem;
       font-weight: 600;
       margin: 0;
@@ -233,7 +262,7 @@ const GoalItem = styled.div`
   
   .goal-progress {
     font-size: 0.8rem;
-    color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)'};
+    color: ${props => props.theme.textColor}; opacity: .7;
   }
 `;
 
@@ -350,7 +379,7 @@ const Modal = styled.div`
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(15, 23, 42, 0.62);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -374,7 +403,7 @@ const ModalContent = styled.div`
   backdrop-filter: blur(10px);
   
   h3 {
-    color: ${props => props.theme.mode === 'dark' ? '#ffffff' : '#1a1a1a'};
+    color: ${props => props.theme.textColor};
     margin-bottom: 1.5rem;
     text-align: center;
   }
@@ -715,75 +744,43 @@ const ProfileSettings = ({ theme }) => {
             <h3>{language === 'it' ? 'Limiti e Controlli' : 'Limits & Controls'}</h3>
           </SectionHeader>
           
-          <FormGroup theme={theme}>
-            <label><input type="checkbox" checked={settings.monthlySpendingLimitEnabled} onChange={(e) => handleSettingChange('monthlySpendingLimitEnabled', e.target.checked)} /> {language === 'it' ? `Limite spesa mensile (${currencySymbol})` : `Monthly spending limit (${currencySymbol})`}</label>
-            <InputWithIcon theme={theme}>
-              <span className="input-icon">{currencySymbol}</span>
-              <input
-                type="number"
-                value={settings.monthlySpendingLimit}
-                onChange={(e) => handleSettingChange('monthlySpendingLimit', parseInt(e.target.value))}
-                min="0"
-                disabled={!settings.monthlySpendingLimitEnabled}
-              />
-            </InputWithIcon>
-          </FormGroup>
-
-          <FormGroup theme={theme}>
-            <label>{controlsT.spendingPercent}</label>
-            <InputWithIcon theme={theme}><BsPercent className="input-icon" /><input type="number" min="0" max="100" value={settings.expensesLimitPercent} onChange={(e) => handleSettingChange('expensesLimitPercent', e.target.value)} /></InputWithIcon>
-          </FormGroup>
+          <ControlGroup theme={theme}>
+            <ControlTitle theme={theme}><strong>{controlsT.spendingGroup}</strong><SwitchLabel theme={theme} $checked={settings.monthlySpendingLimitEnabled}><input type="checkbox" checked={settings.monthlySpendingLimitEnabled} onChange={(e) => handleSettingChange('monthlySpendingLimitEnabled', e.target.checked)} /><span />{controlsT.useFixedAmount}</SwitchLabel></ControlTitle>
+            <ThresholdGrid>
+              <FormGroup theme={theme}><label>{controlsT.fixedAmount}</label><InputWithIcon theme={theme}><span className="input-icon">{currencySymbol}</span><input type="number" value={settings.monthlySpendingLimit} onChange={(e) => handleSettingChange('monthlySpendingLimit', parseInt(e.target.value))} min="0" disabled={!settings.monthlySpendingLimitEnabled} /></InputWithIcon></FormGroup>
+              <FormGroup theme={theme}><label>{controlsT.spendingPercent}</label><InputWithIcon theme={theme}><BsPercent className="input-icon" /><input type="number" min="0" max="100" value={settings.expensesLimitPercent} onChange={(e) => handleSettingChange('expensesLimitPercent', e.target.value)} /></InputWithIcon></FormGroup>
+            </ThresholdGrid>
+          </ControlGroup>
           <StatusLine $ok={(!settings.monthlySpendingLimitEnabled || currentSpending <= toEUR(settings.monthlySpendingLimit)) && (settings.expensesLimitPercent === '' || (spendingPercent !== null && spendingPercent <= Number(settings.expensesLimitPercent)))}>
             {controlsT.currentSpending.replace('{amount}', `${currencySymbol}${fromEUR(currentSpending).toFixed(0)}`).replace('{percent}', spendingPercent === null ? '—' : `${spendingPercent.toFixed(1)}%`)}
           </StatusLine>
 
-          <FormGroup theme={theme}>
-            <label><input type="checkbox" checked={settings.savingsGoalPercentageEnabled} onChange={(e) => handleSettingChange('savingsGoalPercentageEnabled', e.target.checked)} /> {language === 'it' ? 'Obiettivo risparmio mensile (%)' : 'Monthly savings goal (%)'}</label>
-            <InputWithIcon theme={theme}>
-              <BsPercent className="input-icon" />
-              <input
-                type="number"
-                value={settings.savingsGoalPercentage}
-                onChange={(e) => handleSettingChange('savingsGoalPercentage', parseInt(e.target.value))}
-                min="0"
-                max="100"
-                disabled={!settings.savingsGoalPercentageEnabled}
-              />
-            </InputWithIcon>
-          </FormGroup>
-
-          <FormGroup theme={theme}>
-            <label>{controlsT.savingsAmount}</label>
-            <InputWithIcon theme={theme}><span className="input-icon">{currencySymbol}</span><input type="number" min="0" value={settings.savingsAmountGoal} onChange={(e) => handleSettingChange('savingsAmountGoal', e.target.value)} /></InputWithIcon>
-          </FormGroup>
+          <ControlGroup theme={theme}>
+            <ControlTitle theme={theme}><strong>{controlsT.savingsGroup}</strong><SwitchLabel theme={theme} $checked={settings.savingsGoalPercentageEnabled}><input type="checkbox" checked={settings.savingsGoalPercentageEnabled} onChange={(e) => handleSettingChange('savingsGoalPercentageEnabled', e.target.checked)} /><span />{controlsT.usePercentage}</SwitchLabel></ControlTitle>
+            <ThresholdGrid>
+              <FormGroup theme={theme}><label>{controlsT.savingsAmount}</label><InputWithIcon theme={theme}><span className="input-icon">{currencySymbol}</span><input type="number" min="0" value={settings.savingsAmountGoal} onChange={(e) => handleSettingChange('savingsAmountGoal', e.target.value)} /></InputWithIcon></FormGroup>
+              <FormGroup theme={theme}><label>{controlsT.savingsPercent}</label><InputWithIcon theme={theme}><BsPercent className="input-icon" /><input type="number" value={settings.savingsGoalPercentage} onChange={(e) => handleSettingChange('savingsGoalPercentage', parseInt(e.target.value))} min="0" max="100" disabled={!settings.savingsGoalPercentageEnabled} /></InputWithIcon></FormGroup>
+            </ThresholdGrid>
+          </ControlGroup>
           <StatusLine $ok={(settings.savingsAmountGoal === '' || currentSavings >= toEUR(Number(settings.savingsAmountGoal))) && (!settings.savingsGoalPercentageEnabled || (savingsPercent !== null && savingsPercent >= settings.savingsGoalPercentage))}>
             {controlsT.currentSavings.replace('{amount}', `${currencySymbol}${fromEUR(currentSavings).toFixed(0)}`).replace('{percent}', savingsPercent === null ? '—' : `${savingsPercent.toFixed(1)}%`)}
           </StatusLine>
 
-          <FormGroup theme={theme}>
-            <label><input type="checkbox" checked={settings.emergencyFundTargetEnabled} onChange={(e) => handleSettingChange('emergencyFundTargetEnabled', e.target.checked)} /> {language === 'it' ? `Fondo emergenza target (${currencySymbol})` : `Emergency fund target (${currencySymbol})`}</label>
-            <InputWithIcon theme={theme}>
-              <span className="input-icon">{currencySymbol}</span>
-              <input
-                type="number"
-                value={settings.emergencyFundTarget}
-                onChange={(e) => handleSettingChange('emergencyFundTarget', parseInt(e.target.value))}
-                min="0"
-                disabled={!settings.emergencyFundTargetEnabled}
-              />
-            </InputWithIcon>
-          </FormGroup>
-
-          <FormGroup theme={theme}>
-            <label>{controlsT.emergencyMonths}</label>
-            <input type="number" min="0" step="0.5" value={settings.emergencyFundMonths} onChange={(e) => handleSettingChange('emergencyFundMonths', e.target.value)} />
-          </FormGroup>
+          <ControlGroup theme={theme}>
+            <ControlTitle theme={theme}><strong>{controlsT.emergencyGroup}</strong><SwitchLabel theme={theme} $checked={settings.emergencyFundTargetEnabled}><input type="checkbox" checked={settings.emergencyFundTargetEnabled} onChange={(e) => handleSettingChange('emergencyFundTargetEnabled', e.target.checked)} /><span />{controlsT.useFixedAmount}</SwitchLabel></ControlTitle>
+            <ThresholdGrid>
+              <FormGroup theme={theme}><label>{controlsT.fixedAmount}</label><InputWithIcon theme={theme}><span className="input-icon">{currencySymbol}</span><input type="number" value={settings.emergencyFundTarget} onChange={(e) => handleSettingChange('emergencyFundTarget', parseInt(e.target.value))} min="0" disabled={!settings.emergencyFundTargetEnabled} /></InputWithIcon></FormGroup>
+              <FormGroup theme={theme}><label>{controlsT.emergencyMonths}</label><input type="number" min="0" step="0.5" value={settings.emergencyFundMonths} onChange={(e) => handleSettingChange('emergencyFundMonths', e.target.value)} /></FormGroup>
+            </ThresholdGrid>
+          </ControlGroup>
           <StatusLine $ok={(!settings.emergencyFundTargetEnabled || emergencyFundValue >= toEUR(settings.emergencyFundTarget)) && (settings.emergencyFundMonths === '' || (emergencyMonths !== null && emergencyMonths >= Number(settings.emergencyFundMonths)))}>
             {controlsT.currentEmergency.replace('{amount}', `${currencySymbol}${fromEUR(emergencyFundValue).toFixed(0)}`).replace('{months}', emergencyMonths === null ? '—' : emergencyMonths.toFixed(1))}
           </StatusLine>
 
           <ControlCard theme={theme}>
-            <h4>{controlsT.advancedTitle}</h4><p>{controlsT.advancedHint}</p>
+            <AdvancedDetails theme={theme}>
+            <summary><h4>{controlsT.advancedTitle}</h4></summary>
+            <div className="advanced-content"><p>{controlsT.advancedHint}</p>
             <ThresholdGrid>
               <FormGroup theme={theme}><label>{controlsT.fixedExpensesPercent}</label><InputWithIcon theme={theme}><BsPercent className="input-icon" /><input type="number" min="0" max="100" value={settings.fixedExpensesPercent} onChange={(e) => handleSettingChange('fixedExpensesPercent', e.target.value)} /></InputWithIcon></FormGroup>
               <FormGroup theme={theme}><label>{controlsT.debtReduction}</label><InputWithIcon theme={theme}><span className="input-icon">{currencySymbol}</span><input type="number" min="0" value={settings.debtReductionGoal} onChange={(e) => handleSettingChange('debtReductionGoal', e.target.value)} /></InputWithIcon></FormGroup>
@@ -807,19 +804,11 @@ const ProfileSettings = ({ theme }) => {
                 <ActionButton type="button" theme={theme} onClick={() => { if (!newCategoryLimit.name.trim() || newCategoryLimit.value === '') return; handleSettingChange('categorySpendingLimits', { ...settings.categorySpendingLimits, [newCategoryLimit.name.trim()]: newCategoryLimit.value }); setNewCategoryLimit({ name: '', value: '' }); }}><FaPlus /></ActionButton>
               </div>
             </FormGroup>
+            </div>
+            </AdvancedDetails>
           </ControlCard>
 
-          <FormGroup theme={theme}>
-            <label>
-              <input
-                type="checkbox"
-                checked={settings.notificationsEnabled}
-                onChange={(e) => handleSettingChange('notificationsEnabled', e.target.checked)}
-                style={{ marginRight: '0.5rem' }}
-              />
-              {language === 'it' ? 'Attiva notifiche per limiti' : 'Enable limit notifications'}
-            </label>
-          </FormGroup>
+          <ControlGroup theme={theme}><ControlTitle theme={theme}><strong>{controlsT.notifications}</strong><SwitchLabel theme={theme} $checked={settings.notificationsEnabled}><input type="checkbox" checked={settings.notificationsEnabled} onChange={(e) => handleSettingChange('notificationsEnabled', e.target.checked)} /><span />{settings.notificationsEnabled ? controlsT.enabled : controlsT.disabled}</SwitchLabel></ControlTitle></ControlGroup>
 
           <SaveButton theme={theme} onClick={handleSaveSettings}>
             <FaSave />
@@ -832,23 +821,11 @@ const ProfileSettings = ({ theme }) => {
             <FaChartLine className="section-icon" />
             <h3>{translations.graphs.statsHoldings.insights.monthlyTargetTitle}</h3>
           </SectionHeader>
-          <FormGroup theme={theme}>
-            <label>{translations.graphs.statsHoldings.insights.monthlyTargetHint}</label>
-            <InputWithIcon theme={theme}>
-              <span className="input-icon">{currencySymbol}</span>
-              <input
-                type="number"
-                min="0"
-                value={monthlyTargetInput}
-                onChange={(event) => setMonthlyTargetInput(event.target.value)}
-                placeholder={translations.graphs.statsHoldings.insights.monthlyTargetPlaceholder}
-              />
-            </InputWithIcon>
-          </FormGroup>
-          <FormGroup theme={theme}>
-            <label>{controlsT.investmentPercent}</label>
-            <InputWithIcon theme={theme}><BsPercent className="input-icon" /><input type="number" min="0" max="100" value={monthlyTargetPercentInput} onChange={(event) => setMonthlyTargetPercentInput(event.target.value)} /></InputWithIcon>
-          </FormGroup>
+          <p style={{ color: theme.textColor, opacity: .78 }}>{translations.graphs.statsHoldings.insights.monthlyTargetHint}</p>
+          <ThresholdGrid>
+            <FormGroup theme={theme}><label>{controlsT.fixedAmount}</label><InputWithIcon theme={theme}><span className="input-icon">{currencySymbol}</span><input type="number" min="0" value={monthlyTargetInput} onChange={(event) => setMonthlyTargetInput(event.target.value)} placeholder={translations.graphs.statsHoldings.insights.monthlyTargetPlaceholder} /></InputWithIcon></FormGroup>
+            <FormGroup theme={theme}><label>{controlsT.investmentPercent}</label><InputWithIcon theme={theme}><BsPercent className="input-icon" /><input type="number" min="0" max="100" value={monthlyTargetPercentInput} onChange={(event) => setMonthlyTargetPercentInput(event.target.value)} /></InputWithIcon></FormGroup>
+          </ThresholdGrid>
           <StatusLine $ok>
             {controlsT.bothRequired}
           </StatusLine>

@@ -6,7 +6,7 @@ export const themes = {
     jollyColor: '#b5ded1',
     primaryColor: '#e6f4f0', //#f5f5f5 //#fafafa (umami color) //#e6f4f0 (green light) #F7F5FF (old white)
     secondaryColor: '#079164',
-    textColor: 'black',//#222629
+    textColor: '#172033',
     borderColor: '#079164',
     backgroundColor: '#f5f5f5',
     buttonBackgroundColor: '#079164',
@@ -16,20 +16,20 @@ export const themes = {
   dark: {
     mode: 'dark',
     jollyColor: '#b5ded1', //maybe better white
-    primaryColor: '#0d0f13', //black
+    primaryColor: '#18212d',
     secondaryColor: '#079164', //green
-    textColor: 'white',
-    borderColor: 'white',
+    textColor: '#f8fafc',
+    borderColor: '#dbe4ee',
     backgroundColor: '#222831', //#222831 o #3d3d3d 
     buttonBackgroundColor: '#079164',   // #FF8000 arancione o #59A52C verde o #6fca3a verde chiaro o #079164 (verde smeraldo)
     iconBackgroundColor: '#079164',
-    rankingInfoBackgroundColor: '#1a1a1a',
+    rankingInfoBackgroundColor: '#263244',
   },
 };
 
 export const primaryColor = '#079164';
-export const secondaryColor = '#0d0f13';
-export const backgroundColor = '#0d0f13';
+export const secondaryColor = '#18212d';
+export const backgroundColor = '#18212d';
 
 export const getColorsBalances = (translations) => ({
   [translations.assets.stocks]: '#FF6600',

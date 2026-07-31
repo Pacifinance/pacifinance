@@ -565,7 +565,7 @@
     },
     "whatsNew": {
         "title": "Quoi de neuf ?",
-        "viewRoadmap": "Voir la feuille de route complète →"
+        "viewRoadmap": "Voir la feuille de route complète →", "showMore": "Afficher plus", "details": "Détails", "collapse": "Réduire", "categories": { "feature": "Fonction", "ux": "Expérience", "security": "Sécurité", "performance": "Performance", "bugfix": "Correction" }
     },
     "dashboard": {
         "quickAdd": {
@@ -736,7 +736,7 @@
             },
             "breakdownTitle": "Répartition par position",
             "breakdownDescription": "Découvrez si vous êtes trop exposé sur une seule position",
-            "overweightWarning": "Position surpondérée",
+            "overweightWarning": "Position surpondérée", "assetDetails": "Afficher les détails de l'actif", "toggleCategory": "Activer ou désactiver toute la catégorie", "assetDetailLabels": { "details": "Détails de l'actif", "close": "Fermer", "value": "Valeur actuelle", "invested": "Investi", "quantity": "Quantité", "sector": "Secteur", "industry": "Industrie", "country": "Pays", "exchange": "Marché", "isin": "ISIN", "dividends": "Dividendes reçus", "payments": "paiements", "lastDividend": "Dernier dividende", "notes": "Notes", "stocks": "Actions", "etf": "ETF", "bitcoin": "Bitcoin", "crypto": "Crypto", "bonds": "Obligations", "funds": "Fonds", "commodities": "Matières premières" },
             "historyTitle": "Évolution dans le temps",
             "historyDescription": "La valeur de vos positions, mois par mois",
             "communityDataTitle": "Des prix vérifiés, construits ensemble",

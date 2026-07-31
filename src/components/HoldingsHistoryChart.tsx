@@ -15,7 +15,8 @@ import { MediaQueryContext } from '../contexts/MediaQueryContext';
 import { CustomTick, compactNumber } from '../utils/customGraphsInfo';
 import { getHoldingValue, paletteColor, ASSET_CATEGORY_ORDER } from '../utils/holdingsChartHelpers';
 import { Info, ShieldCheck, Users } from 'lucide-react';
-import type { InvestmentHoldingHistoryDto, InvestmentAssetKey } from '../types/api';
+import HoldingAssetDetails from './HoldingAssetDetails';
+import type { InvestmentDividendSummaryDto, InvestmentHoldingDto, InvestmentHoldingHistoryDto, InvestmentAssetKey } from '../types/api';
 
 interface HoldingsHistoryChartProps {
   theme: any;
@@ -24,6 +25,8 @@ interface HoldingsHistoryChartProps {
   isHidden: boolean;
   type?: 'area' | 'bar';
   onContribute?: () => void;
+  holdings?: InvestmentHoldingDto[];
+  dividends?: InvestmentDividendSummaryDto[];
 }
 
 const Title = styled.h4`
@@ -93,8 +96,8 @@ const TrustLegend = styled.div`
 
 const Legend = styled.div`
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem 0.9rem;
+  flex-direction: column;
+  gap: 0.35rem;
   margin-top: 1rem;
   justify-content: center;
 `;
@@ -118,6 +121,20 @@ const LegendItem = styled.button`
     border-radius: 50%;
     flex-shrink: 0;
   }
+`;
+
+const ChartArea = styled.div`position: relative;`;
+
+const CategoryDetails = styled.details`
+  border-top: 1px solid ${(p) => p.theme.mode === 'dark' ? 'rgba(255,255,255,.08)' : 'rgba(0,0,0,.08)'};
+  padding: .35rem 0;
+  summary { display: flex; align-items: center; cursor: pointer; list-style: none; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: '›'; margin-left: auto; transition: transform .2s; }
+  &[open] summary::after { transform: rotate(90deg); }
+  .items { display: flex; flex-wrap: wrap; justify-content: center; gap: .5rem .9rem; padding: .5rem; }
+  .toggle { border: 0; background: transparent; color: inherit; cursor: pointer; margin-right: .35rem; }
+  .info { border: 0; background: transparent; color: inherit; cursor: pointer; padding: 0; display: inline-flex; }
 `;
 
 const ClosedTag = styled.span`
@@ -168,11 +185,12 @@ const EmptyState = styled.div`
 
 const DEFAULT_VISIBLE_COUNT = 6;
 
-export default function HoldingsHistoryChart({ theme, history, assetKey, isHidden, type = 'area', onContribute }: HoldingsHistoryChartProps) {
+export default function HoldingsHistoryChart({ theme, history, assetKey, isHidden, type = 'area', onContribute, holdings = [], dividends = [] }: HoldingsHistoryChartProps) {
   const { translations } = useContext(LanguageContext);
   const { formatAmount, fromEUR } = useContext(CurrencyContext);
   const { isMobileScreen } = useContext(MediaQueryContext);
   const t = translations.graphs.statsHoldings;
+  const [detailHoldingId, setDetailHoldingId] = useState<number | null>(null);
 
   const relevantHistory = useMemo(
     () => (assetKey ? history.filter((h) => h.assetKey === assetKey) : history),
@@ -256,6 +274,11 @@ export default function HoldingsHistoryChart({ theme, history, assetKey, isHidde
     setLineVisibility((prev) => ({ ...prev, [holdingId]: !prev[holdingId] }));
   };
 
+  const toggleCategory = (categoryIds: string[]) => {
+    const shouldHide = categoryIds.some((id) => lineVisibility[id]);
+    setLineVisibility((previous) => ({ ...previous, ...Object.fromEntries(categoryIds.map((id) => [id, !shouldHide])) }));
+  };
+
   const trustCard = (
     <PriceTrustCard theme={theme}>
       <Users size={19} color={theme.buttonBackgroundColor} />
@@ -312,6 +335,7 @@ export default function HoldingsHistoryChart({ theme, history, assetKey, isHidde
       <Title theme={theme}>{t.historyTitle}</Title>
       <Description theme={theme}>{t.historyDescription}</Description>
       {trustCard}
+      <ChartArea>
       <ResponsiveContainer width="100%" height={isMobileScreen ? 220 : 320}>
         <ChartComponent data={rows} margin={{ top: 8, right: 12, left: 0, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke={theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'} />
@@ -349,26 +373,37 @@ export default function HoldingsHistoryChart({ theme, history, assetKey, isHidde
           ))}
         </ChartComponent>
       </ResponsiveContainer>
+      {detailHoldingId != null && (() => {
+        const holding = holdings.find((item) => item.id === detailHoldingId);
+        if (!holding) return null;
+        return <HoldingAssetDetails holding={holding} dividend={dividends.find((item) => item.instrumentId === holding.instrument?.id)} formatAmount={formatAmount} labels={t.assetDetailLabels} onClose={() => setDetailHoldingId(null)} />;
+      })()}
+      </ChartArea>
       <TrustLegend theme={theme}>
         <span><i className="verified" /><ShieldCheck size={12} />{t.verifiedPoint}</span>
         <span><i className="unverified" /><Info size={12} />{t.unverifiedPoint}</span>
       </TrustLegend>
       <Legend theme={theme}>
-        {legendOrder.map((id, i) => {
-          const prevId = legendOrder[i - 1];
-          const category = byHolding[id]?.[0]?.assetKey;
-          const prevCategory = prevId ? byHolding[prevId]?.[0]?.assetKey : undefined;
-          const isGroupStart = !assetKey && category && category !== prevCategory;
-          return (
-            <React.Fragment key={id}>
-              {isGroupStart && <CategoryHeader theme={theme}>{translations.assets[category]}</CategoryHeader>}
-              <LegendItem theme={theme} $active={lineVisibility[id]} onClick={() => handleLegendClick(id)} type="button">
-                <span className="dot" style={{ backgroundColor: paletteColor(rankedIds.indexOf(id)) }} />
-                {isHidden ? '****' : labelFor(id)}
-                {!isHidden && isClosed(id) && <ClosedTag>{t.closedTag || 'closed'}</ClosedTag>}
-              </LegendItem>
-            </React.Fragment>
-          );
+        {(assetKey ? [assetKey] : ASSET_CATEGORY_ORDER).map((category) => {
+          const categoryIds = legendOrder.filter((id) => byHolding[id]?.[0]?.assetKey === category);
+          if (categoryIds.length === 0) return null;
+          const enabled = categoryIds.some((id) => lineVisibility[id]);
+          return <CategoryDetails key={category} theme={theme} open={Boolean(assetKey)}>
+            <summary>
+              <button type="button" className="toggle" onClick={(event) => { event.preventDefault(); toggleCategory(categoryIds); }} aria-label={t.toggleCategory}>{enabled ? '✓' : '○'}</button>
+              <CategoryHeader theme={theme}>{translations.assets[category]} · {categoryIds.length}</CategoryHeader>
+            </summary>
+            <div className="items">{categoryIds.map((id) => (
+              <React.Fragment key={id}>
+                <LegendItem theme={theme} $active={lineVisibility[id]} onClick={() => handleLegendClick(id)} type="button">
+                  <span className="dot" style={{ backgroundColor: paletteColor(rankedIds.indexOf(id)) }} />
+                  {isHidden ? '****' : labelFor(id)}
+                  {!isHidden && isClosed(id) && <ClosedTag>{t.closedTag || 'closed'}</ClosedTag>}
+                </LegendItem>
+                {!isHidden && <button type="button" className="info" aria-label={t.assetDetails} onClick={() => setDetailHoldingId(Number(id))}><Info size={13} /></button>}
+              </React.Fragment>
+            ))}</div>
+          </CategoryDetails>;
         })}
       </Legend>
     </>

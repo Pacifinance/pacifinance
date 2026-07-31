@@ -4,6 +4,8 @@
 > Per analisi, idee e feature planning vedi [docs/ANALYSES.md](docs/ANALYSES.md)
 > Roadmap status rapido: [x] completato · [~] in sviluppo · [ ] pianificato (con marker <!-- roadmap:id -->)
 
+- [x] Grafici investimenti interattivi: categorie richiudibili/selezionabili, dettagli asset e feed Novità progressivo <!-- roadmap:interactive-investment-chart-legends -->
+
 ---
 
 ## Completati

@@ -565,7 +565,7 @@
     },
     "whatsNew": {
         "title": "Was gibt's Neues",
-        "viewRoadmap": "Vollständige Roadmap ansehen →"
+        "viewRoadmap": "Vollständige Roadmap ansehen →", "showMore": "Weitere Updates", "details": "Details", "collapse": "Einklappen", "categories": { "feature": "Funktion", "ux": "Erlebnis", "security": "Sicherheit", "performance": "Leistung", "bugfix": "Korrektur" }
     },
     "dashboard": {
         "quickAdd": {
@@ -736,7 +736,7 @@
             },
             "breakdownTitle": "Zusammensetzung nach Position",
             "breakdownDescription": "Finde heraus, ob du in einer einzelnen Position übergewichtet bist",
-            "overweightWarning": "Übergewichtete Position",
+            "overweightWarning": "Übergewichtete Position", "assetDetails": "Asset-Details anzeigen", "toggleCategory": "Gesamte Kategorie ein- oder ausschalten", "assetDetailLabels": { "details": "Asset-Details", "close": "Schließen", "value": "Aktueller Wert", "invested": "Investiert", "quantity": "Menge", "sector": "Sektor", "industry": "Branche", "country": "Land", "exchange": "Börse", "isin": "ISIN", "dividends": "Erhaltene Dividenden", "payments": "Zahlungen", "lastDividend": "Letzte Dividende", "notes": "Notizen", "stocks": "Aktien", "etf": "ETF", "bitcoin": "Bitcoin", "crypto": "Krypto", "bonds": "Anleihen", "funds": "Fonds", "commodities": "Rohstoffe" },
             "historyTitle": "Wertentwicklung im Zeitverlauf",
             "historyDescription": "Der Wert deiner Positionen, Monat für Monat",
             "communityDataTitle": "Gemeinsam verifizierte Preise",

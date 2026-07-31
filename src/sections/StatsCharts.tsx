@@ -19,6 +19,7 @@ import HoldingsHistoryChart from '../components/HoldingsHistoryChart';
 import PortfolioInsights from '../components/PortfolioInsights';
 import { getIncomesArray, getOutflowsArray, getBalanceChartData, getTotalIncomesCurrentMonth } from '../utils/userDataSelectors';
 import { useLocalizedNavigate } from '../hooks/useLocalizedNavigate';
+import type { InvestmentDividendSummaryDto } from '../types/api';
 
 /** Every investment-holdings asset key that can appear in the category selector (excludes liquidity/bank/cash). */
 const HOLDING_ASSET_KEYS = ['stocks', 'etf', 'bitcoin', 'crypto', 'bonds', 'funds', 'commodities'];
@@ -502,6 +503,7 @@ export default function StatsCharts() {
     const [monthlyInvestmentTarget, setMonthlyInvestmentTarget] = useState(null);
     const [monthlyInvestmentTargetPercent, setMonthlyInvestmentTargetPercent] = useState(null);
     const [annualPassiveIncome, setAnnualPassiveIncome] = useState(0);
+    const [investmentDividends, setInvestmentDividends] = useState<InvestmentDividendSummaryDto[]>([]);
     const [holdingsLoaded, setHoldingsLoaded] = useState(false);
     const [selectedHoldingAssetKey, setSelectedHoldingAssetKey] = useState(null);
     const [refreshingPrices, setRefreshingPrices] = useState(false);
@@ -529,6 +531,7 @@ export default function StatsCharts() {
                     setMonthlyInvestmentTarget(settings?.monthlyTarget ?? null);
                     setMonthlyInvestmentTargetPercent(settings?.monthlyTargetPercent ?? null);
                     setAnnualPassiveIncome(Array.isArray(dividends) ? dividends.reduce((sum, item) => sum + (item.totalAmount || 0), 0) : 0);
+                    setInvestmentDividends(Array.isArray(dividends) ? dividends : []);
                     setHoldingsLoaded(true);
                 }
             } catch (error) {
@@ -643,6 +646,7 @@ export default function StatsCharts() {
                                 theme={theme} 
                                 userData={userData} 
                                 isHidden={isHidden}
+                                dividends={investmentDividends}
                                 positionLimitPercent={userData?.limits?.positionConcentrationLimit}
                                 categoryLimitPercent={userData?.limits?.assetCategoryConcentrationLimit}
                                 CustomTick={CustomTick}
@@ -887,6 +891,8 @@ export default function StatsCharts() {
                                 isHidden={isHidden}
                                 type="area"
                                 onContribute={() => navigate('/dashboard')}
+                                holdings={investmentHoldings}
+                                dividends={investmentDividends}
                             />
                         </ChartCard>
                     </ChartGrid>

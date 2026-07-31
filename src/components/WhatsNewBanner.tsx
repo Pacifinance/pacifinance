@@ -19,6 +19,7 @@ import { LocalizedLink } from './LocalizedLink';
 
 const STORAGE_KEY = 'pacifinance-whats-new-seen';
 const MONTHS_LOOKBACK = 3;
+const PAGE_SIZE = 5;
 
 /* ── Animations ───────────────────────────────────────────── */
 
@@ -170,6 +171,14 @@ const Item = styled.div`
   color: ${p => p.theme.textColor};
   opacity: 0.85;
   line-height: 1.45;
+  padding: .5rem;
+  border-radius: 9px;
+  background: ${p => p.$unseen ? `${p.theme.buttonBackgroundColor}12` : 'transparent'};
+  border-left: 2px solid ${p => p.$unseen ? p.theme.buttonBackgroundColor : 'transparent'};
+  button { border: 0; background: transparent; color: inherit; cursor: pointer; padding: 0; text-align: left; width: 100%; }
+  .meta { display: flex; align-items: center; gap: .4rem; margin-top: .15rem; font-size: .66rem; opacity: .62; }
+  .category { text-transform: uppercase; font-weight: 700; letter-spacing: .03em; }
+  .description { display: block; margin-top: .35rem; opacity: .82; }
 `;
 
 const ItemIcon = styled.span`
@@ -193,10 +202,14 @@ const RoadmapLink = styled.span`
   }
 `;
 
-/* ── Helpers ──────────────────────────────────────────────── */
+const MoreButton = styled.button`
+  width: 100%; margin-top: .65rem; padding: .5rem; border-radius: 8px;
+  border: 1px solid ${p => p.theme.buttonBackgroundColor}45;
+  background: ${p => p.theme.buttonBackgroundColor}12;
+  color: ${p => p.theme.textColor}; cursor: pointer; font-weight: 600;
+`;
 
-const getVersionSignature = (items) =>
-  items.map(i => i.id).sort().join(',');
+/* ── Helpers ──────────────────────────────────────────────── */
 
 const getRecentItems = () => {
   const now = new Date();
@@ -217,17 +230,18 @@ const WhatsNewBanner = () => {
   const wrapperRef = useRef(null);
 
   const recentItems = useMemo(() => getRecentItems(), []);
-  const versionSig = useMemo(() => getVersionSignature(recentItems), [recentItems]);
-
-  const [seen, setSeen] = useState(() => {
+  const [seenIds, setSeenIds] = useState(() => {
     try {
-      return localStorage.getItem(STORAGE_KEY) === versionSig;
+      const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      return new Set<string>(Array.isArray(stored) ? stored.filter((value): value is string => typeof value === 'string') : []);
     } catch {
-      return false;
+      return new Set<string>();
     }
   });
 
   const [open, setOpen] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
 
   const handleToggle = useCallback(() => {
     setOpen(prev => !prev);
@@ -235,13 +249,11 @@ const WhatsNewBanner = () => {
 
   const handleClose = useCallback(() => {
     setOpen(false);
-    if (!seen) {
-      setSeen(true);
-      try {
-        localStorage.setItem(STORAGE_KEY, versionSig);
-      } catch { /* ignore */ }
-    }
-  }, [seen, versionSig]);
+    const next = new Set(seenIds);
+    recentItems.slice(0, visibleCount).forEach((item) => next.add(item.id));
+    setSeenIds(next);
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify([...next])); } catch { /* ignore */ }
+  }, [seenIds, recentItems, visibleCount]);
 
   // Close on Escape
   useEffect(() => {
@@ -253,7 +265,7 @@ const WhatsNewBanner = () => {
 
   if (recentItems.length === 0) return null;
 
-  const hasNotification = !seen;
+  const hasNotification = recentItems.some((item) => !seenIds.has(item.id));
 
   return (
     <Wrapper ref={wrapperRef}>
@@ -283,17 +295,19 @@ const WhatsNewBanner = () => {
             </DropdownHeader>
 
             <ItemList>
-              {recentItems.map(item => (
-                <Item key={item.id} theme={theme}>
+              {recentItems.slice(0, visibleCount).map(item => (
+                <Item key={item.id} theme={theme} $unseen={!seenIds.has(item.id)}>
                   <ItemIcon>{item.icon}</ItemIcon>
-                  <span>
+                  <button type="button" onClick={() => setExpandedIds((previous) => { const next = new Set(previous); if (next.has(item.id)) next.delete(item.id); else next.add(item.id); return next; })} aria-expanded={expandedIds.has(item.id)}>
                     <strong>{item.title[language] || item.title.en}</strong>
-                    {' — '}
-                    {item.description[language] || item.description.en}
-                  </span>
+                    <span className="meta"><span className="category">{t.categories?.[item.category] || item.category}</span><span>{item.completedDate}</span><span>{expandedIds.has(item.id) ? t.collapse : t.details}</span></span>
+                    {expandedIds.has(item.id) && <span className="description">{item.description[language] || item.description.en}</span>}
+                  </button>
                 </Item>
               ))}
             </ItemList>
+
+            {visibleCount < recentItems.length && <MoreButton theme={theme} type="button" onClick={() => setVisibleCount((count) => Math.min(count + PAGE_SIZE, recentItems.length))}>{t.showMore}</MoreButton>}
 
             <RoadmapLink theme={theme}>
               <LocalizedLink to="/roadmap" data-umami-event="whats-new-roadmap-link" onClick={handleClose}>

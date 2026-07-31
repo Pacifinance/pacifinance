@@ -21,6 +21,18 @@ export interface RoadmapItem {
 const roadmapData: RoadmapItem[] = [
   /* ──────────── COMPLETED ──────────── */
   {
+    id: 'interactive-investment-chart-legends',
+    title: { it: 'Grafici investimenti interattivi', en: 'Interactive investment charts' },
+    description: {
+      it: 'Legenda richiudibile per categoria, selezione di interi gruppi e schede asset con dati societari e dividendi; il pannello Novità ora è progressivo e distingue gli aggiornamenti non letti.',
+      en: 'Collapsible category legends, whole-group selection and asset cards with company and dividend data; the What\'s New panel is now progressive and highlights unread updates.'
+    },
+    status: 'completed',
+    category: 'ux',
+    icon: '📊',
+    completedDate: '2026-07',
+  },
+  {
     id: 'recurring-transactions',
     title: { it: 'Transazioni Ricorrenti', en: 'Recurring Transactions' },
     description: {

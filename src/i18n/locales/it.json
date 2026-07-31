@@ -566,7 +566,9 @@
 
     "whatsNew": {
         "title": "Novità",
-        "viewRoadmap": "Vedi la roadmap completa →"
+        "viewRoadmap": "Vedi la roadmap completa →",
+        "showMore": "Mostra altri aggiornamenti", "details": "Dettagli", "collapse": "Riduci",
+        "categories": { "feature": "Funzione", "ux": "Esperienza", "security": "Sicurezza", "performance": "Prestazioni", "bugfix": "Correzione" }
     },
 
     "dashboard": {
@@ -739,6 +741,8 @@
             "breakdownTitle": "Composizione per posizione",
             "breakdownDescription": "Scopri se sei troppo esposto su una singola posizione",
             "overweightWarning": "Posizione sovrappesata",
+            "assetDetails": "Mostra dettagli dell'asset", "toggleCategory": "Attiva o disattiva l'intera categoria",
+            "assetDetailLabels": { "details": "Dettagli asset", "close": "Chiudi", "value": "Valore attuale", "invested": "Investito", "quantity": "Quantità", "sector": "Settore", "industry": "Industria", "country": "Paese", "exchange": "Mercato", "isin": "ISIN", "dividends": "Dividendi ricevuti", "payments": "pagamenti", "lastDividend": "Ultimo dividendo", "notes": "Note", "stocks": "Azioni", "etf": "ETF", "bitcoin": "Bitcoin", "crypto": "Crypto", "bonds": "Obbligazioni", "funds": "Fondi", "commodities": "Materie prime" },
             "historyTitle": "Andamento nel tempo",
             "historyDescription": "Valore dei tuoi holding mese per mese",
             "communityDataTitle": "Prezzi verificati, costruiti insieme",

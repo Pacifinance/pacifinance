@@ -1,4 +1,4 @@
-import React, { useContext, useMemo } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { PieChart } from 'recharts/lib/chart/PieChart';
 import { Pie } from 'recharts/lib/polar/Pie';
@@ -11,7 +11,9 @@ import { MediaQueryContext } from '../contexts/MediaQueryContext';
 import { RenderCustomizedLabel } from '../utils/customGraphsInfo';
 import { getHoldingValue, getHoldingLabel, paletteColor, OTHER_SLICE_COLOR, ASSET_CATEGORY_ORDER } from '../utils/holdingsChartHelpers';
 import { getRandomGrayscaleColor } from '../utils/colorUtils';
-import type { InvestmentHoldingDto, InvestmentAssetKey } from '../types/api';
+import HoldingAssetDetails from './HoldingAssetDetails';
+import { Info } from 'lucide-react';
+import type { InvestmentDividendSummaryDto, InvestmentHoldingDto, InvestmentAssetKey } from '../types/api';
 
 interface HoldingsBreakdownChartProps {
   theme: any;
@@ -20,6 +22,7 @@ interface HoldingsBreakdownChartProps {
   isHidden: boolean;
   positionLimitPercent?: number | null;
   categoryLimitPercent?: number | null;
+  dividends?: InvestmentDividendSummaryDto[];
 }
 
 const Title = styled.h4`
@@ -48,6 +51,7 @@ const Legend = styled.div`
 `;
 
 const ChartStage = styled.div`
+  position: relative;
   width: 100%;
   height: 380px;
   @media (max-width: 768px) { height: 240px; }
@@ -69,6 +73,7 @@ const CategoryDetails = styled.details`
   &[open] summary::after { transform: rotate(90deg); }
 
   .category-items { display: flex; flex-direction: column; gap: 0.35rem; padding: 0.45rem 0.2rem 0.25rem; }
+  .category-toggle { border: 0; background: transparent; color: inherit; cursor: pointer; padding: .2rem; font-weight: 700; }
 `;
 
 const LegendItem = styled.div`
@@ -104,6 +109,8 @@ const LegendItem = styled.div`
     font-weight: 600;
     flex-shrink: 0;
   }
+  button { border: 0; background: transparent; color: inherit; cursor: pointer; padding: 2px; display: inline-flex; }
+  &.inactive { opacity: .4; text-decoration: line-through; }
 `;
 
 const EmptyState = styled.p`
@@ -134,11 +141,13 @@ const MAX_SLICES = 8;
 /** A slice materially larger than an even split flags as an overweight rebalancing cue. */
 const OVERWEIGHT_MULTIPLIER = 1.5;
 
-export default function HoldingsBreakdownChart({ theme, holdings, assetKey, isHidden, positionLimitPercent, categoryLimitPercent }: HoldingsBreakdownChartProps) {
+export default function HoldingsBreakdownChart({ theme, holdings, assetKey, isHidden, positionLimitPercent, categoryLimitPercent, dividends = [] }: HoldingsBreakdownChartProps) {
   const { translations } = useContext(LanguageContext);
   const { formatAmount } = useContext(CurrencyContext);
   const { isMobileScreen } = useContext(MediaQueryContext);
   const t = translations.graphs.statsHoldings;
+  const [hiddenIds, setHiddenIds] = useState<Set<number>>(new Set());
+  const [detailId, setDetailId] = useState<number | null>(null);
 
   const allRows = useMemo(() => {
     const relevant = (assetKey ? holdings.filter((h) => h.assetKey === assetKey) : holdings)
@@ -150,8 +159,9 @@ export default function HoldingsBreakdownChart({ theme, holdings, assetKey, isHi
   }, [holdings, assetKey]);
 
   const rows = useMemo(() => {
-    const top = allRows.slice(0, MAX_SLICES);
-    const rest = allRows.slice(MAX_SLICES);
+    const visibleRows = allRows.filter((row) => !hiddenIds.has(row.id));
+    const top = visibleRows.slice(0, MAX_SLICES);
+    const rest = visibleRows.slice(MAX_SLICES);
     const otherValue = rest.reduce((sum, r) => sum + r.value, 0);
 
     const withOther = otherValue > 0
@@ -172,8 +182,9 @@ export default function HoldingsBreakdownChart({ theme, holdings, assetKey, isHi
       });
     }
     return withOther;
-  }, [allRows, assetKey, translations.general.other]);
+  }, [allRows, assetKey, translations.general.other, hiddenIds]);
 
+  const portfolioTotal = allRows.reduce((sum, r) => sum + r.value, 0);
   const total = rows.reduce((sum, r) => sum + r.value, 0);
   const overweightThreshold = positionLimitPercent ?? (rows.length > 0 ? (100 / rows.length) * OVERWEIGHT_MULTIPLIER : Infinity);
 
@@ -201,18 +212,20 @@ export default function HoldingsBreakdownChart({ theme, holdings, assetKey, isHi
   const groupBorderColor = theme.mode === 'dark' ? 'rgba(255,255,255,0.85)' : 'rgba(0,0,0,0.65)';
 
   const renderLegendItem = (row: (typeof allRows)[number], index: number) => {
-    const pct = (row.value / total) * 100;
+    const pct = portfolioTotal > 0 ? (row.value / portfolioTotal) * 100 : 0;
+    const inactive = hiddenIds.has(row.id);
     return (
-      <LegendItem key={row.id} theme={theme}>
+      <LegendItem key={row.id} theme={theme} className={inactive ? 'inactive' : ''}>
         <span className="dot" style={{ backgroundColor: isHidden ? getRandomGrayscaleColor() : paletteColor(index) }} />
-        <span className="label">{isHidden ? '****' : row.label}</span>
+        <button className="label" type="button" onClick={() => setHiddenIds((previous) => { const next = new Set(previous); if (next.has(row.id)) next.delete(row.id); else next.add(row.id); return next; })}>{isHidden ? '****' : row.label}</button>
         {pct > overweightThreshold && <span className="overweight" title={t.overweightWarning}>⚠</span>}
         <span className="pct">{isHidden ? '****' : `${pct.toFixed(1)}%`}</span>
+        {!isHidden && <button type="button" aria-label={t.assetDetails} onClick={() => setDetailId(row.id)}><Info size={14} /></button>}
       </LegendItem>
     );
   };
 
-  if (rows.length === 0) {
+  if (allRows.length === 0) {
     return (
       <>
         <Title theme={theme}>{t.breakdownTitle}</Title>
@@ -243,6 +256,8 @@ export default function HoldingsBreakdownChart({ theme, holdings, assetKey, isHi
               return (
                 <Cell
                   key={row.id}
+                  onClick={() => typeof row.id === 'number' && setDetailId(row.id)}
+                  style={{ cursor: typeof row.id === 'number' && !isHidden ? 'pointer' : 'default' }}
                   fill={isHidden ? getRandomGrayscaleColor() : colorFor(row, index)}
                   stroke={isGroupStart ? groupBorderColor : strokeColor}
                   strokeWidth={isGroupStart ? 3 : 1}
@@ -253,11 +268,16 @@ export default function HoldingsBreakdownChart({ theme, holdings, assetKey, isHi
           <Tooltip
             formatter={(value: number, _name: string, entry: any) => [
               isHidden ? '****' : `${formatAmount(value)} (${((value / total) * 100).toFixed(1)}%)`,
-              isHidden ? '****' : entry?.payload?.label,
+              isHidden ? '****' : (holdings.find((item) => item.id === entry?.payload?.id)?.instrument?.name || entry?.payload?.label),
             ]}
           />
           </PieChart>
         </ResponsiveContainer>
+        {detailId != null && (() => {
+          const holding = holdings.find((item) => item.id === detailId);
+          if (!holding) return null;
+          return <HoldingAssetDetails holding={holding} dividend={dividends.find((item) => item.instrumentId === holding.instrument?.id)} formatAmount={formatAmount} labels={t.assetDetailLabels} onClose={() => setDetailId(null)} />;
+        })()}
       </ChartStage>
       <Legend theme={theme}>
         {assetKey
@@ -265,10 +285,20 @@ export default function HoldingsBreakdownChart({ theme, holdings, assetKey, isHi
           : ASSET_CATEGORY_ORDER.map((category) => {
               const categoryRows = allRows.filter((row) => row.assetKey === category);
               if (categoryRows.length === 0) return null;
-              const categoryPct = categoryTotals ? ((categoryTotals.get(category) ?? 0) / total) * 100 : 0;
+              const categoryPct = categoryTotals && portfolioTotal > 0 ? ((categoryTotals.get(category) ?? 0) / portfolioTotal) * 100 : 0;
+              const categoryEnabled = categoryRows.some((row) => !hiddenIds.has(row.id));
+              const toggleCategory = (event: React.MouseEvent) => {
+                event.preventDefault();
+                setHiddenIds((previous) => {
+                  const next = new Set(previous);
+                  categoryRows.forEach((row) => categoryEnabled ? next.add(row.id) : next.delete(row.id));
+                  return next;
+                });
+              };
               return (
                 <CategoryDetails key={category} theme={theme}>
                   <summary>
+                    <button type="button" className="category-toggle" onClick={toggleCategory} aria-label={t.toggleCategory}>{categoryEnabled ? '✓' : '○'}</button>
                     <CategoryHeader theme={theme}>
                       <span>{translations.assets[category]}</span>
                       <span className="category-meta">

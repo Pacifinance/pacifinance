@@ -566,7 +566,9 @@
 
     "whatsNew": {
         "title": "What's New",
-        "viewRoadmap": "View full roadmap →"
+        "viewRoadmap": "View full roadmap →",
+        "showMore": "Show more updates", "details": "Details", "collapse": "Collapse",
+        "categories": { "feature": "Feature", "ux": "Experience", "security": "Security", "performance": "Performance", "bugfix": "Fix" }
     },
 
     "dashboard": {
@@ -739,6 +741,8 @@
             "breakdownTitle": "Breakdown by holding",
             "breakdownDescription": "See if you're overweight in a single position",
             "overweightWarning": "Overweight position",
+            "assetDetails": "Show asset details", "toggleCategory": "Enable or disable the whole category",
+            "assetDetailLabels": { "details": "Asset details", "close": "Close", "value": "Current value", "invested": "Invested", "quantity": "Quantity", "sector": "Sector", "industry": "Industry", "country": "Country", "exchange": "Exchange", "isin": "ISIN", "dividends": "Dividends received", "payments": "payments", "lastDividend": "Last dividend", "notes": "Notes", "stocks": "Stocks", "etf": "ETF", "bitcoin": "Bitcoin", "crypto": "Crypto", "bonds": "Bonds", "funds": "Funds", "commodities": "Commodities" },
             "historyTitle": "Value over time",
             "historyDescription": "Your holdings' value, month by month",
             "communityDataTitle": "Verified prices, built together",

@@ -23,7 +23,6 @@ import { formatInstrumentDetails } from '../utils/instrumentDisplay';
 import { KIND_TO_ASSET_KEY } from '../constants/investmentSchema';
 import ImportPlatformGuide from './ImportPlatformGuide';
 import InstrumentSearchAutocomplete from './InstrumentSearchAutocomplete';
-import { HoldingConflictError } from '../services/investmentService';
 import type {
   InvestmentInstrumentDto, InvestmentKind, InvestmentHoldingDto, InvestmentTransactionSummaryDto,
   InvestmentHoldingHistorySaveRequest, InvestmentDividendSaveRequest, InvestmentTransactionSaveRequest,
@@ -53,18 +52,33 @@ interface ImportRowState {
   position: AggregatedPosition;
   transactions: ImportedTransaction[];
   /** This position's own dividend payments found in the file (deduped) — saved
-   * alongside the holding once it's resolved (see importSelected/resolveConflict). */
+   * alongside the holding once it's resolved (see importSelected). */
   dividends: ImportedDividend[];
   instrument: InvestmentInstrumentDto | null;
-  status: 'pending' | 'resolving' | 'resolved' | 'not-found' | 'conflict' | 'saved' | 'error';
+  /** Purely instrument-resolution state — whether this row's merge with an
+   * existing holding would conflict (and needs a mergeStrategy choice) is a
+   * separate, orthogonal concern, always derived live via wouldConflict/
+   * isRowReady rather than folded into this enum (see those below). */
+  status: 'pending' | 'resolving' | 'resolved' | 'not-found' | 'saved' | 'error';
   selected: boolean;
   /** Every "YYYY-MM" this position's history will backfill, chronological — includes the current month. */
   historyMonths: string[];
   /** Asset kind picked for a not-found row — determines which catalog (OpenFIGI/CoinGecko)
    * the manual re-search below uses, and what kind gets created if added as unverified. */
   manualKind: InvestmentKind;
-  /** Set when status is 'conflict': the already-held holding this row's instrument collided with (see HoldingConflictError). */
-  conflictExisting: InvestmentHoldingDto | null;
+  /** Chosen during review when wouldConflict(row, existing) is true — fills the
+   * gap resolveMergeStrategy deliberately leaves undefined for a genuine
+   * cross-platform conflict, decided before commit instead of reactively after
+   * a failed save (see isRowReady). Reset to null if the row's instrument changes. */
+  mergeStrategy: 'add' | 'replace' | null;
+  /** Manual per-row corrections made during review, applied on top of the parsed
+   * defaults at commit time (see getEffectiveAveragePrice/getEffectiveCurrentValue/
+   * getEffectiveNotes). Deliberately excludes quantity/investedAmount: both are
+   * independently re-derived by buildHistoryEntries straight from `transactions`,
+   * so an override that only patched the saveHolding payload would leave the
+   * live holding and its own most-recent history point silently disagreeing —
+   * a real follow-up, not something to bolt on here. */
+  overrides: { averagePrice?: number; currentValue?: number; notes?: string };
 }
 
 interface ClosedHoldingCandidate {
@@ -286,6 +300,84 @@ const ConflictButton = styled.button`
   &:hover { opacity: 0.85; }
 `;
 
+const MergeChoiceLine = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.72rem;
+  color: ${(p) => p.theme.textColor};
+  opacity: 0.75;
+
+  button {
+    border: none;
+    background: transparent;
+    color: ${(p) => p.theme.buttonBackgroundColor};
+    font-size: 0.72rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0;
+    text-decoration: underline;
+  }
+`;
+
+const OverrideToggle = styled.button`
+  align-self: flex-start;
+  margin-top: 0.3rem;
+  border: none;
+  background: transparent;
+  color: ${(p) => p.theme.buttonBackgroundColor};
+  font-size: 0.7rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+`;
+
+/** Local-only layout for an OrphanRow's content when it needs an opt-out
+ * checkbox — OrphanRow itself (investmentImport/ReconciliationStyles.tsx) is
+ * shared with InvestmentReconciliationPanel.tsx, which never shows one, so
+ * the flex layout lives here rather than on the shared component. */
+const OrphanRowContent = styled.div`
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+
+  input[type='checkbox'] {
+    flex-shrink: 0;
+    margin-top: 0.15rem;
+    accent-color: ${(p) => p.theme.buttonBackgroundColor};
+    cursor: pointer;
+  }
+`;
+
+const OverrideFields = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-top: 0.35rem;
+  padding: 0.5rem;
+  border-radius: 8px;
+  background: ${(p) => (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)')};
+
+  label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    font-size: 0.68rem;
+    color: ${(p) => p.theme.textColor};
+    opacity: 0.7;
+  }
+
+  input {
+    padding: 0.3rem 0.4rem;
+    border-radius: 6px;
+    border: 1px solid ${(p) => (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.15)' : '#cbd5e1')};
+    background: ${(p) => (p.theme.mode === 'dark' ? '#1a1f2e' : 'white')};
+    color: ${(p) => p.theme.textColor};
+    font-size: 0.78rem;
+  }
+`;
+
 export default function InvestmentImportWizard({ onClose, onImported }: InvestmentImportWizardProps) {
   const { theme } = useContext(ThemeContext);
   const { translations, language } = useContext(LanguageContext);
@@ -330,6 +422,13 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
    * closed automatically: the user confirms each one explicitly below. */
   const [closedCandidates, setClosedCandidates] = useState<ClosedHoldingCandidate[]>([]);
   const [orphanSells, setOrphanSells] = useState<OrphanSellWarning[]>([]);
+  /** Orphan sells default to included (matches the previous unconditional-
+   * import behavior) — only tracks the ones a user has explicitly excluded. */
+  const [excludedOrphanKeys, setExcludedOrphanKeys] = useState<Set<string>>(new Set());
+  /** Which row's manual-override fields (average price/current value/notes)
+   * are expanded — at most one at a time, matches the history drawer's own
+   * single-open convention in InvestmentHoldingsPanel.tsx. Keyed by position.key. */
+  const [editingOverridesFor, setEditingOverridesFor] = useState<string | null>(null);
 
   const [loadingSavedTransactions, setLoadingSavedTransactions] = useState(false);
   /** Surfaces import progress to the user — a multi-year, multi-instrument
@@ -404,7 +503,8 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
       const positionDividends = dividendsByKey.get(position.key) ?? [];
       return {
         position, transactions: positionTransactions, dividends: positionDividends, instrument: null,
-        status: 'pending', selected: true, historyMonths, manualKind: 'stock', conflictExisting: null,
+        status: 'pending', selected: true, historyMonths, manualKind: 'stock',
+        mergeStrategy: null, overrides: {},
       };
     });
     setRows(initialRows);
@@ -472,6 +572,7 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
         alreadyPersisted,
       };
     }));
+    setExcludedOrphanKeys(new Set());
 
     void resolveInstruments(initialRows);
   };
@@ -535,6 +636,48 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
     const recordedMonths = recordedHistoryByInstrumentId.get(row.instrument.id);
     const overlaps = Boolean(recordedMonths) && row.historyMonths.some((m) => recordedMonths!.has(m));
     return overlaps ? undefined : 'add';
+  };
+
+  // Single source of truth for "what will happen to the already-held
+  // instrument this row matches" — mirrors insertHolding's own overlap-then-
+  // source decision (server/src/db/models/investments.ts) so the outcome
+  // shown/acted on here never diverges from what the backend would actually
+  // do. Both the review-time impact text (describeExistingImpact) and the
+  // proactive conflict check (wouldConflict) switch on this single result
+  // instead of each re-deriving the same booleans by hand.
+  const resolveMergeOutcome = (row: ImportRowState, existing: InvestmentHoldingDto): 'add' | 'up-to-date' | 'auto-replace' | 'conflict' => {
+    if (resolveMergeStrategy(row) === 'add') return 'add';
+
+    // Every month this row covers was already recorded, AND the resulting
+    // quantity/invested amount match what's already saved — a re-import of a
+    // file already imported before, with nothing new in it.
+    const recordedMonths = row.instrument ? recordedHistoryByInstrumentId.get(row.instrument.id) : undefined;
+    const allMonthsAlreadyRecorded = Boolean(recordedMonths) && row.historyMonths.every((m) => recordedMonths!.has(m));
+    const rowInvestedEUR = row.position.investedAmount != null
+      ? convertAmountToEUR(row.position.investedAmount, row.position.investedAmountCurrency)
+      : 0;
+    const quantityUnchanged = Math.abs((existing.quantity ?? 0) - (row.position.quantity ?? 0)) < 0.0001;
+    const amountUnchanged = Math.abs((existing.investedAmount ?? 0) - rowInvestedEUR) < 0.01;
+    if (allMonthsAlreadyRecorded && quantityUnchanged && amountUnchanged) return 'up-to-date';
+
+    const willAutoReplace = existing.importSource === platform || existing.importSource == null;
+    return willAutoReplace ? 'auto-replace' : 'conflict';
+  };
+
+  const wouldConflict = (row: ImportRowState, existing: InvestmentHoldingDto): boolean =>
+    resolveMergeOutcome(row, existing) === 'conflict';
+
+  // A row is ready to actually reach saveHolding at commit time once its
+  // instrument is resolved AND — if merging with an already-held instrument
+  // would conflict — the user has picked how (see the proactive Add/Replace
+  // UI below). Used consistently everywhere a row's "can this be imported
+  // right now" needs checking (the checkbox, the selected-count, the commit
+  // loop's own skip condition) so none of them can silently drift apart.
+  const isRowReady = (row: ImportRowState): boolean => {
+    if (row.status !== 'resolved' || !row.instrument) return false;
+    const existing = existingByInstrumentId.get(row.instrument.id);
+    if (existing && wouldConflict(row, existing) && !row.mergeStrategy) return false;
+    return true;
   };
 
   const resolveInstruments = async (toResolve: ImportRowState[]) => {
@@ -638,8 +781,8 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
   // the recorded history for those months stays permanently wrong even
   // though the current, most-recent total looks right.
   // Takes the raw ingredients (not a full ImportRowState) so the exact same
-  // backfill logic covers both an open row (importSelected/resolveConflict)
-  // and a position about to be closed (handleCloseHolding) - a closed
+  // backfill logic covers both an open row (importSelected) and a position
+  // about to be closed (handleCloseHolding) - a closed
   // position's pre-closure months are just as real a part of "value over
   // time" as an open one's, they just happen to end at zero instead of
   // continuing to grow.
@@ -667,10 +810,21 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
     return entries;
   };
 
+  // At this point every selected row has already been through review: its
+  // instrument is resolved, any merge conflict with an already-held
+  // instrument has an explicit mergeStrategy choice (see isRowReady), and any
+  // manual overrides are already sitting in row.overrides — nothing here
+  // should discover something new to ask the user about. The try/catch below
+  // is a defensive fallback only, for the narrow race window where another
+  // tab/session changed this same instrument's holding between review and
+  // commit (existingByInstrumentId is a snapshot fetched once, up front) —
+  // there's no conflict-resolution UI left to route that into mid-commit, so
+  // it's just marked as an error; re-dropping the same file(s) is cheap and
+  // idempotent (handleFiles merges cumulatively) if that happens.
   const importSelected = async () => {
     if (importing) return;
     setImporting(true);
-    const total = rows.filter((r) => r.selected && r.status === 'resolved' && r.instrument).length;
+    const total = rows.filter((r) => r.selected && isRowReady(r)).length;
     setImportPhase('holdings');
     setImportProgress({ current: 0, total });
     try {
@@ -680,7 +834,7 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
 
       for (let i = 0; i < rows.length; i++) {
         const row = rows[i];
-        if (!row.selected || row.status !== 'resolved' || !row.instrument) continue;
+        if (!row.selected || !isRowReady(row) || !row.instrument) continue;
         const assetKey = KIND_TO_ASSET_KEY[row.instrument.kind];
         if (!assetKey) continue;
         try {
@@ -688,12 +842,14 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
             instrument_id: row.instrument.id,
             asset_key: assetKey,
             quantity: row.position.quantity,
-            average_price: row.position.averagePrice != null ? convertAmountToEUR(row.position.averagePrice, row.position.currency) : null,
-            current_value: null,
+            average_price: getEffectiveAveragePrice(row) != null
+              ? convertAmountToEUR(getEffectiveAveragePrice(row)!, row.position.currency)
+              : null,
+            current_value: row.overrides.currentValue != null ? convertAmountToEUR(row.overrides.currentValue, row.position.investedAmountCurrency) : null,
             invested_amount: row.position.investedAmount != null ? convertAmountToEUR(row.position.investedAmount, row.position.investedAmountCurrency) : null,
-            notes: '',
+            notes: row.overrides.notes ?? '',
             import_source: platform,
-            merge_strategy: resolveMergeStrategy(row),
+            merge_strategy: resolveMergeStrategy(row) ?? row.mergeStrategy ?? undefined,
           });
           historyEntries.push(...buildHistoryEntries(
             row.transactions, row.position.key, saved.id, row.instrument.id,
@@ -702,12 +858,9 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
           dividendEntries.push(...buildDividendEntries(row, saved.id));
           transactionEntries.push(...buildTransactionEntries(row.transactions, row.instrument.id, saved.id, platform ?? 'generic', convertAmountToEUR));
           setRows((prev) => prev.map((r, idx) => (idx === i ? { ...r, status: 'saved' } : r)));
-        } catch (error) {
-          if (error instanceof HoldingConflictError) {
-            setRows((prev) => prev.map((r, idx) => (idx === i ? { ...r, status: 'conflict', conflictExisting: error.existing } : r)));
-          } else {
-            setRows((prev) => prev.map((r, idx) => (idx === i ? { ...r, status: 'error' } : r)));
-          }
+        } catch {
+          // See the function-level comment above — this should be rare.
+          setRows((prev) => prev.map((r, idx) => (idx === i ? { ...r, status: 'error' } : r)));
         }
         setImportProgress((prev) => (prev ? { ...prev, current: prev.current + 1 } : prev));
       }
@@ -715,9 +868,10 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
       // holding to save/replace, just the transactions themselves, so a later
       // file with the missing buy can reconcile against them instead of the
       // sell being lost the moment this session ends. holding_id is null:
-      // nothing to attach it to yet.
+      // nothing to attach it to yet. Excluded ones (user opted out during
+      // review) are skipped entirely.
       for (const orphan of orphanSells) {
-        if (!orphan.instrument) continue;
+        if (!orphan.instrument || excludedOrphanKeys.has(orphan.key)) continue;
         transactionEntries.push(...buildTransactionEntries(orphan.transactions, orphan.instrument.id, null, platform ?? 'generic', convertAmountToEUR));
       }
 
@@ -730,44 +884,6 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
       setImporting(false);
       setImportPhase(null);
       setImportProgress(null);
-    }
-  };
-
-  // Resolves a 'conflict' row once the user picks how to handle the
-  // already-held instrument: "add" sums both positions (e.g. the same stock
-  // held on a different platform too), "replace" overwrites it (e.g. the
-  // existing holding was a rough manual entry the user wants superseded by
-  // this file's exact numbers).
-  const resolveConflict = async (index: number, strategy: 'add' | 'replace') => {
-    const row = rows[index];
-    if (!row.instrument) return;
-    const assetKey = KIND_TO_ASSET_KEY[row.instrument.kind];
-    if (!assetKey) return;
-    setRows((prev) => prev.map((r, idx) => (idx === index ? { ...r, status: 'resolving' } : r)));
-    try {
-      const saved = await investmentService.saveHolding({
-        instrument_id: row.instrument.id,
-        asset_key: assetKey,
-        quantity: row.position.quantity,
-        average_price: row.position.averagePrice != null ? convertAmountToEUR(row.position.averagePrice, row.position.currency) : null,
-        current_value: null,
-        invested_amount: row.position.investedAmount != null ? convertAmountToEUR(row.position.investedAmount, row.position.investedAmountCurrency) : null,
-        notes: '',
-        import_source: platform,
-        merge_strategy: strategy,
-      });
-      await flushBatches(
-        investmentService,
-        buildHistoryEntries(
-          row.transactions, row.position.key, saved.id, row.instrument.id,
-          recordedHistoryByInstrumentId, recordedQuantityByInstrumentId, convertAmountToEUR,
-        ),
-        buildDividendEntries(row, saved.id),
-        buildTransactionEntries(row.transactions, row.instrument.id, saved.id, platform ?? 'generic', convertAmountToEUR),
-      );
-      setRows((prev) => prev.map((r, idx) => (idx === index ? { ...r, status: 'saved' } : r)));
-    } catch {
-      setRows((prev) => prev.map((r, idx) => (idx === index ? { ...r, status: 'error' } : r)));
     }
   };
 
@@ -803,7 +919,7 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
     }
   };
 
-  const importableCount = rows.filter((r) => r.selected && r.status === 'resolved').length;
+  const importableCount = rows.filter((r) => r.selected && isRowReady(r)).length;
   const savedCount = rows.filter((r) => r.status === 'saved').length;
 
   const formatMonthLabel = (monthKey: string) => {
@@ -819,50 +935,46 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
   const describeExistingImpact = (row: ImportRowState, existing: InvestmentHoldingDto) => {
     const existingQuantity = formatNumber(existing.quantity ?? 0);
     const existingAmount = `${formatNumber(existing.investedAmount ?? 0)} ${currencySymbol}`;
-
     const rowInvestedEUR = row.position.investedAmount != null
       ? convertAmountToEUR(row.position.investedAmount, row.position.investedAmountCurrency)
       : 0;
 
-    if (resolveMergeStrategy(row) === 'add') {
-      // Non-overlapping months (e.g. an older or newer statement covering a
-      // period never imported before): unambiguous, always summed, never asked.
-      return (t.existingWillAdd || "Already held: {quantity} units, {amount} — this file covers different months you don't have yet, so it will be ADDED on top, bringing it to {newQuantity} units, {newAmount}")
-        .replace('{quantity}', existingQuantity)
-        .replace('{amount}', existingAmount)
-        .replace('{newQuantity}', formatNumber((existing.quantity ?? 0) + (row.position.quantity ?? 0)))
-        .replace('{newAmount}', `${formatNumber((existing.investedAmount ?? 0) + rowInvestedEUR)} ${currencySymbol}`);
+    switch (resolveMergeOutcome(row, existing)) {
+      case 'add':
+        // Non-overlapping months (e.g. an older or newer statement covering a
+        // period never imported before): unambiguous, always summed, never asked.
+        return (t.existingWillAdd || "Already held: {quantity} units, {amount} — this file covers different months you don't have yet, so it will be ADDED on top, bringing it to {newQuantity} units, {newAmount}")
+          .replace('{quantity}', existingQuantity)
+          .replace('{amount}', existingAmount)
+          .replace('{newQuantity}', formatNumber((existing.quantity ?? 0) + (row.position.quantity ?? 0)))
+          .replace('{newAmount}', `${formatNumber((existing.investedAmount ?? 0) + rowInvestedEUR)} ${currencySymbol}`);
+      case 'up-to-date':
+        // Distinguished from the "will be updated" case below (partial overlap,
+        // or the numbers actually differ - e.g. a corrected re-export) so
+        // re-importing an unchanged file doesn't claim to be "adding
+        // transactions you didn't have yet" when it's genuinely adding nothing.
+        return (t.existingAlreadyUpToDate || 'Already held: {quantity} units, {amount} — these transactions are already recorded, importing will not change anything')
+          .replace('{quantity}', existingQuantity)
+          .replace('{amount}', existingAmount);
+      case 'auto-replace':
+        return (t.existingWillUpdate || 'Already held: {quantity} units, {amount} — will be REPLACED (not added to) with {newQuantity} units, {newAmount} from this file')
+          .replace('{quantity}', existingQuantity)
+          .replace('{amount}', existingAmount)
+          .replace('{newQuantity}', formatNumber(row.position.quantity ?? 0))
+          .replace('{newAmount}', `${formatNumber(rowInvestedEUR)} ${currencySymbol}`);
+      case 'conflict':
+      default:
+        return (t.existingDifferentSource || "Already held: {quantity} units, {amount} — tracked from a different source, you'll be asked whether to add to it or replace it")
+          .replace('{quantity}', existingQuantity)
+          .replace('{amount}', existingAmount);
     }
-
-    // Every month this row covers was already recorded, AND the resulting
-    // quantity/invested amount match what's already saved — a re-import of a
-    // file already imported before, with nothing new in it. Distinguished
-    // from the "will be updated" case below (partial overlap, or the numbers
-    // actually differ - e.g. a corrected re-export) so re-importing an
-    // unchanged file doesn't claim to be "adding transactions you didn't have
-    // yet" when it's genuinely adding nothing.
-    const recordedMonths = row.instrument ? recordedHistoryByInstrumentId.get(row.instrument.id) : undefined;
-    const allMonthsAlreadyRecorded = Boolean(recordedMonths) && row.historyMonths.every((m) => recordedMonths!.has(m));
-    const quantityUnchanged = Math.abs((existing.quantity ?? 0) - (row.position.quantity ?? 0)) < 0.0001;
-    const amountUnchanged = Math.abs((existing.investedAmount ?? 0) - rowInvestedEUR) < 0.01;
-    if (allMonthsAlreadyRecorded && quantityUnchanged && amountUnchanged) {
-      return (t.existingAlreadyUpToDate || 'Already held: {quantity} units, {amount} — these transactions are already recorded, importing will not change anything')
-        .replace('{quantity}', existingQuantity)
-        .replace('{amount}', existingAmount);
-    }
-
-    const willAutoReplace = existing.importSource === platform || existing.importSource == null;
-    if (willAutoReplace) {
-      return (t.existingWillUpdate || 'Already held: {quantity} units, {amount} — will be REPLACED (not added to) with {newQuantity} units, {newAmount} from this file')
-        .replace('{quantity}', existingQuantity)
-        .replace('{amount}', existingAmount)
-        .replace('{newQuantity}', formatNumber(row.position.quantity ?? 0))
-        .replace('{newAmount}', `${formatNumber(rowInvestedEUR)} ${currencySymbol}`);
-    }
-    return (t.existingDifferentSource || "Already held: {quantity} units, {amount} — tracked from a different source, you'll be asked whether to add to it or replace it")
-      .replace('{quantity}', existingQuantity)
-      .replace('{amount}', existingAmount);
   };
+
+  // The manual average-price override (if any) falls back to the parsed
+  // value, in the instrument's own currency — same shape as every other
+  // getEffective* helper in DataImportWizard.tsx's review step.
+  const getEffectiveAveragePrice = (row: ImportRowState): number | null =>
+    row.overrides.averagePrice ?? row.position.averagePrice ?? null;
 
   // Previews the dividends found for this row — aggregateDividends returns at
   // most one entry here since row.dividends is already scoped to a single
@@ -880,7 +992,7 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
     switch (status) {
       case 'resolving': return <FontAwesomeIcon icon={faSpinner} spin />;
       case 'resolved': case 'saved': return <FontAwesomeIcon icon={faCircleCheck} />;
-      case 'not-found': case 'conflict': case 'error': return <FontAwesomeIcon icon={faTriangleExclamation} />;
+      case 'not-found': case 'error': return <FontAwesomeIcon icon={faTriangleExclamation} />;
       default: return null;
     }
   };
@@ -965,23 +1077,46 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
           {orphanSells.length > 0 && (
             <OrphanSection theme={theme}>
               <h4>{t.orphanSellsTitle || 'Sell with no matching buy found'}</h4>
-              {orphanSells.map((orphan) => (
-                <OrphanRow key={orphan.key} theme={theme}>
-                  {orphan.alreadyPersisted
-                    ? (t.orphanSellsStillPending || "{ticker} — you still have an unresolved sell for this with no matching buy found — the purchase is probably in a file you haven't uploaded yet. Upload it to reconcile this automatically.")
-                      .replace('{ticker}', orphan.ticker || orphan.name || orphan.isin || '?')
-                    : (
-                      <>
-                        {(t.orphanSellsNote || "{ticker} — this file shows a sell, but no buy for it was found (in this import or in your account) — the matching purchase is probably in another file you haven't uploaded yet.")
-                          .replace('{ticker}', orphan.ticker || orphan.name || orphan.isin || '?')}
-                        {' '}
-                        {orphan.instrument
-                          ? (t.orphanSellsWillSave || "It will be recorded when you import, so uploading the missing file later will reconcile it automatically.")
-                          : (t.orphanSellsUnresolved || "Couldn't identify this instrument, so it won't be recorded this time.")}
-                      </>
-                    )}
-                </OrphanRow>
-              ))}
+              {orphanSells.map((orphan) => {
+                // Only a NEW orphan (not already persisted from a past import)
+                // with a resolved instrument actually gets saved on commit -
+                // that's the only case where opting out changes anything
+                // (an already-persisted one is already in the ledger; an
+                // unresolved one already won't be saved regardless).
+                const isOptOutable = !orphan.alreadyPersisted && Boolean(orphan.instrument);
+                return (
+                  <OrphanRow key={orphan.key} theme={theme}>
+                    <OrphanRowContent theme={theme}>
+                      {isOptOutable && (
+                        <input
+                          type="checkbox"
+                          checked={!excludedOrphanKeys.has(orphan.key)}
+                          onChange={(e) => setExcludedOrphanKeys((prev) => {
+                            const next = new Set(prev);
+                            if (e.target.checked) next.delete(orphan.key); else next.add(orphan.key);
+                            return next;
+                          })}
+                        />
+                      )}
+                      <span>
+                        {orphan.alreadyPersisted
+                          ? (t.orphanSellsStillPending || "{ticker} — you still have an unresolved sell for this with no matching buy found — the purchase is probably in a file you haven't uploaded yet. Upload it to reconcile this automatically.")
+                            .replace('{ticker}', orphan.ticker || orphan.name || orphan.isin || '?')
+                          : (
+                            <>
+                              {(t.orphanSellsNote || "{ticker} — this file shows a sell, but no buy for it was found (in this import or in your account) — the matching purchase is probably in another file you haven't uploaded yet.")
+                                .replace('{ticker}', orphan.ticker || orphan.name || orphan.isin || '?')}
+                              {' '}
+                              {orphan.instrument
+                                ? (t.orphanSellsWillSave || "It will be recorded when you import, so uploading the missing file later will reconcile it automatically.")
+                                : (t.orphanSellsUnresolved || "Couldn't identify this instrument, so it won't be recorded this time.")}
+                            </>
+                          )}
+                      </span>
+                    </OrphanRowContent>
+                  </OrphanRow>
+                );
+              })}
             </OrphanSection>
           )}
 
@@ -990,7 +1125,7 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
               <input
                 type="checkbox"
                 checked={row.selected}
-                disabled={row.status !== 'resolved' || importing || importDone}
+                disabled={!isRowReady(row) || importing || importDone}
                 onChange={(e) => setRows((prev) => prev.map((r, idx) => (idx === index ? { ...r, selected: e.target.checked } : r)))}
               />
               <PositionInfo theme={theme}>
@@ -1001,13 +1136,13 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
                   )}
                 </strong>
                 <span>
-                  {formatNumber(row.position.quantity)} × {row.position.averagePrice != null ? `${formatNumber(convertAmountToEUR(row.position.averagePrice, row.position.currency))} ${currencySymbol}` : '—'}
+                  {formatNumber(row.position.quantity)} × {getEffectiveAveragePrice(row) != null ? `${formatNumber(convertAmountToEUR(getEffectiveAveragePrice(row)!, row.position.currency))} ${currencySymbol}` : '—'}
                   {row.position.investedAmount != null && ` · ${formatNumber(convertAmountToEUR(row.position.investedAmount, row.position.investedAmountCurrency))} ${currencySymbol}`}
                 </span>
                 {row.instrument && formatInstrumentDetails(row.instrument) !== '' && (
                   <span>{formatInstrumentDetails(row.instrument)}</span>
                 )}
-                {row.instrument && (row.status === 'resolved' || row.status === 'conflict') && existingByInstrumentId.has(row.instrument.id) && (
+                {row.instrument && row.status === 'resolved' && existingByInstrumentId.has(row.instrument.id) && (
                   <ImpactNote theme={theme}>{describeExistingImpact(row, existingByInstrumentId.get(row.instrument.id)!)}</ImpactNote>
                 )}
                 {row.historyMonths.length > 1 && (
@@ -1035,22 +1170,80 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
                     />
                   </ManualResolveBlock>
                 )}
-                {row.status === 'conflict' && row.conflictExisting && (
-                  <ManualResolveBlock theme={theme}>
-                    <span>
-                      {(t.conflictMessage || "The current (today's, not a specific month's) position for this instrument already has {quantity} units totaling {amount}, tracked from a different source. Sum both totals, or replace the existing one with this file?")
-                        .replace('{quantity}', formatNumber(row.conflictExisting.quantity ?? 0))
-                        .replace('{amount}', `${formatNumber(row.conflictExisting.investedAmount ?? 0)} ${currencySymbol}`)}
-                    </span>
-                    <ConflictActions>
-                      <ConflictButton theme={theme} type="button" onClick={() => resolveConflict(index, 'add')}>
-                        {t.conflictAdd || 'Add to existing'}
-                      </ConflictButton>
-                      <ConflictButton theme={theme} type="button" onClick={() => resolveConflict(index, 'replace')}>
-                        {t.conflictReplace || 'Replace'}
-                      </ConflictButton>
-                    </ConflictActions>
-                  </ManualResolveBlock>
+                {row.status === 'resolved' && row.instrument && existingByInstrumentId.has(row.instrument.id)
+                  && wouldConflict(row, existingByInstrumentId.get(row.instrument.id)!) && (
+                  row.mergeStrategy ? (
+                    <MergeChoiceLine theme={theme}>
+                      {(t.mergeStrategyChosen || 'Merge choice: {strategy}').replace(
+                        '{strategy}', row.mergeStrategy === 'add' ? (t.conflictAdd || 'Add to existing') : (t.conflictReplace || 'Replace'),
+                      )}
+                      <button type="button" onClick={() => setRows((prev) => prev.map((r, idx) => (idx === index ? { ...r, mergeStrategy: null } : r)))}>
+                        {t.mergeStrategyChange || 'Change'}
+                      </button>
+                    </MergeChoiceLine>
+                  ) : (
+                    <ManualResolveBlock theme={theme}>
+                      <span>
+                        {(t.conflictMessage || "The current (today's, not a specific month's) position for this instrument already has {quantity} units totaling {amount}, tracked from a different source. Sum both totals, or replace the existing one with this file?")
+                          .replace('{quantity}', formatNumber(existingByInstrumentId.get(row.instrument.id)!.quantity ?? 0))
+                          .replace('{amount}', `${formatNumber(existingByInstrumentId.get(row.instrument.id)!.investedAmount ?? 0)} ${currencySymbol}`)}
+                      </span>
+                      <ConflictActions>
+                        <ConflictButton theme={theme} type="button" onClick={() => setRows((prev) => prev.map((r, idx) => (idx === index ? { ...r, mergeStrategy: 'add' } : r)))}>
+                          {t.conflictAdd || 'Add to existing'}
+                        </ConflictButton>
+                        <ConflictButton theme={theme} type="button" onClick={() => setRows((prev) => prev.map((r, idx) => (idx === index ? { ...r, mergeStrategy: 'replace' } : r)))}>
+                          {t.conflictReplace || 'Replace'}
+                        </ConflictButton>
+                      </ConflictActions>
+                    </ManualResolveBlock>
+                  )
+                )}
+                {row.status === 'error' && (
+                  <span>{t.rowError || "Couldn't be processed — try re-dropping the same file(s) again."}</span>
+                )}
+                {row.status === 'resolved' && (
+                  editingOverridesFor === row.position.key ? (
+                    <OverrideFields theme={theme}>
+                      <label>
+                        {t.overrideAveragePrice || 'Average price'}
+                        <input
+                          type="number"
+                          value={row.overrides.averagePrice ?? ''}
+                          onChange={(e) => setRows((prev) => prev.map((r, idx) => (idx === index
+                            ? { ...r, overrides: { ...r.overrides, averagePrice: e.target.value === '' ? undefined : Number(e.target.value) } }
+                            : r)))}
+                        />
+                      </label>
+                      <label>
+                        {t.overrideCurrentValue || 'Current value'}
+                        <input
+                          type="number"
+                          value={row.overrides.currentValue ?? ''}
+                          onChange={(e) => setRows((prev) => prev.map((r, idx) => (idx === index
+                            ? { ...r, overrides: { ...r.overrides, currentValue: e.target.value === '' ? undefined : Number(e.target.value) } }
+                            : r)))}
+                        />
+                      </label>
+                      <label>
+                        {t.overrideNotes || 'Notes'}
+                        <input
+                          type="text"
+                          value={row.overrides.notes ?? ''}
+                          onChange={(e) => setRows((prev) => prev.map((r, idx) => (idx === index
+                            ? { ...r, overrides: { ...r.overrides, notes: e.target.value } }
+                            : r)))}
+                        />
+                      </label>
+                      <OverrideToggle type="button" onClick={() => setEditingOverridesFor(null)}>
+                        {t.overrideDone || 'Done'}
+                      </OverrideToggle>
+                    </OverrideFields>
+                  ) : (
+                    <OverrideToggle type="button" onClick={() => setEditingOverridesFor(row.position.key)}>
+                      {t.overrideToggle || 'Modify'}
+                    </OverrideToggle>
+                  )
                 )}
               </PositionInfo>
               <StatusIcon theme={theme} className={row.status}>{statusIcon(row.status)}</StatusIcon>

@@ -293,13 +293,24 @@ function parseGeneric(header: string[], rows: string[][]): ParsedImportFile {
       : GENERIC_SELL.some((t) => type.includes(t)) ? 'sell' : null;
     if (side) {
       const currency = cell(row, col.currency);
+      // Some generic exports (e.g. TradeRepublic) sign the shares column
+      // itself (negative on a sell) instead of always reporting a positive
+      // magnitude - every other parser here (Trading212, DEGIRO, Directa)
+      // always yields a positive quantity and lets `side` carry the
+      // direction, which is what aggregatePositions/closedPositions assume
+      // (a sell's quantity is subtracted via `side`, not via its own sign).
+      // Without normalizing, a negative sell quantity fails aggregate.ts's
+      // `tx.quantity <= 0` guard and gets silently dropped from position
+      // math entirely - the sell is never subtracted, so a fully-sold
+      // position keeps showing its original buy quantity forever.
+      const rawQuantity = parseImportNumber(cell(row, col.quantity));
       transactions.push({
         side,
         isin: cell(row, col.isin),
         ticker: cell(row, col.ticker),
         name: cell(row, col.name),
         date: parseImportDate(cell(row, col.date)),
-        quantity: parseImportNumber(cell(row, col.quantity)),
+        quantity: rawQuantity != null ? Math.abs(rawQuantity) : null,
         price: parseImportNumber(cell(row, col.price)),
         total: parseImportNumber(cell(row, col.total)),
         currency,

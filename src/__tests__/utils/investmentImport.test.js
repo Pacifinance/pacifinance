@@ -188,6 +188,25 @@ describe('detectPlatform / parseInvestmentCsv', () => {
     });
   });
 
+  it('normalizes a generic export that signs the shares column itself on a sell (e.g. TradeRepublic)', () => {
+    const raw = [
+      'date,type,symbol,name,shares,price,amount,currency',
+      '2022-03-22,BUY,ETH,Ethereum,0.0019,2755.36,-5.24,EUR',
+      '2022-03-22,SELL,ETH,Ethereum,-0.0019,2699.51,5.13,EUR',
+    ].join('\n');
+    const parsed = parseInvestmentCsv(raw);
+    expect(parsed.platform).toBe('generic');
+    expect(parsed.transactions).toHaveLength(2);
+    // Quantity must always be a positive magnitude, direction carried by
+    // `side` - a negative quantity fails aggregate.ts's own guard and gets
+    // silently dropped from every position calculation, permanently hiding
+    // the sell (see aggregatePositions/closedPositions below).
+    expect(parsed.transactions[0]).toMatchObject({ side: 'buy', quantity: 0.0019 });
+    expect(parsed.transactions[1]).toMatchObject({ side: 'sell', quantity: 0.0019 });
+    expect(aggregatePositions(parsed.transactions)).toEqual([]);
+    expect(closedPositions(parsed.transactions)).toMatchObject([{ key: 'ETH', quantity: 0 }]);
+  });
+
   it('returns null for unrecognized files', () => {
     expect(parseInvestmentCsv('foo,bar\n1,2')).toBeNull();
     expect(parseInvestmentCsv('')).toBeNull();

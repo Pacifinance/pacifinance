@@ -175,7 +175,7 @@
 - [ ] Widget riepilogo rapido home: patrimonio + variazione mese precedente
 - [ ] Grafici trend storico patrimonio (linea temporale) <!-- roadmap:trend-charts -->
 - [ ] Export PDF: migliorare layout con grafici inclusi <!-- roadmap:pdf-reports -->
-- [x] Obiettivi e limiti (Goals & Limits con monitoraggio dedicato, backend + UI) <!-- roadmap:goals-limits -->
+- [x] Obiettivi e limiti flessibili: soglie fisse e percentuali combinabili, fondo d'emergenza in mesi, limiti per categoria e concentrazione, debiti e rendita passiva (backend + UI + analisi) <!-- roadmap:goals-limits -->
 - [~] Onboarding guidato per nuovi utenti: wizard 4 step con progress bar <!-- roadmap:onboarding -->
 - [ ] Rendere l'account demo che non faccia richieste al db e usi dei mockData in modo da mostrare rapidamente tutte le funzionalità dell'applicazione e convincere l'utente a registrarsi (ora è un account che fa richieste al db ma non è scalabile con tanti utenti)
 

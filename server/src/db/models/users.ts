@@ -222,7 +222,11 @@ async function getPublicInfoByUserId(user_id: string) {
     const {data, error} = await supabase.from("profiles")
         .select(`
             user_code, nickname, account_type, created_at,
-            expenses_limit, savings_percent, emergency_fund_goal, benchmark_consent, seen_badges, is_admin,
+            expenses_limit, savings_percent, emergency_fund_goal,
+            expenses_limit_percent, savings_amount_goal, emergency_fund_months,
+            fixed_expenses_percent, category_spending_limits, debt_reduction_goal,
+            position_concentration_limit, asset_category_concentration_limit, annual_passive_income_goal,
+            benchmark_consent, seen_badges, is_admin,
             ${TAG_JOIN_FIELDS}
         `)
         .eq("id", user_id)
@@ -257,7 +261,16 @@ async function getPublicInfoByUserId(user_id: string) {
         goals: {
             expensesLimit: d.expenses_limit as number,
             savingsPercent: d.savings_percent as number,
-            emergencyFundGoal: d.emergency_fund_goal as number
+            emergencyFundGoal: d.emergency_fund_goal as number,
+            expensesLimitPercent: d.expenses_limit_percent as number | null,
+            savingsAmountGoal: d.savings_amount_goal as number | null,
+            emergencyFundMonths: d.emergency_fund_months as number | null,
+            fixedExpensesPercent: d.fixed_expenses_percent as number | null,
+            categorySpendingLimits: (d.category_spending_limits ?? {}) as Record<string, number>,
+            debtReductionGoal: d.debt_reduction_goal as number | null,
+            positionConcentrationLimit: d.position_concentration_limit as number | null,
+            assetCategoryConcentrationLimit: d.asset_category_concentration_limit as number | null,
+            annualPassiveIncomeGoal: d.annual_passive_income_goal as number | null
         }
     }
 }
@@ -358,13 +371,36 @@ async function setPublicInfoOfUserId(user_id: string, age: number, livingSituati
  * @param emergencyFundGoal Goal on emergency fund
  * @returns Updated profile row, or null in case of error
  */
-async function setGoalsOfUserId(user_id: string, expensesLimit: number,
-    savingsPercent: number, emergencyFundGoal: number) {
+export type FinancialControlsInput = {
+    expensesLimit: number
+    savingsPercent: number
+    emergencyFundGoal: number
+    expensesLimitPercent: number | null
+    savingsAmountGoal: number | null
+    emergencyFundMonths: number | null
+    fixedExpensesPercent: number | null
+    categorySpendingLimits: Record<string, number>
+    debtReductionGoal: number | null
+    positionConcentrationLimit: number | null
+    assetCategoryConcentrationLimit: number | null
+    annualPassiveIncomeGoal: number | null
+}
+
+async function setGoalsOfUserId(user_id: string, controls: FinancialControlsInput) {
     const {data, error} = await supabase.from("profiles")
         .update({
-            expenses_limit: expensesLimit,
-            savings_percent: savingsPercent,
-            emergency_fund_goal: emergencyFundGoal
+            expenses_limit: controls.expensesLimit,
+            savings_percent: controls.savingsPercent,
+            emergency_fund_goal: controls.emergencyFundGoal,
+            expenses_limit_percent: controls.expensesLimitPercent,
+            savings_amount_goal: controls.savingsAmountGoal,
+            emergency_fund_months: controls.emergencyFundMonths,
+            fixed_expenses_percent: controls.fixedExpensesPercent,
+            category_spending_limits: controls.categorySpendingLimits,
+            debt_reduction_goal: controls.debtReductionGoal,
+            position_concentration_limit: controls.positionConcentrationLimit,
+            asset_category_concentration_limit: controls.assetCategoryConcentrationLimit,
+            annual_passive_income_goal: controls.annualPassiveIncomeGoal,
         })
         .eq("id", user_id)
         .select("id")

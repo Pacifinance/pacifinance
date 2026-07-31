@@ -56,7 +56,16 @@ create table public.profiles (
 
   expenses_limit numeric not null default -1,
   savings_percent numeric not null default -1,
-  emergency_fund_goal numeric not null default -1
+  emergency_fund_goal numeric not null default -1,
+  expenses_limit_percent numeric check (expenses_limit_percent is null or expenses_limit_percent between 0 and 100),
+  savings_amount_goal numeric check (savings_amount_goal is null or savings_amount_goal >= 0),
+  emergency_fund_months numeric check (emergency_fund_months is null or emergency_fund_months >= 0),
+  fixed_expenses_percent numeric check (fixed_expenses_percent is null or fixed_expenses_percent between 0 and 100),
+  category_spending_limits jsonb not null default '{}'::jsonb,
+  debt_reduction_goal numeric check (debt_reduction_goal is null or debt_reduction_goal >= 0),
+  position_concentration_limit numeric check (position_concentration_limit is null or position_concentration_limit between 0 and 100),
+  asset_category_concentration_limit numeric check (asset_category_concentration_limit is null or asset_category_concentration_limit between 0 and 100),
+  annual_passive_income_goal numeric check (annual_passive_income_goal is null or annual_passive_income_goal >= 0)
 );
 
 create index profiles_benchmark_consent_idx on public.profiles (benchmark_consent) where benchmark_consent;
@@ -269,6 +278,7 @@ create table public.user_goals (
   name text not null,
   goal_type text not null default 'savings' check (goal_type in ('savings', 'purchase', 'investment', 'debt')),
   target_value numeric not null,
+  target_percent_of_net_worth numeric check (target_percent_of_net_worth is null or target_percent_of_net_worth between 0 and 100),
   current_value numeric not null default 0,
   linked_asset_key text check (linked_asset_key is null or linked_asset_key in (
     'bank', 'cash', 'digitalServices', 'emergencyFund',

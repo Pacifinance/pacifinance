@@ -97,9 +97,21 @@ export interface Rankings {
 
 export interface Limits {
   monthlySpendingLimit: number;
+  monthlySpendingLimitEnabled: boolean;
   savingsGoalPercentage: number;
+  savingsGoalPercentageEnabled: boolean;
   emergencyFundTarget: number;
+  emergencyFundTargetEnabled: boolean;
   notificationsEnabled: boolean;
+  expensesLimitPercent: number | null;
+  savingsAmountGoal: number | null;
+  emergencyFundMonths: number | null;
+  fixedExpensesPercent: number | null;
+  categorySpendingLimits: Record<string, number>;
+  debtReductionGoal: number | null;
+  positionConcentrationLimit: number | null;
+  assetCategoryConcentrationLimit: number | null;
+  annualPassiveIncomeGoal: number | null;
 }
 
 export interface UserDates {

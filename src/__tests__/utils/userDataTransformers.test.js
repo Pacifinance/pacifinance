@@ -225,6 +225,23 @@ describe('buildGoalsAndLimits', () => {
     expect(result.limits.monthlySpendingLimit).toBe(DEFAULT_MONTHLY_SPENDING_LIMIT);
     expect(result.limits.savingsGoalPercentage).toBe(DEFAULT_SAVINGS_GOAL_PERCENTAGE);
     expect(result.limits.emergencyFundTarget).toBe(DEFAULT_EMERGENCY_FUND_TARGET);
+    expect(result.limits.monthlySpendingLimitEnabled).toBe(false);
+    expect(result.limits.savingsGoalPercentageEnabled).toBe(false);
+    expect(result.limits.emergencyFundTargetEnabled).toBe(false);
+  });
+
+  it('preserves optional dual thresholds and advanced controls', () => {
+    const result = buildGoalsAndLimits({
+      expensesLimit: 2000, savingsPercent: 20, emergencyFundGoal: 10000,
+      expensesLimitPercent: 60, savingsAmountGoal: 400, emergencyFundMonths: 6,
+      fixedExpensesPercent: 45, categorySpendingLimits: { food: 300 }, debtReductionGoal: 200,
+      positionConcentrationLimit: 20, assetCategoryConcentrationLimit: 50, annualPassiveIncomeGoal: 1200,
+    });
+    expect(result.limits).toMatchObject({
+      expensesLimitPercent: 60, savingsAmountGoal: 400, emergencyFundMonths: 6,
+      fixedExpensesPercent: 45, categorySpendingLimits: { food: 300 }, debtReductionGoal: 200,
+      positionConcentrationLimit: 20, assetCategoryConcentrationLimit: 50, annualPassiveIncomeGoal: 1200,
+    });
   });
 
   it('uses defaults when input is null/undefined', () => {

@@ -62,6 +62,15 @@ interface RawGoals {
   expensesLimit?: number | null;
   savingsPercent?: number | null;
   emergencyFundGoal?: number | null;
+  expensesLimitPercent?: number | null;
+  savingsAmountGoal?: number | null;
+  emergencyFundMonths?: number | null;
+  fixedExpensesPercent?: number | null;
+  categorySpendingLimits?: Record<string, number> | null;
+  debtReductionGoal?: number | null;
+  positionConcentrationLimit?: number | null;
+  assetCategoryConcentrationLimit?: number | null;
+  annualPassiveIncomeGoal?: number | null;
 }
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -238,9 +247,21 @@ export interface GoalsAndLimits {
   goals: unknown[];
   limits: {
     monthlySpendingLimit: number;
+    monthlySpendingLimitEnabled: boolean;
     savingsGoalPercentage: number;
+    savingsGoalPercentageEnabled: boolean;
     emergencyFundTarget: number;
+    emergencyFundTargetEnabled: boolean;
     notificationsEnabled: boolean;
+    expensesLimitPercent: number | null;
+    savingsAmountGoal: number | null;
+    emergencyFundMonths: number | null;
+    fixedExpensesPercent: number | null;
+    categorySpendingLimits: Record<string, number>;
+    debtReductionGoal: number | null;
+    positionConcentrationLimit: number | null;
+    assetCategoryConcentrationLimit: number | null;
+    annualPassiveIncomeGoal: number | null;
   };
 }
 
@@ -251,8 +272,20 @@ export const buildGoalsAndLimits = (userGoals: RawGoals | null | undefined): Goa
     goals: [],
     limits: {
       monthlySpendingLimit: (g.expensesLimit != null && g.expensesLimit !== -1) ? g.expensesLimit : DEFAULT_MONTHLY_SPENDING_LIMIT,
+      monthlySpendingLimitEnabled: g.expensesLimit !== -1,
       savingsGoalPercentage: (g.savingsPercent != null && g.savingsPercent !== -1) ? g.savingsPercent : DEFAULT_SAVINGS_GOAL_PERCENTAGE,
+      savingsGoalPercentageEnabled: g.savingsPercent !== -1,
       emergencyFundTarget: (g.emergencyFundGoal != null && g.emergencyFundGoal !== -1) ? g.emergencyFundGoal : DEFAULT_EMERGENCY_FUND_TARGET,
+      emergencyFundTargetEnabled: g.emergencyFundGoal !== -1,
+      expensesLimitPercent: g.expensesLimitPercent ?? null,
+      savingsAmountGoal: g.savingsAmountGoal ?? null,
+      emergencyFundMonths: g.emergencyFundMonths ?? null,
+      fixedExpensesPercent: g.fixedExpensesPercent ?? null,
+      categorySpendingLimits: g.categorySpendingLimits ?? {},
+      debtReductionGoal: g.debtReductionGoal ?? null,
+      positionConcentrationLimit: g.positionConcentrationLimit ?? null,
+      assetCategoryConcentrationLimit: g.assetCategoryConcentrationLimit ?? null,
+      annualPassiveIncomeGoal: g.annualPassiveIncomeGoal ?? null,
       notificationsEnabled: true,
     },
   };

@@ -429,11 +429,12 @@ investmentsRouter.post("/settings/get", async (req, res) => {
 
 investmentsRouter.post("/settings/save", async (req, res) => {
     const monthlyTarget = optionalNumber(req.body.monthly_target ?? req.body.monthlyTarget)
-    if (monthlyTarget === undefined) {
+    const monthlyTargetPercent = optionalNumber(req.body.monthly_target_percent ?? req.body.monthlyTargetPercent)
+    if (monthlyTarget === undefined || monthlyTargetPercent === undefined || (monthlyTargetPercent !== null && monthlyTargetPercent > 100)) {
         res.status(400).send()
         return
     }
-    const result = await db.investments.saveInvestmentSettings(req.userId as string, monthlyTarget)
+    const result = await db.investments.saveInvestmentSettings(req.userId as string, monthlyTarget, monthlyTargetPercent)
     if (result === null) {
         res.status(500).send()
         return

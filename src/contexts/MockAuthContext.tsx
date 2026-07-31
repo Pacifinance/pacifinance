@@ -373,8 +373,20 @@ export const mockUserData = {
     
     limits: {
         monthlySpendingLimit: 2800,
+        monthlySpendingLimitEnabled: true,
         savingsGoalPercentage: 25,
+        savingsGoalPercentageEnabled: true,
         emergencyFundTarget: 15000,
+        emergencyFundTargetEnabled: true,
+        expensesLimitPercent: 65,
+        savingsAmountGoal: 500,
+        emergencyFundMonths: 6,
+        fixedExpensesPercent: 50,
+        categorySpendingLimits: {},
+        debtReductionGoal: null,
+        positionConcentrationLimit: 25,
+        assetCategoryConcentrationLimit: 60,
+        annualPassiveIncomeGoal: 1200,
         notificationsEnabled: true
     },
     

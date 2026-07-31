@@ -18,6 +18,8 @@ interface HoldingsBreakdownChartProps {
   holdings: InvestmentHoldingDto[];
   assetKey: InvestmentAssetKey | null;
   isHidden: boolean;
+  positionLimitPercent?: number | null;
+  categoryLimitPercent?: number | null;
 }
 
 const Title = styled.h4`
@@ -132,7 +134,7 @@ const MAX_SLICES = 8;
 /** A slice materially larger than an even split flags as an overweight rebalancing cue. */
 const OVERWEIGHT_MULTIPLIER = 1.5;
 
-export default function HoldingsBreakdownChart({ theme, holdings, assetKey, isHidden }: HoldingsBreakdownChartProps) {
+export default function HoldingsBreakdownChart({ theme, holdings, assetKey, isHidden, positionLimitPercent, categoryLimitPercent }: HoldingsBreakdownChartProps) {
   const { translations } = useContext(LanguageContext);
   const { formatAmount } = useContext(CurrencyContext);
   const { isMobileScreen } = useContext(MediaQueryContext);
@@ -173,7 +175,7 @@ export default function HoldingsBreakdownChart({ theme, holdings, assetKey, isHi
   }, [allRows, assetKey, translations.general.other]);
 
   const total = rows.reduce((sum, r) => sum + r.value, 0);
-  const overweightThreshold = rows.length > 0 ? (100 / rows.length) * OVERWEIGHT_MULTIPLIER : Infinity;
+  const overweightThreshold = positionLimitPercent ?? (rows.length > 0 ? (100 / rows.length) * OVERWEIGHT_MULTIPLIER : Infinity);
 
   const categoryTotals = useMemo(() => {
     if (assetKey) return null;
@@ -271,7 +273,7 @@ export default function HoldingsBreakdownChart({ theme, holdings, assetKey, isHi
                       <span>{translations.assets[category]}</span>
                       <span className="category-meta">
                         <span className="count">{categoryRows.length}</span>
-                        <span>{isHidden ? '****' : `${categoryPct.toFixed(1)}%`}</span>
+                        <span>{isHidden ? '****' : `${categoryPct.toFixed(1)}%${categoryLimitPercent != null && categoryPct > categoryLimitPercent ? ' ⚠' : ''}`}</span>
                       </span>
                     </CategoryHeader>
                   </summary>

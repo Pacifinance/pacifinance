@@ -223,8 +223,40 @@ userRouter.post("/goals", async (req, res) => {
         savingsPercent = 100
     if (emergencyFundGoal < 0)
         emergencyFundGoal = -1
+    const optionalNumber = (key: string, max?: number): number | null | undefined => {
+        const raw = req.body[key]
+        if (raw === undefined || raw === null || raw === "") return null
+        const value = Number(raw)
+        if (!Number.isFinite(value) || value < 0 || (max !== undefined && value > max)) return undefined
+        return value
+    }
+    const categoryLimitsRaw = req.body.category_spending_limits ?? {}
+    const categorySpendingLimits = typeof categoryLimitsRaw === "object" && !Array.isArray(categoryLimitsRaw)
+        ? Object.fromEntries(Object.entries(categoryLimitsRaw).filter(([key, value]) =>
+            key.length <= 80 && Number.isFinite(Number(value)) && Number(value) >= 0,
+        ).map(([key, value]) => [common.sanitizeInput(key), Number(value)]))
+        : null
+    const controls = {
+        expensesLimit,
+        savingsPercent,
+        emergencyFundGoal,
+        expensesLimitPercent: optionalNumber("expenses_limit_percent", 100),
+        savingsAmountGoal: optionalNumber("savings_amount_goal"),
+        emergencyFundMonths: optionalNumber("emergency_fund_months"),
+        fixedExpensesPercent: optionalNumber("fixed_expenses_percent", 100),
+        categorySpendingLimits,
+        debtReductionGoal: optionalNumber("debt_reduction_goal"),
+        positionConcentrationLimit: optionalNumber("position_concentration_limit", 100),
+        assetCategoryConcentrationLimit: optionalNumber("asset_category_concentration_limit", 100),
+        annualPassiveIncomeGoal: optionalNumber("annual_passive_income_goal"),
+    }
+    if (Object.values(controls).some((value) => value === undefined) || categorySpendingLimits === null) {
+        res.status(400).send()
+        return
+    }
     const doc = await db.users.setGoalsOfUserId(
-        req.userId as string, expensesLimit, savingsPercent, emergencyFundGoal
+        req.userId as string,
+        controls as import("../../db/models/users").FinancialControlsInput,
     )
     // Check if the document was inserted successfully. Send
     // status code 500 (Internal Server Error) if it failed

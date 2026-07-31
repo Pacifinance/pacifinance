@@ -17,7 +17,7 @@ import DetailedExpenseAnalysis from '../components/DetailedOutflowsAnalysis';
 import HoldingsBreakdownChart from '../components/HoldingsBreakdownChart';
 import HoldingsHistoryChart from '../components/HoldingsHistoryChart';
 import PortfolioInsights from '../components/PortfolioInsights';
-import { getIncomesArray, getOutflowsArray, getBalanceChartData } from '../utils/userDataSelectors';
+import { getIncomesArray, getOutflowsArray, getBalanceChartData, getTotalIncomesCurrentMonth } from '../utils/userDataSelectors';
 import { useLocalizedNavigate } from '../hooks/useLocalizedNavigate';
 
 /** Every investment-holdings asset key that can appear in the category selector (excludes liquidity/bank/cash). */
@@ -500,6 +500,8 @@ export default function StatsCharts() {
     const [holdingHistory, setHoldingHistory] = useState([]);
     const [investmentGoals, setInvestmentGoals] = useState([]);
     const [monthlyInvestmentTarget, setMonthlyInvestmentTarget] = useState(null);
+    const [monthlyInvestmentTargetPercent, setMonthlyInvestmentTargetPercent] = useState(null);
+    const [annualPassiveIncome, setAnnualPassiveIncome] = useState(0);
     const [holdingsLoaded, setHoldingsLoaded] = useState(false);
     const [selectedHoldingAssetKey, setSelectedHoldingAssetKey] = useState(null);
     const [refreshingPrices, setRefreshingPrices] = useState(false);
@@ -513,17 +515,20 @@ export default function StatsCharts() {
         let cancelled = false;
         (async () => {
             try {
-                const [holdings, history, goals, settings] = await Promise.all([
+                const [holdings, history, goals, settings, dividends] = await Promise.all([
                     investmentService.getHoldings(),
                     investmentService.getHoldingHistory(),
                     goalService.getGoals(),
                     investmentService.getSettings(),
+                    investmentService.getDividendsSummary(),
                 ]);
                 if (!cancelled) {
                     setInvestmentHoldings(Array.isArray(holdings) ? holdings : []);
                     setHoldingHistory(Array.isArray(history) ? history : []);
                     setInvestmentGoals(Array.isArray(goals) ? goals : []);
                     setMonthlyInvestmentTarget(settings?.monthlyTarget ?? null);
+                    setMonthlyInvestmentTargetPercent(settings?.monthlyTargetPercent ?? null);
+                    setAnnualPassiveIncome(Array.isArray(dividends) ? dividends.reduce((sum, item) => sum + (item.totalAmount || 0), 0) : 0);
                     setHoldingsLoaded(true);
                 }
             } catch (error) {
@@ -637,7 +642,9 @@ export default function StatsCharts() {
                                 type="area"
                                 theme={theme} 
                                 userData={userData} 
-                                isHidden={isHidden} 
+                                isHidden={isHidden}
+                                positionLimitPercent={userData?.limits?.positionConcentrationLimit}
+                                categoryLimitPercent={userData?.limits?.assetCategoryConcentrationLimit}
                                 CustomTick={CustomTick}
                             />
                         </ChartCard>
@@ -892,6 +899,10 @@ export default function StatsCharts() {
                         assetKey={availableAssetKeys.length > 1 ? selectedHoldingAssetKey : availableAssetKeys[0]}
                         isHidden={isHidden}
                         monthlyTarget={monthlyInvestmentTarget}
+                        monthlyTargetPercent={monthlyInvestmentTargetPercent}
+                        currentMonthlyIncome={getTotalIncomesCurrentMonth(userData)}
+                        annualPassiveIncome={annualPassiveIncome}
+                        annualPassiveIncomeTarget={userData?.limits?.annualPassiveIncomeGoal ?? null}
                     />
                 </SectionContainer>
             </>

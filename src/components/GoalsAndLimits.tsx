@@ -9,7 +9,11 @@ import { useToast } from '../contexts/ToastContext';
 import {
   getMonthlySpendingLimit,
   getSavingsGoalPercentage,
-  getEmergencyFundTarget
+  getEmergencyFundTarget,
+  getTotalIncomesCurrentMonth,
+  getTotalOutflowsCurrentMonth,
+  getEmergencyFund,
+  getTotalValue
 } from '../utils/userDataSelectors';
 import {
     FaBullseye, 
@@ -172,6 +176,33 @@ const InputWithIcon = styled.div`
     color: ${props => props.theme.secondaryColor};
     font-size: 0.9rem;
   }
+`;
+
+const ControlCard = styled.div`
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 12px;
+  border: 1px solid ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,.1)' : 'rgba(0,0,0,.1)'};
+  background: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,.035)' : 'rgba(0,0,0,.02)'};
+  h4 { margin: 0 0 .35rem; color: ${props => props.theme.mode === 'dark' ? '#fff' : '#171717'}; }
+  p { margin: 0 0 .85rem; opacity: .7; font-size: .8rem; line-height: 1.45; }
+`;
+
+const ThresholdGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .75rem;
+  ${FormGroup} { margin: 0; }
+  @media (max-width: 520px) { grid-template-columns: 1fr; }
+`;
+
+const StatusLine = styled.div`
+  margin-top: .8rem;
+  padding: .55rem .7rem;
+  border-radius: 8px;
+  font-size: .78rem;
+  background: ${props => props.$ok ? 'rgba(16,185,129,.12)' : 'rgba(245,158,11,.12)'};
+  color: ${props => props.$ok ? '#10b981' : '#f59e0b'};
 `;
 
 const GoalItem = styled.div`
@@ -391,24 +422,39 @@ const CancelButton = styled.button`
 
 const ProfileSettings = ({ theme }) => {
   const { language, translations } = useContext(LanguageContext);
-  const { currencySymbol, toEUR, fromEUR } = useContext(CurrencyContext);
+  const { currencySymbol, formatAmount, toEUR, fromEUR } = useContext(CurrencyContext);
   useContext(MediaQueryContext);
   const { userData, setUserData } = useContext(UserContext);
   const { showSuccess, showError } = useToast();
-  const { userService, goalService, investmentService } = useDemoServices();
+  const { userService, goalService, investmentService, recurringTransactionService } = useDemoServices();
   
   // Stati per i limiti e controlli
   const [settings, setSettings] = useState({
     monthlySpendingLimit: 2000,
+    monthlySpendingLimitEnabled: true,
+    expensesLimitPercent: '',
+    savingsAmountGoal: '',
     savingsGoalPercentage: 20,
+    savingsGoalPercentageEnabled: true,
     emergencyFundTarget: 10000,
+    emergencyFundTargetEnabled: true,
+    emergencyFundMonths: '',
+    fixedExpensesPercent: '',
+    categorySpendingLimits: {},
+    debtReductionGoal: '',
+    positionConcentrationLimit: '',
+    assetCategoryConcentrationLimit: '',
+    annualPassiveIncomeGoal: '',
     notificationsEnabled: true
   });
 
   // Stati per gli obiettivi
   const [goals, setGoals] = useState([]);
   const [monthlyTargetInput, setMonthlyTargetInput] = useState('');
+  const [monthlyTargetPercentInput, setMonthlyTargetPercentInput] = useState('');
   const [savingMonthlyTarget, setSavingMonthlyTarget] = useState(false);
+  const [newCategoryLimit, setNewCategoryLimit] = useState({ name: '', value: '' });
+  const [monthlyFixedExpenses, setMonthlyFixedExpenses] = useState(0);
   
   // Stati per il modal di modifica
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -419,7 +465,8 @@ const ProfileSettings = ({ theme }) => {
     current: 0,
     deadline: '',
     type: 'savings',
-    linkedAssetKey: null
+    linkedAssetKey: null,
+    targetPercentOfNetWorth: ''
   });
 
   const refreshGoals = () => {
@@ -432,6 +479,7 @@ const ProfileSettings = ({ theme }) => {
         target: goal.targetValue,
         deadline: goal.deadline || '',
         linkedAssetKey: goal.linkedAssetKey,
+        targetPercentOfNetWorth: goal.targetPercentOfNetWorth ?? '',
       })));
     });
   };
@@ -441,18 +489,33 @@ const ProfileSettings = ({ theme }) => {
     if (userData) {
       // Carica i settings dall'UserContext usando i selector
       setSettings({
-        monthlySpendingLimit: getMonthlySpendingLimit(userData),
+        monthlySpendingLimit: fromEUR(getMonthlySpendingLimit(userData)),
+        monthlySpendingLimitEnabled: userData?.limits?.monthlySpendingLimitEnabled ?? true,
+        expensesLimitPercent: userData?.limits?.expensesLimitPercent ?? '',
+        savingsAmountGoal: userData?.limits?.savingsAmountGoal == null ? '' : fromEUR(userData.limits.savingsAmountGoal),
         savingsGoalPercentage: getSavingsGoalPercentage(userData),
-        emergencyFundTarget: getEmergencyFundTarget(userData),
+        savingsGoalPercentageEnabled: userData?.limits?.savingsGoalPercentageEnabled ?? true,
+        emergencyFundTarget: fromEUR(getEmergencyFundTarget(userData)),
+        emergencyFundTargetEnabled: userData?.limits?.emergencyFundTargetEnabled ?? true,
+        emergencyFundMonths: userData?.limits?.emergencyFundMonths ?? '',
+        fixedExpensesPercent: userData?.limits?.fixedExpensesPercent ?? '',
+        categorySpendingLimits: Object.fromEntries(Object.entries(userData?.limits?.categorySpendingLimits ?? {}).map(([key, value]) => [key, fromEUR(Number(value))])),
+        debtReductionGoal: userData?.limits?.debtReductionGoal == null ? '' : fromEUR(userData.limits.debtReductionGoal),
+        positionConcentrationLimit: userData?.limits?.positionConcentrationLimit ?? '',
+        assetCategoryConcentrationLimit: userData?.limits?.assetCategoryConcentrationLimit ?? '',
+        annualPassiveIncomeGoal: userData?.limits?.annualPassiveIncomeGoal == null ? '' : fromEUR(userData.limits.annualPassiveIncomeGoal),
         notificationsEnabled: true // Questo potrebbe venire dal backend in futuro
       });
     }
-  }, [userData]);
+  }, [userData, fromEUR]);
 
   // Carica i goal reali dal backend (indipendente da userData, stesso pattern
   // già usato per holding/conti dettagliati).
   useEffect(() => {
     refreshGoals();
+    recurringTransactionService.getRecurring()
+      .then((items) => setMonthlyFixedExpenses(items.filter((item) => item.active && item.isExpense).reduce((sum, item) => sum + item.amount, 0)))
+      .catch((error) => console.error('GoalsAndLimits: failed to load recurring expenses', error));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -461,6 +524,7 @@ const ProfileSettings = ({ theme }) => {
       .then((investmentSettings) => {
         const target = investmentSettings?.monthlyTarget ?? null;
         setMonthlyTargetInput(target == null ? '' : String(fromEUR(target)));
+        setMonthlyTargetPercentInput(investmentSettings?.monthlyTargetPercent == null ? '' : String(investmentSettings.monthlyTargetPercent));
       })
       .catch((error) => console.error('GoalsAndLimits: failed to load monthly investment target', error));
   }, [investmentService, fromEUR]);
@@ -470,7 +534,10 @@ const ProfileSettings = ({ theme }) => {
     setSavingMonthlyTarget(true);
     try {
       const value = monthlyTargetInput.trim() === '' ? null : toEUR(Number(monthlyTargetInput));
-      await investmentService.saveSettings({ monthly_target: value });
+      await investmentService.saveSettings({
+        monthly_target: value,
+        monthly_target_percent: monthlyTargetPercentInput === '' ? null : Number(monthlyTargetPercentInput),
+      });
     } finally {
       setSavingMonthlyTarget(false);
     }
@@ -494,15 +561,24 @@ const ProfileSettings = ({ theme }) => {
   const handleSaveSettings = async () => {
     try {
       // Prepara i dati per il backend con validazione
-      const expensesLimit = (settings.monthlySpendingLimit >= 0) ? settings.monthlySpendingLimit : -1;
-      const savingsPercent = (settings.savingsGoalPercentage >= 0 && settings.savingsGoalPercentage <= 100) ? settings.savingsGoalPercentage : -1;
-      const emergencyFundGoal = (settings.emergencyFundTarget >= 0) ? settings.emergencyFundTarget : -1;
+      const expensesLimit = settings.monthlySpendingLimitEnabled && settings.monthlySpendingLimit >= 0 ? toEUR(settings.monthlySpendingLimit) : -1;
+      const savingsPercent = settings.savingsGoalPercentageEnabled && settings.savingsGoalPercentage >= 0 && settings.savingsGoalPercentage <= 100 ? settings.savingsGoalPercentage : -1;
+      const emergencyFundGoal = settings.emergencyFundTargetEnabled && settings.emergencyFundTarget >= 0 ? toEUR(settings.emergencyFundTarget) : -1;
 
       // Invia i dati al backend
       await userService.saveGoals({
         expenses_limit: expensesLimit,
         savings_percent: savingsPercent,
-        emergency_fund_goal: emergencyFundGoal
+        emergency_fund_goal: emergencyFundGoal,
+        expenses_limit_percent: settings.expensesLimitPercent === '' ? null : Number(settings.expensesLimitPercent),
+        savings_amount_goal: settings.savingsAmountGoal === '' ? null : toEUR(Number(settings.savingsAmountGoal)),
+        emergency_fund_months: settings.emergencyFundMonths === '' ? null : Number(settings.emergencyFundMonths),
+        fixed_expenses_percent: settings.fixedExpensesPercent === '' ? null : Number(settings.fixedExpensesPercent),
+        category_spending_limits: Object.fromEntries(Object.entries(settings.categorySpendingLimits).map(([key, value]) => [key, toEUR(Number(value))])),
+        debt_reduction_goal: settings.debtReductionGoal === '' ? null : toEUR(Number(settings.debtReductionGoal)),
+        position_concentration_limit: settings.positionConcentrationLimit === '' ? null : Number(settings.positionConcentrationLimit),
+        asset_category_concentration_limit: settings.assetCategoryConcentrationLimit === '' ? null : Number(settings.assetCategoryConcentrationLimit),
+        annual_passive_income_goal: settings.annualPassiveIncomeGoal === '' ? null : toEUR(Number(settings.annualPassiveIncomeGoal)),
       });
 
       // Aggiorna il UserContext locale
@@ -510,8 +586,20 @@ const ProfileSettings = ({ theme }) => {
         limits: {
           ...userData.limits,
           monthlySpendingLimit: expensesLimit !== -1 ? expensesLimit : 2000,
+          monthlySpendingLimitEnabled: expensesLimit !== -1,
           savingsGoalPercentage: savingsPercent !== -1 ? savingsPercent : 20,
+          savingsGoalPercentageEnabled: savingsPercent !== -1,
           emergencyFundTarget: emergencyFundGoal !== -1 ? emergencyFundGoal : 10000,
+          emergencyFundTargetEnabled: emergencyFundGoal !== -1,
+          expensesLimitPercent: settings.expensesLimitPercent === '' ? null : Number(settings.expensesLimitPercent),
+          savingsAmountGoal: settings.savingsAmountGoal === '' ? null : toEUR(Number(settings.savingsAmountGoal)),
+          emergencyFundMonths: settings.emergencyFundMonths === '' ? null : Number(settings.emergencyFundMonths),
+          fixedExpensesPercent: settings.fixedExpensesPercent === '' ? null : Number(settings.fixedExpensesPercent),
+          categorySpendingLimits: Object.fromEntries(Object.entries(settings.categorySpendingLimits).map(([key, value]) => [key, toEUR(Number(value))])),
+          debtReductionGoal: settings.debtReductionGoal === '' ? null : toEUR(Number(settings.debtReductionGoal)),
+          positionConcentrationLimit: settings.positionConcentrationLimit === '' ? null : Number(settings.positionConcentrationLimit),
+          assetCategoryConcentrationLimit: settings.assetCategoryConcentrationLimit === '' ? null : Number(settings.assetCategoryConcentrationLimit),
+          annualPassiveIncomeGoal: settings.annualPassiveIncomeGoal === '' ? null : toEUR(Number(settings.annualPassiveIncomeGoal)),
           notificationsEnabled: settings.notificationsEnabled
         }
       });
@@ -532,7 +620,8 @@ const ProfileSettings = ({ theme }) => {
       current: 0,
       deadline: '2026-12-31',
       type: 'savings',
-      linkedAssetKey: null
+      linkedAssetKey: null,
+      targetPercentOfNetWorth: ''
     };
     setModalGoalData(newGoal);
     setEditingGoal(null);
@@ -562,6 +651,7 @@ const ProfileSettings = ({ theme }) => {
         name: modalGoalData.name,
         goal_type: modalGoalData.type,
         target_value: Number(modalGoalData.target) || 0,
+        target_percent_of_net_worth: modalGoalData.targetPercentOfNetWorth === '' ? null : Number(modalGoalData.targetPercentOfNetWorth),
         current_value: modalGoalData.linkedAssetKey ? 0 : (Number(modalGoalData.current) || 0),
         linked_asset_key: modalGoalData.linkedAssetKey || null,
         deadline: modalGoalData.deadline || null,
@@ -583,13 +673,24 @@ const ProfileSettings = ({ theme }) => {
       current: 0,
       deadline: '',
       type: 'savings',
-      linkedAssetKey: null
+      linkedAssetKey: null,
+      targetPercentOfNetWorth: ''
     });
   };
 
   const handleModalInputChange = (key, value) => {
     setModalGoalData(prev => ({ ...prev, [key]: value }));
   };
+
+  const controlsT = translations.goals.financialControls;
+  const currentIncome = getTotalIncomesCurrentMonth(userData);
+  const currentSpending = getTotalOutflowsCurrentMonth(userData);
+  const currentSavings = currentIncome - currentSpending;
+  const emergencyFundValue = getEmergencyFund(userData);
+  const netWorth = getTotalValue(userData);
+  const spendingPercent = currentIncome > 0 ? (currentSpending / currentIncome) * 100 : null;
+  const savingsPercent = currentIncome > 0 ? (currentSavings / currentIncome) * 100 : null;
+  const emergencyMonths = currentSpending > 0 ? emergencyFundValue / currentSpending : null;
 
   return (
     <ProfileContainer theme={theme}>
@@ -615,7 +716,7 @@ const ProfileSettings = ({ theme }) => {
           </SectionHeader>
           
           <FormGroup theme={theme}>
-            <label>{language === 'it' ? `Limite spesa mensile (${currencySymbol})` : `Monthly spending limit (${currencySymbol})`}</label>
+            <label><input type="checkbox" checked={settings.monthlySpendingLimitEnabled} onChange={(e) => handleSettingChange('monthlySpendingLimitEnabled', e.target.checked)} /> {language === 'it' ? `Limite spesa mensile (${currencySymbol})` : `Monthly spending limit (${currencySymbol})`}</label>
             <InputWithIcon theme={theme}>
               <span className="input-icon">{currencySymbol}</span>
               <input
@@ -623,12 +724,21 @@ const ProfileSettings = ({ theme }) => {
                 value={settings.monthlySpendingLimit}
                 onChange={(e) => handleSettingChange('monthlySpendingLimit', parseInt(e.target.value))}
                 min="0"
+                disabled={!settings.monthlySpendingLimitEnabled}
               />
             </InputWithIcon>
           </FormGroup>
 
           <FormGroup theme={theme}>
-            <label>{language === 'it' ? 'Obiettivo risparmio mensile (%)' : 'Monthly savings goal (%)'}</label>
+            <label>{controlsT.spendingPercent}</label>
+            <InputWithIcon theme={theme}><BsPercent className="input-icon" /><input type="number" min="0" max="100" value={settings.expensesLimitPercent} onChange={(e) => handleSettingChange('expensesLimitPercent', e.target.value)} /></InputWithIcon>
+          </FormGroup>
+          <StatusLine $ok={(!settings.monthlySpendingLimitEnabled || currentSpending <= toEUR(settings.monthlySpendingLimit)) && (settings.expensesLimitPercent === '' || (spendingPercent !== null && spendingPercent <= Number(settings.expensesLimitPercent)))}>
+            {controlsT.currentSpending.replace('{amount}', `${currencySymbol}${fromEUR(currentSpending).toFixed(0)}`).replace('{percent}', spendingPercent === null ? '—' : `${spendingPercent.toFixed(1)}%`)}
+          </StatusLine>
+
+          <FormGroup theme={theme}>
+            <label><input type="checkbox" checked={settings.savingsGoalPercentageEnabled} onChange={(e) => handleSettingChange('savingsGoalPercentageEnabled', e.target.checked)} /> {language === 'it' ? 'Obiettivo risparmio mensile (%)' : 'Monthly savings goal (%)'}</label>
             <InputWithIcon theme={theme}>
               <BsPercent className="input-icon" />
               <input
@@ -637,12 +747,21 @@ const ProfileSettings = ({ theme }) => {
                 onChange={(e) => handleSettingChange('savingsGoalPercentage', parseInt(e.target.value))}
                 min="0"
                 max="100"
+                disabled={!settings.savingsGoalPercentageEnabled}
               />
             </InputWithIcon>
           </FormGroup>
 
           <FormGroup theme={theme}>
-            <label>{language === 'it' ? `Fondo emergenza target (${currencySymbol})` : `Emergency fund target (${currencySymbol})`}</label>
+            <label>{controlsT.savingsAmount}</label>
+            <InputWithIcon theme={theme}><span className="input-icon">{currencySymbol}</span><input type="number" min="0" value={settings.savingsAmountGoal} onChange={(e) => handleSettingChange('savingsAmountGoal', e.target.value)} /></InputWithIcon>
+          </FormGroup>
+          <StatusLine $ok={(settings.savingsAmountGoal === '' || currentSavings >= toEUR(Number(settings.savingsAmountGoal))) && (!settings.savingsGoalPercentageEnabled || (savingsPercent !== null && savingsPercent >= settings.savingsGoalPercentage))}>
+            {controlsT.currentSavings.replace('{amount}', `${currencySymbol}${fromEUR(currentSavings).toFixed(0)}`).replace('{percent}', savingsPercent === null ? '—' : `${savingsPercent.toFixed(1)}%`)}
+          </StatusLine>
+
+          <FormGroup theme={theme}>
+            <label><input type="checkbox" checked={settings.emergencyFundTargetEnabled} onChange={(e) => handleSettingChange('emergencyFundTargetEnabled', e.target.checked)} /> {language === 'it' ? `Fondo emergenza target (${currencySymbol})` : `Emergency fund target (${currencySymbol})`}</label>
             <InputWithIcon theme={theme}>
               <span className="input-icon">{currencySymbol}</span>
               <input
@@ -650,9 +769,45 @@ const ProfileSettings = ({ theme }) => {
                 value={settings.emergencyFundTarget}
                 onChange={(e) => handleSettingChange('emergencyFundTarget', parseInt(e.target.value))}
                 min="0"
+                disabled={!settings.emergencyFundTargetEnabled}
               />
             </InputWithIcon>
           </FormGroup>
+
+          <FormGroup theme={theme}>
+            <label>{controlsT.emergencyMonths}</label>
+            <input type="number" min="0" step="0.5" value={settings.emergencyFundMonths} onChange={(e) => handleSettingChange('emergencyFundMonths', e.target.value)} />
+          </FormGroup>
+          <StatusLine $ok={(!settings.emergencyFundTargetEnabled || emergencyFundValue >= toEUR(settings.emergencyFundTarget)) && (settings.emergencyFundMonths === '' || (emergencyMonths !== null && emergencyMonths >= Number(settings.emergencyFundMonths)))}>
+            {controlsT.currentEmergency.replace('{amount}', `${currencySymbol}${fromEUR(emergencyFundValue).toFixed(0)}`).replace('{months}', emergencyMonths === null ? '—' : emergencyMonths.toFixed(1))}
+          </StatusLine>
+
+          <ControlCard theme={theme}>
+            <h4>{controlsT.advancedTitle}</h4><p>{controlsT.advancedHint}</p>
+            <ThresholdGrid>
+              <FormGroup theme={theme}><label>{controlsT.fixedExpensesPercent}</label><InputWithIcon theme={theme}><BsPercent className="input-icon" /><input type="number" min="0" max="100" value={settings.fixedExpensesPercent} onChange={(e) => handleSettingChange('fixedExpensesPercent', e.target.value)} /></InputWithIcon></FormGroup>
+              <FormGroup theme={theme}><label>{controlsT.debtReduction}</label><InputWithIcon theme={theme}><span className="input-icon">{currencySymbol}</span><input type="number" min="0" value={settings.debtReductionGoal} onChange={(e) => handleSettingChange('debtReductionGoal', e.target.value)} /></InputWithIcon></FormGroup>
+              <FormGroup theme={theme}><label>{controlsT.positionConcentration}</label><InputWithIcon theme={theme}><BsPercent className="input-icon" /><input type="number" min="0" max="100" value={settings.positionConcentrationLimit} onChange={(e) => handleSettingChange('positionConcentrationLimit', e.target.value)} /></InputWithIcon></FormGroup>
+              <FormGroup theme={theme}><label>{controlsT.categoryConcentration}</label><InputWithIcon theme={theme}><BsPercent className="input-icon" /><input type="number" min="0" max="100" value={settings.assetCategoryConcentrationLimit} onChange={(e) => handleSettingChange('assetCategoryConcentrationLimit', e.target.value)} /></InputWithIcon></FormGroup>
+              <FormGroup theme={theme}><label>{controlsT.passiveIncome}</label><InputWithIcon theme={theme}><span className="input-icon">{currencySymbol}</span><input type="number" min="0" value={settings.annualPassiveIncomeGoal} onChange={(e) => handleSettingChange('annualPassiveIncomeGoal', e.target.value)} /></InputWithIcon></FormGroup>
+            </ThresholdGrid>
+            {settings.fixedExpensesPercent !== '' && <StatusLine $ok={currentIncome > 0 && monthlyFixedExpenses / currentIncome * 100 <= Number(settings.fixedExpensesPercent)}>{controlsT.currentFixedExpenses.replace('{percent}', currentIncome > 0 ? `${(monthlyFixedExpenses / currentIncome * 100).toFixed(1)}%` : '—')}</StatusLine>}
+            <FormGroup theme={theme}>
+              <label>{controlsT.categorySpending}</label>
+              {Object.entries(settings.categorySpendingLimits).map(([name, value]) => (
+                <div key={name} style={{ display: 'grid', gridTemplateColumns: '1fr 110px 36px', gap: '.5rem', marginBottom: '.5rem' }}>
+                  <input value={name} readOnly aria-label={controlsT.categoryName} />
+                  <input type="number" min="0" value={value} onChange={(e) => handleSettingChange('categorySpendingLimits', { ...settings.categorySpendingLimits, [name]: e.target.value })} aria-label={controlsT.categoryAmount} />
+                  <ActionButton type="button" variant="danger" theme={theme} onClick={() => { const next = { ...settings.categorySpendingLimits }; delete next[name]; handleSettingChange('categorySpendingLimits', next); }}><FaTrash /></ActionButton>
+                </div>
+              ))}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 110px 36px', gap: '.5rem' }}>
+                <input value={newCategoryLimit.name} onChange={(e) => setNewCategoryLimit((current) => ({ ...current, name: e.target.value }))} placeholder={controlsT.categoryName} />
+                <input type="number" min="0" value={newCategoryLimit.value} onChange={(e) => setNewCategoryLimit((current) => ({ ...current, value: e.target.value }))} placeholder={controlsT.categoryAmount} />
+                <ActionButton type="button" theme={theme} onClick={() => { if (!newCategoryLimit.name.trim() || newCategoryLimit.value === '') return; handleSettingChange('categorySpendingLimits', { ...settings.categorySpendingLimits, [newCategoryLimit.name.trim()]: newCategoryLimit.value }); setNewCategoryLimit({ name: '', value: '' }); }}><FaPlus /></ActionButton>
+              </div>
+            </FormGroup>
+          </ControlCard>
 
           <FormGroup theme={theme}>
             <label>
@@ -690,6 +845,14 @@ const ProfileSettings = ({ theme }) => {
               />
             </InputWithIcon>
           </FormGroup>
+          <FormGroup theme={theme}>
+            <label>{controlsT.investmentPercent}</label>
+            <InputWithIcon theme={theme}><BsPercent className="input-icon" /><input type="number" min="0" max="100" value={monthlyTargetPercentInput} onChange={(event) => setMonthlyTargetPercentInput(event.target.value)} /></InputWithIcon>
+          </FormGroup>
+          <StatusLine $ok>
+            {controlsT.bothRequired}
+          </StatusLine>
+
           <SaveButton theme={theme} onClick={saveMonthlyInvestmentTarget} disabled={savingMonthlyTarget}>
             <FaSave />
             {translations.graphs.statsHoldings.insights.saveButton}
@@ -709,7 +872,9 @@ const ProfileSettings = ({ theme }) => {
             </EmptyState>
           )}
           {goals.map(goal => {
-            const progress = (goal.current / goal.target) * 100;
+            const percentTarget = goal.targetPercentOfNetWorth === '' || goal.targetPercentOfNetWorth == null ? 0 : netWorth * Number(goal.targetPercentOfNetWorth) / 100;
+            const effectiveTarget = Math.max(goal.target, percentTarget);
+            const progress = effectiveTarget > 0 ? (goal.current / effectiveTarget) * 100 : 0;
             const deadlineLabel = goal.deadline
               ? new Date(goal.deadline).toLocaleDateString(language === 'it' ? 'it-IT' : 'en-US')
               : (language === 'it' ? 'Nessuna scadenza' : 'No deadline');
@@ -734,7 +899,8 @@ const ProfileSettings = ({ theme }) => {
                   </div>
                 </div>
                 <div className="goal-progress">
-                  {currencySymbol}{goal.current.toLocaleString()} / {currencySymbol}{goal.target.toLocaleString()} ({progress.toFixed(1)}%)
+                  {formatAmount(goal.current)} / {formatAmount(effectiveTarget)} ({progress.toFixed(1)}%)
+                  {goal.targetPercentOfNetWorth !== '' && goal.targetPercentOfNetWorth != null && <><br />{controlsT.netWorthRequirement.replace('{percent}', String(goal.targetPercentOfNetWorth)).replace('{amount}', formatAmount(percentTarget))}</>}
                   <br />
                   {language === 'it' ? 'Scadenza' : 'Deadline'}: {deadlineLabel}
                 </div>
@@ -767,7 +933,7 @@ const ProfileSettings = ({ theme }) => {
                 onChange={(e) => handleModalInputChange('name', e.target.value)}
                 placeholder={language === 'it' ? 'Es. Fondo emergenza' : 'Ex. Emergency fund'}
               />
-            </FormGroup>
+          </FormGroup>
 
             <FormGroup theme={theme}>
               <label>{translations?.goals?.sourceLabel || (language === 'it' ? 'Origine del valore' : 'Value source')}</label>
@@ -816,6 +982,12 @@ const ProfileSettings = ({ theme }) => {
                       : 'Calculated automatically from the current balance — not editable.')}
                 </small>
               )}
+            </FormGroup>
+
+            <FormGroup theme={theme}>
+              <label>{controlsT.customNetWorthPercent}</label>
+              <InputWithIcon theme={theme}><BsPercent className="input-icon" /><input type="number" min="0" max="100" value={modalGoalData.targetPercentOfNetWorth} onChange={(e) => handleModalInputChange('targetPercentOfNetWorth', e.target.value)} /></InputWithIcon>
+              <small style={{ opacity: 0.65, fontSize: '0.72rem' }}>{controlsT.bothRequired}</small>
             </FormGroup>
 
             <FormGroup theme={theme}>

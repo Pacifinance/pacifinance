@@ -981,7 +981,7 @@ describe("private backend routes", () => {
 
         expect(response.status).toBe(200)
         expect(response.json).toEqual({monthlyTarget: 250})
-        expect(mockDb.investments.saveInvestmentSettings).toHaveBeenCalledWith("user-uuid", 250)
+        expect(mockDb.investments.saveInvestmentSettings).toHaveBeenCalledWith("user-uuid", 250, null)
     })
 
     it("allows clearing the monthly investment target by sending an empty value", async () => {
@@ -994,7 +994,16 @@ describe("private backend routes", () => {
         })
 
         expect(response.status).toBe(200)
-        expect(mockDb.investments.saveInvestmentSettings).toHaveBeenCalledWith("user-uuid", null)
+        expect(mockDb.investments.saveInvestmentSettings).toHaveBeenCalledWith("user-uuid", null, null)
+    })
+
+    it("saves both monthly investment thresholds", async () => {
+        mockDb.investments.saveInvestmentSettings.mockResolvedValue({monthlyTarget: 250, monthlyTargetPercent: 15})
+        const response = await request(app, "/api/investments/settings/save", {
+            method: "POST", headers: {cookie: authCookie}, body: {monthly_target: 250, monthly_target_percent: 15},
+        })
+        expect(response.status).toBe(200)
+        expect(mockDb.investments.saveInvestmentSettings).toHaveBeenCalledWith("user-uuid", 250, 15)
     })
 
     it("rejects an invalid (non-numeric) monthly investment target", async () => {

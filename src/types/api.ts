@@ -288,6 +288,15 @@ export interface UserGoalsRequest {
   expenses_limit?: number;
   savings_percent?: number;
   emergency_fund_goal?: number;
+  expenses_limit_percent?: number | null;
+  savings_amount_goal?: number | null;
+  emergency_fund_months?: number | null;
+  fixed_expenses_percent?: number | null;
+  category_spending_limits?: Record<string, number>;
+  debt_reduction_goal?: number | null;
+  position_concentration_limit?: number | null;
+  asset_category_concentration_limit?: number | null;
+  annual_passive_income_goal?: number | null;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -596,10 +605,12 @@ export interface InvestmentBatchSaveResponse {
 
 export interface InvestmentSettingsDto {
   monthlyTarget: number | null;
+  monthlyTargetPercent: number | null;
 }
 
 export interface InvestmentSettingsSaveRequest {
   monthly_target: number | null;
+  monthly_target_percent?: number | null;
 }
 
 export interface InvestmentDividendDto {
@@ -818,6 +829,7 @@ export interface GoalDto {
   name: string;
   goalType: GoalType;
   targetValue: number;
+  targetPercentOfNetWorth: number | null;
   currentValue: number;
   linkedAssetKey: AssetKey | null;
   deadline: string | null;
@@ -831,6 +843,7 @@ export interface GoalSaveRequest {
   name: string;
   goal_type: GoalType;
   target_value: number;
+  target_percent_of_net_worth?: number | null;
   current_value?: number;
   linked_asset_key?: AssetKey | null;
   deadline?: string | null;

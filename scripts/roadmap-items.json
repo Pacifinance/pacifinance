@@ -112,12 +112,12 @@
     "todoMatch": "Obiettivi e Limiti",
     "title": { "it": "Obiettivi e Limiti di Spesa", "en": "Goals & Spending Limits" },
     "description": {
-      "it": "Imposta obiettivi di risparmio personalizzati e limiti di spesa mensili con notifiche.",
-      "en": "Set custom savings goals and monthly spending limits with notifications."
+      "it": "Combina soglie fisse e percentuali per spesa, risparmio, investimenti, fondo d'emergenza e obiettivi personali; monitora anche concentrazione del portafoglio, spese fisse, categorie, debiti e rendita passiva.",
+      "en": "Combine fixed and percentage thresholds for spending, savings, investments, emergency funds and personal goals; also track portfolio concentration, fixed expenses, categories, debt and passive income."
     },
     "category": "feature",
     "icon": "🎯",
-    "completedDate": "2025-01"
+    "completedDate": "2026-07"
   },
   {
     "id": "multi-currency",

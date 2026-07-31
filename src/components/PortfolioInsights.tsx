@@ -31,6 +31,10 @@ interface PortfolioInsightsProps {
   assetKey: AssetKey | null;
   isHidden: boolean;
   monthlyTarget: number | null;
+  monthlyTargetPercent: number | null;
+  currentMonthlyIncome: number;
+  annualPassiveIncome: number;
+  annualPassiveIncomeTarget: number | null;
   /** Portfolio-wide (not per-category) "how much I'd like to invest each month" € target, or null if unset. */
 }
 
@@ -227,7 +231,7 @@ function formatMonthsHuman(months: number, t: Record<string, string>): string {
 }
 
 export default function PortfolioInsights({
-  theme, holdings, history, goals, assetKey, isHidden, monthlyTarget,
+  theme, holdings, history, goals, assetKey, isHidden, monthlyTarget, monthlyTargetPercent, currentMonthlyIncome, annualPassiveIncome, annualPassiveIncomeTarget,
 }: PortfolioInsightsProps) {
   const { translations, language } = useContext(LanguageContext);
   const { formatAmount } = useContext(CurrencyContext);
@@ -321,16 +325,19 @@ export default function PortfolioInsights({
       {assetKey === null && (
         <TargetSection theme={theme}>
           <h5>{t.monthlyTargetTitle || 'Monthly investment target'}</h5>
-          {monthlyTarget != null && contributionSeries.length > 0 ? (() => {
+          {(monthlyTarget != null || monthlyTargetPercent != null) && contributionSeries.length > 0 ? (() => {
+            const percentageTarget = monthlyTargetPercent == null ? 0 : currentMonthlyIncome * monthlyTargetPercent / 100;
+            const effectiveTarget = Math.max(monthlyTarget ?? 0, percentageTarget);
             const recent = contributionSeries.slice(-8).reverse();
-            const successfulMonths = recent.filter((point) => point.amount >= monthlyTarget).length;
+            const successfulMonths = recent.filter((point) => point.amount >= effectiveTarget).length;
             const successPercentage = recent.length > 0 ? (successfulMonths / recent.length) * 100 : 0;
             const recentAverage = recent.reduce((sum, point) => sum + point.amount, 0) / recent.length;
             return (
               <TargetOverview>
                 <TargetSummary theme={theme}>
                   <span>{t.monthlyTargetSavedLabel || 'Saved monthly target'}</span>
-                  <strong>{isHidden ? '****' : formatAmount(monthlyTarget)}</strong>
+                  <strong>{isHidden ? '****' : formatAmount(effectiveTarget)}</strong>
+                  {monthlyTargetPercent != null && <small>{monthlyTargetPercent}%</small>}
                   <small>{(t.monthlyTargetSuccessRate || '{success}/{total} recent months reached')
                     .replace('{success}', String(successfulMonths))
                     .replace('{total}', String(recent.length))}</small>
@@ -344,8 +351,8 @@ export default function PortfolioInsights({
                 </TargetSummary>
                 <MonthResults>
                   {recent.map((point) => {
-                    const hit = point.amount >= monthlyTarget;
-                    const difference = point.amount - monthlyTarget;
+                    const hit = point.amount >= effectiveTarget;
+                    const difference = point.amount - effectiveTarget;
                     return (
                       <MonthResult key={point.month} theme={theme} $hit={hit}>
                         <span>{formatMonthLabel(point.month, language)}</span>
@@ -360,7 +367,7 @@ export default function PortfolioInsights({
               </TargetOverview>
             );
           })() : (
-            <Hint theme={theme}>{monthlyTarget != null
+            <Hint theme={theme}>{monthlyTarget != null || monthlyTargetPercent != null
               ? (t.monthlyTargetNeedsHistory || 'Keep recording history to compare recent months.')
               : (t.monthlyTargetHint || 'Set a monthly investment target to track your consistency.')}</Hint>
           )}
@@ -368,6 +375,13 @@ export default function PortfolioInsights({
             {t.monthlyTargetManageLink || 'Manage monthly investment target →'}
           </MonthlyTargetLink>
 
+        </TargetSection>
+      )}
+      {assetKey === null && annualPassiveIncomeTarget != null && (
+        <TargetSection theme={theme}>
+          <h5>{t.passiveIncomeTitle || 'Annual passive-income goal'}</h5>
+          <ProgressLabel theme={theme}><span>{isHidden ? '****' : formatAmount(annualPassiveIncome)}</span><strong>{isHidden ? '****' : formatAmount(annualPassiveIncomeTarget)}</strong></ProgressLabel>
+          <ProgressTrack theme={theme}><ProgressFill theme={theme} $pct={annualPassiveIncomeTarget > 0 ? annualPassiveIncome / annualPassiveIncomeTarget * 100 : 0} /></ProgressTrack>
         </TargetSection>
       )}
 

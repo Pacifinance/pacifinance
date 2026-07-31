@@ -965,25 +965,25 @@ describe("investments model", () => {
 
             const result = await investments.getInvestmentSettings("user-1")
 
-            expect(result).toEqual({monthlyTarget: null})
+            expect(result).toEqual({monthlyTarget: null, monthlyTargetPercent: null})
         })
 
         it("returns the stored monthlyTarget", async () => {
-            mockSupabase.from.mockReturnValueOnce(makeChain({data: {monthly_target: 300}, error: null}))
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: {monthly_target: 300, monthly_target_percent: 15}, error: null}))
 
             const result = await investments.getInvestmentSettings("user-1")
 
-            expect(result).toEqual({monthlyTarget: 300})
+            expect(result).toEqual({monthlyTarget: 300, monthlyTargetPercent: 15})
         })
     })
 
     describe("saveInvestmentSettings", () => {
         it("upserts and returns the saved monthlyTarget", async () => {
-            mockSupabase.from.mockReturnValueOnce(makeChain({data: {monthly_target: 250}, error: null}))
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: {monthly_target: 250, monthly_target_percent: 10}, error: null}))
 
-            const result = await investments.saveInvestmentSettings("user-1", 250)
+            const result = await investments.saveInvestmentSettings("user-1", 250, 10)
 
-            expect(result).toEqual({monthlyTarget: 250})
+            expect(result).toEqual({monthlyTarget: 250, monthlyTargetPercent: 10})
         })
 
         it("returns null when the upsert fails", async () => {

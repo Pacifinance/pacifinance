@@ -27,9 +27,9 @@ const FAKE_SUCCESS = { status: 200, data: { success: true } };
 
 /** Sample goals so the feature is visible in demo mode (no real backend session to fetch from). */
 const DEMO_GOALS: GoalDto[] = [
-  { id: -1, name: 'Fondo Emergenza', goalType: 'savings', targetValue: 15000, currentValue: 5000, linkedAssetKey: 'emergencyFund', deadline: '2026-12-31', updatedAt: new Date().toISOString() },
-  { id: -2, name: 'Vacanze Estate 2026', goalType: 'savings', targetValue: 4000, currentValue: 2200, linkedAssetKey: null, deadline: '2026-06-30', updatedAt: new Date().toISOString() },
-  { id: -3, name: 'Nuovo MacBook Pro', goalType: 'purchase', targetValue: 3500, currentValue: 1800, linkedAssetKey: null, deadline: '2026-04-15', updatedAt: new Date().toISOString() },
+  { id: -1, name: 'Fondo Emergenza', goalType: 'savings', targetValue: 15000, targetPercentOfNetWorth: null, currentValue: 5000, linkedAssetKey: 'emergencyFund', deadline: '2026-12-31', updatedAt: new Date().toISOString() },
+  { id: -2, name: 'Vacanze Estate 2026', goalType: 'savings', targetValue: 4000, targetPercentOfNetWorth: null, currentValue: 2200, linkedAssetKey: null, deadline: '2026-06-30', updatedAt: new Date().toISOString() },
+  { id: -3, name: 'Nuovo MacBook Pro', goalType: 'purchase', targetValue: 3500, targetPercentOfNetWorth: null, currentValue: 1800, linkedAssetKey: null, deadline: '2026-04-15', updatedAt: new Date().toISOString() },
 ];
 
 /** Small static catalog so the instrument search works offline in demo mode (no backend session exists). */
@@ -157,8 +157,8 @@ export const useDemoServices = () => {
         saveHoldingHistoryBatch: async (data) => ({ savedCount: data.entries.length, errors: [] }),
         // No session-backed setting to persist in demo mode - echoes the save
         // back (like saveHolding above) without actually remembering it.
-        getSettings: async (): Promise<InvestmentSettingsDto> => ({ monthlyTarget: null }),
-        saveSettings: async (data): Promise<InvestmentSettingsDto> => ({ monthlyTarget: data.monthly_target }),
+        getSettings: async (): Promise<InvestmentSettingsDto> => ({ monthlyTarget: null, monthlyTargetPercent: null }),
+        saveSettings: async (data): Promise<InvestmentSettingsDto> => ({ monthlyTarget: data.monthly_target, monthlyTargetPercent: data.monthly_target_percent ?? null }),
         // No session-backed dividend ledger in demo mode - echoes the save back
         // (like saveHolding/saveHoldingHistory above) without persisting it.
         saveDividend: async (data): Promise<InvestmentDividendDto> => ({
@@ -288,6 +288,7 @@ export const useDemoServices = () => {
           name: data.name,
           goalType: data.goal_type,
           targetValue: data.target_value,
+          targetPercentOfNetWorth: data.target_percent_of_net_worth ?? null,
           currentValue: data.current_value ?? 0,
           linkedAssetKey: data.linked_asset_key ?? null,
           deadline: data.deadline ?? null,

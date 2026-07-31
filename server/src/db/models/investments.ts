@@ -1076,7 +1076,7 @@ async function backfillHistoricalPrices(user_id: string, eurRates: Record<string
     return results
 }
 
-export type InvestmentSettings = { monthlyTarget: number | null }
+export type InvestmentSettings = { monthlyTarget: number | null; monthlyTargetPercent: number | null }
 
 /**
  * Reads the user's "how much would I like to invest each month" € target -
@@ -1085,22 +1085,24 @@ export type InvestmentSettings = { monthlyTarget: number | null }
  */
 async function getInvestmentSettings(user_id: string): Promise<InvestmentSettings> {
     const {data, error} = await supabase.from("user_investment_settings")
-        .select("monthly_target").eq("user_id", user_id).maybeSingle()
+        .select("monthly_target, monthly_target_percent").eq("user_id", user_id).maybeSingle()
     if (error) console.error("investments.getInvestmentSettings: failed to read settings", error)
-    return {monthlyTarget: (data as {monthly_target: number | null} | null)?.monthly_target ?? null}
+    const row = data as {monthly_target: number | null; monthly_target_percent: number | null} | null
+    return {monthlyTarget: row?.monthly_target ?? null, monthlyTargetPercent: row?.monthly_target_percent ?? null}
 }
 
 /** onConflict targets the table's own primary key (user_id) - a single row per user, no partial index involved. */
-async function saveInvestmentSettings(user_id: string, monthlyTarget: number | null): Promise<InvestmentSettings | null> {
+async function saveInvestmentSettings(user_id: string, monthlyTarget: number | null, monthlyTargetPercent: number | null = null): Promise<InvestmentSettings | null> {
     const {data, error} = await supabase.from("user_investment_settings")
-        .upsert({user_id, monthly_target: monthlyTarget, updated_at: new Date().toISOString()}, {onConflict: "user_id"})
-        .select("monthly_target")
+        .upsert({user_id, monthly_target: monthlyTarget, monthly_target_percent: monthlyTargetPercent, updated_at: new Date().toISOString()}, {onConflict: "user_id"})
+        .select("monthly_target, monthly_target_percent")
         .single()
     if (error) {
         console.error("investments.saveInvestmentSettings: failed to save settings", error)
         return null
     }
-    return {monthlyTarget: (data as {monthly_target: number | null}).monthly_target}
+    const row = data as {monthly_target: number | null; monthly_target_percent: number | null}
+    return {monthlyTarget: row.monthly_target, monthlyTargetPercent: row.monthly_target_percent}
 }
 
 type DividendRow = {

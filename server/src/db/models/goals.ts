@@ -15,6 +15,7 @@ type GoalRow = {
     name: string
     goal_type: GoalType
     target_value: number
+    target_percent_of_net_worth: number | null
     current_value: number
     linked_asset_key: GoalLinkedAssetKey | null
     deadline: string | null
@@ -25,12 +26,13 @@ export type GoalInput = {
     name: string
     goalType: GoalType
     targetValue: number
+    targetPercentOfNetWorth: number | null
     currentValue: number
     linkedAssetKey: GoalLinkedAssetKey | null
     deadline: string | null
 }
 
-const GOAL_SELECT = ["id", "name", "goal_type", "target_value", "current_value", "linked_asset_key", "deadline", "updated_at"].join(", ")
+const GOAL_SELECT = ["id", "name", "goal_type", "target_value", "target_percent_of_net_worth", "current_value", "linked_asset_key", "deadline", "updated_at"].join(", ")
 
 function toGoal(row: GoalRow) {
     return {
@@ -38,6 +40,7 @@ function toGoal(row: GoalRow) {
         name: row.name,
         goalType: row.goal_type,
         targetValue: row.target_value,
+        targetPercentOfNetWorth: row.target_percent_of_net_worth,
         currentValue: row.current_value,
         linkedAssetKey: row.linked_asset_key,
         deadline: row.deadline,
@@ -51,6 +54,7 @@ function toGoalPayload(user_id: string, input: GoalInput) {
         name: input.name,
         goal_type: input.goalType,
         target_value: input.targetValue,
+        target_percent_of_net_worth: input.targetPercentOfNetWorth,
         current_value: input.currentValue,
         linked_asset_key: input.linkedAssetKey,
         deadline: input.deadline,
@@ -106,6 +110,7 @@ async function updateGoal(user_id: string, goal_id: number, input: GoalInput) {
             name: input.name,
             goal_type: input.goalType,
             target_value: input.targetValue,
+            target_percent_of_net_worth: input.targetPercentOfNetWorth,
             current_value: input.currentValue,
             linked_asset_key: input.linkedAssetKey,
             deadline: input.deadline,

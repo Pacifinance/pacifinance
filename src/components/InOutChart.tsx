@@ -924,7 +924,7 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
             )}
             
             {/* Limite di spesa mensile - solo se abilitato dall'utente */}
-            {userData?.limits?.notificationsEnabled && userData?.limits?.monthlySpendingLimit && !isHidden && (
+            {userData?.limits?.notificationsEnabled && userData?.limits?.monthlySpendingLimitEnabled !== false && userData?.limits?.monthlySpendingLimit && !isHidden && (
               <ReferenceLine 
                 y={userData.limits.monthlySpendingLimit} 
                 stroke="#ff6b35"

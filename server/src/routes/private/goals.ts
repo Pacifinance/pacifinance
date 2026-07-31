@@ -11,6 +11,9 @@ function parseGoalPayload(body: Record<string, unknown>) {
     const name = common.sanitizeInput(String(body.name ?? "")).slice(0, 80)
     const goalType = common.sanitizeInput(String(body.goal_type ?? body.goalType ?? "savings"))
     const targetValue = Number(body.target_value ?? body.targetValue)
+    const rawTargetPercent = body.target_percent_of_net_worth ?? body.targetPercentOfNetWorth
+    const targetPercentOfNetWorth = rawTargetPercent === undefined || rawTargetPercent === null || rawTargetPercent === ""
+        ? null : Number(rawTargetPercent)
     const currentValue = Number(body.current_value ?? body.currentValue ?? 0)
     const rawLinkedAssetKey = common.sanitizeInput(String(body.linked_asset_key ?? body.linkedAssetKey ?? ""))
     const rawDeadline = common.sanitizeInput(String(body.deadline ?? ""))
@@ -19,7 +22,8 @@ function parseGoalPayload(body: Record<string, unknown>) {
         name.length === 0 ||
         !isOneOf(goalType, db.goals.GOAL_TYPES) ||
         !Number.isFinite(targetValue) || targetValue < 0 ||
-        !Number.isFinite(currentValue) || currentValue < 0
+        !Number.isFinite(currentValue) || currentValue < 0 ||
+        (targetPercentOfNetWorth !== null && (!Number.isFinite(targetPercentOfNetWorth) || targetPercentOfNetWorth < 0 || targetPercentOfNetWorth > 100))
     ) {
         return null
     }
@@ -30,6 +34,7 @@ function parseGoalPayload(body: Record<string, unknown>) {
         name,
         goalType,
         targetValue,
+        targetPercentOfNetWorth,
         currentValue,
         linkedAssetKey: rawLinkedAssetKey === "" ? null : rawLinkedAssetKey,
         deadline: rawDeadline === "" ? null : rawDeadline,

@@ -1376,6 +1376,9 @@ export interface TransactionSummaryEntry {
     totalCurrency: string | null
     tradeDate: string
     externalId: string | null
+    /** Which import produced this row (e.g. "trading212", "directa") - lets
+     * the UI show where a given purchase/sale actually came from. */
+    source: string
 }
 
 /**
@@ -1391,7 +1394,7 @@ export interface TransactionSummaryEntry {
  */
 async function getTransactionsByUserId(user_id: string): Promise<TransactionSummaryEntry[]> {
     const {data, error} = await supabase.from("user_investment_transactions")
-        .select(`instrument_id, side, quantity, price, currency, total, total_currency, trade_date, external_id, instrument:investment_instruments(isin, symbol, name)`)
+        .select(`instrument_id, side, quantity, price, currency, total, total_currency, trade_date, external_id, source, instrument:investment_instruments(isin, symbol, name)`)
         .eq("user_id", user_id)
     if (error) console.error("investments.getTransactionsByUserId: failed to read transactions", error)
     if (error || !data) return []
@@ -1406,6 +1409,7 @@ async function getTransactionsByUserId(user_id: string): Promise<TransactionSumm
         total_currency: string | null
         trade_date: string
         external_id: string | null
+        source: string
         instrument: {isin: string | null; symbol: string; name: string} | {isin: string | null; symbol: string; name: string}[] | null
     }
 
@@ -1426,6 +1430,7 @@ async function getTransactionsByUserId(user_id: string): Promise<TransactionSumm
                 totalCurrency: row.total_currency,
                 tradeDate: row.trade_date,
                 externalId: row.external_id,
+                source: row.source,
             }
         })
         .filter((entry): entry is TransactionSummaryEntry => entry !== null)

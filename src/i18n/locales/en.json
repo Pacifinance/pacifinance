@@ -2829,7 +2829,8 @@
         "reconciliationOrphanNote": "{ticker} — you still have a sell recorded with no matching buy. The purchase is probably in a file you haven't uploaded yet — upload it to reconcile this automatically.",
         "historyTitle": "History",
         "historyLoading": "Loading history…",
-        "historyEmptyState": "No history recorded for this instrument yet."
+        "historyEmptyState": "No history recorded for this instrument yet.",
+        "historyAllYears": "All years"
         },
         "attribution": {
             "coingecko": "Data provided by CoinGecko",

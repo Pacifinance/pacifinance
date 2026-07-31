@@ -694,6 +694,8 @@ export interface InvestmentTransactionSummaryDto {
   totalCurrency: string | null;
   tradeDate: string;
   externalId: string | null;
+  /** Which import produced this row (e.g. "trading212", "directa") - lets the UI show where a given purchase/sale actually came from. */
+  source: string;
 }
 
 export type InvestmentTransactionsGetResponse = InvestmentTransactionSummaryDto[];

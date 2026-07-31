@@ -18,7 +18,10 @@ import {
 import { ModernActionButton } from '../styles/MyStyled';
 import { ASSET_KEY_TO_KIND, KIND_TO_SEARCH_SOURCE, DEFAULT_INSTRUMENT_HINTS } from '../constants/investmentSchema';
 import { formatInstrumentDetails } from '../utils/instrumentDisplay';
-import type { InvestmentAssetKey, InvestmentDividendSummaryDto, InvestmentHoldingDto, InvestmentHoldingHistoryDto, InvestmentInstrumentDto } from '../types/api';
+import type {
+  InvestmentAssetKey, InvestmentDividendSummaryDto, InvestmentHoldingDto, InvestmentHoldingHistoryDto,
+  InvestmentInstrumentDto, InvestmentTransactionSummaryDto,
+} from '../types/api';
 
 interface InvestmentHoldingsPanelProps {
   assetKey: InvestmentAssetKey;
@@ -233,6 +236,26 @@ const HistoryDrawer = styled.div`
   gap: 0.3rem;
 `;
 
+const HistoryYearFilter = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.1rem;
+
+  select {
+    padding: 0.25rem 0.4rem;
+    border-radius: 6px;
+    border: 1px solid ${(p) => (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.15)' : '#cbd5e1')};
+    background: ${(p) => (p.theme.mode === 'dark' ? '#1a1f2e' : 'white')};
+    color: ${(p) => p.theme.textColor};
+    font-size: 0.72rem;
+
+    option {
+      background: ${(p) => (p.theme.mode === 'dark' ? '#1a1f2e' : 'white')};
+      color: ${(p) => p.theme.textColor};
+    }
+  }
+`;
+
 const HistoryMonthRow = styled.div`
   display: flex;
   align-items: center;
@@ -244,6 +267,7 @@ const HistoryMonthRow = styled.div`
 
   span.month { flex-shrink: 0; opacity: 0.65; min-width: 4.5rem; }
   span.values { flex: 1; text-align: right; }
+  span.source { display: block; font-size: 0.68rem; opacity: 0.55; }
 
   button {
     width: 26px;
@@ -484,10 +508,18 @@ export default function InvestmentHoldingsPanel({
    * never opens a drawer never pays for this request), then filtered
    * client-side per holding. */
   const [allHistory, setAllHistory] = useState<InvestmentHoldingHistoryDto[] | null>(null);
+  /** Every recorded transaction across every instrument - fetched lazily
+   * alongside allHistory, purely to look up which platform(s) contributed to
+   * a given month (see renderHoldingRow's history drawer) - not needed for
+   * anything else in this panel. */
+  const [allTransactions, setAllTransactions] = useState<InvestmentTransactionSummaryDto[] | null>(null);
   const [loadingHistory, setLoadingHistory] = useState(false);
   const [editingHistoryMonthKey, setEditingHistoryMonthKey] = useState<string | null>(null);
   const [historyMonthInputs, setHistoryMonthInputs] = useState({ currentValue: '', investedAmount: '', quantity: '' });
   const [savingHistoryMonth, setSavingHistoryMonth] = useState(false);
+  /** Which calendar year the history drawer is filtered to, per holding id -
+   * "all" (the default) shows every recorded month. */
+  const [historyYearFilterByHoldingId, setHistoryYearFilterByHoldingId] = useState<Record<number, string>>({});
   /** Per-instrument dividend totals (see server/src/db/models/investments.ts
    * getDividendsSummaryByUserId) — fetched once per panel open, keyed by
    * instrument id so each holding row can show its own total and compare it
@@ -629,11 +661,16 @@ export default function InvestmentHoldingsPanel({
     if (allHistory !== null) return;
     setLoadingHistory(true);
     try {
-      const history = await investmentService.getHoldingHistory({});
+      const [history, transactions] = await Promise.all([
+        investmentService.getHoldingHistory({}),
+        investmentService.getTransactions(),
+      ]);
       setAllHistory(history);
+      setAllTransactions(transactions);
     } catch (error) {
       console.error('InvestmentHoldingsPanel: failed to load holding history', error);
       setAllHistory([]);
+      setAllTransactions([]);
     } finally {
       setLoadingHistory(false);
     }
@@ -850,21 +887,60 @@ export default function InvestmentHoldingsPanel({
           <HistoryDrawer theme={theme}>
             {loadingHistory && <span style={{ fontSize: '0.78rem', opacity: 0.6 }}>{t.historyLoading || 'Caricamento storico…'}</span>}
             {!loadingHistory && (() => {
-              const monthsForHolding = (allHistory ?? [])
+              // Deltas (buy/sell coloring) always need chronological order to
+              // compare a month against the one right before it - computed
+              // here regardless of how the list is eventually displayed.
+              const chronological = (allHistory ?? [])
                 .filter((entry) => entry.holdingId === holding.id)
                 .sort((a, b) => a.userDate.localeCompare(b.userDate));
-              if (monthsForHolding.length === 0) {
+              if (chronological.length === 0) {
                 return <span style={{ fontSize: '0.78rem', opacity: 0.6 }}>{t.historyEmptyState || 'Nessuno storico registrato per questo titolo.'}</span>;
               }
-              return monthsForHolding.map((entry, idx) => {
+
+              const years = Array.from(new Set(chronological.map((entry) => entry.userDate.slice(0, 4)))).sort().reverse();
+              const yearFilter = historyYearFilterByHoldingId[holding.id] ?? 'all';
+
+              const enriched = chronological.map((entry, idx) => {
                 // Whether this month's quantity grew (bought that month) or
                 // shrank (sold) vs. the previous recorded month - the numbers
                 // alone don't make that obvious at a glance, so it's called
                 // out with a colored +/- delta (green/red).
-                const prevQuantity = idx > 0 ? (monthsForHolding[idx - 1].quantity ?? 0) : 0;
+                const prevQuantity = idx > 0 ? (chronological[idx - 1].quantity ?? 0) : 0;
                 const quantityDelta = entry.quantity != null ? entry.quantity - prevQuantity : null;
-                const locale = language === 'it' ? 'it-IT' : 'en-US';
-                return editingHistoryMonthKey === entry.userDate ? (
+                // Every platform that recorded a transaction for this
+                // instrument within this exact calendar month - a position
+                // built up from more than one broker shows all of them.
+                const monthKey = entry.userDate.slice(0, 7);
+                const sources = Array.from(new Set(
+                  (allTransactions ?? [])
+                    .filter((tx) => tx.instrumentId === entry.instrumentId && tx.tradeDate.slice(0, 7) === monthKey)
+                    .map((tx) => translations.investments.importWizard?.platforms?.[tx.source] || tx.source)
+                ));
+                return { entry, quantityDelta, sources };
+              });
+
+              // Newest first for display (the math above already used the
+              // chronological order it needed), optionally narrowed to one year.
+              const displayed = enriched
+                .filter(({ entry }) => yearFilter === 'all' || entry.userDate.slice(0, 4) === yearFilter)
+                .reverse();
+
+              const locale = language === 'it' ? 'it-IT' : 'en-US';
+
+              return (
+                <>
+                  {years.length > 1 && (
+                    <HistoryYearFilter theme={theme}>
+                      <select
+                        value={yearFilter}
+                        onChange={(e) => setHistoryYearFilterByHoldingId((prev) => ({ ...prev, [holding.id]: e.target.value }))}
+                      >
+                        <option value="all">{t.historyAllYears || 'Tutti gli anni'}</option>
+                        {years.map((year) => <option key={year} value={year}>{year}</option>)}
+                      </select>
+                    </HistoryYearFilter>
+                  )}
+                  {displayed.map(({ entry, quantityDelta, sources }) => editingHistoryMonthKey === entry.userDate ? (
                   <HistoryMonthEditRow key={entry.userDate} theme={theme}>
                     <input
                       type="number"
@@ -898,23 +974,25 @@ export default function InvestmentHoldingsPanel({
                     </button>
                   </HistoryMonthEditRow>
                 ) : (
-                  <HistoryMonthRow key={entry.userDate} theme={theme}>
-                    <span className="month">{formatHistoryMonthLabel(entry.userDate)}</span>
-                    <span className="values">
-                      {formatAmount(entry.currentValue ?? entry.investedAmount ?? 0)}
-                      {entry.quantity != null && ` · ${entry.quantity.toLocaleString(locale, { maximumFractionDigits: 6 })}`}
-                      {quantityDelta != null && Math.abs(quantityDelta) > 0.0000001 && (
-                        <HistoryQuantityDelta theme={theme} $positive={quantityDelta > 0}>
-                          {' '}({quantityDelta > 0 ? '+' : ''}{quantityDelta.toLocaleString(locale, { maximumFractionDigits: 6 })})
-                        </HistoryQuantityDelta>
-                      )}
-                    </span>
-                    <button type="button" onClick={() => startHistoryMonthEdit(entry)} aria-label={t.editTitle}>
-                      <FontAwesomeIcon icon={faPen} />
-                    </button>
-                  </HistoryMonthRow>
-                );
-              });
+                    <HistoryMonthRow key={entry.userDate} theme={theme}>
+                      <span className="month">{formatHistoryMonthLabel(entry.userDate)}</span>
+                      <span className="values">
+                        {formatAmount(entry.currentValue ?? entry.investedAmount ?? 0)}
+                        {entry.quantity != null && ` · ${entry.quantity.toLocaleString(locale, { maximumFractionDigits: 6 })}`}
+                        {quantityDelta != null && Math.abs(quantityDelta) > 0.0000001 && (
+                          <HistoryQuantityDelta theme={theme} $positive={quantityDelta > 0}>
+                            {' '}({quantityDelta > 0 ? '+' : ''}{quantityDelta.toLocaleString(locale, { maximumFractionDigits: 6 })})
+                          </HistoryQuantityDelta>
+                        )}
+                        {sources.length > 0 && <span className="source">{sources.join(', ')}</span>}
+                      </span>
+                      <button type="button" onClick={() => startHistoryMonthEdit(entry)} aria-label={t.editTitle}>
+                        <FontAwesomeIcon icon={faPen} />
+                      </button>
+                    </HistoryMonthRow>
+                  ))}
+                </>
+              );
             })()}
           </HistoryDrawer>
         )}

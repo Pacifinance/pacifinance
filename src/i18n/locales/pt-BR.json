@@ -2803,7 +2803,8 @@
         "reconciliationOrphanNote": "{ticker} — você ainda tem uma venda registrada sem compra correspondente. A compra provavelmente está em um arquivo que você ainda não enviou — envie-o para reconciliar isso automaticamente.",
         "historyTitle": "Histórico",
         "historyLoading": "Carregando histórico…",
-        "historyEmptyState": "Ainda não há histórico registrado para este ativo."
+        "historyEmptyState": "Ainda não há histórico registrado para este ativo.",
+        "historyAllYears": "Todos os anos"
         },
         "attribution": {
             "coingecko": "Dados fornecidos pelo CoinGecko",

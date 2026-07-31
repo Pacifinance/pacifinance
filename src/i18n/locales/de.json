@@ -2803,7 +2803,8 @@
         "reconciliationOrphanNote": "{ticker} — du hast noch einen Verkauf erfasst, ohne passenden Kauf. Der Kauf befindet sich wahrscheinlich in einer noch nicht hochgeladenen Datei — lade sie hoch, um dies automatisch abzugleichen.",
         "historyTitle": "Verlauf",
         "historyLoading": "Verlauf wird geladen…",
-        "historyEmptyState": "Für dieses Instrument ist noch kein Verlauf erfasst."
+        "historyEmptyState": "Für dieses Instrument ist noch kein Verlauf erfasst.",
+        "historyAllYears": "Alle Jahre"
         },
         "attribution": {
             "coingecko": "Daten bereitgestellt von CoinGecko",

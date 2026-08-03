@@ -48,6 +48,7 @@ import {
   deleteSavedMapping,
   saveLastImport,
   clearLastImport,
+  formatImportWeekday,
 } from '../utils/dataImport';
 import { EXPENSE_CATEGORY_CODES } from '../data/expenseCategoryCodes';
 import { getCategoryColor } from '../data/categoryColors';
@@ -531,7 +532,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
   // Detected bank/institution export format (Revolut, N26 — see utils/dataImport/bankFormats.ts),
   // and whether the user wants imported rows tagged with a bank-named sub-category.
   const [detectedBank, setDetectedBank] = useState(null);
-  const [tagWithBankCategory, setTagWithBankCategory] = useState(true);
+  const [tagWithBankCategory, setTagWithBankCategory] = useState(false);
   // Rows a bank preset excluded as not belonging in this wizard (e.g. Trade
   // Republic's investment trades — see bankFormats.ts filterRow) — reported
   // to the user rather than silently dropped.
@@ -594,6 +595,21 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
     return translateTag(tag?.label, language, isOutflow ? 'expense' : 'income') || 'Other';
   };
 
+  const bankCategoryPlan = useMemo(() => {
+    if (!detectedBank) return [];
+    const bankLabel = t.bankNames?.[detectedBank] || detectedBank;
+    const plannedTransactions = importableTx.map((tx) => ({
+      categoryIndex: rowCategories[tx.rowIndex] !== undefined ? rowCategories[tx.rowIndex] : tx.categoryIndex,
+      isOutflow: tx.isOutflow,
+    }));
+    return distinctCategoryFlows(plannedTransactions).map((flow) => ({
+      ...flow,
+      categoryLabel: resolveCategoryLabel(flow.parentIndex, flow.isExpense, null),
+      existing: Boolean(findExistingBankCategory(customCategories, flow.parentIndex, flow.isExpense, bankLabel)),
+    }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [detectedBank, importableTx, rowCategories, customCategories, language, t.bankNames]);
+
   // Maps a "YYYY-MM-DD" date to its index in the 13-month window
   // getAllOutflows/getAllIncomes are bucketed by (0 = current calendar month),
   // so the month viewer opens already on the month being imported.
@@ -650,7 +666,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
       // guessing (see utils/dataImport/bankFormats.ts) — skips manual mapping entirely.
       const bankFormat = detectBankFormat(h);
       setDetectedBank(bankFormat?.bank ?? null);
-      setTagWithBankCategory(true);
+      setTagWithBankCategory(false);
       setDualAmountMode(false);
       setMccCol(-1);
       setTimeCol(-1);
@@ -731,6 +747,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
     // Re-run detection: known bank format first, generic heuristic otherwise
     const bankFormat = detectBankFormat(h);
     setDetectedBank(bankFormat?.bank ?? null);
+    setTagWithBankCategory(false);
     setDualAmountMode(false);
     setMccCol(-1);
     setTimeCol(-1);
@@ -1032,17 +1049,20 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
     let success = 0;
     let failed = 0;
     const total = taggedTx.length;
-    const BATCH_SIZE = 5;
+    const API_BATCH_SIZE = 500;
 
-    for (let i = 0; i < total; i += BATCH_SIZE) {
-      const batch = taggedTx.slice(i, i + BATCH_SIZE);
-      const promises = batch.map(tx =>
-        financeService.addExpenseOrIncome(toAPIFormat({ ...tx, amount: toEUR(tx.amount) }, defaultPaymentType))
-          .then(() => { success++; })
-          .catch(() => { failed++; })
-      );
-      await Promise.all(promises);
-      setImportProgress(Math.min(((i + BATCH_SIZE) / total) * 100, 100));
+    for (let i = 0; i < total; i += API_BATCH_SIZE) {
+      const batch = taggedTx.slice(i, i + API_BATCH_SIZE);
+      try {
+        const result = await financeService.addExpensesAndIncomesBatch({
+          expenses: batch.map(tx => toAPIFormat({ ...tx, amount: toEUR(tx.amount) }, defaultPaymentType).expense),
+        });
+        success += result.inserted;
+        failed += batch.length - result.inserted;
+      } catch {
+        failed += batch.length;
+      }
+      setImportProgress(Math.min(((i + batch.length) / total) * 100, 100));
     }
 
     setImporting(false);
@@ -1219,7 +1239,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                     checked={tagWithBankCategory}
                     onChange={e => setTagWithBankCategory(e.target.checked)}
                   />
-                  {(t.tagWithBankCategory || 'Tag these transactions with a "{bank}" sub-category')
+                  {(t.tagWithBankCategory || 'Create optional "{bank}" custom sub-categories (requires your confirmation)')
                     .replace('{bank}', t.bankNames?.[detectedBank] || detectedBank)}
                 </label>
               </BankDetectedBanner>
@@ -1658,6 +1678,40 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
             </div>
           </Card>
 
+          {detectedBank && (
+            <Card theme={theme} $compact>
+              <p style={{ color: theme.textColor, fontWeight: 650, marginBottom: '0.4rem', fontSize: '0.9rem' }}>
+                {t.bankCategoryReviewTitle || 'Provider sub-categories (optional)'}
+              </p>
+              <p style={{ color: theme.textColor, opacity: 0.72, fontSize: '0.8rem', lineHeight: 1.45, marginBottom: '0.65rem' }}>
+                {tagWithBankCategory
+                  ? (t.bankCategoryReviewEnabled || 'You approved this: the following sub-categories will be reused or created when you import.')
+                  : (t.bankCategoryReviewDisabled || 'No provider sub-category will be created. Your transaction categories remain exactly as shown below.')}
+              </p>
+              <label style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', color: theme.textColor, fontSize: '0.82rem', cursor: 'pointer' }}>
+                <input
+                  type="checkbox"
+                  checked={tagWithBankCategory}
+                  onChange={(event) => setTagWithBankCategory(event.target.checked)}
+                  style={{ marginTop: 2, accentColor: theme.buttonBackgroundColor }}
+                />
+                {(t.bankCategoryExplicitConsent || 'Yes, create/reuse {count} provider sub-categories')
+                  .replace('{count}', String(bankCategoryPlan.length))}
+              </label>
+              {tagWithBankCategory && bankCategoryPlan.length > 0 && (
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', marginTop: '0.65rem' }}>
+                  {bankCategoryPlan.map((item) => (
+                    <Badge key={`${item.parentIndex}:${item.isExpense}`} $variant={item.existing ? 'success' : 'warning'}>
+                      {item.categoryLabel} / {t.bankNames?.[detectedBank] || detectedBank} · {item.existing
+                        ? (t.bankCategoryExisting || 'already exists')
+                        : (t.bankCategoryNew || 'will be created')}
+                    </Badge>
+                  ))}
+                </div>
+              )}
+            </Card>
+          )}
+
           {/* Category Breakdown */}
           {liveSummary && (
             <Card theme={theme} $compact>
@@ -1745,7 +1799,10 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                           />
                         </td>
                         <td>
-                          {tx.date}
+                          <div>{tx.date}</div>
+                          <div style={{ fontSize: '0.72rem', opacity: 0.72, textTransform: 'capitalize' }}>
+                            {formatImportWeekday(tx.date, language)}
+                          </div>
                           {tx.time && (
                             <div style={{ fontSize: '0.72rem', opacity: 0.6 }}>{tx.time}</div>
                           )}

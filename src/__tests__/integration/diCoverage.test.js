@@ -66,7 +66,7 @@ describe('DI Coverage — Architecture Health', () => {
 
       const requiredMethods = [
         'getBalances', 'addBalance',
-        'getExpensesAndIncomes', 'addExpenseOrIncome', 'deleteExpenseOrIncome',
+        'getExpensesAndIncomes', 'addExpenseOrIncome', 'addExpensesAndIncomesBatch', 'deleteExpenseOrIncome',
       ];
 
       for (const method of requiredMethods) {

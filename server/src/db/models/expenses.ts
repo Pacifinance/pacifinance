@@ -102,6 +102,66 @@ async function insertNew(user_id: string, date: Date, amount: number, is_expense
     return toExpense(data)
 }
 
+export type ExpenseBatchInput = {
+    date: Date
+    amount: number
+    isExpense: boolean
+    notes: string
+    paymentType: number
+    categoryTag: number
+    userCategoryId: number | null
+    balanceSource: ExpenseBalanceSource | null
+}
+
+/**
+ * Inserts an import batch with one database write. Tag references are resolved
+ * once per distinct category/payment pair, rather than once per transaction.
+ */
+async function insertBatch(user_id: string, inputs: ExpenseBatchInput[]) {
+    if (inputs.length === 0) return []
+
+    const referenceRequests = new Map<string, {index: number, type: number}>()
+    for (const input of inputs) {
+        const categoryType = input.isExpense ? tags.TagType.expense.value : tags.TagType.income.value
+        referenceRequests.set(`category:${categoryType}:${input.categoryTag}`, {index: input.categoryTag, type: categoryType})
+        const paymentIndex = input.isExpense ? input.paymentType : 0
+        referenceRequests.set(`payment:${tags.TagType.payment.value}:${paymentIndex}`, {index: paymentIndex, type: tags.TagType.payment.value})
+    }
+
+    const references = new Map<string, Awaited<ReturnType<typeof tags.getReferenceByIndexAndType>>>()
+    await Promise.all(Array.from(referenceRequests.entries()).map(async ([key, request]) => {
+        references.set(key, await tags.getReferenceByIndexAndType(request.index, request.type))
+    }))
+
+    const rows = inputs.map((input) => {
+        const categoryType = input.isExpense ? tags.TagType.expense.value : tags.TagType.income.value
+        const paymentIndex = input.isExpense ? input.paymentType : 0
+        const categoryRef = references.get(`category:${categoryType}:${input.categoryTag}`)
+        const paymentRef = references.get(`payment:${tags.TagType.payment.value}:${paymentIndex}`)
+        if (!categoryRef || !paymentRef) return null
+        return {
+            user_id,
+            occurred_at: input.date,
+            amount: input.amount,
+            is_expense: input.isExpense,
+            notes: encryptField(input.notes),
+            payment_type_tag_id: paymentRef.id,
+            category_tag_id: categoryRef.id,
+            user_category_id: input.userCategoryId,
+            balance_asset_key: input.balanceSource?.asset_key ?? null,
+            balance_detail_type: input.balanceSource?.detail_type ?? null,
+            balance_detail_id: input.balanceSource?.detail_id ?? null,
+        }
+    })
+    if (rows.some((row) => row === null)) return null
+    const validRows = rows.filter((row): row is NonNullable<typeof row> => row !== null)
+
+    const {data, error} = await supabase.from("expenses").insert(validRows).select(EXPENSE_SELECT)
+    if (error) console.error("expenses.insertBatch: failed to insert expenses", error)
+    if (error || !data) return null
+    return data.map((row) => toExpense(row))
+}
+
 /**
  * Gets all the expenses of a user
  * @param user_id uuid of the user
@@ -305,6 +365,7 @@ async function getExpenseRankingPool(user_ids: string[] | undefined, is_expense_
 
 export default {
     insertNew,
+    insertBatch,
     getAllByUserId,
     getMonthlyExpensesByUserId,
     getRecentMonthlyExpensesByUserId,

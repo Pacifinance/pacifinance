@@ -33,7 +33,9 @@ function isExpenseValid(data: any) {
     const NOTES_MAX_LENGTH = 64;
     const PAYMENT_NONE = 0; // database index of the 'none' payment type (hardcoded = bad, but it will never change...probably...)
     // Cast the amount to Number and the is_expense flag to Boolean for type integrity
-    data.amount = common.roundCurrency(Number(data.amount));
+    const rawAmount = Number(data.amount)
+    const amount_valid = Number.isFinite(rawAmount) && rawAmount > 0
+    data.amount = common.roundCurrency(rawAmount);
     data.is_expense = Boolean(data.is_expense);
     // If the date field is not set or invalid, set it to now
     const now = ExtDate.fromNow()
@@ -50,7 +52,6 @@ function isExpenseValid(data: any) {
      * 2. it's an income and all fields but payment_type are valid
      */
     const is_expense = data.is_expense;
-    const amount_valid = !isNaN(data.amount);
     const category_valid = (data.category_tag !== undefined);
     const payment_type_valid = (data.payment_type !== undefined && data.payment_type !== PAYMENT_NONE); // for expenses only
     return (
@@ -94,6 +95,44 @@ expensesRouter.post("/add", async (req, res) => {
     res.status(200);
     res.send();
 });
+
+const MAX_EXPENSE_IMPORT_BATCH = 500
+
+expensesRouter.post("/batch-add", async (req, res) => {
+    const expenses = req.body?.expenses
+    if (!Array.isArray(expenses) || expenses.length === 0 || expenses.length > MAX_EXPENSE_IMPORT_BATCH) {
+        res.status(400).send()
+        return
+    }
+
+    const inputs = []
+    for (const expense of expenses) {
+        if (!expense || typeof expense !== "object" || !isExpenseValid(expense)) {
+            res.status(400).send()
+            return
+        }
+        const rawUserCategoryId = expense.user_category_id
+        const userCategoryId = rawUserCategoryId !== null && rawUserCategoryId !== undefined
+            && Number.isFinite(Number(rawUserCategoryId)) ? Number(rawUserCategoryId) : null
+        inputs.push({
+            date: expense.date as Date,
+            amount: expense.amount as number,
+            isExpense: expense.is_expense as boolean,
+            notes: expense.notes as string,
+            paymentType: expense.payment_type as number,
+            categoryTag: expense.category_tag as number,
+            userCategoryId,
+            balanceSource: sanitizeBalanceSource(expense.balance_source),
+        })
+    }
+
+    const inserted = await db.expenses.insertBatch(req.userId as string, inputs)
+    if (inserted === null) {
+        res.status(500).send()
+        return
+    }
+    res.status(200).json({inserted: inserted.length})
+})
 
 expensesRouter.post("/get", async (req, res) => {
     const months = 13

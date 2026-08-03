@@ -54,6 +54,7 @@ export const useDemoServices = () => {
         ...services.financeService,
         addBalance: async () => FAKE_SUCCESS,
         addExpenseOrIncome: async () => FAKE_SUCCESS,
+        addExpensesAndIncomesBatch: async (data) => ({inserted: data?.expenses?.length ?? 0}),
         deleteExpenseOrIncome: async () => FAKE_SUCCESS,
       },
       userService: {

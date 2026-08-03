@@ -28,6 +28,7 @@ import {
   processRows,
   toAPIFormat,
   summarizeImport,
+  formatImportWeekday,
   saveMapping,
   loadSavedMappings,
   deleteSavedMapping,
@@ -39,6 +40,21 @@ import {
 // ═══════════════════════════════════════════════════════════════
 
 describe('Date Parsing', () => {
+  describe('formatImportWeekday', () => {
+    it('returns an empty value for a missing or malformed date', () => {
+      expect(formatImportWeekday('', 'it')).toBe('');
+      expect(formatImportWeekday('03/08/2026', 'it')).toBe('');
+    });
+
+    it('formats a Monday in the selected language', () => {
+      expect(formatImportWeekday('2026-08-03', 'it-IT')).toBe('lunedì');
+    });
+
+    it('formats a Sunday without timezone drift', () => {
+      expect(formatImportWeekday('2026-08-02', 'en-US')).toBe('Sunday');
+    });
+  });
+
   describe('DATE_FORMATS', () => {
     it('should export 7 date formats', () => {
       expect(DATE_FORMATS).toHaveLength(7);

@@ -129,6 +129,8 @@ export interface ExpenseDto {
 }
 
 export interface ExpenseAddRequest { expense: ExpenseDto; }
+export interface ExpenseBatchAddRequest { expenses: ExpenseDto[]; }
+export interface ExpenseBatchAddResponse { inserted: number; }
 
 /** Body of POST /expenses/monthly-totals. Omitted `months` -> full history. */
 export interface MonthlyTotalsRequest {

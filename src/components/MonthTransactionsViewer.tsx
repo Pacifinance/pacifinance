@@ -20,6 +20,7 @@ import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
 import { getAllOutflows, getAllIncomes } from '../utils/userDataSelectors';
 import { translateTag } from '../data/tagTranslations';
+import { formatImportWeekday } from '../utils/dataImport';
 import {
   Overlay, ModalContainer, ModalHeader, ModalTitle, CloseButton, ModalBody,
 } from './multiInsert/SharedStyles';
@@ -44,6 +45,8 @@ const SummaryRow = styled.div`
   gap: 0.75rem;
   font-size: 0.82rem;
   opacity: 0.75;
+  color: ${(p) => p.theme.textColor};
+  flex-wrap: wrap;
 `;
 
 const EntryRow = styled.div`
@@ -60,6 +63,7 @@ const EntryRow = styled.div`
 const EntryMain = styled.div`
   min-width: 0;
   flex: 1;
+  color: ${(p) => p.theme.textColor};
 
   .notes {
     font-weight: 600;
@@ -131,6 +135,17 @@ export default function MonthTransactionsViewer({ theme, userData, onClose, init
     return t.monthViewer?.uncategorized || 'Other';
   };
 
+  const dateContextFor = (entry) => {
+    const rawDate = String(entry.date || '');
+    const dateOnly = rawDate.slice(0, 10);
+    const weekday = formatImportWeekday(dateOnly, language);
+    const hasTime = rawDate.includes('T');
+    const time = hasTime
+      ? new Date(rawDate).toLocaleTimeString(language, { hour: '2-digit', minute: '2-digit' })
+      : '';
+    return [dateOnly, weekday, time].filter(Boolean).join(' · ');
+  };
+
   return (
     <Overlay theme={theme} onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
       <ModalContainer theme={theme} $maxWidth="560px">
@@ -143,7 +158,7 @@ export default function MonthTransactionsViewer({ theme, userData, onClose, init
             <CloseIcon fontSize="small" />
           </CloseButton>
         </ModalHeader>
-        <ModalBody>
+        <ModalBody theme={theme}>
           <MonthSelect theme={theme} value={monthIndex} onChange={(e) => setMonthIndex(Number(e.target.value))}>
             {monthOptions.map((opt) => (
               <option key={opt.index} value={opt.index}>{opt.label}</option>
@@ -163,7 +178,7 @@ export default function MonthTransactionsViewer({ theme, userData, onClose, init
               <EntryRow theme={theme} key={entry.id ?? i}>
                 <EntryMain>
                   <div className="notes">{entry.notes || t.monthViewer?.noNote || '—'}</div>
-                  <div className="meta">{entry.date ? String(entry.date).slice(0, 10) : ''} · {categoryLabelFor(entry)}</div>
+                  <div className="meta" style={{ textTransform: 'capitalize' }}>{dateContextFor(entry)} · {categoryLabelFor(entry)}</div>
                 </EntryMain>
                 <EntryAmount $isOutflow={entry.isOutflow}>
                   {entry.isOutflow ? '-' : '+'}{formatAmount(entry.amount || 0)}

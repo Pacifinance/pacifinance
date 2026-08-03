@@ -113,6 +113,19 @@ describe('financeService', () => {
     });
   });
 
+  describe('addExpensesAndIncomesBatch', () => {
+    it('sends all imported transactions in one request', async () => {
+      const payload = { expenses: [{ amount: 10 }, { amount: 20 }] };
+      mockClient.post.mockResolvedValue({ data: { inserted: 2 } });
+
+      const result = await service.addExpensesAndIncomesBatch(payload);
+
+      expect(mockClient.post).toHaveBeenCalledOnce();
+      expect(mockClient.post).toHaveBeenCalledWith('/api/expenses/batch-add', payload);
+      expect(result).toEqual({ inserted: 2 });
+    });
+  });
+
   describe('deleteExpenseOrIncome', () => {
     it('should call /expenses/delete with data and return full response', async () => {
       const deleteData = { id: 'tx1' };

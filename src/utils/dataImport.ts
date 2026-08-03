@@ -738,6 +738,14 @@ export const summarizeImport = (transactions) => {
   };
 };
 
+/** Localized weekday for an ISO date-only string, without UTC/local-midnight drift. */
+export const formatImportWeekday = (date, locale) => {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(String(date || ''))) return '';
+  const parsed = new Date(`${date}T12:00:00Z`);
+  if (Number.isNaN(parsed.getTime())) return '';
+  return new Intl.DateTimeFormat(locale || 'en', { weekday: 'long', timeZone: 'UTC' }).format(parsed);
+};
+
 // Accepted file extensions
 export const ACCEPTED_EXTENSIONS = '.csv,.tsv,.txt,.xlsx,.xls';
 

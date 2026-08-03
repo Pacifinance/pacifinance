@@ -183,6 +183,39 @@ describe("private backend routes", () => {
         )
     })
 
+    it("validates and inserts an expense import as one batch", async () => {
+        mockDb.expenses.insertBatch.mockResolvedValue([{id: 1}, {id: 2}])
+        const response = await request(app, "/api/expenses/batch-add", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {expenses: [
+                {date: "2026-08-01", amount: "12.345", is_expense: true, payment_type: 1, category_tag: 4, notes: "Lunch"},
+                {date: "2026-08-02", amount: "20", is_expense: false, payment_type: 3, category_tag: 0, notes: "Refund"},
+            ]}
+        })
+
+        expect(response.status).toBe(200)
+        expect(response.json).toEqual({inserted: 2})
+        expect(mockDb.expenses.insertBatch).toHaveBeenCalledTimes(1)
+        expect(mockDb.expenses.insertBatch).toHaveBeenCalledWith("user-uuid", [
+            expect.objectContaining({amount: 12.34, isExpense: true, paymentType: 1, categoryTag: 4}),
+            expect.objectContaining({amount: 20, isExpense: false, paymentType: 0, categoryTag: 0}),
+        ])
+    })
+
+    it("rejects empty, oversized, or partially invalid expense batches", async () => {
+        const callBatch = (expenses: unknown[]) => request(app, "/api/expenses/batch-add", {
+            method: "POST", headers: {cookie: authCookie}, body: {expenses}
+        })
+        await expect(callBatch([])).resolves.toMatchObject({status: 400})
+        await expect(callBatch(Array.from({length: 501}, () => ({})))).resolves.toMatchObject({status: 400})
+        await expect(callBatch([
+            {date: "2026-08-01", amount: 10, is_expense: true, payment_type: 1, category_tag: 4},
+            {date: "2026-08-01", amount: "invalid", is_expense: true, payment_type: 1, category_tag: 4},
+        ])).resolves.toMatchObject({status: 400})
+        expect(mockDb.expenses.insertBatch).not.toHaveBeenCalled()
+    })
+
     it("persists a valid balance source and drops an invalid one", async () => {
         const addExpense = (balance_source: any) => request(app, "/api/expenses/add", {
             method: "POST",

@@ -56,7 +56,7 @@ const createMockServices = (overrides = {}) => {
       getExpensesAndIncomes: vi.fn().mockResolvedValue([]),
       getCustomCategories: vi.fn().mockResolvedValue([]),
       getMonthlyTotals: vi.fn().mockResolvedValue([]),
-      addBalance: vi.fn(), addExpenseOrIncome: vi.fn(), deleteExpenseOrIncome: vi.fn(),
+      addBalance: vi.fn(), addExpenseOrIncome: vi.fn(), addExpensesAndIncomesBatch: vi.fn(), deleteExpenseOrIncome: vi.fn(),
       addCustomCategory: vi.fn(), deleteCustomCategory: vi.fn(),
       ...overrides.financeService,
     },

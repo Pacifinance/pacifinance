@@ -54,6 +54,7 @@ const mocks = vi.hoisted(() => {
         },
         expenses: {
             insertNew: vi.fn(),
+            insertBatch: vi.fn(),
             getMonthlyExpensesByUserId: vi.fn(),
             getRecentMonthlyExpensesByUserId: vi.fn(),
             getMonthlyTotalsByUserId: vi.fn(),
@@ -277,6 +278,7 @@ export function resetServerMocks() {
     mockDb.balances.getRankingPool.mockResolvedValue([])
 
     mockDb.expenses.insertNew.mockResolvedValue({id: 1})
+    mockDb.expenses.insertBatch.mockResolvedValue([])
     mockDb.expenses.getMonthlyExpensesByUserId.mockResolvedValue([])
     mockDb.expenses.getRecentMonthlyExpensesByUserId.mockResolvedValue([])
     mockDb.expenses.getMonthlyTotalsByUserId.mockResolvedValue([])

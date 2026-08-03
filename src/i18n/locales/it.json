@@ -2297,8 +2297,10 @@
         "bankDetected": "Rilevato: {bank} — colonne mappate automaticamente.",
         "bankNames": {
                 "revolut": "Revolut",
-                "n26": "N26"
+                "n26": "N26",
+                "traderepublic": "Trade Republic"
         },
+        "bankRowsSkipped": "{count} righe erano operazioni di investimento e sono state escluse — importale da \"Importa investimenti\".",
         "tagWithBankCategory": "Etichetta queste transazioni con una sottocategoria \"{bank}\"",
         "retroHint": "{count} transazioni passate con una nota simile sono classificate in una categoria diversa.",
         "retroHintSuggestion": "Puoi aggiornarle manualmente dallo storico.",

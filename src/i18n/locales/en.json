@@ -2297,8 +2297,10 @@
         "bankDetected": "Detected: {bank} — columns mapped automatically.",
         "bankNames": {
                 "revolut": "Revolut",
-                "n26": "N26"
+                "n26": "N26",
+                "traderepublic": "Trade Republic"
         },
+        "bankRowsSkipped": "{count} rows were investment trades and were skipped — import those from \"Import Investments\" instead.",
         "tagWithBankCategory": "Tag these transactions with a \"{bank}\" sub-category",
         "retroHint": "{count} past transactions with a similar note are filed under a different category.",
         "retroHintSuggestion": "You can update them manually from the transaction history.",

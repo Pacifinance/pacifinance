@@ -2263,8 +2263,10 @@
         "bankDetected": "Erkannt: {bank} — Spalten automatisch zugeordnet.",
         "bankNames": {
                 "revolut": "Revolut",
-                "n26": "N26"
+                "n26": "N26",
+                "traderepublic": "Trade Republic"
         },
+        "bankRowsSkipped": "{count} Zeilen waren Investmentgeschäfte und wurden übersprungen — importiere sie stattdessen über „Investitionen importieren“.",
         "tagWithBankCategory": "Diese Transaktionen mit einer \"{bank}\"-Unterkategorie kennzeichnen",
         "retroHint": "{count} vergangene Transaktionen mit ähnlicher Notiz sind einer anderen Kategorie zugeordnet.",
         "retroHintSuggestion": "Sie können diese manuell im Verlauf aktualisieren.",

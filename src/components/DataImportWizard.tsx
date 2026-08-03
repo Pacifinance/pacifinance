@@ -36,6 +36,7 @@ import UndoIcon from '@mui/icons-material/Undo';
 import {
   parseFile,
   autoDetectColumns,
+  detectDualAmountColumns,
   detectDateFormat,
   DATE_FORMATS,
   processRows,
@@ -474,6 +475,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
   const [outflowCol, setOutflowCol] = useState(-1);
   const [categoryCol, setCategoryCol] = useState(-1);
   const [notesCol, setNotesCol] = useState(-1);
+  const [mccCol, setMccCol] = useState(-1);
   const [dateFormat, setDateFormat] = useState('');
   const [transactionType, setTransactionType] = useState('auto');
   const [defaultOutflowCategory, setDefaultOutflowCategory] = useState(9999);
@@ -509,6 +511,10 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
   // and whether the user wants imported rows tagged with a bank-named sub-category.
   const [detectedBank, setDetectedBank] = useState(null);
   const [tagWithBankCategory, setTagWithBankCategory] = useState(true);
+  // Rows a bank preset excluded as not belonging in this wizard (e.g. Trade
+  // Republic's investment trades — see bankFormats.ts filterRow) — reported
+  // to the user rather than silently dropped.
+  const [bankFilteredCount, setBankFilteredCount] = useState(0);
   // Informational nudge shown after the user manually recategorizes a row, when
   // past transactions with a similar note are filed under a different category.
   const [retroHint, setRetroHint] = useState(null);
@@ -594,32 +600,52 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
       const hIdx = 0;
       setHeaderRowIndex(hIdx);
       const h = rawRows[hIdx] || [];
-      const r = rawRows.slice(hIdx + 1);
+      let r = rawRows.slice(hIdx + 1);
       setHeaders(h);
-      setRows(r);
 
       // Known bank export? Use its verified column mapping directly instead of
       // guessing (see utils/dataImport/bankFormats.ts) — skips manual mapping entirely.
       const bankFormat = detectBankFormat(h);
       setDetectedBank(bankFormat?.bank ?? null);
       setTagWithBankCategory(true);
+      setDualAmountMode(false);
+      setMccCol(-1);
 
       let dateColForFormat;
       if (bankFormat) {
+        if (bankFormat.filterRow) {
+          const before = r.length;
+          r = r.filter(bankFormat.filterRow);
+          setBankFilteredCount(before - r.length);
+        } else {
+          setBankFilteredCount(0);
+        }
         setDateCol(bankFormat.mapping.dateCol);
         setAmountCol(bankFormat.mapping.amountCol);
         setCategoryCol(bankFormat.mapping.categoryCol ?? -1);
         setNotesCol(bankFormat.mapping.notesCol ?? -1);
+        setMccCol(bankFormat.mapping.mccCol ?? -1);
         dateColForFormat = bankFormat.mapping.dateCol;
       } else {
+        setBankFilteredCount(0);
         // Auto-detect columns
         const detected = autoDetectColumns(h, r);
         if (detected.dateCol !== null) setDateCol(detected.dateCol);
         if (detected.amountCol !== null) setAmountCol(detected.amountCol);
         if (detected.categoryCol !== null) setCategoryCol(detected.categoryCol);
         if (detected.notesCol !== null) setNotesCol(detected.notesCol);
+        if (detected.mccCol !== null) setMccCol(detected.mccCol);
         dateColForFormat = detected.dateCol;
+
+        // Separate income/outflow columns instead of one signed amount column?
+        const dual = detectDualAmountColumns(h, r);
+        if (dual) {
+          setDualAmountMode(true);
+          setIncomeCol(dual.incomeCol);
+          setOutflowCol(dual.outflowCol);
+        }
       }
+      setRows(r);
 
       // Auto-detect date format
       if (dateColForFormat !== null && dateColForFormat !== undefined) {
@@ -653,28 +679,47 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
     const idx = Math.max(0, Math.min(newIdx, allRawRows.length - 2));
     setHeaderRowIndex(idx);
     const h = allRawRows[idx] || [];
-    const r = allRawRows.slice(idx + 1);
+    let r = allRawRows.slice(idx + 1);
     setHeaders(h);
-    setRows(r);
 
     // Re-run detection: known bank format first, generic heuristic otherwise
     const bankFormat = detectBankFormat(h);
     setDetectedBank(bankFormat?.bank ?? null);
+    setDualAmountMode(false);
+    setMccCol(-1);
     let dateColForFormat;
     if (bankFormat) {
+      if (bankFormat.filterRow) {
+        const before = r.length;
+        r = r.filter(bankFormat.filterRow);
+        setBankFilteredCount(before - r.length);
+      } else {
+        setBankFilteredCount(0);
+      }
       setDateCol(bankFormat.mapping.dateCol);
       setAmountCol(bankFormat.mapping.amountCol);
       setCategoryCol(bankFormat.mapping.categoryCol ?? -1);
       setNotesCol(bankFormat.mapping.notesCol ?? -1);
+      setMccCol(bankFormat.mapping.mccCol ?? -1);
       dateColForFormat = bankFormat.mapping.dateCol;
     } else {
+      setBankFilteredCount(0);
       const detected = autoDetectColumns(h, r);
       setDateCol(detected.dateCol !== null ? detected.dateCol : -1);
       setAmountCol(detected.amountCol !== null ? detected.amountCol : -1);
       setCategoryCol(detected.categoryCol !== null ? detected.categoryCol : -1);
       setNotesCol(detected.notesCol !== null ? detected.notesCol : -1);
+      setMccCol(detected.mccCol !== null ? detected.mccCol : -1);
       dateColForFormat = detected.dateCol;
+
+      const dual = detectDualAmountColumns(h, r);
+      if (dual) {
+        setDualAmountMode(true);
+        setIncomeCol(dual.incomeCol);
+        setOutflowCol(dual.outflowCol);
+      }
     }
+    setRows(r);
 
     if (dateColForFormat !== null && dateColForFormat !== undefined) {
       const samples = r.slice(0, 10).map(row => row[dateColForFormat]);
@@ -738,6 +783,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
       outflowCol: dualAmountMode ? outflowCol : -1,
       categoryCol: categoryCol === -1 ? null : categoryCol,
       notesCol: notesCol === -1 ? null : notesCol,
+      mccCol: mccCol === -1 ? null : mccCol,
       dateFormat, transactionType, defaultCategoryIndex: defaultOutflowCategory,
     };
     const { valid: rawValid, errors } = processRows(rows, mapping);
@@ -777,6 +823,14 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
     findLikelyTransfers(validOutflows, validIncomes).forEach(({ outflow, income }) => {
       flags[outflow.rowIndex] = 'transfer';
       flags[income.rowIndex] = 'transfer';
+    });
+    // Rows whose own source type/category column says "transfer" (e.g. Trade
+    // Republic's TRANSFER_INSTANT_INBOUND) — flagged directly, without
+    // needing a matching opposite-flow row in the same file (e.g. a
+    // recurring top-up from another account of the user's, where the
+    // outgoing leg isn't part of this import at all).
+    valid.forEach(tx => {
+      if (tx.isLikelyTransfer && !flags[tx.rowIndex]) flags[tx.rowIndex] = 'transfer';
     });
     setFlaggedRows(flags);
 
@@ -1125,6 +1179,15 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                     .replace('{bank}', t.bankNames?.[detectedBank] || detectedBank)}
                 </label>
               </BankDetectedBanner>
+            )}
+
+            {bankFilteredCount > 0 && (
+              <InfoBanner theme={theme}>
+                <span>
+                  ℹ️ {(t.bankRowsSkipped || '{count} rows were investment trades and were skipped — import those from Import Investments instead.')
+                    .replace('{count}', bankFilteredCount)}
+                </span>
+              </InfoBanner>
             )}
 
             {/* Header Row Selector */}
@@ -1618,8 +1681,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                     </th>
                     <th>{t.date || 'Date'}</th>
                     <th>{t.amount || 'Amount'}</th>
-                    <th>{t.type || 'Type'}</th>
-                    <th>{t.category || 'Category'}</th>
+                    <th>{t.type || 'Type'} / {t.category || 'Category'}</th>
                     <th>{t.notes || 'Notes'}</th>
                   </tr>
                 </thead>
@@ -1640,21 +1702,21 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                           {tx.isOutflow ? '-' : '+'}{currencySymbol}{tx.amount.toFixed(2)}
                         </td>
                         <td>
-                          <Badge $variant={tx.isOutflow ? 'error' : 'success'}>
-                            {tx.isOutflow ? (t.outflow || 'Outflow') : (t.income || 'Income')}
-                          </Badge>
-                          {flaggedRows[tx.rowIndex] === 'duplicate' && (
-                            <Badge $variant="warning" title={t.duplicateHint || 'Looks like it might already be recorded — deselected by default.'}>
-                              {t.duplicateBadge || 'Possible duplicate'}
+                          <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '0.3rem', marginBottom: '0.3rem' }}>
+                            <Badge $variant={tx.isOutflow ? 'error' : 'success'}>
+                              {tx.isOutflow ? (t.outflow || 'Outflow') : (t.income || 'Income')}
                             </Badge>
-                          )}
-                          {flaggedRows[tx.rowIndex] === 'transfer' && (
-                            <Badge $variant="warning" title={t.transferHint || 'Matches an opposite-flow entry with the same amount — might be a transfer between your own accounts, not real income/spending.'}>
-                              {t.transferBadge || 'Possible transfer'}
-                            </Badge>
-                          )}
-                        </td>
-                        <td>
+                            {flaggedRows[tx.rowIndex] === 'duplicate' && (
+                              <Badge $variant="warning" title={t.duplicateHint || 'Looks like it might already be recorded — deselected by default.'}>
+                                {t.duplicateBadge || 'Possible duplicate'}
+                              </Badge>
+                            )}
+                            {flaggedRows[tx.rowIndex] === 'transfer' && (
+                              <Badge $variant="warning" title={t.transferHint || 'Matches an opposite-flow entry with the same amount — might be a transfer between your own accounts, not real income/spending.'}>
+                                {t.transferBadge || 'Possible transfer'}
+                              </Badge>
+                            )}
+                          </div>
                           <CompactSelect
                             theme={theme}
                             value={effectiveCat.index}
@@ -1692,6 +1754,18 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                 </tbody>
               </table>
             </PreviewTable>
+            {isMobile && filteredTx.length > 0 && (
+              <p style={{
+                color: theme.textColor,
+                opacity: 0.45,
+                fontSize: '0.75rem',
+                textAlign: 'right',
+                marginTop: '0.35rem',
+                fontStyle: 'italic'
+              }}>
+                {t.scrollHint || 'Scroll horizontally to see all columns →'}
+              </p>
+            )}
 
             {/* Show more / less toggle */}
             {filteredTx.length > PREVIEW_LIMIT && (

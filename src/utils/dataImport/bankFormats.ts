@@ -13,7 +13,7 @@
  * import fine through the generic manual-mapping flow.
  */
 
-export type BankFormatId = 'revolut' | 'n26';
+export type BankFormatId = 'revolut' | 'n26' | 'traderepublic';
 
 export interface BankColumnMapping {
   dateCol: number;
@@ -21,11 +21,23 @@ export interface BankColumnMapping {
   notesCol: number | null;
   /** Column whose value, once fuzzy-matched, hints at a category (see categoryMatcher.ts). */
   categoryCol: number | null;
+  /** Column holding a Merchant Category Code, if any (see categoryMatcher.ts matchCategoryByMCC). */
+  mccCol?: number | null;
 }
 
 export interface DetectedBankFormat {
   bank: BankFormatId;
   mapping: BankColumnMapping;
+  /**
+   * Some exports mix rows that don't belong in this wizard at all — e.g.
+   * Trade Republic's unified export includes investment trades alongside
+   * cash movements, and trades belong in the Investment Import Wizard, not
+   * here. Return true to KEEP a row; rows this excludes are counted and
+   * reported to the user (see filterReasonKey) rather than silently dropped.
+   */
+  filterRow?: (row: string[]) => boolean;
+  /** i18n key (under dataImport.*) describing what filterRow excludes. */
+  filterReasonKey?: string;
 }
 
 const findColumn = (header: string[], ...names: string[]): number => {
@@ -71,6 +83,39 @@ export function detectBankFormat(header: string[]): DetectedBankFormat | null {
         notesCol: findColumn(header, 'Payee'),
         categoryCol: findColumn(header, 'Category'),
       },
+    };
+  }
+
+  // Trade Republic — verified header (unified cash + investment export):
+  // "datetime,date,account_type,category,type,asset_class,name,symbol,shares,
+  //  price,amount,fee,tax,currency,original_amount,original_currency,fx_rate,
+  //  description,transaction_id,counterparty_name,counterparty_iban,
+  //  payment_reference,mcc_code"
+  // Note: prefers "date" over "datetime" (both present) — see autoDetectColumns
+  // for the same exact-name-first rule applied to unrecognized files.
+  if (hasAll(header, 'account_type', 'type', 'amount') && findColumn(header, 'date') !== -1) {
+    const accountTypeIdx = findColumn(header, 'account_type');
+    const typeIdx = findColumn(header, 'type');
+    return {
+      bank: 'traderepublic',
+      mapping: {
+        dateCol: findColumn(header, 'date'),
+        amountCol: findColumn(header, 'amount'),
+        notesCol: findColumn(header, 'name', 'description'),
+        categoryCol: typeIdx,
+        mccCol: findColumn(header, 'mcc_code', 'mcc') !== -1 ? findColumn(header, 'mcc_code', 'mcc') : null,
+      },
+      // Trade Republic's export mixes cash-account movements with investment
+      // trades (account_type "TRADING", type "BUY"/"SELL") — those belong in
+      // the Investment Import Wizard, not here.
+      filterRow: (row) => {
+        const accountType = (row[accountTypeIdx] || '').trim().toUpperCase();
+        const type = (row[typeIdx] || '').trim().toUpperCase();
+        if (accountType === 'TRADING') return false;
+        if (type === 'BUY' || type === 'SELL') return false;
+        return true;
+      },
+      filterReasonKey: 'traderepublicInvestmentRowsSkipped',
     };
   }
 

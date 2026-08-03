@@ -8,7 +8,7 @@
  */
 
 import Papa from 'papaparse';
-import { matchCategory } from './categoryMatcher';
+import { matchCategory, matchCategoryByMCC } from './categoryMatcher';
 
 // ═══════════════════════════════════════════
 // File Parsing
@@ -131,16 +131,29 @@ const DATE_FORMATS = [
 export { DATE_FORMATS };
 
 /**
+ * Some exports (e.g. Trade Republic's "datetime" column) carry a full ISO
+ * timestamp like "2026-07-16T14:40:18.467Z" in a column that otherwise reads
+ * as a plain date. Strip the time component so the existing YYYY-MM-DD
+ * format still matches, instead of requiring a dedicated format entry.
+ * @param {string} s
+ * @returns {string}
+ */
+const stripTimeComponent = (s) => {
+  const isoMatch = s.match(/^(\d{4}-\d{1,2}-\d{1,2})T/);
+  return isoMatch ? isoMatch[1] : s;
+};
+
+/**
  * Try to auto-detect date format from sample values
  * @param {string[]} samples - Array of date strings
  * @returns {string|null} The detected format label or null
  */
 export const detectDateFormat = (samples) => {
-  const validSamples = samples.filter(s => s && s.trim());
+  const validSamples = samples.filter(s => s && s.trim()).map(s => stripTimeComponent(s.trim()));
   if (validSamples.length === 0) return null;
 
   for (const fmt of DATE_FORMATS) {
-    const matchCount = validSamples.filter(s => fmt.regex.test(s.trim())).length;
+    const matchCount = validSamples.filter(s => fmt.regex.test(s)).length;
     if (matchCount >= validSamples.length * 0.8) {
       return fmt.label;
     }
@@ -158,7 +171,7 @@ export const parseDate = (dateStr, formatLabel) => {
   if (!dateStr) return null;
   const fmt = DATE_FORMATS.find(f => f.label === formatLabel);
   if (!fmt) return null;
-  const match = dateStr.trim().match(fmt.regex);
+  const match = stripTimeComponent(dateStr.trim()).match(fmt.regex);
   if (!match) return null;
   const d = fmt.parse(match);
   return isNaN(d.getTime()) ? null : d;
@@ -247,21 +260,34 @@ export { matchCategory };
 // Auto-Detection Helpers
 // ═══════════════════════════════════════════
 
+// A file can have both a full "datetime" column and a plain "date" column
+// (e.g. Trade Republic's export) — an exact-name match must win over a
+// looser substring match like "datetime", which also contains "date".
+const EXACT_DATE_NAMES = ['date', 'data', 'fecha', 'datum'];
+
 /**
  * Try to auto-detect which column holds dates, amounts, categories
  * @param {string[]} headers
  * @param {string[][]} rows - First N rows for sampling
- * @returns {{ dateCol: number|null, amountCol: number|null, categoryCol: number|null, notesCol: number|null }}
+ * @returns {{ dateCol: number|null, amountCol: number|null, categoryCol: number|null, notesCol: number|null, mccCol: number|null }}
  */
 export const autoDetectColumns = (headers, rows) => {
   const sampleRows = rows.slice(0, 10);
-  const result = { dateCol: null, amountCol: null, categoryCol: null, notesCol: null };
+  const result = { dateCol: null, amountCol: null, categoryCol: null, notesCol: null, mccCol: null };
+
+  // Pass 1: exact header-name match for the date column takes priority over
+  // any substring match found in the pass below.
+  headers.forEach((header, colIdx) => {
+    if (result.dateCol === null && EXACT_DATE_NAMES.includes(header.trim().toLowerCase())) {
+      result.dateCol = colIdx;
+    }
+  });
 
   headers.forEach((header, colIdx) => {
     const h = header.toLowerCase();
     const samples = sampleRows.map(r => r[colIdx]).filter(Boolean);
 
-    // Date detection
+    // Date detection (fallback: substring match, then content sniffing)
     if (result.dateCol === null) {
       if (/data|date|fecha|datum/i.test(h)) {
         result.dateCol = colIdx;
@@ -295,9 +321,52 @@ export const autoDetectColumns = (headers, rows) => {
         result.notesCol = colIdx;
       }
     }
+
+    // Merchant Category Code detection (see matchCategoryByMCC) — a bonus
+    // signal, not required, so no fallback beyond the header-name match.
+    if (result.mccCol === null) {
+      if (/mcc/i.test(h)) {
+        result.mccCol = colIdx;
+      }
+    }
   });
 
   return result;
+};
+
+// Header-name hints for a file that splits amounts into two columns instead
+// of one signed column (common in bank-statement-style exports: "Entrate"/
+// "Uscite", "Dare"/"Avere", "Credit"/"Debit"...).
+const INCOME_COL_HINTS = /entrat[ae]|accredit|credit|deposit|income|avere/i;
+const OUTFLOW_COL_HINTS = /uscit[ae]|addebit|debit|withdrawal|expense|\bdare\b/i;
+
+/**
+ * Try to auto-detect a pair of separate income/outflow amount columns.
+ * Returns null unless BOTH a plausible income and a plausible outflow
+ * column are found (a single hint alone is too weak a signal — the caller
+ * should fall back to single-amount-column detection in that case).
+ * @param {string[]} headers
+ * @param {string[][]} rows
+ * @returns {{ incomeCol: number, outflowCol: number } | null}
+ */
+export const detectDualAmountColumns = (headers, rows) => {
+  const sampleRows = rows.slice(0, 10);
+  let incomeCol = null;
+  let outflowCol = null;
+
+  headers.forEach((header, colIdx) => {
+    const h = header.toLowerCase();
+    const samples = sampleRows.map(r => r[colIdx]).filter(Boolean);
+    const numericRate = samples.length > 0
+      ? samples.filter(s => parseAmount(s) !== null).length / samples.length
+      : 0;
+    if (numericRate < 0.5) return;
+
+    if (incomeCol === null && INCOME_COL_HINTS.test(h)) incomeCol = colIdx;
+    if (outflowCol === null && OUTFLOW_COL_HINTS.test(h)) outflowCol = colIdx;
+  });
+
+  return incomeCol !== null && outflowCol !== null ? { incomeCol, outflowCol } : null;
 };
 
 // ═══════════════════════════════════════════
@@ -313,6 +382,7 @@ export const autoDetectColumns = (headers, rows) => {
  * @property {number} [outflowCol] - Column index for outflow amounts (dual mode)
  * @property {number|null} categoryCol - Column index for category (optional)
  * @property {number|null} notesCol - Column index for notes (optional)
+ * @property {number|null} [mccCol] - Column index for Merchant Category Code (optional)
  * @property {string} dateFormat - Date format label
  * @property {'auto'|'outflow'|'income'} transactionType - How to determine type
  * @property {number} defaultCategoryIndex - Fallback category index
@@ -328,6 +398,8 @@ export const autoDetectColumns = (headers, rows) => {
  * @property {string} notes - Notes/description
  * @property {number} rowIndex - Original row index for error tracking
  * @property {string|null} error - Error message if row is invalid
+ * @property {boolean} [isLikelyTransfer] - True when the source category/type column
+ *   value denotes a transfer to/from another account (see isTransferType)
  */
 
 /**
@@ -367,10 +439,28 @@ export const processRows = (rows, mapping) => {
 };
 
 /**
+ * Recognizes known bank-transaction-type enum values (or the Italian word
+ * "bonifico") that denote a transfer to/from another account rather than a
+ * card purchase or an interest/fee line — e.g. Trade Republic's
+ * TRANSFER_INSTANT_INBOUND/OUTBOUND, TRANSFER_DIRECT_DEBIT_INBOUND. Used to
+ * flag likely inter-account transfers directly, without needing an exact
+ * matching row (same amount/date) elsewhere in the same file.
+ * @param {string} rawValue
+ * @returns {boolean}
+ */
+const isTransferType = (rawValue) => {
+  if (!rawValue) return false;
+  const v = rawValue.trim().toLowerCase();
+  return /^transfer_/.test(v) || v === 'transfer' || v.includes('bonifico');
+};
+
+export { isTransferType };
+
+/**
  * Process a single row
  */
 const processRow = (row, mapping, rowIndex) => {
-  const { dateCol, amountCol, categoryCol, notesCol, dateFormat, transactionType, defaultCategoryIndex } = mapping;
+  const { dateCol, amountCol, categoryCol, notesCol, mccCol, dateFormat, transactionType, defaultCategoryIndex } = mapping;
 
   // Parse date
   const dateStr = row[dateCol];
@@ -406,22 +496,37 @@ const processRow = (row, mapping, rowIndex) => {
   // Match category
   let categoryIndex = defaultCategoryIndex;
   let categoryLabel = 'Other';
+  let isLikelyTransfer = false;
   if (categoryCol !== null && row[categoryCol]) {
-    const matched = matchCategory(row[categoryCol]);
+    const rawCategory = row[categoryCol];
+    if (isTransferType(rawCategory)) isLikelyTransfer = true;
+    const matched = matchCategory(rawCategory);
     if (matched) {
       categoryIndex = matched.index;
       categoryLabel = matched.label;
       // Override isOutflow if category is clearly income
       if (matched.isIncome) isOutflow = false;
     } else {
-      categoryLabel = row[categoryCol];
+      categoryLabel = rawCategory;
+    }
+  }
+
+  // Merchant Category Code fallback (card outflows only) — a bank-agnostic
+  // signal that works even with no prior categorized history to learn from.
+  // Only applied when the category column above didn't already resolve to
+  // something more specific.
+  if (isOutflow && categoryIndex === defaultCategoryIndex && mccCol !== null && mccCol !== undefined && row[mccCol]) {
+    const mccMatch = matchCategoryByMCC(row[mccCol]);
+    if (mccMatch) {
+      categoryIndex = mccMatch.index;
+      categoryLabel = mccMatch.label;
     }
   }
 
   // Notes
   const notes = notesCol !== null ? (row[notesCol] || '') : '';
 
-  return { rowIndex, error: null, date, amount, isOutflow, categoryIndex, categoryLabel, notes };
+  return { rowIndex, error: null, date, amount, isOutflow, categoryIndex, categoryLabel, notes, isLikelyTransfer };
 };
 
 /**
@@ -429,7 +534,7 @@ const processRow = (row, mapping, rowIndex) => {
  * Returns an array of 0-2 transactions per row.
  */
 const processRowDual = (row, mapping, rowIndex) => {
-  const { dateCol, incomeCol, outflowCol, categoryCol, notesCol, dateFormat, defaultCategoryIndex } = mapping;
+  const { dateCol, incomeCol, outflowCol, categoryCol, notesCol, mccCol, dateFormat, defaultCategoryIndex } = mapping;
 
   // Parse date
   const dateStr = row[dateCol];
@@ -442,13 +547,16 @@ const processRowDual = (row, mapping, rowIndex) => {
   // Match category (shared for both)
   let categoryIndex = defaultCategoryIndex;
   let categoryLabel = 'Other';
+  let isLikelyTransfer = false;
   if (categoryCol !== null && row[categoryCol]) {
-    const matched = matchCategory(row[categoryCol]);
+    const rawCategory = row[categoryCol];
+    if (isTransferType(rawCategory)) isLikelyTransfer = true;
+    const matched = matchCategory(rawCategory);
     if (matched) {
       categoryIndex = matched.index;
       categoryLabel = matched.label;
     } else {
-      categoryLabel = row[categoryCol];
+      categoryLabel = rawCategory;
     }
   }
 
@@ -460,7 +568,13 @@ const processRowDual = (row, mapping, rowIndex) => {
     const outStr = row[outflowCol];
     const outAmt = parseAmount(outStr);
     if (outAmt !== null && outAmt !== 0) {
-      results.push({ rowIndex, error: null, date, amount: Math.abs(outAmt), isOutflow: true, categoryIndex, categoryLabel, notes });
+      let outCategoryIndex = categoryIndex;
+      let outCategoryLabel = categoryLabel;
+      if (outCategoryIndex === defaultCategoryIndex && mccCol !== null && mccCol !== undefined && row[mccCol]) {
+        const mccMatch = matchCategoryByMCC(row[mccCol]);
+        if (mccMatch) { outCategoryIndex = mccMatch.index; outCategoryLabel = mccMatch.label; }
+      }
+      results.push({ rowIndex, error: null, date, amount: Math.abs(outAmt), isOutflow: true, categoryIndex: outCategoryIndex, categoryLabel: outCategoryLabel, notes, isLikelyTransfer });
     }
   }
 
@@ -469,7 +583,7 @@ const processRowDual = (row, mapping, rowIndex) => {
     const incStr = row[incomeCol];
     const incAmt = parseAmount(incStr);
     if (incAmt !== null && incAmt !== 0) {
-      results.push({ rowIndex: rowIndex, error: null, date, amount: Math.abs(incAmt), isOutflow: false, categoryIndex, categoryLabel, notes });
+      results.push({ rowIndex: rowIndex, error: null, date, amount: Math.abs(incAmt), isOutflow: false, categoryIndex, categoryLabel, notes, isLikelyTransfer });
     }
   }
 

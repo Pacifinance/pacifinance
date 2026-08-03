@@ -29,4 +29,33 @@ describe('detectBankFormat', () => {
     const header = [' type ', 'product', 'started date', 'COMPLETED DATE', 'description', 'AMOUNT', 'fee', 'currency', 'state', 'balance'];
     expect(detectBankFormat(header)?.bank).toBe('revolut');
   });
+
+  describe('Trade Republic', () => {
+    const header = [
+      'datetime', 'date', 'account_type', 'category', 'type', 'asset_class', 'name', 'symbol',
+      'shares', 'price', 'amount', 'fee', 'tax', 'currency', 'original_amount', 'original_currency',
+      'fx_rate', 'description', 'transaction_id', 'counterparty_name', 'counterparty_iban',
+      'payment_reference', 'mcc_code',
+    ];
+
+    it('detects it and prefers the plain "date" column over "datetime"', () => {
+      const result = detectBankFormat(header);
+      expect(result.bank).toBe('traderepublic');
+      expect(result.mapping.dateCol).toBe(1); // "date", not "datetime" (index 0)
+      expect(result.mapping.amountCol).toBe(10);
+      expect(result.mapping.categoryCol).toBe(4); // "type"
+      expect(result.mapping.notesCol).toBe(6); // "name"
+      expect(result.mapping.mccCol).toBe(22); // "mcc_code"
+    });
+
+    it('filters out investment-trade rows (account_type TRADING / type BUY or SELL), keeps cash rows', () => {
+      const { filterRow } = detectBankFormat(header);
+      const cashRow = header.map(() => '');
+      cashRow[2] = 'DEFAULT'; cashRow[4] = 'CARD_TRANSACTION';
+      const tradeRow = header.map(() => '');
+      tradeRow[2] = 'TRADING'; tradeRow[4] = 'BUY';
+      expect(filterRow(cashRow)).toBe(true);
+      expect(filterRow(tradeRow)).toBe(false);
+    });
+  });
 });

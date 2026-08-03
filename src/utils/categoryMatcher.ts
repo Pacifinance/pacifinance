@@ -63,6 +63,71 @@ const CATEGORY_ALIASES = {
 };
 
 /**
+ * Merchant Category Code (ISO 18245) → Pacifinance category index.
+ *
+ * MCCs are assigned by the card networks (Visa/Mastercard/Amex) to every
+ * merchant, so most bank/broker CSV exports for card transactions carry one
+ * — a bank-agnostic categorization signal that works even for a brand-new
+ * user with no prior transaction history to learn from (unlike
+ * categoryPatterns.ts, which needs existing data to suggest anything). Not
+ * exhaustive — covers the codes actually seen day-to-day in consumer
+ * spending; anything unlisted falls back to the default category, same as
+ * an unmatched free-text category string.
+ */
+const MCC_CATEGORY = {
+  // Food (4)
+  '5411': 4, '5422': 4, '5441': 4, '5451': 4, '5462': 4, '5499': 4,
+  '5811': 4, '5812': 4, '5813': 4, '5814': 4,
+  // House / utilities (5)
+  '4900': 5, '6513': 5,
+  // Free time (6)
+  '7829': 6, '7832': 6, '7841': 6, '7922': 6, '7929': 6, '7991': 6,
+  '7996': 6, '7997': 6, '7998': 6, '7999': 6, '5941': 6, '5945': 6,
+  // Travelling (7)
+  '4511': 7, '4411': 7, '4722': 7, '7011': 7, '7512': 7,
+  // Investment (8)
+  '6211': 8,
+  // Health (9)
+  '5912': 9, '8011': 9, '8021': 9, '8031': 9, '8041': 9, '8042': 9,
+  '8049': 9, '8050': 9, '8062': 9, '8071': 9, '8099': 9,
+  // Tax (10)
+  '9311': 10,
+  // Vehicle (11)
+  '5511': 11, '5531': 11, '5532': 11, '5533': 11, '5541': 11, '5542': 11,
+  '7531': 11, '7534': 11, '7535': 11, '7538': 11, '7542': 11, '7549': 11,
+  // Transports (12)
+  '4111': 12, '4112': 12, '4121': 12, '4131': 12, '4784': 12,
+  // Pets (13)
+  '0742': 13, '5995': 13,
+  // Education (15)
+  '8211': 15, '8220': 15, '8241': 15, '8244': 15, '8249': 15, '8299': 15,
+  '5192': 15, '5942': 15, '5943': 15,
+  // Shopping (3)
+  '5311': 3, '5399': 3, '5611': 3, '5621': 3, '5631': 3, '5641': 3,
+  '5651': 3, '5661': 3, '5691': 3, '5732': 3, '5734': 3, '5944': 3,
+  '5977': 3, '5999': 3, '7230': 3, '7298': 3,
+  // Digital service (1)
+  '4812': 1, '4814': 1, '4816': 1, '4899': 1, '5815': 1, '5816': 1,
+  '5817': 1, '5818': 1, '7372': 1,
+  // Gift (2)
+  '4829': 2, '5947': 2, '5992': 2,
+};
+
+/**
+ * Match a Merchant Category Code to a Pacifinance outflow category.
+ * @param {string} mcc
+ * @returns {{ index: number, label: string } | null}
+ */
+export const matchCategoryByMCC = (mcc) => {
+  if (!mcc) return null;
+  const code = String(mcc).trim().padStart(4, '0');
+  const index = MCC_CATEGORY[code];
+  if (index === undefined) return null;
+  const cat = OUTFLOW_CATEGORIES.find(c => c.index === index);
+  return cat ? { index: cat.index, label: cat.label } : null;
+};
+
+/**
  * Fuzzy match a user's category string to a Pacifinance category index
  * @param {string} userCategory
  * @returns {{ index: number, label: string, isIncome: boolean } | null}

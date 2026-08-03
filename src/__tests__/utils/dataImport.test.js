@@ -22,6 +22,8 @@ import {
   DATE_FORMATS,
   matchCategory,
   autoDetectColumns,
+  detectDualAmountColumns,
+  isTransferType,
   processRows,
   toAPIFormat,
   summarizeImport,
@@ -93,6 +95,14 @@ describe('Date Parsing', () => {
       expect(d.getDate()).toBe(25);
       expect(d.getMonth()).toBe(11);
       expect(d.getFullYear()).toBe(2024);
+    });
+
+    it('should parse a full ISO timestamp against YYYY-MM-DD by stripping the time component', () => {
+      const d = parseDate('2026-07-16T14:40:18.467Z', 'YYYY-MM-DD');
+      expect(d).toBeInstanceOf(Date);
+      expect(d.getDate()).toBe(16);
+      expect(d.getMonth()).toBe(6);
+      expect(d.getFullYear()).toBe(2026);
     });
 
     // DD-MM-YYYY
@@ -190,6 +200,11 @@ describe('Date Parsing', () => {
     it('should return null for non-date samples', () => {
       const samples = ['hello', 'world', 'foo', 'bar'];
       expect(detectDateFormat(samples)).toBeNull();
+    });
+
+    it('should detect YYYY-MM-DD from full ISO timestamps (time component stripped)', () => {
+      const samples = ['2026-07-16T14:40:18.467Z', '2026-07-01T02:42:45.124881Z', '2026-07-23T13:56:30.608Z'];
+      expect(detectDateFormat(samples)).toBe('YYYY-MM-DD');
     });
 
     it('should tolerate up to 20% non-matching samples (80% threshold)', () => {
@@ -603,6 +618,65 @@ describe('Auto-Detect Columns', () => {
       // "Descrizione" matches both category and notes patterns — first match wins per column priority
       expect(result.categoryCol === 2 || result.notesCol === 2).toBe(true);
     });
+
+    it('prefers an exact "date" column over "datetime" when both are present', () => {
+      const headers = ['datetime', 'date', 'amount'];
+      const rows = [['2024-03-15T10:00:00.000Z', '2024-03-15', '100']];
+      const result = autoDetectColumns(headers, rows);
+      expect(result.dateCol).toBe(1);
+    });
+
+    it('detects an MCC column by header name', () => {
+      const headers = ['Date', 'Amount', 'mcc_code'];
+      const rows = [['2024-03-15', '100', '5411']];
+      const result = autoDetectColumns(headers, rows);
+      expect(result.mccCol).toBe(2);
+    });
+  });
+
+  describe('detectDualAmountColumns', () => {
+    it('detects separate income/outflow columns from Italian header hints', () => {
+      const headers = ['Data', 'Entrate', 'Uscite'];
+      const rows = [['15/03/2024', '', '50.00'], ['16/03/2024', '1000.00', '']];
+      const result = detectDualAmountColumns(headers, rows);
+      expect(result).toEqual({ incomeCol: 1, outflowCol: 2 });
+    });
+
+    it('detects separate columns from Dare/Avere (double-entry bookkeeping) header hints', () => {
+      const headers = ['Data', 'Dare', 'Avere'];
+      const rows = [['15/03/2024', '50.00', ''], ['16/03/2024', '', '1000.00']];
+      const result = detectDualAmountColumns(headers, rows);
+      expect(result).toEqual({ incomeCol: 2, outflowCol: 1 });
+    });
+
+    it('returns null when only one side of the pair is found', () => {
+      const headers = ['Data', 'Importo', 'Note'];
+      const rows = [['15/03/2024', '100', 'test']];
+      expect(detectDualAmountColumns(headers, rows)).toBeNull();
+    });
+
+    it('returns null when a hinted column is not actually numeric', () => {
+      const headers = ['Data', 'Entrate', 'Uscite'];
+      const rows = [['15/03/2024', 'n/a', 'n/a']];
+      expect(detectDualAmountColumns(headers, rows)).toBeNull();
+    });
+  });
+});
+
+describe('isTransferType', () => {
+  it('recognizes common bank transfer-type enum values', () => {
+    expect(isTransferType('TRANSFER_INSTANT_INBOUND')).toBe(true);
+    expect(isTransferType('TRANSFER_INSTANT_OUTBOUND')).toBe(true);
+    expect(isTransferType('TRANSFER_DIRECT_DEBIT_INBOUND')).toBe(true);
+    expect(isTransferType('bonifico')).toBe(true);
+    expect(isTransferType('Bonifico in entrata')).toBe(true);
+  });
+
+  it('does not flag ordinary transaction types', () => {
+    expect(isTransferType('CARD_TRANSACTION')).toBe(false);
+    expect(isTransferType('INTEREST_PAYMENT')).toBe(false);
+    expect(isTransferType('')).toBe(false);
+    expect(isTransferType(null)).toBe(false);
   });
 });
 
@@ -644,6 +718,32 @@ describe('Row Processing', () => {
       const { valid } = processRows(rows, baseMapping);
       expect(valid[0].isOutflow).toBe(false);
       expect(valid[0].amount).toBe(2800);
+    });
+
+    it('should flag isLikelyTransfer=true when the category column value is a transfer type', () => {
+      const rows = [['15/03/2024', '900', 'TRANSFER_INSTANT_INBOUND', '']];
+      const { valid } = processRows(rows, baseMapping);
+      expect(valid[0].isLikelyTransfer).toBe(true);
+    });
+
+    it('should not flag isLikelyTransfer for ordinary category values', () => {
+      const rows = [['15/03/2024', '-50', 'food', '']];
+      const { valid } = processRows(rows, baseMapping);
+      expect(valid[0].isLikelyTransfer).toBeFalsy();
+    });
+
+    it('should fall back to MCC-based categorization for outflows when the category column is unmapped', () => {
+      const mapping = { ...baseMapping, categoryCol: null, mccCol: 2 };
+      const rows = [['15/03/2024', '-11.57', '5411', '']]; // 5411 = grocery stores
+      const { valid } = processRows(rows, mapping);
+      expect(valid[0].categoryIndex).toBe(4); // Food
+    });
+
+    it('should not use MCC-based categorization for incomes', () => {
+      const mapping = { ...baseMapping, categoryCol: null, mccCol: 2 };
+      const rows = [['15/03/2024', '900', '5411', '']];
+      const { valid } = processRows(rows, mapping);
+      expect(valid[0].categoryIndex).toBe(9999); // stays default, MCC doesn't apply to income
     });
 
     it('should produce correct date in YYYY-MM-DD format', () => {

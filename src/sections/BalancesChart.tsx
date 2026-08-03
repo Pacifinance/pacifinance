@@ -1,7 +1,9 @@
 import React, {useContext, useEffect, useMemo, useState} from 'react';
 import styled from 'styled-components';
-import {Area, AreaChart} from 'recharts/lib/chart/AreaChart';
-import {Bar, BarChart} from 'recharts/lib/chart/BarChart';
+import {AreaChart} from 'recharts/lib/chart/AreaChart';
+import {BarChart} from 'recharts/lib/chart/BarChart';
+import {Area} from 'recharts/lib/cartesian/Area';
+import {Bar} from 'recharts/lib/cartesian/Bar';
 import {Line} from 'recharts/lib/cartesian/Line';
 import {ComposedChart} from 'recharts/lib/chart/ComposedChart';
 import {CartesianGrid} from 'recharts/lib/cartesian/CartesianGrid';

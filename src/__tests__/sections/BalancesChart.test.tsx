@@ -55,4 +55,11 @@ describe('BalancesChart', () => {
     expect(screen.getByRole('table')).toBeInTheDocument();
     expect(screen.getAllByText('Feb 26').length).toBeGreaterThan(0);
   });
+
+  it('renders the composition and changes chart elements', () => {
+    renderChart();
+
+    expect(() => fireEvent.click(screen.getByText(en.graphs.balanceExplorer.viewComposition))).not.toThrow();
+    expect(() => fireEvent.click(screen.getByText(en.graphs.balanceExplorer.viewChanges))).not.toThrow();
+  });
 });

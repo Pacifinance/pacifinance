@@ -1311,6 +1311,34 @@ export const DropdownContainer = styled.div`
   flex-direction: column;
   align-items: center;
 
+  &.desktop-account-dropdown {
+    position: absolute;
+    inset: 0 auto auto 0;
+    margin: 0;
+    pointer-events: none;
+  }
+
+  &.desktop-account-dropdown .dropdown-menu {
+    top: -8px;
+    right: auto;
+    left: 66px;
+    width: 220px;
+    pointer-events: auto;
+  }
+
+  &.desktop-account-dropdown .dropdown-menu::before {
+    content: '';
+    position: absolute;
+    top: 22px;
+    left: -7px;
+    width: 12px;
+    height: 12px;
+    background: ${({ theme }) => theme.backgroundColor};
+    border-left: 2px solid ${({ theme }) => theme.buttonBackgroundColor};
+    border-bottom: 2px solid ${({ theme }) => theme.buttonBackgroundColor};
+    transform: rotate(45deg);
+  }
+
   .dropdown-header {
     cursor: pointer;
   }

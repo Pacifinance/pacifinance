@@ -575,14 +575,11 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                     </span>
                                 </div>
                             </div>
-                            <DropdownContainer theme={theme}>
+                            <DropdownContainer className="desktop-account-dropdown" theme={theme}>
                                 {showDropdown && (
                                     <div
                                         className="dropdown-menu"
                                         style={{
-                                            position: "absolute",
-                                            top: "50px",
-                                            left: "60px",
                                             backgroundColor: theme.backgroundColor,
                                             borderRadius: "12px",
                                             padding: "12px",

@@ -190,10 +190,10 @@ const BottomGrid = styled.div`
 `;
 
 const BenchmarkOverview = styled.section`
-  background: ${props => props.theme.mode === 'dark' ? props.theme.primaryColor : '#ffffff'};
+  background: ${props => props.theme.mode === 'dark' ? 'linear-gradient(145deg, rgba(22,32,43,.96), rgba(17,25,35,.96))' : 'linear-gradient(145deg, #ffffff, #f8fafc)'};
   border: 1px solid ${props => props.theme.borderColor || 'rgba(15, 23, 42, 0.1)'};
-  border-radius: 8px;
-  padding: 1.25rem;
+  border-radius: 18px;
+  padding: 1.4rem;
   margin-bottom: 1.25rem;
 
   .overview-heading {
@@ -231,7 +231,7 @@ const BenchmarkOverview = styled.section`
   }
 
   .overview-actions { display: flex; flex: 0 0 auto; gap: 0.45rem; }
-  .benchmark-toggle { background: ${props => props.theme.buttonBackgroundColor}; border: 1px solid ${props => props.theme.buttonBackgroundColor}; border-radius: 6px; color: white; cursor: pointer; font-weight: 700; padding: 0.5rem 0.7rem; }
+  .benchmark-toggle { background: ${props => props.theme.buttonBackgroundColor}; border: 1px solid ${props => props.theme.buttonBackgroundColor}; border-radius: 10px; color: white; cursor: pointer; font-weight: 700; padding: 0.6rem 0.85rem; }
 
   @media (max-width: 600px) {
     padding: 1rem;
@@ -239,6 +239,41 @@ const BenchmarkOverview = styled.section`
     .overview-actions { align-items: center; display: grid; grid-template-columns: auto 1fr 1fr; }
     .profile-action, .benchmark-toggle { justify-content: center; }
   }
+`;
+
+const ComparisonGuide = styled.section`
+  display: grid;
+  grid-template-columns: minmax(250px, 1.25fr) repeat(3, minmax(150px, 1fr));
+  gap: 0.75rem;
+  padding: 1rem;
+  border: 1px solid ${props => props.theme.mode === 'dark' ? 'rgba(16,185,129,.22)' : 'rgba(5,150,105,.2)'};
+  border-radius: 16px;
+  background: ${props => props.theme.mode === 'dark' ? 'rgba(6,78,59,.12)' : 'rgba(236,253,245,.72)'};
+
+  .guide-intro, .guide-item { display: flex; gap: .7rem; align-items: flex-start; }
+  .guide-intro svg { color: ${props => props.theme.buttonBackgroundColor}; margin-top: .1rem; }
+  .guide-copy { min-width: 0; }
+  strong { color: ${props => props.theme.textColor}; display: block; font-size: .88rem; margin-bottom: .18rem; }
+  p { color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,.68)' : '#64748b'}; font-size: .78rem; line-height: 1.42; margin: 0; }
+  .guide-number { align-items: center; background: ${props => props.theme.buttonBackgroundColor}20; border-radius: 8px; color: ${props => props.theme.buttonBackgroundColor}; display: inline-flex; flex: 0 0 auto; font-size: .76rem; font-weight: 800; height: 25px; justify-content: center; width: 25px; }
+
+  @media (max-width: 900px) { grid-template-columns: 1fr 1fr; }
+  @media (max-width: 560px) { grid-template-columns: 1fr; padding: .9rem; }
+`;
+
+const InfoTrigger = styled.span`
+  align-items: center;
+  background: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,.1)' : 'rgba(15,23,42,.07)'};
+  border: 1px solid ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,.14)' : 'rgba(15,23,42,.1)'};
+  border-radius: 50%;
+  color: ${props => props.theme.mode === 'dark' ? '#f8fafc' : '#334155'};
+  cursor: help;
+  display: inline-flex;
+  flex: 0 0 auto;
+  height: 28px;
+  justify-content: center;
+  width: 28px;
+  svg { color: currentColor; font-size: 17px; }
 `;
 
 const BenchmarkRankGrid = styled.div`
@@ -396,9 +431,9 @@ const ExpandToggle = styled.button`
 
 const ComparisonCard = styled.div`
   background: ${props => props.theme.mode === 'dark' ? props.theme.primaryColor : 'white'};
-  border-radius: 8px;
+  border-radius: 16px;
   padding: 1.25rem;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
   border: 1px solid ${props => props.theme.borderColor || 'transparent'};
   transition: all 0.25s ease;
   position: relative;
@@ -1473,7 +1508,7 @@ function Comparison({ theme, userData, isHidden}) {
                     </div>
                     <div className="overview-actions">
                         <Tooltip title={translations.comparison.benchmarkOverview?.groupHelp || 'Il gruppo di confronto riunisce utenti con caratteristiche di profilo simili. Mostriamo solo risultati aggregati e quando la numerosità è sufficiente.'}>
-                            <span><InfoIcon fontSize="small" /></span>
+                            <InfoTrigger theme={theme} role="img" aria-label={translations.comparison.benchmarkOverview.groupHelp}><InfoIcon /></InfoTrigger>
                         </Tooltip>
                         <button className="benchmark-toggle" type="button" onClick={() => setIsBenchmarkExpanded((open) => !open)} aria-expanded={isBenchmarkExpanded}>
                             {isBenchmarkExpanded
@@ -1633,13 +1668,25 @@ function Comparison({ theme, userData, isHidden}) {
     const renderInsightsTab = () => (
         <>
             {ProfileCompletionPercentage !== 100 && renderProfileBanner()}
+            <ComparisonGuide theme={theme} aria-label={translations.comparison.guide.title}>
+                <div className="guide-intro">
+                    <ShieldOutlinedIcon />
+                    <div className="guide-copy">
+                        <strong>{translations.comparison.guide.title}</strong>
+                        <p>{translations.comparison.guide.description}</p>
+                    </div>
+                </div>
+                <div className="guide-item"><span className="guide-number">1</span><div><strong>{translations.comparison.guide.youTitle}</strong><p>{translations.comparison.guide.youDescription}</p></div></div>
+                <div className="guide-item"><span className="guide-number">2</span><div><strong>{translations.comparison.guide.similarTitle}</strong><p>{translations.comparison.guide.similarDescription}</p></div></div>
+                <div className="guide-item"><span className="guide-number">3</span><div><strong>{translations.comparison.guide.allTitle}</strong><p>{translations.comparison.guide.allDescription}</p></div></div>
+            </ComparisonGuide>
             {renderBenchmarkOverview()}
             <TopGrid>
                 <ComparisonCard theme={theme} accent="#3498db">
                     <CardHeader theme={theme}>
                         <h3><AccountBalanceIcon /> {translations.comparison.cards.avgBalance.title}</h3>
                         <Tooltip title={translations.comparison.cards.avgBalance.description}>
-                            <InfoIcon style={{ color: theme.textColor }} />
+                            <InfoTrigger theme={theme}><InfoIcon /></InfoTrigger>
                         </Tooltip>
                     </CardHeader>
                     <MetricRow theme={theme}>
@@ -1683,7 +1730,7 @@ function Comparison({ theme, userData, isHidden}) {
                     <CardHeader theme={theme}>
                         <h3><MonetizationOnIcon /> {translations.comparison.cards.avgIncome.title}</h3>
                         <Tooltip title={translations.comparison.cards.avgIncome.description}>
-                            <InfoIcon style={{ color: theme.textColor }} />
+                            <InfoTrigger theme={theme}><InfoIcon /></InfoTrigger>
                         </Tooltip>
                     </CardHeader>
                     <MetricRow theme={theme}>
@@ -1712,7 +1759,7 @@ function Comparison({ theme, userData, isHidden}) {
                     <CardHeader theme={theme}>
                         <h3><TrendingDownIcon /> {translations.comparison.cards.avgOutflows.title}</h3>
                         <Tooltip title={translations.comparison.cards.avgOutflows.description}>
-                            <InfoIcon style={{ color: theme.textColor }} />
+                            <InfoTrigger theme={theme}><InfoIcon /></InfoTrigger>
                         </Tooltip>
                     </CardHeader>
                     <MetricRow theme={theme}>
@@ -1742,7 +1789,7 @@ function Comparison({ theme, userData, isHidden}) {
                     <CardHeader theme={theme}>
                         <h3><SavingsIcon /> {translations.comparison.cards.savingsRate.title}</h3>
                         <Tooltip title={translations.comparison.cards.savingsRate.description}>
-                            <InfoIcon style={{ color: theme.textColor }} />
+                            <InfoTrigger theme={theme}><InfoIcon /></InfoTrigger>
                         </Tooltip>
                     </CardHeader>
                     {userSavingsRate !== null ? (
@@ -1800,7 +1847,7 @@ function Comparison({ theme, userData, isHidden}) {
                     <CardHeader theme={theme}>
                         <h3><PieChartIcon /> {translations.comparison.cards.assetAllocation.title}</h3>
                         <Tooltip title={translations.comparison.cards.assetAllocation.description}>
-                            <InfoIcon style={{ color: theme.textColor }} />
+                            <InfoTrigger theme={theme}><InfoIcon /></InfoTrigger>
                         </Tooltip>
                     </CardHeader>
                     {assetAllocation.length > 0 ? (
@@ -1865,7 +1912,7 @@ function Comparison({ theme, userData, isHidden}) {
                     <CardHeader theme={theme}>
                         <h3><BarChartIcon /> {translations.comparison.cards.spendingCategories.title}</h3>
                         <Tooltip title={translations.comparison.cards.spendingCategories.description}>
-                            <InfoIcon style={{ color: theme.textColor }} />
+                            <InfoTrigger theme={theme}><InfoIcon /></InfoTrigger>
                         </Tooltip>
                     </CardHeader>
                     {spendingByCategory.length > 0 ? (

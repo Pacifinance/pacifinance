@@ -1229,6 +1229,7 @@
         }
     },
     "comparison": {
+        "guide": {"title": "Un confronto utile, senza esporre i tuoi dati", "description": "Partecipando, i tuoi valori confluiscono solo in statistiche aggregate e anonime.", "youTitle": "Tu", "youDescription": "I tuoi dati, visibili soltanto a te.", "similarTitle": "Utenti simili", "similarDescription": "Un gruppo anonimo costruito con i fattori del profilo che scegli.", "allTitle": "Tutti gli utenti", "allDescription": "Il riferimento generale della community, meno personalizzato."},
         "title": "Confronto Anonimo",
         "subtitle": "Confronta le tue performance finanziarie con utenti simili in modo anonimo",
         "benchmarkOverview": {
@@ -1363,8 +1364,8 @@
             "balancedDescription": "Non emergono scostamenti rilevanti. Continua a monitorare il trend, che è più utile del singolo mese."
         },
         "profileBanner": {
-            "title": "🚀 Sblocca confronti personalizzati!",
-            "description": "Completa il tuo profilo nella pagina Account per ottenere confronti anonimi e automatizzati con utenti simili a te. Scopri come ti posizioni rispetto ad altri professionisti!",
+            "title": "Rendi più preciso il tuo gruppo di confronto",
+            "description": "Completa il profilo per trovare utenti davvero simili a te. Questo migliora il confronto, ma non attiva la partecipazione: il consenso anonimo si gestisce separatamente qui sotto.",
             "action": "Completa profilo"
         },
         "tips": {

@@ -1194,6 +1194,7 @@
         }
     },
     "comparison": {
+        "guide": {"title": "Des comparaisons utiles sans exposer tes données", "description": "En participant, tes valeurs servent uniquement à des statistiques anonymes et agrégées.", "youTitle": "Toi", "youDescription": "Tes données, visibles uniquement par toi.", "similarTitle": "Utilisateurs similaires", "similarDescription": "Un groupe anonyme fondé sur les critères de profil que tu choisis.", "allTitle": "Tous les utilisateurs", "allDescription": "La référence générale de la communauté, moins personnalisée."},
         "title": "Comparaison anonyme",
         "subtitle": "Compare tes performances financières avec des utilisateurs similaires de manière anonyme",
         "benchmarkOverview": {

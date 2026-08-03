@@ -1229,6 +1229,7 @@
         }
     },
     "comparison": {
+        "guide": {"title": "Useful comparisons without exposing your data", "description": "When you participate, your values are used only in anonymous, aggregated statistics.", "youTitle": "You", "youDescription": "Your data, visible only to you.", "similarTitle": "Similar users", "similarDescription": "An anonymous group built from the profile factors you choose.", "allTitle": "All users", "allDescription": "The broader community reference, with less personalization."},
         "title": "Anonymous Comparison",
         "subtitle": "Compare your financial performance with similar users anonymously",
         "benchmarkOverview": {
@@ -1363,8 +1364,8 @@
             "balancedDescription": "No material gaps stand out. Keep watching the trend, which is more useful than a single month."
         },
         "profileBanner": {
-            "title": "🚀 Unlock personalized comparisons!",
-            "description": "Complete your profile in the Account page to get anonymous and automated comparisons with similar users. Discover how you position compared to other professionals!",
+            "title": "Make your comparison group more accurate",
+            "description": "Complete your profile to find genuinely similar users. This improves the comparison but does not enable participation: anonymous consent is managed separately below.",
             "action": "Complete profile"
         },
         "tips": {

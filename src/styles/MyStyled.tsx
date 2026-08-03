@@ -1369,6 +1369,7 @@ export const Notification = styled.div`
   color: ${({ theme }) => theme.textColor};
   font-size: 1.5rem;
   padding: 0;
+  padding-bottom: 0.55rem;
   border-radius: 50%;
   background: transparent;
   transition: all 0.2s ease;
@@ -1377,18 +1378,19 @@ export const Notification = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: visible;
   }
 
   .account-image-wrapper {
     width: 42px;
     height: 42px;
     border-radius: 50%;
-    overflow: hidden;
+    overflow: visible;
     display: flex;
     align-items: center;
     justify-content: center;
     background: ${({ theme }) => theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.95)'};
-    border: 2px solid ${({ theme }) => `${theme.buttonBackgroundColor}60`};
+    border: 0;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
     transition: all 0.25s ease;
     aspect-ratio: 1;

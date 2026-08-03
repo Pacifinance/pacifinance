@@ -1194,6 +1194,7 @@
         }
     },
     "comparison": {
+        "guide": {"title": "Comparações úteis sem expor seus dados", "description": "Ao participar, seus valores entram apenas em estatísticas anônimas e agregadas.", "youTitle": "Você", "youDescription": "Seus dados, visíveis somente para você.", "similarTitle": "Usuários semelhantes", "similarDescription": "Um grupo anônimo criado com os fatores de perfil que você escolher.", "allTitle": "Todos os usuários", "allDescription": "A referência geral da comunidade, menos personalizada."},
         "title": "Comparação anônima",
         "subtitle": "Compare seu desempenho financeiro com usuários semelhantes de forma anônima",
         "benchmarkOverview": {

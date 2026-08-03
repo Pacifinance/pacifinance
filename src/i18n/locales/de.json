@@ -1194,6 +1194,7 @@
         }
     },
     "comparison": {
+        "guide": {"title": "Nützliche Vergleiche, ohne deine Daten offenzulegen", "description": "Deine Werte fließen nur in anonyme, zusammengefasste Statistiken ein.", "youTitle": "Du", "youDescription": "Deine Daten, nur für dich sichtbar.", "similarTitle": "Ähnliche Nutzer", "similarDescription": "Eine anonyme Gruppe anhand der von dir gewählten Profilmerkmale.", "allTitle": "Alle Nutzer", "allDescription": "Der allgemeine Community-Vergleich mit weniger Personalisierung."},
         "title": "Anonymer Vergleich",
         "subtitle": "Vergleiche deine finanzielle Leistung anonym mit ähnlichen Nutzern",
         "benchmarkOverview": {

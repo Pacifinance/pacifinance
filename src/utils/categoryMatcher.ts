@@ -12,6 +12,8 @@
  */
 import { EXPENSE_CATEGORY_CODES, getCategoryIndexByLabel } from '../data/expenseCategoryCodes';
 
+const escapeRegExp = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
 /**
  * All outflow category names (English) for fuzzy matching
  */
@@ -153,9 +155,14 @@ export const matchCategory = (userCategory) => {
     return cat ? { index: cat.index, label: cat.label, isIncome: false } : null;
   }
 
-  // 3. Partial match (category name contained in user input)
+  // 3. Partial match (category name contained in user input) — word-boundary
+  // aware in the "alias found inside a longer input" direction, so a short
+  // alias like "car" doesn't spuriously match inside an unrelated word (e.g.
+  // a bank's raw transaction-type value "CARD_TRANSACTION" is not a car
+  // expense; plain substring search would wrongly say it is).
   for (const [alias, idx] of Object.entries(CATEGORY_ALIASES)) {
-    if (normalized.includes(alias) || alias.includes(normalized)) {
+    const aliasFoundAsWord = new RegExp(`\\b${escapeRegExp(alias)}\\b`, 'i').test(normalized);
+    if (aliasFoundAsWord || alias.includes(normalized)) {
       if (typeof idx === 'string' && idx.startsWith('income_')) {
         return { index: parseInt(idx.split('_')[1]), label: userCategory, isIncome: true };
       }

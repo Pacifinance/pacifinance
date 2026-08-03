@@ -39,4 +39,21 @@ describe('matchCategory (regression guard for MCC addition)', () => {
     expect(matchCategory('groceries')?.index).toBe(4);
     expect(matchCategory('unknown-category-xyz')).toBeNull();
   });
+
+  it('does not mistake a bank transaction-type enum for a "car" expense (word-boundary regression)', () => {
+    // "CARD_TRANSACTION" contains "car" as a raw substring, but is not a
+    // vehicle expense — a plain .includes() check used to mis-tag every
+    // card purchase in Trade Republic imports as "Vehicle".
+    expect(matchCategory('CARD_TRANSACTION')).toBeNull();
+    expect(matchCategory('CARD_TRANSACTION_INTERNATIONAL')).toBeNull();
+  });
+
+  it('still matches "car" as a whole word', () => {
+    expect(matchCategory('car')?.index).toBe(11);
+    expect(matchCategory('new car')?.index).toBe(11);
+  });
+
+  it('does not mistake "PAYPAL" for the salary alias "pay"', () => {
+    expect(matchCategory('PAYPAL')).toBeNull();
+  });
 });

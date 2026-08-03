@@ -56,8 +56,9 @@ import { findExistingBankCategory, distinctCategoryFlows } from '../utils/dataIm
 import {
   learnFromTransaction, suggestCategory, findPastMatchesWithDifferentCategory,
 } from '../utils/categoryPatterns';
-import { getAllOutflows, getAllIncomes, getCustomCategories } from '../utils/userDataSelectors';
+import { getAllOutflows, getAllIncomes, getCustomCategories, getOutflowsTags } from '../utils/userDataSelectors';
 import ImportPlatformGuide from './ImportPlatformGuide';
+import CategoryPicker from './CategoryPicker';
 import { findLikelyDuplicates, findDuplicatesWithinBatch, findLikelyTransfers } from '../utils/duplicateDetection';
 
 // ═══════════════════════════════════════════
@@ -165,7 +166,14 @@ const PreviewTable = styled.div`
     text-overflow: ellipsis;
   }
   th {
-    background-color: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.03)'};
+    /* Opaque base + the original tint layered on top as a solid "gradient" —
+       a plain translucent background let scrolled row content (dropdowns,
+       badges) show through the sticky header instead of being hidden by it. */
+    background-color: ${p => p.theme.backgroundColor};
+    background-image: linear-gradient(
+      ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.03)'},
+      ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.03)'}
+    );
     font-weight: 600;
     color: ${p => p.theme.textColor};
     position: sticky;
@@ -192,18 +200,12 @@ const SelectField = styled.select`
   }
 `;
 
-const CompactSelect = styled.select`
-  padding: 0.3rem 0.5rem;
-  border: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)'};
-  border-radius: 6px;
-  background-color: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : '#fff'};
-  color: ${p => p.theme.mode === 'dark' ? '#fff' : '#000'};
-  font-size: 0.78rem;
-  max-width: 160px;
+const CategoryPickerWrap = styled.div`
+  min-width: 160px;
+  max-width: 220px;
 
-  option {
-    background-color: ${p => p.theme.mode === 'dark' ? '#2d2d2d' : '#ffffff'};
-    color: ${p => p.theme.mode === 'dark' ? '#ffffff' : '#000000'};
+  .MuiInputBase-root {
+    font-size: 0.78rem;
   }
 `;
 
@@ -264,6 +266,7 @@ const InfoBanner = styled.div`
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
+  flex-wrap: wrap;
   padding: 0.65rem 0.9rem;
   margin-bottom: 0.75rem;
   border-radius: 10px;
@@ -271,6 +274,11 @@ const InfoBanner = styled.div`
   border: 1px solid rgba(59,130,246,0.25);
   color: ${p => p.theme.textColor};
   font-size: 0.82rem;
+
+  > span {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
 
   button {
     flex-shrink: 0;
@@ -299,13 +307,19 @@ const BankDetectedBanner = styled.div`
   color: ${p => p.theme.textColor};
   font-size: 0.85rem;
 
+  > span {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
   label {
     display: flex;
     align-items: center;
     gap: 0.4rem;
     cursor: pointer;
     font-size: 0.82rem;
-    white-space: nowrap;
+    flex: 1 1 auto;
+    min-width: 0;
   }
 `;
 
@@ -449,7 +463,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
   const { currencySymbol, toEUR } = useContext(CurrencyContext);
   const mediaQuery = useContext(MediaQueryContext);
   const isMobile = mediaQuery?.isMobileScreen ?? false;
-  const { handleSetIsUpdated, userData } = useAuth();
+  const { handleSetIsUpdated, userData, addCustomCategory } = useAuth();
   const { financeService } = useServices();
 
   // Payment tags from user data (filter out 'none')
@@ -493,6 +507,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
   const [rowCategories, setRowCategories] = useState({}); // { rowIndex: categoryIndex }
+  const [rowUserCategoryIds, setRowUserCategoryIds] = useState({}); // { rowIndex: customCategoryId|null }
   const [rowNotes, setRowNotes] = useState({}); // { rowIndex: notesString }
   const [showAllRows, setShowAllRows] = useState(false); // toggle to show all rows in preview
   // rowIndex -> reason, for rows flagged as a likely duplicate or a likely
@@ -554,6 +569,24 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
 
   // Income tags from user data
   const incomesTags = useMemo(() => userData?.tags?.incomesTags || [], [userData]);
+  // Official outflow tags and the user's own custom sub-categories — same
+  // catalog CategoryPicker uses everywhere else in the app (manual insert,
+  // quick-add, edit), so the import review table matches it instead of
+  // reinventing an untranslated, custom-category-blind dropdown of its own.
+  const outflowsTags = useMemo(() => getOutflowsTags(userData), [userData]);
+  const customCategories = useMemo(() => getCustomCategories(userData), [userData]);
+
+  // Resolves a display label for an official category index, preferring the
+  // custom sub-category's own label when one is set (matches what
+  // CategoryPicker shows as selected).
+  const resolveCategoryLabel = (idx, isOutflow, userCategoryId) => {
+    if (userCategoryId != null) {
+      const custom = customCategories.find(c => c.id === userCategoryId);
+      if (custom) return custom.label;
+    }
+    const tag = (isOutflow ? outflowsTags : incomesTags).find(t => t.index === idx);
+    return translateTag(tag?.label, language, isOutflow ? 'expense' : 'income') || 'Other';
+  };
 
   // Live summary based on importable transactions (with category overrides)
   const liveSummary = useMemo(() => {
@@ -562,13 +595,8 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
       let modified = tx;
       if (rowCategories[tx.rowIndex] !== undefined) {
         const idx = rowCategories[tx.rowIndex];
-        if (tx.isOutflow) {
-          const cat = EXPENSE_CATEGORY_CODES.find(c => c.index === idx);
-          modified = { ...modified, categoryIndex: idx, categoryLabel: cat?.translationKey || 'Other' };
-        } else {
-          const tag = incomesTags.find(t => t.index === idx);
-          modified = { ...modified, categoryIndex: idx, categoryLabel: translateTag(tag?.label, language, 'income') || 'Other' };
-        }
+        const userCategoryId = rowUserCategoryIds[tx.rowIndex] ?? null;
+        modified = { ...modified, categoryIndex: idx, categoryLabel: resolveCategoryLabel(idx, tx.isOutflow, userCategoryId) };
       }
       if (rowNotes[tx.rowIndex] !== undefined) {
         modified = { ...modified, notes: rowNotes[tx.rowIndex] };
@@ -576,7 +604,8 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
       return modified;
     });
     return summarizeImport(txWithOverrides);
-  }, [importableTx, rowCategories, rowNotes, incomesTags, language]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [importableTx, rowCategories, rowUserCategoryIds, rowNotes, outflowsTags, incomesTags, customCategories, language]);
 
   // ─── Step 0: Upload ───
 
@@ -879,17 +908,18 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
     });
   };
 
-  const handleRowCategoryChange = (tx, newCategoryIndex) => {
-    setRowCategories(prev => ({ ...prev, [tx.rowIndex]: newCategoryIndex }));
+  const handleRowCategoryChange = (tx, { categoryKey, userCategoryId }) => {
+    setRowCategories(prev => ({ ...prev, [tx.rowIndex]: categoryKey }));
+    setRowUserCategoryIds(prev => ({ ...prev, [tx.rowIndex]: userCategoryId ?? null }));
     const note = getEffectiveNote(tx);
     if (!note) { setRetroHint(null); return; }
     // Teach the local suggestion engine from this correction, then check whether
     // it now disagrees with how similar past transactions were already filed —
     // purely informational (no bulk edit here; user can still fix those manually).
-    learnFromTransaction(note, newCategoryIndex, tx.isOutflow);
+    learnFromTransaction(note, categoryKey, tx.isOutflow);
     const history = (tx.isOutflow ? getAllOutflows(userData) : getAllIncomes(userData))
       .flat().filter(Boolean);
-    const matches = findPastMatchesWithDifferentCategory(history, note, newCategoryIndex);
+    const matches = findPastMatchesWithDifferentCategory(history, note, categoryKey);
     setRetroHint(matches.length > 0 ? { rowIndex: tx.rowIndex, count: matches.length } : null);
   };
 
@@ -902,21 +932,16 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
   };
 
   const getEffectiveCategory = (tx) => {
+    const userCategoryId = rowUserCategoryIds[tx.rowIndex] ?? null;
     if (rowCategories[tx.rowIndex] !== undefined) {
       const idx = rowCategories[tx.rowIndex];
-      if (tx.isOutflow) {
-        const cat = EXPENSE_CATEGORY_CODES.find(c => c.index === idx);
-        return { index: idx, label: cat?.translationKey || 'Other' };
-      } else {
-        const tag = incomesTags.find(t => t.index === idx);
-        return { index: idx, label: translateTag(tag?.label, language, 'income') || 'Other' };
-      }
+      return { index: idx, label: resolveCategoryLabel(idx, tx.isOutflow, userCategoryId), userCategoryId };
     }
     if (!tx.isOutflow && incomesTags.length > 0) {
       const tag = incomesTags.find(t => t.index === tx.categoryIndex);
-      if (tag) return { index: tx.categoryIndex, label: translateTag(tag.label, language, 'income') };
+      if (tag) return { index: tx.categoryIndex, label: translateTag(tag.label, language, 'income'), userCategoryId: null };
     }
-    return { index: tx.categoryIndex, label: tx.categoryLabel };
+    return { index: tx.categoryIndex, label: tx.categoryLabel, userCategoryId: null };
   };
 
   // ─── Step 3: Import ───
@@ -931,13 +956,8 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
       let modified = tx;
       if (rowCategories[tx.rowIndex] !== undefined) {
         const idx = rowCategories[tx.rowIndex];
-        if (tx.isOutflow) {
-          const cat = EXPENSE_CATEGORY_CODES.find(c => c.index === idx);
-          modified = { ...modified, categoryIndex: idx, categoryLabel: cat?.translationKey || 'Other' };
-        } else {
-          const tag = incomesTags.find(t => t.index === idx);
-          modified = { ...modified, categoryIndex: idx, categoryLabel: translateTag(tag?.label, language, 'income') || 'Other' };
-        }
+        const userCategoryId = rowUserCategoryIds[tx.rowIndex] ?? null;
+        modified = { ...modified, categoryIndex: idx, categoryLabel: resolveCategoryLabel(idx, tx.isOutflow, userCategoryId), userCategoryId };
       }
       if (rowNotes[tx.rowIndex] !== undefined) {
         modified = { ...modified, notes: rowNotes[tx.rowIndex] };
@@ -974,6 +994,9 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
         }
       }
       taggedTx = finalTx.map(tx => {
+        // Don't override a custom category the user explicitly picked for this
+        // specific row via the category picker below.
+        if (tx.userCategoryId != null) return tx;
         const userCategoryId = categoryIdByFlow[`${tx.categoryIndex}:${tx.isOutflow}`];
         return userCategoryId !== undefined ? { ...tx, userCategoryId } : tx;
       });
@@ -1415,8 +1438,8 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                     <InfoTooltip theme={theme} data-tip={t.defaultCategoryInfo || 'This category will be assigned to all imported transactions. You can change each one individually in the next step.'}>i</InfoTooltip>
                   </label>
                   <SelectField theme={theme} value={defaultOutflowCategory} onChange={e => setDefaultOutflowCategory(parseInt(e.target.value))}>
-                    {EXPENSE_CATEGORY_CODES.map(c => (
-                      <option key={c.index} value={c.index}>{c.translationKey}</option>
+                    {(outflowsTags.length > 0 ? outflowsTags : EXPENSE_CATEGORY_CODES).map(c => (
+                      <option key={c.index} value={c.index}>{translateTag(c.label, language, 'expense') || c.translationKey}</option>
                     ))}
                   </SelectField>
                 </div>
@@ -1711,27 +1734,23 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                               </Badge>
                             )}
                           </div>
-                          <CompactSelect
-                            theme={theme}
-                            value={effectiveCat.index}
-                            onChange={e => handleRowCategoryChange(tx, parseInt(e.target.value))}
-                          >
-                            {tx.isOutflow ? (
-                              EXPENSE_CATEGORY_CODES.map(c => (
-                                <option key={c.index} value={c.index}>{c.translationKey}</option>
-                              ))
-                            ) : (
-                              incomesTags.length > 0 ? (
-                                incomesTags.map(c => (
-                                  <option key={c.index} value={c.index}>{translateTag(c.label, language, 'income') || c.label}</option>
-                                ))
-                              ) : (
-                                EXPENSE_CATEGORY_CODES.map(c => (
-                                  <option key={c.index} value={c.index}>{c.translationKey}</option>
-                                ))
-                              )
-                            )}
-                          </CompactSelect>
+                          <CategoryPickerWrap>
+                            <CategoryPicker
+                              theme={theme}
+                              officialTags={tx.isOutflow ? outflowsTags : incomesTags}
+                              customCategories={customCategories}
+                              categoryType={tx.isOutflow ? 'expense' : 'income'}
+                              categoryKey={effectiveCat.index}
+                              userCategoryId={effectiveCat.userCategoryId}
+                              onSelect={(selection) => handleRowCategoryChange(tx, selection)}
+                              onCreateCategory={(parentIndex, label) => (
+                                addCustomCategory
+                                  ? addCustomCategory({ label, parent_index: parentIndex, is_expense: tx.isOutflow })
+                                  : Promise.reject(new Error('addCustomCategory unavailable'))
+                              )}
+                              placeholder={t.category || 'Category'}
+                            />
+                          </CategoryPickerWrap>
                         </td>
                         <td>
                           <NoteInput

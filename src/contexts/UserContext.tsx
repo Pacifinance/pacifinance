@@ -3,6 +3,7 @@ import { useServices } from './ServiceContext';
 import { createLegacyBalanceData } from '../utils/userDataSelectors';
 import { generateDemoData } from '../data/demoData';
 import { removeLanguageFromPath } from '../utils/i18nRouting';
+import { seedPatternsFromHistoryOnce } from '../utils/categoryPatterns';
 import {
   transformTags,
   transformUserProfile,
@@ -232,6 +233,14 @@ export const UserProvider = ({ children }) => {
                 communityPriceSubmissions: [],
               },
             });
+            // Seed the local, per-user category-suggestion engine (see
+            // utils/categoryPatterns.ts) from whatever history already exists —
+            // manually entered or imported — once ever per browser. Done here
+            // (not in the CSV import wizard) so it covers every user on first
+            // load, not just those who happen to open that wizard.
+            if ([...allOutflows, ...allIncomes].some((month) => Array.isArray(month) && month.length > 0)) {
+              seedPatternsFromHistoryOnce(allOutflows, allIncomes);
+            }
             setSessionUserInfo(null);
             setIsUpdated(true);
 

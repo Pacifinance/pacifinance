@@ -592,7 +592,8 @@
             "pasteHintDesktop": "Écrivez ou collez une phrase, ou utilisez la dictée vocale de votre système (Win+H sous Windows, double appui sur Fn sur Mac). Ex. « 24,90 courses au supermarché ». Tout reste sur votre appareil, rien n'est envoyé.",
             "pastePlaceholderDesktop": "Ex. « 40 euros essence » ou dictez avec la dictée vocale du système...",
             "sourceLabel": "Compte (facultatif)",
-            "sourceNone": "Aucun"
+            "sourceNone": "Aucun",
+            "categorySuggested": "💡 Suggéré d'après vos transactions passées"
         },
         "title": "Tableau de bord",
         "totalBalance": "Solde total",

@@ -596,7 +596,8 @@
             "pasteHintDesktop": "Scrivi o incolla una frase, oppure usa la dettatura vocale del tuo sistema (Win+H su Windows, doppio tap su Fn su Mac). Es. \"24,90 spesa al supermercato\". Tutto resta sul tuo dispositivo, non inviamo nulla.",
             "pastePlaceholderDesktop": "Es. \"40 euro benzina\" oppure detta con la dettatura vocale del sistema...",
             "sourceLabel": "Conto (opzionale)",
-            "sourceNone": "Nessuno"
+            "sourceNone": "Nessuno",
+            "categorySuggested": "💡 Suggerito in base alle tue transazioni passate"
         },
         "title": "Dashboard",
         "totalBalance": "Il tuo patrimonio totale è: ",

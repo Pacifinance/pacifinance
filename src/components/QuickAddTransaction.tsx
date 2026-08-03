@@ -33,6 +33,7 @@ import { useToast } from '../contexts/ToastContext';
 import { useDemoServices } from '../hooks/useDemoServices';
 import { getOutflowsTags, getIncomesTags, getPaymentTags, getCustomCategories, getCurrentBalance } from '../utils/userDataSelectors';
 import { parseSmartPasteText } from '../utils/smartPasteParser';
+import { learnFromTransaction, suggestCategory } from '../utils/categoryPatterns';
 import { detectPlatform } from '../utils/platformDetection';
 import { useLocalizedNavigate } from '../hooks/useLocalizedNavigate';
 import { ASSET_KEYS, buildSnapshotWithDeltas } from '../constants/balanceSchema';
@@ -246,6 +247,13 @@ const CategoryFieldWrap = styled.div`
   margin-bottom: 0.9rem;
 `;
 
+const CategorySuggestionHint = styled.div`
+  font-size: 0.72rem;
+  opacity: 0.65;
+  color: ${p => p.theme.textColor};
+  margin-top: 0.3rem;
+`;
+
 const SourceSelect = styled.select`
   width: 100%;
   box-sizing: border-box;
@@ -407,6 +415,7 @@ export default function QuickAddTransaction({ theme, showFab = true, menuOpen: c
   const [amount, setAmount] = useState('');
   const [categoryIndex, setCategoryIndex] = useState('');
   const [userCategoryId, setUserCategoryId] = useState(null);
+  const [categorySuggested, setCategorySuggested] = useState(false);
   const [note, setNote] = useState('');
   const [showNote, setShowNote] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -483,7 +492,23 @@ export default function QuickAddTransaction({ theme, showFab = true, menuOpen: c
     return platform === 'ios' || platform === 'android';
   }, []);
 
-  const resetCategory = () => { setCategoryIndex(''); setUserCategoryId(null); };
+  const resetCategory = () => { setCategoryIndex(''); setUserCategoryId(null); setCategorySuggested(false); };
+
+  // Suggest a category from the user's own past categorization habits (see
+  // utils/categoryPatterns.ts — local, no AI/network involved) as they type a
+  // note, same as the CSV import review step already does. Never overrides a
+  // category the user picked themselves.
+  useEffect(() => {
+    if (!note.trim()) return;
+    if (categoryIndex !== '' && !categorySuggested) return;
+    const suggestion = suggestCategory(note, isOutflow);
+    if (suggestion) {
+      setCategoryIndex(suggestion.categoryIndex);
+      setUserCategoryId(null);
+      setCategorySuggested(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [note, isOutflow]);
 
   const resetAndClose = () => {
     setOpen(false);
@@ -578,6 +603,7 @@ export default function QuickAddTransaction({ theme, showFab = true, menuOpen: c
         },
       });
       if (response.status === 200) {
+        if (note.trim()) learnFromTransaction(note, categoryIndex, isOutflow);
         if (source) {
           const deltaEUR = toEUR(amountNumber) * (isOutflow ? -1 : 1);
           await applySourceDelta(source, deltaEUR);
@@ -787,12 +813,18 @@ export default function QuickAddTransaction({ theme, showFab = true, menuOpen: c
                     onSelect={({ categoryKey, userCategoryId: selectedUserCategoryId }) => {
                       setCategoryIndex(categoryKey);
                       setUserCategoryId(selectedUserCategoryId);
+                      setCategorySuggested(false);
                     }}
                     onCreateCategory={(parentIndex, label) =>
                       addCustomCategory({ label, parent_index: parentIndex, is_expense: isOutflow })
                     }
                     placeholder={translations?.insert?.outflowSection?.placeholderCategory || 'Seleziona una categoria'}
                   />
+                  {categorySuggested && (
+                    <CategorySuggestionHint theme={theme}>
+                      {t.categorySuggested || '💡 Suggerito in base alle tue transazioni passate'}
+                    </CategorySuggestionHint>
+                  )}
                 </CategoryFieldWrap>
 
                 <FieldLabel theme={theme}>{t.sourceLabel || 'Conto (opzionale)'}</FieldLabel>

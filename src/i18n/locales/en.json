@@ -596,7 +596,8 @@
             "pasteHintDesktop": "Type or paste a sentence, or use your system's own voice dictation (Win+H on Windows, double-tap Fn on Mac). E.g. \"24.90 groceries at the supermarket\". Everything stays on your device — nothing is sent anywhere.",
             "pastePlaceholderDesktop": "E.g. \"40 euros gas\" or dictate with your system's voice typing...",
             "sourceLabel": "Account (optional)",
-            "sourceNone": "None"
+            "sourceNone": "None",
+            "categorySuggested": "💡 Suggested based on your past transactions"
         },
         "title": "Dashboard",
         "totalBalance": "Your total balance is: ",

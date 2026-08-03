@@ -54,7 +54,7 @@ import { getCategoryColor } from '../data/categoryColors';
 import { detectBankFormat } from '../utils/dataImport/bankFormats';
 import { findExistingBankCategory, distinctCategoryFlows } from '../utils/dataImport/bankCategoryTagging';
 import {
-  learnFromTransaction, suggestCategory, seedPatternsFromHistoryOnce, findPastMatchesWithDifferentCategory,
+  learnFromTransaction, suggestCategory, findPastMatchesWithDifferentCategory,
 } from '../utils/categoryPatterns';
 import { getAllOutflows, getAllIncomes, getCustomCategories } from '../utils/userDataSelectors';
 import ImportPlatformGuide from './ImportPlatformGuide';
@@ -528,16 +528,10 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
     }
   }, [paymentTags, defaultPaymentType]);
 
-  // Seed the local category-suggestion engine from the user's own already-categorized
-  // history — once real data is available, and only once ever per browser (see
-  // seedPatternsFromHistoryOnce). Never sent anywhere: purely a localStorage-backed
-  // frequency table (see utils/categoryPatterns.ts).
-  useEffect(() => {
-    const outflows = getAllOutflows(userData);
-    const incomes = getAllIncomes(userData);
-    const hasHistory = [...outflows, ...incomes].some((month) => Array.isArray(month) && month.length > 0);
-    if (hasHistory) seedPatternsFromHistoryOnce(outflows, incomes);
-  }, [userData]);
+  // Note: the local category-suggestion engine (utils/categoryPatterns.ts) is
+  // seeded from the user's transaction history once, globally, in
+  // UserContext.tsx — not here — so it covers every user on first load, not
+  // just those who happen to open this wizard.
 
   // ─── Derived data ───
 

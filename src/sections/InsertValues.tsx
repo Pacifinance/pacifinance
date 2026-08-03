@@ -41,6 +41,7 @@ import { isPastMonthDate as isPastMonthDateUtil, getBalanceUserDateForMonth } fr
 import { usePastDateBalancePref, PAST_DATE_BALANCE_CHOICES } from '../hooks/usePastDateBalancePref';
 import { addCurrency, roundCurrency } from '../utils/money';
 import { findLikelyDuplicates } from '../utils/duplicateDetection';
+import { learnFromTransaction } from '../utils/categoryPatterns';
 const PastDateBalanceChoiceModal = lazy(() => import('../components/PastDateBalanceChoiceModal'));
 const EditTransactionModal = lazy(() => import('../components/EditTransactionModal'));
 const DuplicateWarningModal = lazy(() => import('../components/DuplicateWarningModal'));
@@ -1428,6 +1429,7 @@ export default function InsertValue({
           .then(async (res) => {
             if (res.status !== 200) { failed++; return; }
             success++;
+            if (row.note) learnFromTransaction(row.note, row.categoryKey, true);
             // Same "make recurring" flag as the single-insert flow: create a
             // template so this row gets re-inserted automatically every month.
             if (row.makeRecurring) {
@@ -1550,7 +1552,14 @@ export default function InsertValue({
           row.balanceSource,
         );
         return financeService.addExpenseOrIncome(inExJson)
-          .then((res) => { if (res.status === 200) success++; else failed++; })
+          .then((res) => {
+            if (res.status === 200) {
+              success++;
+              if (row.note) learnFromTransaction(row.note, row.categoryKey, false);
+            } else {
+              failed++;
+            }
+          })
           .catch(() => { failed++; });
       });
       await Promise.all(promises);
@@ -1815,6 +1824,12 @@ export default function InsertValue({
         showError(translations.insert[sectionKey].editFailed);
         return false;
       }
+      // An edit that changes the category for a given note is often a
+      // correction — at least as strong a training signal as an initial
+      // categorization (see utils/categoryPatterns.ts).
+      if (inExJson.expense.notes) {
+        learnFromTransaction(inExJson.expense.notes, inExJson.expense.category_tag, isOutflow);
+      }
 
       // 4. Apply balance deltas if needed.
       if (needsBalanceUpdate && balanceSource) {
@@ -1944,6 +1959,12 @@ export default function InsertValue({
     try {
       const inExAdd = await financeService.addExpenseOrIncome(inExJson);
       if (inExAdd.status === 200) {
+        // Feed the local per-user category-suggestion engine (see
+        // utils/categoryPatterns.ts) — manual entry is the main signal it
+        // should learn from, not just CSV imports.
+        if (inExJson.expense.notes) {
+          learnFromTransaction(inExJson.expense.notes, inExJson.expense.category_tag, isOutflow);
+        }
         // If the user checked "make recurring" (see OutflowSection's
         // subscription/periodic-payment auto-flag), also create a template so
         // this transaction gets re-inserted automatically every month. Day of

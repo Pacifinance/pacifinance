@@ -594,7 +594,8 @@
             "pasteHintDesktop": "Escribe o pega una frase, o usa el dictado por voz de tu sistema (Win+H en Windows, doble toque en Fn en Mac). Ej. \"24,90 compra en el supermercado\". Todo permanece en tu dispositivo, no enviamos nada.",
             "pastePlaceholderDesktop": "Ej. \"40 euros gasolina\" o dicta con el dictado por voz del sistema...",
             "sourceLabel": "Cuenta (opcional)",
-            "sourceNone": "Ninguna"
+            "sourceNone": "Ninguna",
+            "categorySuggested": "💡 Sugerido según tus transacciones pasadas"
         },
         "title": "Panel",
         "totalBalance": "Tu balance total es: ",

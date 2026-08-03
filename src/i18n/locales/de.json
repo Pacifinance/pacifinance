@@ -592,7 +592,8 @@
             "pasteHintDesktop": "Schreibe oder füge einen Satz ein, oder nutze die Spracherkennung deines Systems (Win+H unter Windows, zweimal Fn drücken auf dem Mac). Z. B. „24,90 Einkauf im Supermarkt“. Alles bleibt auf deinem Gerät, wir senden nichts.",
             "pastePlaceholderDesktop": "Z. B. „40 Euro Benzin“ oder mit der Spracherkennung des Systems diktieren...",
             "sourceLabel": "Konto (optional)",
-            "sourceNone": "Keines"
+            "sourceNone": "Keines",
+            "categorySuggested": "💡 Vorgeschlagen basierend auf deinen bisherigen Transaktionen"
         },
         "title": "Dashboard",
         "totalBalance": "Ihr Gesamtsaldo beträgt: ",

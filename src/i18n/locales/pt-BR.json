@@ -592,7 +592,8 @@
             "pasteHintDesktop": "Escreva ou cole uma frase, ou use o ditado por voz do seu sistema (Win+H no Windows, toque duas vezes em Fn no Mac). Ex. \"24,90 compras no supermercado\". Tudo fica no seu dispositivo, não enviamos nada.",
             "pastePlaceholderDesktop": "Ex. \"40 reais gasolina\" ou dite com o ditado por voz do sistema...",
             "sourceLabel": "Conta (opcional)",
-            "sourceNone": "Nenhuma"
+            "sourceNone": "Nenhuma",
+            "categorySuggested": "💡 Sugerido com base nas suas transações passadas"
         },
         "title": "Painel",
         "totalBalance": "Saldo total",

@@ -23,6 +23,8 @@ export interface BankColumnMapping {
   categoryCol: number | null;
   /** Column holding a Merchant Category Code, if any (see categoryMatcher.ts matchCategoryByMCC). */
   mccCol?: number | null;
+  /** Column holding a full timestamp, when dateCol itself is day-only (e.g. Trade Republic's own "date" vs "datetime"). */
+  timeCol?: number | null;
 }
 
 export interface DetectedBankFormat {
@@ -104,6 +106,10 @@ export function detectBankFormat(header: string[]): DetectedBankFormat | null {
         notesCol: findColumn(header, 'name', 'description'),
         categoryCol: typeIdx,
         mccCol: findColumn(header, 'mcc_code', 'mcc') !== -1 ? findColumn(header, 'mcc_code', 'mcc') : null,
+        // "date" (day-only) is dateCol above; "datetime" carries the actual
+        // time-of-day, useful to tell a work purchase from a personal one
+        // even when they land on the same day.
+        timeCol: findColumn(header, 'datetime') !== -1 ? findColumn(header, 'datetime') : null,
       },
       // Trade Republic's export mixes cash-account movements with investment
       // trades (account_type "TRADING", type "BUY"/"SELL") — those belong in

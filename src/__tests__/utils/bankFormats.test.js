@@ -45,6 +45,7 @@ describe('detectBankFormat', () => {
       expect(result.mapping.amountCol).toBe(10);
       expect(result.mapping.categoryCol).toBe(4); // "type"
       expect(result.mapping.notesCol).toBe(6); // "name"
+      expect(result.mapping.timeCol).toBe(0); // "datetime" — carries the time "date" itself lacks
       expect(result.mapping.mccCol).toBe(22); // "mcc_code"
     });
 

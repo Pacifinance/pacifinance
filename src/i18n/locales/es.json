@@ -2321,7 +2321,18 @@
         "duplicateHint": "Parece que ya está registrado — deseleccionado de forma predeterminada.",
         "transferBadge": "Posible transferencia",
         "transferHint": "Coincide con una entrada de flujo opuesto por el mismo importe — podría ser una transferencia entre tus propias cuentas, no un ingreso o gasto real.",
-        "flaggedRowsNote": "{count} filas parecen posibles duplicados o transferencias entre tus propias cuentas, y se deseleccionaron de forma predeterminada — revisa las etiquetas de abajo y vuelve a seleccionar las que sean genuinas."
+        "flaggedRowsNote": "{count} filas parecen posibles duplicados o transferencias entre tus propias cuentas, y se deseleccionaron de forma predeterminada — revisa las etiquetas de abajo y vuelve a seleccionar las que sean genuinas.",
+        "matchedAgainstLabel": "Similar a:",
+        "viewMonthButton": "👁️ Ver transacciones ya registradas",
+        "monthViewer": {
+            "title": "Transacciones ya registradas",
+            "subtitle": "Compruébalo con calma — esto permanece abierto independientemente de tu importación.",
+            "close": "Cerrar",
+            "entriesLabel": "entradas",
+            "empty": "Todavía no hay nada registrado para este mes.",
+            "noNote": "—",
+            "uncategorized": "Otro"
+        }
     },
     "onboarding": {
         "welcomeTitle": "¡Bienvenido a Pacifinance!",

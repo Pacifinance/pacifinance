@@ -2353,7 +2353,18 @@
         "duplicateHint": "Looks like it might already be recorded — deselected by default.",
         "transferBadge": "Possible transfer",
         "transferHint": "Matches an opposite-flow entry with the same amount — might be a transfer between your own accounts, not real income/spending.",
-        "flaggedRowsNote": "{count} rows look like possible duplicates or transfers between your own accounts, and were deselected by default — check the badges below and re-select any that are actually genuine."
+        "flaggedRowsNote": "{count} rows look like possible duplicates or transfers between your own accounts, and were deselected by default — check the badges below and re-select any that are actually genuine.",
+        "matchedAgainstLabel": "Similar to:",
+        "viewMonthButton": "👁️ View already-recorded transactions",
+        "monthViewer": {
+            "title": "Transactions already recorded",
+            "subtitle": "Check away — this stays open independently of your import.",
+            "close": "Close",
+            "entriesLabel": "entries",
+            "empty": "Nothing recorded for this month yet.",
+            "noNote": "—",
+            "uncategorized": "Other"
+        }
     },
     "onboarding": {
         "welcomeTitle": "Welcome to Pacifinance!",

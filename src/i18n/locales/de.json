@@ -2319,7 +2319,18 @@
         "duplicateHint": "Scheint bereits erfasst zu sein — standardmäßig abgewählt.",
         "transferBadge": "Möglicherweise Überweisung",
         "transferHint": "Stimmt mit einem gegenläufigen Eintrag gleichen Betrags überein — könnte eine Überweisung zwischen Ihren eigenen Konten sein, kein echtes Einkommen/Ausgabe.",
-        "flaggedRowsNote": "{count} Zeilen sehen wie mögliche Duplikate oder Überweisungen zwischen Ihren eigenen Konten aus und wurden standardmäßig abgewählt — prüfen Sie die Markierungen unten und wählen Sie echte Fälle erneut aus."
+        "flaggedRowsNote": "{count} Zeilen sehen wie mögliche Duplikate oder Überweisungen zwischen Ihren eigenen Konten aus und wurden standardmäßig abgewählt — prüfen Sie die Markierungen unten und wählen Sie echte Fälle erneut aus.",
+        "matchedAgainstLabel": "Ähnlich wie:",
+        "viewMonthButton": "👁️ Bereits erfasste Transaktionen anzeigen",
+        "monthViewer": {
+            "title": "Bereits erfasste Transaktionen",
+            "subtitle": "Prüfen Sie ruhig — dieses Fenster bleibt unabhängig von Ihrem Import geöffnet.",
+            "close": "Schließen",
+            "entriesLabel": "Einträge",
+            "empty": "Für diesen Monat wurde noch nichts erfasst.",
+            "noNote": "—",
+            "uncategorized": "Sonstiges"
+        }
     },
     "onboarding": {
         "welcomeTitle": "Willkommen bei Pacifinance!",

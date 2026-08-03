@@ -2319,7 +2319,18 @@
         "duplicateHint": "Semble déjà enregistré — désélectionné par défaut.",
         "transferBadge": "Virement possible",
         "transferHint": "Correspond à une entrée de flux opposé du même montant — pourrait être un virement entre vos propres comptes, pas un revenu/une dépense réel(le).",
-        "flaggedRowsNote": "{count} lignes ressemblent à des doublons possibles ou à des virements entre vos propres comptes, et ont été désélectionnées par défaut — vérifiez les badges ci-dessous et resélectionnez celles qui sont authentiques."
+        "flaggedRowsNote": "{count} lignes ressemblent à des doublons possibles ou à des virements entre vos propres comptes, et ont été désélectionnées par défaut — vérifiez les badges ci-dessous et resélectionnez celles qui sont authentiques.",
+        "matchedAgainstLabel": "Similaire à :",
+        "viewMonthButton": "👁️ Voir les transactions déjà enregistrées",
+        "monthViewer": {
+            "title": "Transactions déjà enregistrées",
+            "subtitle": "Vérifie tranquillement — cette fenêtre reste ouverte indépendamment de ton import.",
+            "close": "Fermer",
+            "entriesLabel": "entrées",
+            "empty": "Rien n'a encore été enregistré ce mois-ci.",
+            "noNote": "—",
+            "uncategorized": "Autre"
+        }
     },
     "onboarding": {
         "welcomeTitle": "Bienvenue sur Pacifinance !",

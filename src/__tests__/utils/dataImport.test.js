@@ -24,6 +24,7 @@ import {
   autoDetectColumns,
   detectDualAmountColumns,
   isTransferType,
+  extractLocalTime,
   processRows,
   toAPIFormat,
   summarizeImport,
@@ -680,6 +681,28 @@ describe('isTransferType', () => {
   });
 });
 
+describe('extractLocalTime', () => {
+  const expectedLocal = (iso) => {
+    const d = new Date(iso);
+    return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+  };
+
+  it('extracts the local time from a full ISO timestamp', () => {
+    const iso = '2026-07-16T14:40:18.467Z';
+    expect(extractLocalTime(iso)).toBe(expectedLocal(iso));
+  });
+
+  it('returns null for a bare date with no time component (never fabricates midnight)', () => {
+    expect(extractLocalTime('2026-07-16')).toBeNull();
+  });
+
+  it('returns null for empty/invalid input', () => {
+    expect(extractLocalTime('')).toBeNull();
+    expect(extractLocalTime(null)).toBeNull();
+    expect(extractLocalTime('not-a-date')).toBeNull();
+  });
+});
+
 // ═══════════════════════════════════════════════════════════════
 // PROCESS ROWS
 // ═══════════════════════════════════════════════════════════════
@@ -718,6 +741,22 @@ describe('Row Processing', () => {
       const { valid } = processRows(rows, baseMapping);
       expect(valid[0].isOutflow).toBe(false);
       expect(valid[0].amount).toBe(2800);
+    });
+
+    it('should capture the local time from a separate timeCol, when mapped', () => {
+      const iso = '2026-07-16T14:40:18.467Z';
+      const d = new Date(iso);
+      const expected = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+      const mapping = { ...baseMapping, timeCol: 4 };
+      const rows = [['15/03/2024', '-50', 'food', 'Lunch', iso]];
+      const { valid } = processRows(rows, mapping);
+      expect(valid[0].time).toBe(expected);
+    });
+
+    it('should leave time null when timeCol is not mapped', () => {
+      const rows = [['15/03/2024', '-50', 'food', 'Lunch']];
+      const { valid } = processRows(rows, baseMapping);
+      expect(valid[0].time).toBeNull();
     });
 
     it('should flag isLikelyTransfer=true when the category column value is a transfer type', () => {

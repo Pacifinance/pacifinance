@@ -46,14 +46,40 @@ describe('learnFromTransaction / suggestCategory', () => {
     learnFromTransaction('Esselunga supermercato', 4, true);
     // Only the "esselunga" token overlaps with the new note ("pagamento" was never seen)
     const suggestion = suggestCategory('Pagamento Esselunga', true);
-    expect(suggestion).toEqual({ categoryIndex: 4, weight: 2 });
+    expect(suggestion).toEqual({ categoryIndex: 4, userCategoryId: null, weight: 2 });
   });
 
   it('keeps expense and income patterns in separate namespaces', () => {
     learnFromTransaction('Bonifico stipendio', 0, false);
     learnFromTransaction('Bonifico stipendio', 0, false);
-    expect(suggestCategory('Bonifico stipendio', false)).toEqual({ categoryIndex: 0, weight: 4 });
+    expect(suggestCategory('Bonifico stipendio', false)).toEqual({ categoryIndex: 0, userCategoryId: null, weight: 4 });
     expect(suggestCategory('Bonifico stipendio', true)).toBeNull();
+  });
+
+  it('learns and suggests a specific custom sub-category, resolving its parent from the live catalog', () => {
+    // User has "Cibo lavoro" (work food, parentIndex 4) as a custom sub-category, id 42
+    learnFromTransaction('Esselunga pausa pranzo ufficio', 4, true, 42);
+    learnFromTransaction('Esselunga pausa pranzo ufficio', 4, true, 42);
+    const customCategories = [{ id: 42, parentIndex: 4 }];
+    const suggestion = suggestCategory('Esselunga pausa pranzo', true, customCategories);
+    expect(suggestion).toEqual({ categoryIndex: 4, userCategoryId: 42, weight: 6 });
+  });
+
+  it('falls back to the next-best match when the suggested custom category no longer exists', () => {
+    learnFromTransaction('Farmacia acquisto', 9, true, 99); // custom category 99, since deleted
+    learnFromTransaction('Farmacia acquisto', 9, true, 99);
+    learnFromTransaction('Farmacia acquisto', 9, true); // plain official category, still qualifies alone
+    // customCategories no longer contains id 99 — the cus: match (weight 4) must be skipped in
+    // favor of the next-best qualifying key, the plain official category (weight 2)
+    expect(suggestCategory('Farmacia acquisto', true, [])).toEqual({ categoryIndex: 9, userCategoryId: null, weight: 2 });
+  });
+
+  it('prefers a custom sub-category suggestion over its own official parent when both were learned separately', () => {
+    learnFromTransaction('Spesa casa settimanale', 4, true); // official Food, no custom category
+    learnFromTransaction('Spesa casa settimanale', 4, true, 7); // custom "Spesa casa", id 7, weight higher
+    learnFromTransaction('Spesa casa settimanale', 4, true, 7);
+    const suggestion = suggestCategory('Spesa casa', true, [{ id: 7, parentIndex: 4 }]);
+    expect(suggestion).toEqual({ categoryIndex: 4, userCategoryId: 7, weight: 4 });
   });
 
   it('picks the category with the most accumulated weight when tokens disagree', () => {
@@ -95,6 +121,16 @@ describe('seedPatternsFromHistoryOnce', () => {
     seedPatternsFromHistoryOnce([[{ notes: 'Farmacia due', amount: 1, isExpense: true, categoryTag: { index: 9 } }]], []);
     expect(suggestCategory('Farmacia', true)).toBeNull(); // second call was a no-op
   });
+
+  it('seeds custom sub-categories from history, not just official parents', () => {
+    const monthlyOutflows = [[
+      { notes: 'Esselunga pausa pranzo', amount: 12, isExpense: true, categoryTag: { index: 4 }, userCategory: { id: 42 } },
+      { notes: 'Esselunga pausa pranzo', amount: 11, isExpense: true, categoryTag: { index: 4 }, userCategory: { id: 42 } },
+    ]];
+    seedPatternsFromHistoryOnce(monthlyOutflows, []);
+    const suggestion = suggestCategory('Esselunga pausa', true, [{ id: 42, parentIndex: 4 }]);
+    expect(suggestion).toEqual({ categoryIndex: 4, userCategoryId: 42, weight: 4 });
+  });
 });
 
 describe('findPastMatchesWithDifferentCategory', () => {
@@ -117,5 +153,23 @@ describe('findPastMatchesWithDifferentCategory', () => {
 
   it('returns nothing when the note has no significant tokens', () => {
     expect(findPastMatchesWithDifferentCategory(history, '', 1)).toEqual([]);
+  });
+
+  it('treats a different custom sub-category under the SAME official parent as a real difference', () => {
+    const withCustom = [
+      { notes: 'Esselunga pausa pranzo', amount: 12, isExpense: true, categoryTag: { index: 4 }, userCategory: { id: 42 } },
+    ];
+    // Same official parent (4), but no custom category this time — should still count as a match
+    const matches = findPastMatchesWithDifferentCategory(withCustom, 'Esselunga pausa', 4, null);
+    expect(matches).toHaveLength(1);
+    expect(matches[0].currentUserCategoryId).toBe(42);
+  });
+
+  it('excludes an entry filed under the exact same custom sub-category', () => {
+    const withCustom = [
+      { notes: 'Esselunga pausa pranzo', amount: 12, isExpense: true, categoryTag: { index: 4 }, userCategory: { id: 42 } },
+    ];
+    const matches = findPastMatchesWithDifferentCategory(withCustom, 'Esselunga pausa', 4, 42);
+    expect(matches).toHaveLength(0);
   });
 });

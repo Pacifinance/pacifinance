@@ -1429,7 +1429,7 @@ export default function InsertValue({
           .then(async (res) => {
             if (res.status !== 200) { failed++; return; }
             success++;
-            if (row.note) learnFromTransaction(row.note, row.categoryKey, true);
+            if (row.note) learnFromTransaction(row.note, row.categoryKey, true, row.userCategoryId ?? null);
             // Same "make recurring" flag as the single-insert flow: create a
             // template so this row gets re-inserted automatically every month.
             if (row.makeRecurring) {
@@ -1555,7 +1555,7 @@ export default function InsertValue({
           .then((res) => {
             if (res.status === 200) {
               success++;
-              if (row.note) learnFromTransaction(row.note, row.categoryKey, false);
+              if (row.note) learnFromTransaction(row.note, row.categoryKey, false, row.userCategoryId ?? null);
             } else {
               failed++;
             }
@@ -1828,7 +1828,7 @@ export default function InsertValue({
       // correction — at least as strong a training signal as an initial
       // categorization (see utils/categoryPatterns.ts).
       if (inExJson.expense.notes) {
-        learnFromTransaction(inExJson.expense.notes, inExJson.expense.category_tag, isOutflow);
+        learnFromTransaction(inExJson.expense.notes, inExJson.expense.category_tag, isOutflow, inExJson.expense.user_category_id ?? null);
       }
 
       // 4. Apply balance deltas if needed.
@@ -1963,7 +1963,7 @@ export default function InsertValue({
         // utils/categoryPatterns.ts) — manual entry is the main signal it
         // should learn from, not just CSV imports.
         if (inExJson.expense.notes) {
-          learnFromTransaction(inExJson.expense.notes, inExJson.expense.category_tag, isOutflow);
+          learnFromTransaction(inExJson.expense.notes, inExJson.expense.category_tag, isOutflow, inExJson.expense.user_category_id ?? null);
         }
         // If the user checked "make recurring" (see OutflowSection's
         // subscription/periodic-payment auto-flag), also create a template so

@@ -144,6 +144,25 @@ const stripTimeComponent = (s) => {
 };
 
 /**
+ * Extracts the time-of-day from a full ISO timestamp, converted to the
+ * browser's local timezone (e.g. Trade Republic's "datetime" column) —
+ * distinguishing a lunchtime work-related purchase from an evening one at
+ * a glance is exactly the kind of thing day-only dates can't show. Returns
+ * null for a bare date with no time component (nothing to extract), not
+ * midnight — a plain "2026-07-16" must never be shown as "00:00".
+ * @param {string} raw
+ * @returns {string|null} "HH:MM" in local time, or null
+ */
+const extractLocalTime = (raw) => {
+  if (!raw || !/T\d{2}:\d{2}/.test(raw)) return null;
+  const d = new Date(raw);
+  if (isNaN(d.getTime())) return null;
+  return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+};
+
+export { extractLocalTime };
+
+/**
  * Try to auto-detect date format from sample values
  * @param {string[]} samples - Array of date strings
  * @returns {string|null} The detected format label or null
@@ -269,11 +288,11 @@ const EXACT_DATE_NAMES = ['date', 'data', 'fecha', 'datum'];
  * Try to auto-detect which column holds dates, amounts, categories
  * @param {string[]} headers
  * @param {string[][]} rows - First N rows for sampling
- * @returns {{ dateCol: number|null, amountCol: number|null, categoryCol: number|null, notesCol: number|null, mccCol: number|null }}
+ * @returns {{ dateCol: number|null, amountCol: number|null, categoryCol: number|null, notesCol: number|null, mccCol: number|null, timeCol: number|null }}
  */
 export const autoDetectColumns = (headers, rows) => {
   const sampleRows = rows.slice(0, 10);
-  const result = { dateCol: null, amountCol: null, categoryCol: null, notesCol: null, mccCol: null };
+  const result = { dateCol: null, amountCol: null, categoryCol: null, notesCol: null, mccCol: null, timeCol: null };
 
   // Pass 1: exact header-name match for the date column takes priority over
   // any substring match found in the pass below.
@@ -319,6 +338,15 @@ export const autoDetectColumns = (headers, rows) => {
     if (result.notesCol === null) {
       if (/note|notes|nota|memo|commento|comment|descrizione/i.test(h)) {
         result.notesCol = colIdx;
+      }
+    }
+
+    // Time-of-day detection — a distinct timestamp column carrying the time
+    // that the (day-only) date column doesn't, e.g. Trade Republic's own
+    // "datetime" column once "date" itself has been chosen for dateCol.
+    if (result.timeCol === null && colIdx !== result.dateCol) {
+      if (/datetime|orario|^ora$|^time$/i.test(h) && samples.some(s => /T\d{2}:\d{2}/.test(s))) {
+        result.timeCol = colIdx;
       }
     }
 
@@ -383,6 +411,7 @@ export const detectDualAmountColumns = (headers, rows) => {
  * @property {number|null} categoryCol - Column index for category (optional)
  * @property {number|null} notesCol - Column index for notes (optional)
  * @property {number|null} [mccCol] - Column index for Merchant Category Code (optional)
+ * @property {number|null} [timeCol] - Column index for a separate time-of-day timestamp (optional)
  * @property {string} dateFormat - Date format label
  * @property {'auto'|'outflow'|'income'} transactionType - How to determine type
  * @property {number} defaultCategoryIndex - Fallback category index
@@ -391,6 +420,7 @@ export const detectDualAmountColumns = (headers, rows) => {
 /**
  * @typedef {Object} ParsedTransaction
  * @property {string} date - YYYY-MM-DD format
+ * @property {string|null} [time] - "HH:MM" local time, when the source carried a timestamp
  * @property {number} amount - Positive number
  * @property {boolean} isOutflow - true = expense, false = income
  * @property {number} categoryIndex - Pacifinance category index
@@ -460,7 +490,7 @@ export { isTransferType };
  * Process a single row
  */
 const processRow = (row, mapping, rowIndex) => {
-  const { dateCol, amountCol, categoryCol, notesCol, mccCol, dateFormat, transactionType, defaultCategoryIndex } = mapping;
+  const { dateCol, amountCol, categoryCol, notesCol, mccCol, timeCol, dateFormat, transactionType, defaultCategoryIndex } = mapping;
 
   // Parse date
   const dateStr = row[dateCol];
@@ -469,6 +499,7 @@ const processRow = (row, mapping, rowIndex) => {
     return { rowIndex, error: `INVALID_DATE: "${dateStr}"`, date: dateStr, amount: 0, isOutflow: true, categoryIndex: 9999, categoryLabel: 'Other', notes: '' };
   }
   const date = formatDateForAPI(parsedDate);
+  const time = timeCol !== null && timeCol !== undefined ? extractLocalTime(row[timeCol]) : null;
 
   // Parse amount
   const amountStr = row[amountCol];
@@ -526,7 +557,7 @@ const processRow = (row, mapping, rowIndex) => {
   // Notes
   const notes = notesCol !== null ? (row[notesCol] || '') : '';
 
-  return { rowIndex, error: null, date, amount, isOutflow, categoryIndex, categoryLabel, notes, isLikelyTransfer };
+  return { rowIndex, error: null, date, time, amount, isOutflow, categoryIndex, categoryLabel, notes, isLikelyTransfer };
 };
 
 /**
@@ -534,7 +565,7 @@ const processRow = (row, mapping, rowIndex) => {
  * Returns an array of 0-2 transactions per row.
  */
 const processRowDual = (row, mapping, rowIndex) => {
-  const { dateCol, incomeCol, outflowCol, categoryCol, notesCol, mccCol, dateFormat, defaultCategoryIndex } = mapping;
+  const { dateCol, incomeCol, outflowCol, categoryCol, notesCol, mccCol, timeCol, dateFormat, defaultCategoryIndex } = mapping;
 
   // Parse date
   const dateStr = row[dateCol];
@@ -543,6 +574,7 @@ const processRowDual = (row, mapping, rowIndex) => {
     return [{ rowIndex, error: `INVALID_DATE: "${dateStr}"`, date: dateStr, amount: 0, isOutflow: true, categoryIndex: 9999, categoryLabel: 'Other', notes: '' }];
   }
   const date = formatDateForAPI(parsedDate);
+  const time = timeCol !== null && timeCol !== undefined ? extractLocalTime(row[timeCol]) : null;
 
   // Match category (shared for both)
   let categoryIndex = defaultCategoryIndex;
@@ -574,7 +606,7 @@ const processRowDual = (row, mapping, rowIndex) => {
         const mccMatch = matchCategoryByMCC(row[mccCol]);
         if (mccMatch) { outCategoryIndex = mccMatch.index; outCategoryLabel = mccMatch.label; }
       }
-      results.push({ rowIndex, error: null, date, amount: Math.abs(outAmt), isOutflow: true, categoryIndex: outCategoryIndex, categoryLabel: outCategoryLabel, notes, isLikelyTransfer });
+      results.push({ rowIndex, error: null, date, time, amount: Math.abs(outAmt), isOutflow: true, categoryIndex: outCategoryIndex, categoryLabel: outCategoryLabel, notes, isLikelyTransfer });
     }
   }
 
@@ -583,7 +615,7 @@ const processRowDual = (row, mapping, rowIndex) => {
     const incStr = row[incomeCol];
     const incAmt = parseAmount(incStr);
     if (incAmt !== null && incAmt !== 0) {
-      results.push({ rowIndex: rowIndex, error: null, date, amount: Math.abs(incAmt), isOutflow: false, categoryIndex, categoryLabel, notes, isLikelyTransfer });
+      results.push({ rowIndex: rowIndex, error: null, date, time, amount: Math.abs(incAmt), isOutflow: false, categoryIndex, categoryLabel, notes, isLikelyTransfer });
     }
   }
 

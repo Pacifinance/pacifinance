@@ -501,14 +501,14 @@ export default function QuickAddTransaction({ theme, showFab = true, menuOpen: c
   useEffect(() => {
     if (!note.trim()) return;
     if (categoryIndex !== '' && !categorySuggested) return;
-    const suggestion = suggestCategory(note, isOutflow);
+    const suggestion = suggestCategory(note, isOutflow, customCategories);
     if (suggestion) {
       setCategoryIndex(suggestion.categoryIndex);
-      setUserCategoryId(null);
+      setUserCategoryId(suggestion.userCategoryId);
       setCategorySuggested(true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [note, isOutflow]);
+  }, [note, isOutflow, customCategories]);
 
   const resetAndClose = () => {
     setOpen(false);
@@ -603,7 +603,7 @@ export default function QuickAddTransaction({ theme, showFab = true, menuOpen: c
         },
       });
       if (response.status === 200) {
-        if (note.trim()) learnFromTransaction(note, categoryIndex, isOutflow);
+        if (note.trim()) learnFromTransaction(note, categoryIndex, isOutflow, userCategoryId);
         if (source) {
           const deltaEUR = toEUR(amountNumber) * (isOutflow ? -1 : 1);
           await applySourceDelta(source, deltaEUR);

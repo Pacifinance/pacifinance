@@ -331,13 +331,19 @@ export default function SignUpForm() {
                     <MuiCustomTextField
                         theme={theme}
                         id="passwordSignUp"
+                        name="new-password"
                         label={translations.header.register.password}
                         type={showPassword ? "text" : "password"}
                         value={password}
                         onChange={handlePasswordChange}
                         required
                         fullWidth
-                        className="w-1/2"
+                        inputProps={{
+                            autoComplete: "new-password",
+                            autoCapitalize: "off",
+                            autoCorrect: "off",
+                            spellCheck: false,
+                        }}
                         InputProps={{
                             endAdornment: (
                                 <MuiCustomInputAdornment
@@ -364,6 +370,7 @@ export default function SignUpForm() {
                     <MuiCustomTextField
                         theme={theme}
                         id="confirmPassword"
+                        name="confirm-password"
                         label={
                             translations.header.register.confirmPassword
                         }
@@ -372,7 +379,12 @@ export default function SignUpForm() {
                         onChange={handleConfirmPasswordChange}
                         required
                         fullWidth
-                        className="w-1/2"
+                        inputProps={{
+                            autoComplete: "new-password",
+                            autoCapitalize: "off",
+                            autoCorrect: "off",
+                            spellCheck: false,
+                        }}
                         InputProps={{
                             endAdornment: (
                                 <MuiCustomInputAdornment

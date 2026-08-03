@@ -247,7 +247,7 @@ export default function AuthPage() {
             </div>
           ) : (
             /* Desktop Layout */
-            <div className="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div className="max-w-6xl w-full grid grid-cols-1 xl:grid-cols-2 gap-12 items-center">
 
               {/* Left Column - Information and Security Notice */}
               <div className="space-y-8">

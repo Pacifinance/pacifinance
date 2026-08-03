@@ -90,13 +90,19 @@ export default function SignInForm() {
           <MuiCustomTextField
             theme={theme}
             id="username"
+            name="username"
             label={translations.header.login.username}
             type={showUsername ? "text" : "password"}
             value={username}
             onChange={(event) => setUsername(event.target.value)}
             fullWidth
             required
-            className="w-1/2"
+            inputProps={{
+              autoComplete: "username",
+              autoCapitalize: "off",
+              autoCorrect: "off",
+              spellCheck: false,
+            }}
             InputProps={{
               endAdornment: (
                 <MuiCustomInputAdornment theme={theme} position="end">
@@ -116,13 +122,19 @@ export default function SignInForm() {
           <MuiCustomTextField
             theme={theme}
             id="passwordSignIn"
+            name="password"
             label={translations.header.login.password}
             type={showPassword ? "text" : "password"}
             value={password}
             onChange={(event) => setPassword(event.target.value)}
             required
             fullWidth
-            className="w-1/2"
+            inputProps={{
+              autoComplete: "current-password",
+              autoCapitalize: "off",
+              autoCorrect: "off",
+              spellCheck: false,
+            }}
             InputProps={{
               endAdornment: (
                 <MuiCustomInputAdornment theme={theme} position="end">

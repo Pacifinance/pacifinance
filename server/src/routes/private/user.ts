@@ -7,6 +7,7 @@ import common from "../common"
 import authCookies from "../authCookies"
 import supabase from "../../db/supabase"
 import { generateRecoveryCode, hashRecoveryCode } from "../../db/recoveryCode"
+import { logger } from "../../libs/logger"
 
 /* === /user/* === */
 
@@ -87,14 +88,14 @@ userRouter.post("/set-id", async (req, res) => {
     const result = await db.users.setUserIdByUserId(userId, new_user_id)
     if (result === null)
     {
-        console.log(`Failed to change ID of user ${userId} to ${new_user_id}`)
+        logger.info(`Failed to change ID of user ${userId} to ${new_user_id}`)
         res.status(500).send()
         return
     }
     // Force the logout: the client must log back in with the new ID
     authCookies.clearAuthCookies(res)
     // Send the new user ID to the client with status code 200 (OK)
-    console.log(`Changed ID of user ${userId} to ${new_user_id}`)
+    logger.info(`Changed ID of user ${userId} to ${new_user_id}`)
     res.status(200)
     res.json({new_id: new_user_id})
 })

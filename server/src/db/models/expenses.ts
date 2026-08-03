@@ -6,7 +6,7 @@ import tags from "./tags"
 import { encryptField, decryptField } from "../crypto"
 
 const EXPENSE_SELECT = `
-    id, occurred_at, amount, is_expense, notes,
+    id, occurred_at, amount, cash_amount, exclude_from_statistics, is_expense, notes,
     balance_asset_key, balance_detail_type, balance_detail_id,
     payment_type:tags!expenses_payment_type_tag_id_fkey(label, client_index, type),
     category_tag:tags!expenses_category_tag_id_fkey(label, client_index, type),
@@ -31,16 +31,48 @@ export type ExpenseBalanceSource = {
     detail_id: number | null
 }
 
-function mapTagJoin(row: any) {
+interface TagJoinRow {
+    label: string
+    client_index: number
+    type: number
+}
+
+interface ExpenseRow {
+    id: number
+    occurred_at: string
+    amount: number
+    cash_amount: number | null
+    exclude_from_statistics: boolean | null
+    is_expense: boolean
+    notes: string
+    balance_asset_key: string | null
+    balance_detail_type: string | null
+    balance_detail_id: number | null
+    payment_type: TagJoinRow | null
+    category_tag: TagJoinRow | null
+    user_category: {id: number, label: string} | null
+}
+
+function mapTagJoin(row: TagJoinRow | null) {
     if (!row) return null
     return {label: row.label, index: row.client_index, type: row.type}
 }
 
-function toExpense(row: any) {
+// Supabase's untyped client infers embedded *-to-one FK joins (payment_type,
+// category_tag, user_category above) as arrays, since without a generated
+// Database type it can't know the relationship is unique. PostgREST actually
+// returns a single object for these at runtime (confirmed by every field
+// access below), so the raw row is taken as unknown and cast to the shape
+// we know it really has, rather than fighting the client's over-cautious
+// inferred type.
+function toExpense(rawRow: unknown) {
+    const row = rawRow as ExpenseRow
     return {
         id: row.id as number,
         date: row.occurred_at,
         amount: row.amount as number,
+        cashAmount: (row.cash_amount as number | null) ?? (row.amount as number),
+        excludeFromStatistics: Boolean(row.exclude_from_statistics),
         isExpense: row.is_expense as boolean,
         notes: decryptField(row.notes),
         paymentType: mapTagJoin(row.payment_type),
@@ -111,6 +143,8 @@ export type ExpenseBatchInput = {
     categoryTag: number
     userCategoryId: number | null
     balanceSource: ExpenseBalanceSource | null
+    cashAmount: number | null
+    excludeFromStatistics: boolean
 }
 
 /**
@@ -143,6 +177,8 @@ async function insertBatch(user_id: string, inputs: ExpenseBatchInput[]) {
             user_id,
             occurred_at: input.date,
             amount: input.amount,
+            cash_amount: input.cashAmount,
+            exclude_from_statistics: input.excludeFromStatistics,
             is_expense: input.isExpense,
             notes: encryptField(input.notes),
             payment_type_tag_id: paymentRef.id,
@@ -271,7 +307,9 @@ async function getTotalMonthlyExpensesByUserId(user_id: string, reference_date: 
     const expenses = await getMonthlyExpensesByUserId(user_id, reference_date, is_expense_filter)
     if (expenses.length === 0)
         return null
-    return expenses.reduce((accumulator, expense) => accumulator + expense.amount, 0)
+    return expenses.reduce((accumulator, expense) => (
+        expense.excludeFromStatistics ? accumulator : accumulator + expense.amount
+    ), 0)
 }
 
 /**
@@ -290,8 +328,8 @@ async function getMonthlyTotalsByUserId(user_id: string, months?: number) {
     })
     if (error) console.error("expenses.getMonthlyTotalsByUserId: get_monthly_totals RPC failed", error)
     if (error || !data) return null
-    return (data as any[]).map((row) => ({
-        monthStart: row.month_start as string,
+    return (data as {month_start: string, total_outflows: number, total_incomes: number}[]).map((row) => ({
+        monthStart: row.month_start,
         totalOutflows: Number(row.total_outflows),
         totalIncomes: Number(row.total_incomes)
     }))
@@ -360,7 +398,7 @@ async function getExpenseRankingPool(user_ids: string[] | undefined, is_expense_
     })
     if (error) console.error("expenses.getExpenseRankingPool: get_expense_ranking_pool RPC failed", error)
     if (error || !data) return []
-    return (data as any[]).map((row) => ({userId: row.user_id as string, total: Number(row.total_amount)}))
+    return (data as {user_id: string, total_amount: number}[]).map((row) => ({userId: row.user_id, total: Number(row.total_amount)}))
 }
 
 export default {

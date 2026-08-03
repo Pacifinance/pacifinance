@@ -9,6 +9,7 @@ import redis from "../../cache/redisClient"
 import { TimeoutError, getTimeoutMs, withTimeout } from "../../libs/timeout"
 import { checkAndConsumeRateLimit } from "../../libs/rateLimiter"
 import { generateRecoveryCode, hashRecoveryCode, parseRecoveryCodeInput } from "../../db/recoveryCode"
+import { logger } from "../../libs/logger"
 
 const publicRouter = express.Router()
 
@@ -183,14 +184,14 @@ publicRouter.post("/registration", async (req, res) => {
         // Verify Cloudflare Turnstile token. Send status code 401 (Unauthorized) if
         // the verification failed, or 500 (Internal Server Error) if Cloudflare
         // responded with an error status code
-        console.log("registration: verifying Turnstile token")
+        logger.info("registration: verifying Turnstile token")
         const [verified, response_code] = await verifyTurnstileToken(turnstile_token)
         if (!verified) {
             res.status(response_code).send()
             return
         }
         // Generate a random public user ID
-        console.log("registration: generating user code")
+        logger.info("registration: generating user code")
         const user_id = await withTimeout(
             common.generateUserId(db.users.userIdLength),
             getTimeoutMs("REGISTRATION_STEP_TIMEOUT_MS", 10000),
@@ -199,7 +200,7 @@ publicRouter.post("/registration", async (req, res) => {
         // Register the account: creates the Supabase Auth user (password hashing is
         // handled internally by Supabase Auth) and the corresponding profile row.
         // Send status code 500 (Internal Server Error) in case of error
-        console.log(`registration: creating Supabase user for code ${user_id}`)
+        logger.info(`registration: creating Supabase user for code ${user_id}`)
         const insertion = await withTimeout(
             db.users.insertNew(user_id, user_pwd),
             getTimeoutMs("REGISTRATION_STEP_TIMEOUT_MS", 10000),
@@ -207,7 +208,7 @@ publicRouter.post("/registration", async (req, res) => {
         )
         if (insertion === null)
         {
-            console.log("Error while trying to insert a new user in the database")
+            logger.info("Error while trying to insert a new user in the database")
             res.status(500).send()
             return
         }
@@ -218,7 +219,7 @@ publicRouter.post("/registration", async (req, res) => {
         const recoverySaved = await db.users.setRecoveryCodeHash(insertion.id, hashRecoveryCode(recoveryCode.bytes))
         if (recoverySaved === null)
             console.error(`registration: failed to store recovery code hash for user ${user_id} (account still usable, just without a recovery code yet)`)
-        console.log(`User ${user_id} registered`)
+        logger.info(`User ${user_id} registered`)
         // Send the user ID and recovery code to the client with status code 200 (OK)
         res.status(200)
         res.json({

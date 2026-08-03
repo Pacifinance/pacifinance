@@ -367,6 +367,13 @@ describe('aggregateOutflowsByCategory', () => {
   it('handles empty input', () => {
     expect(aggregateOutflowsByCategory([])).toEqual({});
   });
+
+  it('excludes non-statistical movements from category totals', () => {
+    const result = aggregateOutflowsByCategory([[
+      { isExpense: true, amount: 25, categoryTag: { label: 'Food' }, excludeFromStatistics: true },
+    ]]);
+    expect(result[0]).toEqual({});
+  });
 });
 
 // ═══════════════════════════════════════════
@@ -410,6 +417,15 @@ describe('buildMonthlyArrays', () => {
     const data = [[{ isExpense: true, amount: '150' }]];
     const result = buildMonthlyArrays(data);
     expect(result.outflowsArray[0]).toBe(150);
+  });
+
+  it('excludes linked reimbursements from income statistics', () => {
+    const data = [[
+      { isExpense: false, amount: 80 },
+      { isExpense: false, amount: 30, excludeFromStatistics: true },
+    ]];
+    const result = buildMonthlyArrays(data);
+    expect(result.incomesArray[0]).toBe(80);
   });
 });
 

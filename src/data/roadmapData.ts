@@ -165,6 +165,18 @@ const roadmapData: RoadmapItem[] = [
     completedDate: '2025-02',
   },
   {
+    id: 'trend-charts',
+    title: { it: 'Grafici Trend Patrimonio', en: 'Net Worth Trend Charts' },
+    description: {
+      it: 'Visualizza l\'andamento del tuo patrimonio nel tempo con grafici a linea interattivi.',
+      en: 'View your net worth trend over time with interactive line charts.'
+    },
+    status: 'completed',
+    category: 'feature',
+    icon: '📈',
+    completedDate: '2026-08',
+  },
+  {
     id: 'stability',
     title: { it: 'App Più Stabile e Affidabile', en: 'More Stable & Reliable App' },
     description: {
@@ -446,17 +458,6 @@ const roadmapData: RoadmapItem[] = [
     status: 'planned',
     category: 'feature',
     icon: '📤',
-  },
-  {
-    id: 'trend-charts',
-    title: { it: 'Grafici Trend Patrimonio', en: 'Net Worth Trend Charts' },
-    description: {
-      it: 'Visualizza l\'andamento del tuo patrimonio nel tempo con grafici a linea interattivi.',
-      en: 'View your net worth trend over time with interactive line charts.'
-    },
-    status: 'planned',
-    category: 'feature',
-    icon: '📈',
   },
   {
     id: 'push-notifications',

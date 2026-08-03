@@ -1,4 +1,5 @@
 import { ExtDate } from "../../libs/datelib"
+import { logger } from "../../libs/logger"
 import { roundCurrency, toCents, fromCents } from "../../libs/money"
 
 import users from "../../db/models/users"
@@ -294,7 +295,7 @@ async function fetchUserAverages(): Promise<AveragesCachedData> {
     // Stage timings stay in the logs because the source query cost depends on
     // data shape. Cohort aggregation below is now CPU-only and deterministic.
     const t0 = Date.now()
-    console.log("Started computation of users averages")
+    logger.info("Started computation of users averages")
 
     const averagesCachedData: AveragesCachedData = {
         all: {
@@ -318,12 +319,12 @@ async function fetchUserAverages(): Promise<AveragesCachedData> {
     // Demo and test accounts must never influence real community benchmarks.
     const allUsersList = await users.getAllBenchmarkUserIds()
     const allUserIds = allUsersList.map((user) => user.id)
-    console.log(`[averages] fetched ${allUsersList.length} users (+${Date.now() - t0}ms)`)
+    logger.info(`[averages] fetched ${allUsersList.length} users (+${Date.now() - t0}ms)`)
 
     const currentMonth = ExtDate.fromReferenceMonthStart(now)
     const metricRows = await benchmarks.getMetricRows(allUserIds, currentMonth)
     const rowsByUserId = new Map(metricRows.map((row) => [row.userId, row]))
-    console.log(`[averages] current source metrics fetched (+${Date.now() - t0}ms)`)
+    logger.info(`[averages] current source metrics fetched (+${Date.now() - t0}ms)`)
 
     const historyDates = ([3, 6, 12] as const).map((monthsAgo) => {
         const date = currentMonth.copy()
@@ -335,7 +336,7 @@ async function fetchUserAverages(): Promise<AveragesCachedData> {
         date,
         rows: await benchmarks.getMetricRows(allUserIds, date)
     })))
-    console.log(`[averages] 3/6/12-month source metrics fetched (+${Date.now() - t0}ms)`)
+    logger.info(`[averages] 3/6/12-month source metrics fetched (+${Date.now() - t0}ms)`)
 
     averagesCachedData.all = computeAveragesForCohorts(
         { balance: allUserIds, incomes: allUserIds, outflows: allUserIds, general: allUserIds }, rowsByUserId
@@ -359,12 +360,12 @@ async function fetchUserAverages(): Promise<AveragesCachedData> {
         {balance: allUserIds, incomes: allUserIds, outflows: allUserIds, general: allUserIds},
         rows
     ))
-    console.log(`[averages] "all" cohort computed (+${Date.now() - t0}ms)`)
+    logger.info(`[averages] "all" cohort computed (+${Date.now() - t0}ms)`)
 
     // Fetched once and reused for every user below. No financial values are
     // read again while building cohorts.
     const snapshot = await similarUsers.fetchMonthlyProfilesSnapshot(now)
-    console.log(`[averages] profiles snapshot fetched (+${Date.now() - t0}ms)`)
+    logger.info(`[averages] profiles snapshot fetched (+${Date.now() - t0}ms)`)
 
     for (const user of allUsersList) {
         const userRef = user.id
@@ -410,8 +411,8 @@ async function fetchUserAverages(): Promise<AveragesCachedData> {
         averagesCachedData[userRef] = userAverages
     }
 
-    console.log(`[averages] per-user averages computed (+${Date.now() - t0}ms)`)
-    console.log("Finished computation of users averages")
+    logger.info(`[averages] per-user averages computed (+${Date.now() - t0}ms)`)
+    logger.info("Finished computation of users averages")
 
     return averagesCachedData
 }

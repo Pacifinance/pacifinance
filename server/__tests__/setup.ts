@@ -163,7 +163,9 @@ const mocks = vi.hoisted(() => {
             getReceivablesByUserId: vi.fn(),
             insertReceivable: vi.fn(),
             settleReceivable: vi.fn(),
-            deleteReceivable: vi.fn()
+            deleteReceivable: vi.fn(),
+            insertImportedReceivables: vi.fn(),
+            insertImportedReimbursements: vi.fn()
         }
     }
 

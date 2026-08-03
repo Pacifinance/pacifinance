@@ -185,6 +185,8 @@ describe("private backend routes", () => {
 
     it("validates and inserts an expense import as one batch", async () => {
         mockDb.expenses.insertBatch.mockResolvedValue([{id: 1}, {id: 2}])
+        mockDb.sharedExpenses.insertImportedReceivables.mockResolvedValue([])
+        mockDb.sharedExpenses.insertImportedReimbursements.mockResolvedValue([])
         const response = await request(app, "/api/expenses/batch-add", {
             method: "POST",
             headers: {cookie: authCookie},
@@ -195,11 +197,60 @@ describe("private backend routes", () => {
         })
 
         expect(response.status).toBe(200)
-        expect(response.json).toEqual({inserted: 2})
+        expect(response.json).toEqual({inserted: 2, transaction_ids: [1, 2], link_failures: 0})
         expect(mockDb.expenses.insertBatch).toHaveBeenCalledTimes(1)
         expect(mockDb.expenses.insertBatch).toHaveBeenCalledWith("user-uuid", [
             expect.objectContaining({amount: 12.34, isExpense: true, paymentType: 1, categoryTag: 4}),
             expect.objectContaining({amount: 20, isExpense: false, paymentType: 0, categoryTag: 0}),
+        ])
+    })
+
+    it("persists shared-expense and reimbursement links in the same import request", async () => {
+        mockDb.expenses.insertBatch.mockResolvedValue([{id: 10}, {id: 11}])
+        mockDb.sharedExpenses.insertImportedReceivables.mockResolvedValue([{id: 4}])
+        mockDb.sharedExpenses.insertImportedReimbursements.mockResolvedValue([{id: 5}])
+        const response = await request(app, "/api/expenses/batch-add", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {expenses: [
+                {date: "2026-08-01", amount: 40, cash_amount: 100, is_expense: true, payment_type: 1,
+                    category_tag: 4, notes: "Dinner", shared_expense: {own_share: 40}},
+                {date: "2026-08-02", amount: 30, is_expense: false, payment_type: 0,
+                    category_tag: 0, notes: "Refund", reimbursement_receivable_id: 7},
+            ]},
+        })
+
+        expect(response.status).toBe(200)
+        expect(mockDb.expenses.insertBatch).toHaveBeenCalledWith("user-uuid", [
+            expect.objectContaining({amount: 40, cashAmount: 100, excludeFromStatistics: false}),
+            expect.objectContaining({amount: 30, excludeFromStatistics: true}),
+        ])
+        expect(mockDb.sharedExpenses.insertImportedReceivables).toHaveBeenCalledWith("user-uuid", [
+            expect.objectContaining({expenseId: 10, totalAmount: 100, ownShare: 40}),
+        ])
+        expect(mockDb.sharedExpenses.insertImportedReimbursements).toHaveBeenCalledWith("user-uuid", [
+            {expenseId: 11, receivableId: 7, amount: 30},
+        ])
+    })
+
+    it("links a reimbursement to a shared expense created by the same batch", async () => {
+        mockDb.expenses.insertBatch.mockResolvedValue([{id: 20}, {id: 21}])
+        mockDb.sharedExpenses.insertImportedReceivables.mockResolvedValue([{id: 9}])
+        mockDb.sharedExpenses.insertImportedReimbursements.mockResolvedValue([{id: 10}])
+        const response = await request(app, "/api/expenses/batch-add", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {expenses: [
+                {date: "2026-08-01", amount: 40, cash_amount: 100, is_expense: true, payment_type: 1,
+                    category_tag: 4, notes: "Dinner", shared_expense: {own_share: 40, client_ref: "shared:3"}},
+                {date: "2026-08-02", amount: 30, is_expense: false, payment_type: 0,
+                    category_tag: 0, notes: "Refund", reimbursement_shared_expense_ref: "shared:3"},
+            ]},
+        })
+
+        expect(response.status).toBe(200)
+        expect(mockDb.sharedExpenses.insertImportedReimbursements).toHaveBeenCalledWith("user-uuid", [
+            {expenseId: 21, sharedRef: "shared:3", receivableId: 9, amount: 30},
         ])
     })
 

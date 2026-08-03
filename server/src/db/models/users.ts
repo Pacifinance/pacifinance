@@ -28,9 +28,49 @@ function emailForUserCode(user_code: string) {
 /**
  * Maps a "tags" row (or a null join result) to the public Tag shape used by the frontend
  */
-function mapTagRow(row: any) {
+type TagJoin = {label: string, client_index: number, type: number} | null
+
+function mapTagRow(row: TagJoin) {
     if (!row) return null
     return {label: row.label, index: row.client_index, type: row.type}
+}
+
+/** Row shape returned by getPublicInfoByUserId's select (profiles + its tag joins). */
+interface PublicProfileRow {
+    user_code: string
+    nickname: string
+    account_type: number
+    created_at: string
+    expenses_limit: number
+    savings_percent: number
+    emergency_fund_goal: number
+    expenses_limit_percent: number | null
+    expenses_limit_percent_enabled: boolean | null
+    savings_amount_goal: number | null
+    savings_amount_goal_enabled: boolean | null
+    emergency_fund_months: number | null
+    emergency_fund_months_enabled: boolean | null
+    fixed_expenses_percent: number | null
+    category_spending_limits: Record<string, number> | null
+    debt_reduction_goal: number | null
+    position_concentration_limit: number | null
+    asset_category_concentration_limit: number | null
+    annual_passive_income_goal: number | null
+    benchmark_consent: boolean
+    seen_badges: unknown
+    is_admin: unknown
+    age: TagJoin
+    living_situation: TagJoin
+    housing_type: TagJoin
+    children: TagJoin
+    country: TagJoin
+    job: TagJoin
+    job_type: TagJoin
+    job_country: TagJoin
+    work_time: TagJoin
+    remote_type: TagJoin
+    years_of_experience: TagJoin
+    preferred_currency: TagJoin
 }
 
 const TAG_JOIN_FIELDS = `
@@ -314,15 +354,18 @@ async function getPublicInfoByUserId(user_id: string) {
     if (error) console.error("users.getPublicInfoByUserId: lookup failed", error)
     if (error || !data) return null
 
-    const d = data as any
+    // Supabase's untyped client infers embedded *-to-one FK joins (age,
+    // living_situation, etc.) as arrays; PostgREST actually returns a single
+    // object here at runtime, hence the unknown intermediate step.
+    const d = data as unknown as PublicProfileRow
     return {
-        userId: d.user_code as string,
+        userId: d.user_code,
         // Keep wire aliases for older clients during the profile migration.
-        user_code: d.user_code as string,
+        user_code: d.user_code,
         creationDate: d.created_at,
-        type: d.account_type as number,
-        account_type: d.account_type as number,
-        nickname: d.nickname as string,
+        type: d.account_type,
+        account_type: d.account_type,
+        nickname: d.nickname,
         age: mapTagRow(d.age),
         livingSituation: mapTagRow(d.living_situation),
         housingType: mapTagRow(d.housing_type),
@@ -335,25 +378,25 @@ async function getPublicInfoByUserId(user_id: string) {
         remoteType: mapTagRow(d.remote_type),
         yearsOfExperience: mapTagRow(d.years_of_experience),
         preferredCurrency: mapTagRow(d.preferred_currency),
-        benchmarkConsent: d.benchmark_consent as boolean,
+        benchmarkConsent: d.benchmark_consent,
         seenBadges: Array.isArray(d.seen_badges) ? d.seen_badges as string[] : [],
         isAdmin: d.is_admin === true,
         goals: {
-            expensesLimit: d.expenses_limit as number,
-            savingsPercent: d.savings_percent as number,
-            emergencyFundGoal: d.emergency_fund_goal as number,
-            expensesLimitPercent: d.expenses_limit_percent as number | null,
+            expensesLimit: d.expenses_limit,
+            savingsPercent: d.savings_percent,
+            emergencyFundGoal: d.emergency_fund_goal,
+            expensesLimitPercent: d.expenses_limit_percent,
             expensesLimitPercentEnabled: d.expenses_limit_percent_enabled !== false,
-            savingsAmountGoal: d.savings_amount_goal as number | null,
+            savingsAmountGoal: d.savings_amount_goal,
             savingsAmountGoalEnabled: d.savings_amount_goal_enabled !== false,
-            emergencyFundMonths: d.emergency_fund_months as number | null,
+            emergencyFundMonths: d.emergency_fund_months,
             emergencyFundMonthsEnabled: d.emergency_fund_months_enabled !== false,
-            fixedExpensesPercent: d.fixed_expenses_percent as number | null,
-            categorySpendingLimits: (d.category_spending_limits ?? {}) as Record<string, number>,
-            debtReductionGoal: d.debt_reduction_goal as number | null,
-            positionConcentrationLimit: d.position_concentration_limit as number | null,
-            assetCategoryConcentrationLimit: d.asset_category_concentration_limit as number | null,
-            annualPassiveIncomeGoal: d.annual_passive_income_goal as number | null
+            fixedExpensesPercent: d.fixed_expenses_percent,
+            categorySpendingLimits: d.category_spending_limits ?? {},
+            debtReductionGoal: d.debt_reduction_goal,
+            positionConcentrationLimit: d.position_concentration_limit,
+            assetCategoryConcentrationLimit: d.asset_category_concentration_limit,
+            annualPassiveIncomeGoal: d.annual_passive_income_goal
         }
     }
 }

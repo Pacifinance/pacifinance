@@ -28,6 +28,7 @@ import { downloadExcel } from '../utils/downloadData.jsx';
 import { RiFileExcel2Line } from "react-icons/ri";
 
 import { getCategoryColor } from '../data/categoryColors';
+import { assetColors } from '../data/assetColors';
 import { compactNumber } from '../utils/customGraphsInfo.jsx';
 import { getLighterSolidColor, getGrayscaleColor, getRandomGrayscaleColor } from '../utils/colorUtils';
 import { resolveTagKeyFromLocalized, translateTag } from '../data/tagTranslations';
@@ -736,12 +737,12 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
           >
             <defs>
               <linearGradient id="incomeGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#079164" stopOpacity={0.3}/>
-                <stop offset="95%" stopColor="#079164" stopOpacity={0.1}/>
+                <stop offset="5%" stopColor={assetColors.income} stopOpacity={0.3}/>
+                <stop offset="95%" stopColor={assetColors.income} stopOpacity={0.1}/>
               </linearGradient>
               <linearGradient id="outflowGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#ff3838" stopOpacity={0.3}/>
-                <stop offset="95%" stopColor="#ff3838" stopOpacity={0.1}/>
+                <stop offset="5%" stopColor={assetColors.expense} stopOpacity={0.3}/>
+                <stop offset="95%" stopColor={assetColors.expense} stopOpacity={0.1}/>
               </linearGradient>
             </defs>
             
@@ -849,18 +850,18 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
               <Line 
                 type="monotone" 
                 dataKey={translations.general.incomes} 
-                stroke={isHidden ? greyColor1 : "#079164"} 
+                stroke={isHidden ? greyColor1 : assetColors.income} 
                 strokeWidth={isMobile ? 2 : 3}
                 connectNulls={false}
                 isAnimationActive={false}
                 dot={{ 
                   r: isLongRange ? 0 : (isMobile ? 3 : 5),
-                  fill: isHidden ? greyColor1 : "#079164", 
+                  fill: isHidden ? greyColor1 : assetColors.income, 
                   strokeWidth: isLongRange ? 0 : (isMobile ? 1 : 2)
                 }}
                 activeDot={{ 
                   r: isMobile ? 6 : 10, 
-                  fill: isHidden ? greyColor1 : "#079164",
+                  fill: isHidden ? greyColor1 : assetColors.income,
                   stroke: '#fff',
                   strokeWidth: isMobile ? 2 : 4,
                   style: { 
@@ -875,18 +876,18 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
               <Line 
                 type="monotone" 
                 dataKey={translations.general.outflows} 
-                stroke={isHidden ? greyColor2 : "#ff3838"} 
+                stroke={isHidden ? greyColor2 : assetColors.expense} 
                 strokeWidth={isMobile ? 2 : 3}
                 connectNulls={false}
                 isAnimationActive={false}
                 dot={{ 
                   r: isLongRange ? 0 : (isMobile ? 3 : 5),
-                  fill: isHidden ? greyColor2 : "#ff3838", 
+                  fill: isHidden ? greyColor2 : assetColors.expense, 
                   strokeWidth: isLongRange ? 0 : (isMobile ? 1 : 2)
                 }}
                 activeDot={{ 
                   r: isMobile ? 6 : 10, 
-                  fill: isHidden ? greyColor2 : "#ff3838",
+                  fill: isHidden ? greyColor2 : assetColors.expense,
                   stroke: '#fff',
                   strokeWidth: isMobile ? 2 : 4,
                   style: { 
@@ -987,8 +988,8 @@ function InOutChart({theme, userData, isHidden, type = "line"}) {
           width: '100%'
         }}>
           {[
-            { key: 'incomes', label: translations.general.incomes, color: "#079164" },
-            { key: 'outflows', label: translations.general.outflows, color: "#ff3838" },
+            { key: 'incomes', label: translations.general.incomes, color: assetColors.income },
+            { key: 'outflows', label: translations.general.outflows, color: assetColors.expense },
             { key: 'saved', label: translations.general.saved, color: "#06b6d4" }
           ].map(({ key, label, color }) => (
             <div

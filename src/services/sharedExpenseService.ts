@@ -1,8 +1,8 @@
 /**
  * Shared Expense Service — receivables for money fronted for a group (e.g.
- * paying an Uber/dinner for everyone) that's owed back. The outflow itself is
- * added normally through financeService with amount = the user's own share
- * only; this service only manages the "credito verso terzi" side.
+ * paying an Uber/dinner for everyone) that's owed back. Imported movements can
+ * persistently link their real cash amount, personal share and reimbursements;
+ * this service also supports the manual receivable workflow.
  *
  * @module services/sharedExpenseService
  */

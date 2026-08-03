@@ -28,7 +28,7 @@ vi.mock('../../hooks/useLocalizedNavigate', () => ({
 }));
 
 // Import component after mocks
-import OnboardingWelcome from '../../components/OnboardingWelcome';
+import OnboardingWelcome from '../../sections/OnboardingWelcome';
 
 const mockTranslations = {
   onboarding: {

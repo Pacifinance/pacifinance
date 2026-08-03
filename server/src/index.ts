@@ -2,6 +2,7 @@ import express from "express"
 import cookieParser from "cookie-parser"
 
 import rootRouter from "./routes/routes"
+import { logger } from "./libs/logger"
 
 /* ==================== Express.js server initialization ==================== */
 
@@ -18,7 +19,7 @@ app.use((req, res, next) => {
     next()
 })
 app.use((req, res, next) => {
-    const body = (req as any).body
+    const body = req.body
     if (!Buffer.isBuffer(body)) {
         next()
         return
@@ -26,13 +27,13 @@ app.use((req, res, next) => {
 
     const rawBody = body.toString("utf8")
     if (rawBody === "") {
-        (req as any).body = {}
+        req.body = {}
         next()
         return
     }
 
     try {
-        (req as any).body = JSON.parse(rawBody)
+        req.body = JSON.parse(rawBody)
         next()
     } catch {
         res.status(400).send()
@@ -60,7 +61,7 @@ app.use("/api", rootRouter)
 // as a normal standalone Express server.
 if (!process.env.VERCEL) {
     app.listen(process.env.PORT || 3000, () => {
-        console.log("Server is listening...")
+        logger.info("Server is listening...")
     }).on('error', (err) => {
         console.error("Startup error:\n", err)
     })

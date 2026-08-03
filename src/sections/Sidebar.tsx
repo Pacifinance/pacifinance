@@ -19,7 +19,7 @@ import { useLocalizedNavigate } from "../hooks/useLocalizedNavigate";
 import LogoPaci from "../components/Logo";
 import SidebarMobile from "../components/SidebarMobile";
 import BottomNavBar from "../components/BottomNavBar";
-import QuickAddTransaction from "../components/QuickAddTransaction";
+import QuickAddTransaction from "./QuickAddTransaction";
 import SidebarModals from "../components/SidebarModals";
 import { ThemeContext } from "../contexts/ThemeContext";
 import { PrivacyContext } from "../contexts/PrivacyContext";

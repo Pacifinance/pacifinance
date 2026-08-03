@@ -26,7 +26,7 @@ import SettingsRow from "../components/SettingsRow";
 import { exportToCSV, exportToExcel, exportToJSON, exportToPDF } from "../utils/dataExport";
 import Tooltip from "@mui/material/Tooltip";
 
-const DataImportWizard = lazy(() => import("../components/DataImportWizard"));
+const DataImportWizard = lazy(() => import("../sections/DataImportWizard"));
 import {
     Section,
     TitleDashboard,
@@ -73,7 +73,7 @@ const SettingsPage = () => {
     const { mode } = theme;
     const { isHidden, toggleHidden } = useContext(PrivacyContext);
     const { language, translations } = useContext(LanguageContext);
-    const { currency, setCurrency } = useContext(CurrencyContext);
+    const { currency, setCurrency, formatAmount, currencySymbol } = useContext(CurrencyContext);
     const auth = useAuth();
     const { userData, handleSetIsAuthenticated } = auth;
     const userContext = useContext(UserContext) || {};
@@ -377,7 +377,7 @@ const SettingsPage = () => {
                     exportToJSON(completeUserData, language, filterOptions);
                     break;
                 case 'pdf':
-                    await exportToPDF(completeUserData, language, filterOptions);
+                    await exportToPDF(completeUserData, language, filterOptions, formatAmount, currencySymbol);
                     break;
                 default:
                     throw new Error('Formato non supportato');

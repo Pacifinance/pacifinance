@@ -22,6 +22,17 @@ function numberOrNull(value: unknown) {
     return value === null || value === undefined ? null : Number(value)
 }
 
+interface BenchmarkMetricRpcRow {
+    user_id: string
+    balance_total: unknown
+    asset_allocation: {liquid?: unknown, investments?: unknown, crypto?: unknown} | null
+    monthly_income: unknown
+    monthly_expenses: unknown
+    yearly_income: unknown
+    yearly_expenses: unknown
+    yearly_expenses_by_category: unknown
+}
+
 /**
  * Loads the compact numeric source rows used to calculate every community
  * benchmark. It deliberately returns no transaction-level data.
@@ -36,7 +47,7 @@ async function getMetricRows(userIds: string[], currentMonth: ExtDate): Promise<
     if (error) console.error("benchmarks.getMetricRows: get_benchmark_metric_rows RPC failed", error)
     if (error || !data) return []
 
-    return (data as any[]).map((row) => {
+    return (data as BenchmarkMetricRpcRow[]).map((row) => {
         const rawCategories = row.yearly_expenses_by_category && typeof row.yearly_expenses_by_category === "object"
             ? row.yearly_expenses_by_category as Record<string, unknown>
             : {}
@@ -46,7 +57,7 @@ async function getMetricRows(userIds: string[], currentMonth: ExtDate): Promise<
         }, {} as Record<number, number>)
 
         return {
-            userId: row.user_id as string,
+            userId: row.user_id,
             balanceTotal: numberOrNull(row.balance_total),
             assetAllocation: row.asset_allocation && typeof row.asset_allocation === "object"
                 ? {

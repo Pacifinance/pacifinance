@@ -5,7 +5,7 @@
  */
 
 import type { UserData } from '../types/user';
-import type { TagDto, ExpenseDto, TransactionDto } from '../types/api';
+import type { TagDto, TransactionDto } from '../types/api';
 import {
   DEFAULT_MONTHLY_SPENDING_LIMIT,
   DEFAULT_SAVINGS_GOAL_PERCENTAGE,
@@ -201,16 +201,16 @@ export const isNewUser = (userData: UserDataLike): boolean => {
   if (!userData) return false;
   const hasBalance = getTotalValue(userData) > 0;
   const outflows = getAllOutflows(userData);
-  const hasOutflows = outflows.some((month: ExpenseDto[]) => Array.isArray(month) ? month.length > 0 : false);
+  const hasOutflows = outflows.some((month: TransactionDto[]) => Array.isArray(month) ? month.length > 0 : false);
   const incomes = getAllIncomes(userData);
-  const hasIncomes = incomes.some((month: ExpenseDto[]) => Array.isArray(month) ? month.length > 0 : false);
+  const hasIncomes = incomes.some((month: TransactionDto[]) => Array.isArray(month) ? month.length > 0 : false);
   return !hasBalance && !hasOutflows && !hasIncomes;
 };
 
 // Expense and income selectors
-export const getAllOutflows = (userData: UserDataLike): any[] => userData?.expenses?.allOutflows || [];
+export const getAllOutflows = (userData: UserDataLike): TransactionDto[][] => userData?.expenses?.allOutflows || [];
 export const getOutflowsArray = (userData: UserDataLike): number[] => userData?.expenses?.outflowsArray || [];
-export const getTotalOutflowsPerCategoryPerMonth = (userData: UserDataLike): Record<string, any> => userData?.expenses?.totalOutflowsPerCategoryPerMonth || {};
+export const getTotalOutflowsPerCategoryPerMonth = (userData: UserDataLike): Record<string, Record<string, number>> => userData?.expenses?.totalOutflowsPerCategoryPerMonth || {};
 
 export type CategoryBreakdown = Record<string, {
   amount: number;
@@ -278,10 +278,10 @@ export const getTotalOutflowsCategoryBreakdownPerMonth = (userData: UserDataLike
   return breakdown;
 };
 
-export const getAllIncomes = (userData: UserDataLike): any[] => userData?.incomes?.allIncomes || [];
+export const getAllIncomes = (userData: UserDataLike): TransactionDto[][] => userData?.incomes?.allIncomes || [];
 
 const aggregateTransactionsByCategory = (
-  monthlyEntries: any[],
+  monthlyEntries: TransactionDto[][],
   type: 'expense' | 'income',
 ): Record<string, CategoryBreakdown> => {
   const breakdown: Record<string, CategoryBreakdown> = {};
@@ -296,7 +296,6 @@ const aggregateTransactionsByCategory = (
     month.forEach((entry) => {
       const parent =
         translateTagDirect(entry?.categoryTag?.label, 'en', type) ||
-        entry?.categoryTag?.translations?.en ||
         entry?.categoryTag?.label ||
         'Unknown';
       const child = entry?.userCategory?.label || null;
@@ -397,20 +396,20 @@ export const getTotalSavedCurrentMonth = (userData: UserDataLike): number => {
 };
 
 // Tags selectors
-export const getOutflowsTags = (userData: UserDataLike): any[] => userData?.tags?.outflowsTags || [];
-export const getIncomesTags = (userData: UserDataLike): any[] => userData?.tags?.incomesTags || [];
-export const getPaymentTags = (userData: UserDataLike): any[] => userData?.tags?.paymentTags || [];
-export const getNationalityTags = (userData: UserDataLike): any[] => userData?.tags?.nationalityTags || [];
-export const getJobTags = (userData: UserDataLike): any[] => userData?.tags?.jobTags || [];
-export const getJobTypeTags = (userData: UserDataLike): any[] => userData?.tags?.jobTypeTags || [];
-export const getWorkTimeTags = (userData: UserDataLike): any[] => userData?.tags?.workTimeTags || [];
-export const getRemoteTypeTags = (userData: UserDataLike): any[] => userData?.tags?.remoteTypeTags || [];
-export const getAgeTags = (userData: UserDataLike): any[] => userData?.tags?.ageTags || [];
-export const getLivingSituationTags = (userData: UserDataLike): any[] => userData?.tags?.livingSituationTags || [];
-export const getHousingTypeTags = (userData: UserDataLike): any[] => userData?.tags?.housingTypeTags || [];
-export const getChildrenTags = (userData: UserDataLike): any[] => userData?.tags?.childrenTags || [];
-export const getYearsOfExperienceTags = (userData: UserDataLike): any[] => userData?.tags?.yearsOfExperienceTags || [];
-export const getCurrencyTags = (userData: UserDataLike): any[] => userData?.tags?.currencyTags || [];
+export const getOutflowsTags = (userData: UserDataLike): TagDto[] => userData?.tags?.outflowsTags || [];
+export const getIncomesTags = (userData: UserDataLike): TagDto[] => userData?.tags?.incomesTags || [];
+export const getPaymentTags = (userData: UserDataLike): TagDto[] => userData?.tags?.paymentTags || [];
+export const getNationalityTags = (userData: UserDataLike): TagDto[] => userData?.tags?.nationalityTags || [];
+export const getJobTags = (userData: UserDataLike): TagDto[] => userData?.tags?.jobTags || [];
+export const getJobTypeTags = (userData: UserDataLike): TagDto[] => userData?.tags?.jobTypeTags || [];
+export const getWorkTimeTags = (userData: UserDataLike): TagDto[] => userData?.tags?.workTimeTags || [];
+export const getRemoteTypeTags = (userData: UserDataLike): TagDto[] => userData?.tags?.remoteTypeTags || [];
+export const getAgeTags = (userData: UserDataLike): TagDto[] => userData?.tags?.ageTags || [];
+export const getLivingSituationTags = (userData: UserDataLike): TagDto[] => userData?.tags?.livingSituationTags || [];
+export const getHousingTypeTags = (userData: UserDataLike): TagDto[] => userData?.tags?.housingTypeTags || [];
+export const getChildrenTags = (userData: UserDataLike): TagDto[] => userData?.tags?.childrenTags || [];
+export const getYearsOfExperienceTags = (userData: UserDataLike): TagDto[] => userData?.tags?.yearsOfExperienceTags || [];
+export const getCurrencyTags = (userData: UserDataLike): TagDto[] => userData?.tags?.currencyTags || [];
 
 /** User's custom sub-categories (children of an official expense/income tag). See UserContext.addCustomCategory/deleteCustomCategory. */
 export const getCustomCategories = (userData: UserDataLike): Array<{ id: number; parentIndex: number; label: string }> =>

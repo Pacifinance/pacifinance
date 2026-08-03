@@ -179,9 +179,9 @@ const mockUserData = {
   expenses: {
     allOutflows: [
       [
-        { amount: 50, categoryTag: { translations: { en: 'Food' } }, isExpense: true },
-        { amount: 800, categoryTag: { translations: { en: 'House' } }, isExpense: true },
-        { amount: 150, categoryTag: { translations: { en: 'Transport' } }, isExpense: true }
+        { amount: 50, categoryTag: { label: 'Food' }, isExpense: true },
+        { amount: 800, categoryTag: { label: 'House' }, isExpense: true },
+        { amount: 150, categoryTag: { label: 'Transport' }, isExpense: true }
       ]
     ],
     outflowsArray: [2100, 1950, 2200, 1800, 2300, 1750, 2150, 1900, 2050, 1850, 2250, 1700, 2000],
@@ -200,8 +200,8 @@ const mockUserData = {
   incomes: {
     allIncomes: [
       [
-        { amount: 2600, categoryTag: { translations: { en: 'Salary' } }, isExpense: false },
-        { amount: 200, categoryTag: { translations: { en: 'Salary' } }, userCategory: { label: 'Bonus' }, isExpense: false }
+        { amount: 2600, categoryTag: { label: 'Salary' }, isExpense: false },
+        { amount: 200, categoryTag: { label: 'Salary' }, userCategory: { label: 'Bonus' }, isExpense: false }
       ]
     ],
     incomesArray: [2800, 2750, 2900, 2650, 2850, 2700, 2800, 2750, 2900, 2650, 2850, 2700, 2600]

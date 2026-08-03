@@ -19,7 +19,7 @@ import { resolveTagKeyFromLocalized, translateTag } from '../data/tagTranslation
 import { compactNumber } from '../utils/customGraphsInfo.jsx';
 import {
   Overlay, ModalContainer, ModalHeader, ModalTitle, CloseButton, ModalBody, FieldLabel, FieldInput,
-} from './multiInsert/SharedStyles';
+} from '../components/multiInsert/SharedStyles';
 
 // UI accent colors for "which month" in the comparison chart/table — not asset/category
 // colors (those stay centralized in src/data/categoryColors.js), just two fixed, distinct

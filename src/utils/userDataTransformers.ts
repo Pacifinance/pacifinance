@@ -340,6 +340,7 @@ interface RawTransactionEntry {
   amount?: unknown;
   categoryTag?: RawTagObject | null;
   userCategory?: { label?: string | null } | null;
+  excludeFromStatistics?: unknown;
 }
 
 /** Aggregate outflows by category for each month. */
@@ -351,7 +352,7 @@ export const aggregateOutflowsByCategory = (
     const perCategory: Record<string, number> = {};
     if (!Array.isArray(month)) { result[index] = perCategory; return; }
     month.forEach(entry => {
-      if (entry?.isExpense) {
+      if (entry?.isExpense && !entry.excludeFromStatistics) {
         const parentCategory =
           translateTagDirect(entry.categoryTag?.label, 'en', 'expense') ||
           entry.categoryTag?.translations?.en ||
@@ -380,6 +381,7 @@ export const buildMonthlyArrays = (
     if (!Array.isArray(outerItem)) return;
     outerItem.forEach(innerItem => {
       if (!innerItem) return;
+      if (innerItem.excludeFromStatistics) return;
       const amount = Number(innerItem.amount) || 0;
       if (innerItem.isExpense) {
         outflowsArray[index] += amount;

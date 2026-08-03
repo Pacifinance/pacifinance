@@ -64,7 +64,10 @@ jobs:
           echo "url=$url" >> "$GITHUB_OUTPUT"
 
   deploy-preview:
-    if: github.event_name == 'pull_request'
+    # Skip PRs from forks: they never have access to repo secrets like
+    # VERCEL_TOKEN, so this job would just fail red on every external
+    # contributor's PR instead of not running at all.
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write

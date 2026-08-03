@@ -53,14 +53,13 @@ import {
 import { EXPENSE_CATEGORY_CODES } from '../data/expenseCategoryCodes';
 import { getCategoryColor } from '../data/categoryColors';
 import { detectBankFormat } from '../utils/dataImport/bankFormats';
-import { findExistingBankCategory, distinctCategoryFlows } from '../utils/dataImport/bankCategoryTagging';
 import {
   learnFromTransaction, suggestCategory, findPastMatchesWithDifferentCategory,
 } from '../utils/categoryPatterns';
 import { getAllOutflows, getAllIncomes, getCustomCategories, getOutflowsTags } from '../utils/userDataSelectors';
-import ImportPlatformGuide from './ImportPlatformGuide';
-import MonthTransactionsViewer from './MonthTransactionsViewer';
-import CategoryPicker from './CategoryPicker';
+import ImportPlatformGuide from '../components/ImportPlatformGuide';
+import MonthTransactionsViewer from '../components/MonthTransactionsViewer';
+import CategoryPicker from '../components/CategoryPicker';
 import { findLikelyDuplicates, findDuplicatesWithinBatch, findLikelyTransfers } from '../utils/duplicateDetection';
 
 // ═══════════════════════════════════════════
@@ -466,7 +465,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
   const mediaQuery = useContext(MediaQueryContext);
   const isMobile = mediaQuery?.isMobileScreen ?? false;
   const { handleSetIsUpdated, userData, addCustomCategory } = useAuth();
-  const { financeService } = useServices();
+  const { financeService, liquidityAccountService, sharedExpenseService } = useServices();
 
   // Payment tags from user data (filter out 'none')
   const paymentTags = (userData?.tags?.paymentTags || []).filter(t => t.label !== 'none');
@@ -512,6 +511,9 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
   const [rowCategories, setRowCategories] = useState({}); // { rowIndex: categoryIndex }
   const [rowUserCategoryIds, setRowUserCategoryIds] = useState({}); // { rowIndex: customCategoryId|null }
   const [rowNotes, setRowNotes] = useState({}); // { rowIndex: notesString }
+  const [rowSharedExpenses, setRowSharedExpenses] = useState({}); // { rowIndex: own share in display currency }
+  const [rowReimbursements, setRowReimbursements] = useState({}); // { rowIndex: receivable id }
+  const [rowAccountIds, setRowAccountIds] = useState({}); // optional per-row receiving account override
   const [showAllRows, setShowAllRows] = useState(false); // toggle to show all rows in preview
   // rowIndex -> reason, for rows flagged as a likely duplicate or a likely
   // transfer between the user's own accounts (see utils/duplicateDetection.ts).
@@ -529,10 +531,15 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
   const [undoing, setUndoing] = useState(false);
   const [undoResult, setUndoResult] = useState(null);
 
-  // Detected bank/institution export format (Revolut, N26 — see utils/dataImport/bankFormats.ts),
-  // and whether the user wants imported rows tagged with a bank-named sub-category.
+  // Detected bank/institution export format (Revolut, N26 — see utils/dataImport/bankFormats.ts).
+  // It is a payment source, never a transaction sub-category.
   const [detectedBank, setDetectedBank] = useState(null);
-  const [tagWithBankCategory, setTagWithBankCategory] = useState(false);
+  const [liquidityAccounts, setLiquidityAccounts] = useState([]);
+  const [receivables, setReceivables] = useState([]);
+  const [selectedAccountId, setSelectedAccountId] = useState('');
+  const [newAccountLabel, setNewAccountLabel] = useState('');
+  const [newAccountAssetKey, setNewAccountAssetKey] = useState('bank');
+  const [updateAccountBalance, setUpdateAccountBalance] = useState(false);
   // Rows a bank preset excluded as not belonging in this wizard (e.g. Trade
   // Republic's investment trades — see bankFormats.ts filterRow) — reported
   // to the user rather than silently dropped.
@@ -595,20 +602,38 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
     return translateTag(tag?.label, language, isOutflow ? 'expense' : 'income') || 'Other';
   };
 
-  const bankCategoryPlan = useMemo(() => {
-    if (!detectedBank) return [];
-    const bankLabel = t.bankNames?.[detectedBank] || detectedBank;
-    const plannedTransactions = importableTx.map((tx) => ({
-      categoryIndex: rowCategories[tx.rowIndex] !== undefined ? rowCategories[tx.rowIndex] : tx.categoryIndex,
-      isOutflow: tx.isOutflow,
-    }));
-    return distinctCategoryFlows(plannedTransactions).map((flow) => ({
-      ...flow,
-      categoryLabel: resolveCategoryLabel(flow.parentIndex, flow.isExpense, null),
-      existing: Boolean(findExistingBankCategory(customCategories, flow.parentIndex, flow.isExpense, bankLabel)),
-    }));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [detectedBank, importableTx, rowCategories, customCategories, language, t.bankNames]);
+  const selectedAccount = liquidityAccounts.find((account) => String(account.id) === String(selectedAccountId));
+  const accountDelta = useMemo(() => importableTx.reduce((total, tx) => (
+    total + (tx.isOutflow ? -toEUR(tx.amount) : toEUR(tx.amount))
+  ), 0), [importableTx, toEUR]);
+  const hasInvalidImportDetails = importableTx.some((tx) => {
+    if (rowSharedExpenses[tx.rowIndex] !== undefined) {
+      const ownShare = Number(rowSharedExpenses[tx.rowIndex]);
+      if (!Number.isFinite(ownShare) || ownShare < 0 || ownShare >= tx.amount) return true;
+    }
+    if (rowReimbursements[tx.rowIndex]) {
+      const receivingAccountId = rowAccountIds[tx.rowIndex] || selectedAccountId;
+      if (!receivingAccountId || (receivingAccountId === 'new' && !newAccountLabel.trim())) return true;
+    }
+    return false;
+  });
+
+  useEffect(() => {
+    if (step !== 2) return;
+    let active = true;
+    Promise.all([liquidityAccountService.getAccounts(), sharedExpenseService.getReceivables()])
+      .then(([accounts, items]) => {
+        if (!active) return;
+        setLiquidityAccounts(Array.isArray(accounts) ? accounts : []);
+        setReceivables(Array.isArray(items) ? items : []);
+        const providerLabel = detectedBank ? (t.bankNames?.[detectedBank] || detectedBank) : '';
+        setNewAccountLabel(providerLabel);
+        const match = accounts.find((account) => account.label.toLocaleLowerCase() === providerLabel.toLocaleLowerCase());
+        if (match) setSelectedAccountId(String(match.id));
+      })
+      .catch(() => {});
+    return () => { active = false; };
+  }, [step, detectedBank, liquidityAccountService, sharedExpenseService, t.bankNames]);
 
   // Maps a "YYYY-MM-DD" date to its index in the 13-month window
   // getAllOutflows/getAllIncomes are bucketed by (0 = current calendar month),
@@ -666,7 +691,6 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
       // guessing (see utils/dataImport/bankFormats.ts) — skips manual mapping entirely.
       const bankFormat = detectBankFormat(h);
       setDetectedBank(bankFormat?.bank ?? null);
-      setTagWithBankCategory(false);
       setDualAmountMode(false);
       setMccCol(-1);
       setTimeCol(-1);
@@ -747,7 +771,6 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
     // Re-run detection: known bank format first, generic heuristic otherwise
     const bankFormat = detectBankFormat(h);
     setDetectedBank(bankFormat?.bank ?? null);
-    setTagWithBankCategory(false);
     setDualAmountMode(false);
     setMccCol(-1);
     setTimeCol(-1);
@@ -1009,60 +1032,100 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
       return modified;
     });
 
-    // Optional: tag every imported row with a "<Bank>" sub-category, one per
-    // distinct (official category, flow) pair actually used — a custom
-    // category always belongs to a single parent, so e.g. "Food" and
-    // "Transport" rows from the same Revolut export each get their own
-    // "Revolut" sub-category. Reuses an existing one if already created by a
-    // previous import (see findExistingBankCategory).
-    let taggedTx = finalTx;
-    if (detectedBank && tagWithBankCategory) {
-      const bankLabel = t.bankNames?.[detectedBank] || detectedBank;
-      const existingCategories = getCustomCategories(userData);
-      const categoryIdByFlow = {};
-      for (const flow of distinctCategoryFlows(finalTx)) {
-        const flowKey = `${flow.parentIndex}:${flow.isExpense}`;
-        const existing = findExistingBankCategory(existingCategories, flow.parentIndex, flow.isExpense, bankLabel);
-        if (existing) {
-          categoryIdByFlow[flowKey] = existing.id;
-          continue;
-        }
-        try {
-          const created = await financeService.addCustomCategory({
-            label: bankLabel, parent_index: flow.parentIndex, is_expense: flow.isExpense,
-          });
-          categoryIdByFlow[flowKey] = created.id;
-        } catch {
-          // Tagging is a nice-to-have — if creating the sub-category fails, the
-          // transaction still imports, just without the bank tag.
-        }
+    let account = selectedAccount;
+    if (selectedAccountId === 'new') {
+      try {
+        account = await liquidityAccountService.saveAccount({
+          asset_key: newAccountAssetKey,
+          label: newAccountLabel.trim(),
+          current_value: 0,
+          currency: 'EUR',
+        });
+        setLiquidityAccounts((current) => [...current, account]);
+        setSelectedAccountId(String(account.id));
+      } catch {
+        account = null;
       }
-      taggedTx = finalTx.map(tx => {
-        // Don't override a custom category the user explicitly picked for this
-        // specific row via the category picker below.
-        if (tx.userCategoryId != null) return tx;
-        const userCategoryId = categoryIdByFlow[`${tx.categoryIndex}:${tx.isOutflow}`];
-        return userCategoryId !== undefined ? { ...tx, userCategoryId } : tx;
-      });
     }
 
     let success = 0;
     let failed = 0;
-    const total = taggedTx.length;
+    let linkFailures = 0;
+    const total = finalTx.length;
     const API_BATCH_SIZE = 500;
 
     for (let i = 0; i < total; i += API_BATCH_SIZE) {
-      const batch = taggedTx.slice(i, i + API_BATCH_SIZE);
+      const batch = finalTx.slice(i, i + API_BATCH_SIZE);
       try {
         const result = await financeService.addExpensesAndIncomesBatch({
-          expenses: batch.map(tx => toAPIFormat({ ...tx, amount: toEUR(tx.amount) }, defaultPaymentType).expense),
+          expenses: batch.map(tx => {
+            const expense = toAPIFormat({ ...tx, amount: toEUR(tx.amount) }, defaultPaymentType).expense;
+            const rowAccount = liquidityAccounts.find((item) => String(item.id) === String(rowAccountIds[tx.rowIndex])) || account;
+            if (rowAccount) {
+              expense.balance_source = {
+                asset_key: rowAccount.assetKey,
+                detail_type: 'liquidity',
+                detail_id: rowAccount.id,
+              };
+            }
+            const ownShare = Number(rowSharedExpenses[tx.rowIndex]);
+            if (tx.isOutflow && Number.isFinite(ownShare)) {
+              expense.cash_amount = expense.amount;
+              expense.amount = toEUR(ownShare);
+              expense.shared_expense = { own_share: expense.amount };
+            }
+            const reimbursementTarget = rowReimbursements[tx.rowIndex];
+            const receivableId = Number(reimbursementTarget);
+            if (!tx.isOutflow && typeof reimbursementTarget === 'string' && reimbursementTarget.startsWith('shared:')) {
+              expense.reimbursement_shared_expense_ref = reimbursementTarget;
+              expense.exclude_from_statistics = true;
+            } else if (!tx.isOutflow && Number.isFinite(receivableId)) {
+              expense.reimbursement_receivable_id = receivableId;
+              expense.exclude_from_statistics = true;
+            }
+            if (expense.shared_expense) expense.shared_expense.client_ref = `shared:${tx.rowIndex}`;
+            return expense;
+          }),
         });
         success += result.inserted;
+        linkFailures += result.link_failures || 0;
         failed += batch.length - result.inserted;
       } catch {
         failed += batch.length;
       }
       setImportProgress(Math.min(((i + batch.length) / total) * 100, 100));
+    }
+
+    if (success === total && account && updateAccountBalance) {
+      const deltasByAccount = new Map();
+      finalTx.forEach((tx) => {
+        const target = liquidityAccounts.find((item) => String(item.id) === String(rowAccountIds[tx.rowIndex])) || account;
+        if (!target) return;
+        deltasByAccount.set(target.id, {
+          account: target,
+          delta: (deltasByAccount.get(target.id)?.delta || 0) + (tx.isOutflow ? -toEUR(tx.amount) : toEUR(tx.amount)),
+        });
+      });
+      try {
+        await Promise.all(Array.from(deltasByAccount.values()).map(async ({ account: target, delta }) => {
+          const updated = await liquidityAccountService.saveAccount({
+            id: target.id,
+            asset_key: target.assetKey,
+            label: target.label,
+            current_value: target.currentValue + delta,
+            currency: target.currency,
+            notes: target.notes,
+          });
+          await liquidityAccountService.saveAccountHistory({
+            account_id: updated.id,
+            user_date: dateTo || new Date().toISOString().slice(0, 10),
+            current_value: updated.currentValue,
+          });
+        }));
+      } catch {
+        // Transactions are already safely imported. Do not mark/retry them:
+        // the persisted balance_source lets the user reconcile the account.
+      }
     }
 
     setImporting(false);
@@ -1071,7 +1134,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
       amount: toEUR(tx.amount),
       is_expense: tx.isOutflow,
     }));
-    setImportResult({ success, failed, total, _savedTx: savedTxForUndo });
+    setImportResult({ success, failed, linkFailures, total, _savedTx: savedTxForUndo });
 
     if (success > 0) {
       saveLastImport(savedTxForUndo);
@@ -1233,15 +1296,6 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                   ✅ {(t.bankDetected || 'Detected: {bank} — columns mapped automatically.')
                     .replace('{bank}', t.bankNames?.[detectedBank] || detectedBank)}
                 </span>
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={tagWithBankCategory}
-                    onChange={e => setTagWithBankCategory(e.target.checked)}
-                  />
-                  {(t.tagWithBankCategory || 'Create optional "{bank}" custom sub-categories (requires your confirmation)')
-                    .replace('{bank}', t.bankNames?.[detectedBank] || detectedBank)}
-                </label>
               </BankDetectedBanner>
             )}
 
@@ -1678,39 +1732,43 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
             </div>
           </Card>
 
-          {detectedBank && (
-            <Card theme={theme} $compact>
-              <p style={{ color: theme.textColor, fontWeight: 650, marginBottom: '0.4rem', fontSize: '0.9rem' }}>
-                {t.bankCategoryReviewTitle || 'Provider sub-categories (optional)'}
-              </p>
-              <p style={{ color: theme.textColor, opacity: 0.72, fontSize: '0.8rem', lineHeight: 1.45, marginBottom: '0.65rem' }}>
-                {tagWithBankCategory
-                  ? (t.bankCategoryReviewEnabled || 'You approved this: the following sub-categories will be reused or created when you import.')
-                  : (t.bankCategoryReviewDisabled || 'No provider sub-category will be created. Your transaction categories remain exactly as shown below.')}
-              </p>
-              <label style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', color: theme.textColor, fontSize: '0.82rem', cursor: 'pointer' }}>
-                <input
-                  type="checkbox"
-                  checked={tagWithBankCategory}
-                  onChange={(event) => setTagWithBankCategory(event.target.checked)}
-                  style={{ marginTop: 2, accentColor: theme.buttonBackgroundColor }}
-                />
-                {(t.bankCategoryExplicitConsent || 'Yes, create/reuse {count} provider sub-categories')
-                  .replace('{count}', String(bankCategoryPlan.length))}
-              </label>
-              {tagWithBankCategory && bankCategoryPlan.length > 0 && (
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', marginTop: '0.65rem' }}>
-                  {bankCategoryPlan.map((item) => (
-                    <Badge key={`${item.parentIndex}:${item.isExpense}`} $variant={item.existing ? 'success' : 'warning'}>
-                      {item.categoryLabel} / {t.bankNames?.[detectedBank] || detectedBank} · {item.existing
-                        ? (t.bankCategoryExisting || 'already exists')
-                        : (t.bankCategoryNew || 'will be created')}
-                    </Badge>
-                  ))}
+          <Card theme={theme} $compact>
+            <p style={{ color: theme.textColor, fontWeight: 650, marginBottom: '0.4rem', fontSize: '0.9rem' }}>
+              {t.paymentSourceTitle || 'Payment source and account balance'}
+            </p>
+            <p style={{ color: theme.textColor, opacity: 0.72, fontSize: '0.8rem', lineHeight: 1.45, marginBottom: '0.65rem' }}>
+              {(t.paymentSourceHelp || 'The file provider is a bank or payment source, not a transaction category. Link it to an account to keep every movement traceable.')}
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'minmax(220px, 1fr) minmax(180px, 1fr)', gap: '0.65rem' }}>
+              <select value={selectedAccountId} onChange={(event) => setSelectedAccountId(event.target.value)}>
+                <option value="">{t.noLinkedAccount || 'Do not link an account'}</option>
+                {liquidityAccounts.map((accountItem) => (
+                  <option key={accountItem.id} value={accountItem.id}>{accountItem.label}</option>
+                ))}
+                <option value="new">{t.createPaymentAccount || '+ Create a payment account'}</option>
+              </select>
+              {selectedAccountId === 'new' && (
+                <div style={{ display: 'flex', gap: '0.4rem' }}>
+                  <input value={newAccountLabel} onChange={(event) => setNewAccountLabel(event.target.value)} placeholder={t.accountName || 'Account name'} />
+                  <select value={newAccountAssetKey} onChange={(event) => setNewAccountAssetKey(event.target.value)}>
+                    <option value="bank">{t.bankAccount || 'Bank'}</option>
+                    <option value="digitalServices">{t.digitalAccount || 'Payment platform'}</option>
+                    <option value="cash">{t.cashAccount || 'Cash'}</option>
+                  </select>
                 </div>
               )}
-            </Card>
-          )}
+            </div>
+            {selectedAccountId && (
+              <label style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', color: theme.textColor, fontSize: '0.82rem', cursor: 'pointer', marginTop: '0.75rem' }}>
+                <input type="checkbox" checked={updateAccountBalance} onChange={(event) => setUpdateAccountBalance(event.target.checked)} />
+                <span>
+                  {(t.applyBalanceDelta || 'Update this account with the net change from selected movements: {amount}')
+                    .replace('{amount}', `${accountDelta >= 0 ? '+' : ''}${currencySymbol}${accountDelta.toFixed(2)}`)}
+                  <small style={{ display: 'block', opacity: 0.65 }}>{t.applyBalanceDeltaWarning || 'Enable only if these movements have not already been applied to the current balance.'}</small>
+                </span>
+              </label>
+            )}
+          </Card>
 
           {/* Category Breakdown */}
           {liveSummary && (
@@ -1860,6 +1918,86 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                             maxLength={64}
                             placeholder={t.addNote || '—'}
                           />
+                          {tx.isOutflow ? (
+                            <div style={{ marginTop: '0.55rem', color: theme.textColor, fontSize: '0.75rem' }}>
+                              <label style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', cursor: 'pointer' }}>
+                                <input
+                                  type="checkbox"
+                                  checked={rowSharedExpenses[tx.rowIndex] !== undefined}
+                                  onChange={(event) => setRowSharedExpenses((current) => {
+                                    const next = { ...current };
+                                    if (event.target.checked) next[tx.rowIndex] = (tx.amount / 2).toFixed(2);
+                                    else delete next[tx.rowIndex];
+                                    return next;
+                                  })}
+                                />
+                                {t.sharedExpense || 'Shared expense'}
+                              </label>
+                              {rowSharedExpenses[tx.rowIndex] !== undefined && (
+                                <label style={{ display: 'block', marginTop: '0.35rem' }}>
+                                  {t.myShare || 'My share'}
+                                  <NoteInput
+                                    theme={theme}
+                                    type="number"
+                                    min="0"
+                                    max={tx.amount}
+                                    step="0.01"
+                                    value={rowSharedExpenses[tx.rowIndex]}
+                                    onChange={(event) => setRowSharedExpenses((current) => ({ ...current, [tx.rowIndex]: event.target.value }))}
+                                  />
+                                  <small style={{ display: 'block', opacity: 0.65, marginTop: 2 }}>
+                                    {(t.sharedExpenseCreditPreview || 'A receivable of {amount} will remain visible until reimbursed.')
+                                      .replace('{amount}', `${currencySymbol}${Math.max(0, tx.amount - Number(rowSharedExpenses[tx.rowIndex] || 0)).toFixed(2)}`)}
+                                  </small>
+                                </label>
+                              )}
+                            </div>
+                          ) : (receivables.some((item) => item.status !== 'settled') || Object.keys(rowSharedExpenses).length > 0) && (
+                            <label style={{ display: 'block', marginTop: '0.55rem', color: theme.textColor, fontSize: '0.75rem' }}>
+                              {t.linkReimbursement || 'Link as reimbursement'}
+                              <select
+                                value={rowReimbursements[tx.rowIndex] ?? ''}
+                                onChange={(event) => setRowReimbursements((current) => {
+                                  const next = { ...current };
+                                  if (event.target.value) next[tx.rowIndex] = event.target.value;
+                                  else delete next[tx.rowIndex];
+                                  return next;
+                                })}
+                                style={{ display: 'block', width: '100%', marginTop: 4 }}
+                              >
+                                <option value="">{t.notAReimbursement || 'Ordinary income'}</option>
+                                {receivables.filter((item) => item.status !== 'settled').map((item) => (
+                                  <option key={item.id} value={item.id}>
+                                    {item.notes || t.untitledSharedExpense || 'Shared expense'} · {currencySymbol}{Math.max(0, item.receivableAmount - item.settledAmount).toFixed(2)}
+                                  </option>
+                                ))}
+                                {importableTx.filter((item) => item.isOutflow && rowSharedExpenses[item.rowIndex] !== undefined).map((item) => (
+                                  <option key={`shared:${item.rowIndex}`} value={`shared:${item.rowIndex}`}>
+                                    {(t.sharedExpenseInThisImport || 'This import: {note} · {amount}')
+                                      .replace('{note}', getEffectiveNote(item) || t.untitledSharedExpense || 'Shared expense')
+                                      .replace('{amount}', `${currencySymbol}${Math.max(0, item.amount - Number(rowSharedExpenses[item.rowIndex] || 0)).toFixed(2)}`)}
+                                  </option>
+                                ))}
+                              </select>
+                              {rowReimbursements[tx.rowIndex] && (
+                                <>
+                                  <select
+                                    value={rowAccountIds[tx.rowIndex] ?? selectedAccountId}
+                                    onChange={(event) => setRowAccountIds((current) => ({ ...current, [tx.rowIndex]: event.target.value }))}
+                                    style={{ display: 'block', width: '100%', marginTop: 4 }}
+                                  >
+                                    <option value="">{t.selectReceivingAccount || 'Select receiving account'}</option>
+                                    {liquidityAccounts.map((accountItem) => (
+                                      <option key={accountItem.id} value={accountItem.id}>{accountItem.label}</option>
+                                    ))}
+                                  </select>
+                                  <small style={{ display: 'block', opacity: 0.65, marginTop: 2 }}>
+                                    {t.reimbursementStatsHelp || 'It updates the receivable and account, but is excluded from income statistics.'}
+                                  </small>
+                                </>
+                              )}
+                            </label>
+                          )}
                         </td>
                       </tr>
                     );
@@ -1898,7 +2036,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
             <SecondaryBtn theme={theme} onClick={() => setStep(1)}>
               <ArrowBackIcon style={{ fontSize: 18 }} /> {t.back || 'Back'}
             </SecondaryBtn>
-            <PrimaryBtn onClick={handleImport} disabled={importableTx.length === 0}>
+            <PrimaryBtn onClick={handleImport} disabled={importableTx.length === 0 || hasInvalidImportDetails}>
               <CloudUploadIcon style={{ fontSize: 18 }} />
               {t.importButton || 'Import'} {importableTx.length} {t.transactions || 'transactions'}
             </PrimaryBtn>
@@ -1924,7 +2062,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
           ) : importResult && (
             <>
               <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-                {importResult.failed === 0 ? (
+              {importResult.failed === 0 ? (
                   <CheckCircleIcon style={{ fontSize: 64, color: '#079164' }} />
                 ) : (
                   <WarningIcon style={{ fontSize: 64, color: '#ffc107' }} />
@@ -1975,6 +2113,12 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                     }
                   </SecondaryBtn>
                 </div>
+              )}
+              {importResult.linkFailures > 0 && (
+                <p style={{ color: '#ffc107', marginTop: '0.75rem' }}>
+                  {(t.sharedLinksFailed || '{count} shared-expense links could not be saved. The transactions were imported and were not retried to avoid duplicates.')
+                    .replace('{count}', String(importResult.linkFailures))}
+                </p>
               )}
 
               {/* Undo result */}

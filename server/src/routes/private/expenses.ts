@@ -4,6 +4,7 @@ import { ExtDate } from "../../libs/datelib"
 
 import db from "../../db/db"
 import { EXPENSE_BALANCE_ASSET_KEYS, EXPENSE_BALANCE_DETAIL_TYPES, ExpenseBalanceSource } from "../../db/models/expenses"
+import type { ImportedReimbursementLink, ImportedSharedExpenseLink } from "../../db/models/sharedExpenses"
 import common from "../common"
 
 /**
@@ -37,6 +38,23 @@ function isExpenseValid(data: any) {
     const amount_valid = Number.isFinite(rawAmount) && rawAmount > 0
     data.amount = common.roundCurrency(rawAmount);
     data.is_expense = Boolean(data.is_expense);
+    if (data.shared_expense !== undefined) {
+        const ownShare = Number(data.shared_expense?.own_share)
+        const cashAmount = Number(data.cash_amount)
+        if (!data.is_expense || !Number.isFinite(ownShare) || ownShare < 0
+            || !Number.isFinite(cashAmount) || cashAmount <= ownShare) return false
+        data.amount = common.roundCurrency(ownShare)
+        data.cash_amount = common.roundCurrency(cashAmount)
+    }
+    if (data.reimbursement_receivable_id !== undefined && data.reimbursement_receivable_id !== null) {
+        if (data.is_expense || !Number.isFinite(Number(data.reimbursement_receivable_id))) return false
+        data.exclude_from_statistics = true
+    }
+    if (data.reimbursement_shared_expense_ref !== undefined) {
+        if (data.is_expense || typeof data.reimbursement_shared_expense_ref !== "string"
+            || data.reimbursement_shared_expense_ref.length > 40) return false
+        data.exclude_from_statistics = true
+    }
     // If the date field is not set or invalid, set it to now
     const now = ExtDate.fromNow()
     data.date = new ExtDate(data.date);
@@ -123,7 +141,15 @@ expensesRouter.post("/batch-add", async (req, res) => {
             categoryTag: expense.category_tag as number,
             userCategoryId,
             balanceSource: sanitizeBalanceSource(expense.balance_source),
+            cashAmount: expense.cash_amount === null || expense.cash_amount === undefined
+                ? null : common.roundCurrency(Number(expense.cash_amount)),
+            excludeFromStatistics: expense.exclude_from_statistics === true,
         })
+        const last = inputs[inputs.length - 1]
+        if (last.cashAmount !== null && (!Number.isFinite(last.cashAmount) || last.cashAmount <= 0)) {
+            res.status(400).send()
+            return
+        }
     }
 
     const inserted = await db.expenses.insertBatch(req.userId as string, inputs)
@@ -131,7 +157,62 @@ expensesRouter.post("/batch-add", async (req, res) => {
         res.status(500).send()
         return
     }
-    res.status(200).json({inserted: inserted.length})
+    const sharedLinks: ImportedSharedExpenseLink[] = []
+    const reimbursementLinks: ImportedReimbursementLink[] = []
+    const pendingReimbursementLinks: Array<{expenseId: number; sharedRef: string; amount: number}> = []
+    const sharedRefs: string[] = []
+    for (let index = 0; index < inserted.length; index++) {
+        const requestExpense = expenses[index]
+        const insertedExpense = inserted[index]
+        const ownShare = Number(requestExpense.shared_expense?.own_share)
+        if (requestExpense.shared_expense && requestExpense.is_expense
+            && Number.isFinite(ownShare) && ownShare >= 0 && ownShare < Number(requestExpense.cash_amount)) {
+            sharedLinks.push({
+                expenseId: insertedExpense.id,
+                occurredAt: requestExpense.date,
+                notes: requestExpense.notes,
+                totalAmount: Number(requestExpense.cash_amount),
+                ownShare,
+            })
+            sharedRefs.push(String(requestExpense.shared_expense.client_ref ?? ""))
+        }
+        const receivableId = Number(requestExpense.reimbursement_receivable_id)
+        if (!requestExpense.is_expense && Number.isFinite(receivableId)) {
+            reimbursementLinks.push({
+                expenseId: insertedExpense.id,
+                receivableId,
+                amount: requestExpense.amount,
+            })
+        } else if (!requestExpense.is_expense && requestExpense.reimbursement_shared_expense_ref) {
+            pendingReimbursementLinks.push({
+                expenseId: insertedExpense.id,
+                sharedRef: requestExpense.reimbursement_shared_expense_ref,
+                amount: requestExpense.amount,
+            })
+        }
+    }
+
+    const receivables = await db.sharedExpenses.insertImportedReceivables(req.userId as string, sharedLinks)
+    if (receivables !== null) {
+        const receivableByRef = new Map(sharedRefs.map((ref, index) => [ref, receivables[index]?.id]))
+        for (const link of pendingReimbursementLinks) {
+            const receivableId = receivableByRef.get(link.sharedRef)
+            if (receivableId !== undefined) reimbursementLinks.push({...link, receivableId})
+        }
+    }
+    const reimbursements = await db.sharedExpenses.insertImportedReimbursements(req.userId as string, reimbursementLinks)
+    // Never return a retryable 5xx after the transaction rows were committed:
+    // financeService retries transient 500s and that would duplicate the whole
+    // import. Surface link failures in the successful response instead.
+    const linkFailures = (receivables === null ? sharedLinks.length : 0)
+        + (reimbursements === null ? reimbursementLinks.length : 0)
+        + (receivables === null ? pendingReimbursementLinks.length : Math.max(0, pendingReimbursementLinks.length
+            - reimbursementLinks.filter((link) => pendingReimbursementLinks.some((pending) => pending.expenseId === link.expenseId)).length))
+    res.status(200).json({
+        inserted: inserted.length,
+        transaction_ids: inserted.map((item) => item.id),
+        link_failures: linkFailures,
+    })
 })
 
 expensesRouter.post("/get", async (req, res) => {

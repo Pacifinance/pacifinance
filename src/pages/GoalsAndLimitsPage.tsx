@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { LanguageContext } from '../contexts/LanguageContext';
-import GoalsAndLimits from '../components/GoalsAndLimits';
+import GoalsAndLimits from '../sections/GoalsAndLimits';
 import SEOHead from '../components/SEOHead';
 import Sidebar from '../sections/Sidebar';
 import { useAuth } from '../hooks/useAuth';

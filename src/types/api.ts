@@ -126,11 +126,22 @@ export interface ExpenseDto {
   /** Optional custom sub-category id (from /categories/get), display-only — stats stay on category_tag. */
   user_category_id?: number | null;
   balance_source?: ExpenseBalanceSourceDto | null;
+  /** Real movement on the selected account when `amount` is only the user's share. */
+  cash_amount?: number | null;
+  /** Keeps an auditable movement out of income/outflow statistics. */
+  exclude_from_statistics?: boolean;
+  shared_expense?: { own_share: number; client_ref?: string };
+  reimbursement_receivable_id?: number;
+  reimbursement_shared_expense_ref?: string;
 }
 
 export interface ExpenseAddRequest { expense: ExpenseDto; }
 export interface ExpenseBatchAddRequest { expenses: ExpenseDto[]; }
-export interface ExpenseBatchAddResponse { inserted: number; }
+export interface ExpenseBatchAddResponse {
+  inserted: number;
+  transaction_ids: number[];
+  link_failures?: number;
+}
 
 /** Body of POST /expenses/monthly-totals. Omitted `months` -> full history. */
 export interface MonthlyTotalsRequest {
@@ -168,6 +179,8 @@ export interface TransactionDto {
   balanceAssetKey: AssetKey | null;
   balanceDetailType: 'liquidity' | 'investment' | null;
   balanceDetailId: number | null;
+  cashAmount: number;
+  excludeFromStatistics: boolean;
 }
 
 /** Body of POST /expenses/month. `month` is 1-12. */
@@ -897,6 +910,7 @@ export interface SharedExpenseReceivableDto {
   receivableAmount: number;
   settledAmount: number;
   status: SharedExpenseReceivableStatus;
+  expenseId?: number | null;
 }
 
 export type SharedExpenseReceivablesGetResponse = SharedExpenseReceivableDto[];

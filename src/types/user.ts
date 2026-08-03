@@ -8,7 +8,7 @@
  * @module types/user
  */
 
-import type { BalanceMonthDto, CommunityPriceWithInstrumentDto, ExpenseDto, InvestmentTransactionSummaryDto, StatsAverageBucket, TagDto, TransactionDto } from './api';
+import type { BalanceMonthDto, CommunityPriceWithInstrumentDto, InvestmentTransactionSummaryDto, StatsAverageBucket, TagDto, TransactionDto } from './api';
 import type { KeyValue } from './common';
 
 // ─── Profile ─────────────────────────────────────────────────────────
@@ -53,14 +53,14 @@ export interface BalanceSnapshot {
 export type BalanceEntry = BalanceMonthDto;
 
 export interface Expenses {
-  allOutflows: ExpenseDto[][];
+  allOutflows: TransactionDto[][];
   outflowsArray: number[];
   totalOutflowsPerCategoryPerMonth: Record<string, Record<string, number>>;
   totalOutflowsMonth?: number;
 }
 
 export interface Incomes {
-  allIncomes: ExpenseDto[][];
+  allIncomes: TransactionDto[][];
   incomesArray: number[];
   totalIncomesMonth?: number;
 }

@@ -1,4 +1,5 @@
 import { ExtDate } from "../../libs/datelib"
+import { logger } from "../../libs/logger"
 
 import users from "../../db/models/users"
 import balances from "../../db/models/balances"
@@ -38,24 +39,24 @@ export type RankingsCachedData = {
  */
 async function fetchUserRankings(): Promise<RankingsCachedData> {
     const t0 = Date.now()
-    console.log("Started computation of user rankings")
+    logger.info("Started computation of user rankings")
 
     const reference_date = ExtDate.fromNow(); reference_date.moveByMonths(-1)
 
     // Demo and test accounts must never affect real users' percentile ranks.
     const allUsersList = await users.getAllBenchmarkUserIds()
     const allUserIds = allUsersList.map((user) => user.id)
-    console.log(`[rankings] fetched ${allUsersList.length} users (+${Date.now() - t0}ms)`)
+    logger.info(`[rankings] fetched ${allUsersList.length} users (+${Date.now() - t0}ms)`)
 
     const snapshot = await similarUsers.fetchMonthlyProfilesSnapshot(ExtDate.fromNow())
-    console.log(`[rankings] profiles snapshot fetched (+${Date.now() - t0}ms)`)
+    logger.info(`[rankings] profiles snapshot fetched (+${Date.now() - t0}ms)`)
 
     const [balancePool, incomePool, expensePool] = await Promise.all([
         balances.getRankingPool(allUserIds, true),
         expenses.getExpenseRankingPool(allUserIds, false, reference_date),
         expenses.getExpenseRankingPool(allUserIds, true, reference_date),
     ])
-    console.log(`[rankings] population-wide pools fetched (+${Date.now() - t0}ms)`)
+    logger.info(`[rankings] population-wide pools fetched (+${Date.now() - t0}ms)`)
 
     const rankingsCachedData: RankingsCachedData = {}
 
@@ -88,8 +89,8 @@ async function fetchUserRankings(): Promise<RankingsCachedData> {
         }
     }
 
-    console.log(`[rankings] per-user rankings computed (+${Date.now() - t0}ms)`)
-    console.log("Finished computation of user rankings")
+    logger.info(`[rankings] per-user rankings computed (+${Date.now() - t0}ms)`)
+    logger.info("Finished computation of user rankings")
 
     return rankingsCachedData
 }

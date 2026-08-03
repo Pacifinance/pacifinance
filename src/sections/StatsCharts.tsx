@@ -1,19 +1,19 @@
 import React, {useState, useContext, useEffect} from 'react';
 import BalancesStats from '../components/BalancesStats';
-import BalancesChart from '../components/BalancesChart';
-import InOutCharts from '../components/InOutChart';
+import BalancesChart from './BalancesChart';
+import InOutCharts from './InOutChart';
 import { useAuth } from '../hooks/useAuth';
 import { useDemoServices } from '../hooks/useDemoServices';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { StandardPageTitle, StyledSectionStats, SecondaryTitle } from '../styles/MyStyled';
 import styled from 'styled-components';
-import InOutStats from '../components/InOutStats';
+import InOutStats from './InOutStats';
 import { PrivacyContext } from '../contexts/PrivacyContext';
 import { CustomTick } from '../utils/customGraphsInfo';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { TrendingUp, BarChart3, PieChart, LineChart, DollarSign, TrendingDown, Brain, RefreshCw } from 'lucide-react';
 import AdvancedInsightsSection from '../components/AdvancedInsightsSection';
-import DetailedExpenseAnalysis from '../components/DetailedOutflowsAnalysis';
+import DetailedExpenseAnalysis from './DetailedOutflowsAnalysis';
 import HoldingsBreakdownChart from '../components/HoldingsBreakdownChart';
 import HoldingsHistoryChart from '../components/HoldingsHistoryChart';
 import PortfolioInsights from '../components/PortfolioInsights';
@@ -639,27 +639,9 @@ export default function StatsCharts() {
         return (
             <>
                 <SectionContainer>
-                    <ChartGrid columns={2}>
-                        <ChartCard theme={theme} className="slide-in-left">
-                            <BalancesChart 
-                                type="area"
-                                theme={theme} 
-                                userData={userData} 
-                                isHidden={isHidden}
-                                dividends={investmentDividends}
-                                positionLimitPercent={userData?.limits?.positionConcentrationLimit}
-                                categoryLimitPercent={userData?.limits?.assetCategoryConcentrationLimit}
-                                CustomTick={CustomTick}
-                            />
-                        </ChartCard>
-                        <ChartCard theme={theme} className="slide-in-right">
-                            <BalancesChart 
-                                type="bar"
-                                theme={theme} 
-                                userData={userData} 
-                                isHidden={isHidden} 
-                                CustomTick={CustomTick}
-                            />
+                    <ChartGrid columns={1}>
+                        <ChartCard theme={theme} className="fade-in-up">
+                            <BalancesChart theme={theme} userData={userData} isHidden={isHidden} />
                         </ChartCard>
                     </ChartGrid>
                 </SectionContainer>

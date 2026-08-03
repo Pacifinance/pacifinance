@@ -31,7 +31,7 @@ let generated_recovery_base32 = "";
 let generated_recovery_words = "";
 
 // Cloudflare Turnstile configuration
-const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY || import.meta.env.REACT_APP_TURNSTILE_SITE_KEY;
+const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY;
 const IS_DEV = import.meta.env.DEV || import.meta.env.VITE_DEV_MODE === 'true';
 
 // export { generated_user_id };

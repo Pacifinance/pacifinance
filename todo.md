@@ -180,7 +180,7 @@
 ### Funzionalita
 - [ ] Notifiche push (PWA) per promemoria inserimento dati mensili <!-- roadmap:push-notifications -->
 - [ ] Widget riepilogo rapido home: patrimonio + variazione mese precedente
-- [ ] Grafici trend storico patrimonio (linea temporale) <!-- roadmap:trend-charts -->
+- [x] Grafici trend storico patrimonio (linea temporale) <!-- roadmap:trend-charts -->
 - [ ] Export PDF: migliorare layout con grafici inclusi <!-- roadmap:pdf-reports -->
 - [x] Obiettivi e limiti flessibili: soglie fisse e percentuali combinabili, fondo d'emergenza in mesi, limiti per categoria e concentrazione, debiti e rendita passiva (backend + UI + analisi) <!-- roadmap:goals-limits -->
 - [~] Onboarding guidato per nuovi utenti: wizard 4 step con progress bar <!-- roadmap:onboarding -->

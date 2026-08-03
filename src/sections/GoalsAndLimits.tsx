@@ -17,7 +17,7 @@ import {
   getOutflowsTags,
   getCustomCategories
 } from '../utils/userDataSelectors';
-import CategoryPicker from './CategoryPicker';
+import CategoryPicker from '../components/CategoryPicker';
 import {
     FaBullseye, 
     FaChartLine, 

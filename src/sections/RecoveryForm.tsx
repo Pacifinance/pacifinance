@@ -17,7 +17,7 @@ import {
 // Cloudflare Turnstile configuration — same pattern as SignUpForm.tsx (not
 // shared as a hook there either; kept consistent rather than introducing a
 // new abstraction for just these two callers).
-const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY || import.meta.env.REACT_APP_TURNSTILE_SITE_KEY;
+const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY;
 const IS_DEV = import.meta.env.DEV || import.meta.env.VITE_DEV_MODE === 'true';
 
 interface RecoveryFormProps {

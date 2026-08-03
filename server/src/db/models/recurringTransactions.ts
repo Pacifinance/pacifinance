@@ -12,23 +12,42 @@ const RECURRING_SELECT = `
     user_category:user_categories(id, label)
 `
 
-function mapTagJoin(row: any) {
+type TagJoin = {label: string, client_index: number, type: number} | null
+
+interface RecurringRow {
+    id: number
+    is_expense: boolean
+    amount: number
+    notes: string
+    day_of_month: number
+    active: boolean
+    next_run_date: string
+    payment_type: TagJoin
+    category_tag: TagJoin
+    user_category: {id: number, label: string} | null
+}
+
+function mapTagJoin(row: TagJoin) {
     if (!row) return null
     return {label: row.label, index: row.client_index, type: row.type}
 }
 
-function toRecurring(row: any) {
+// See the matching comment in expenses.ts's toExpense: Supabase's untyped
+// client infers embedded *-to-one FK joins as arrays, but PostgREST actually
+// returns a single object here at runtime.
+function toRecurring(rawRow: unknown) {
+    const row = rawRow as RecurringRow
     return {
-        id: row.id as number,
-        isExpense: row.is_expense as boolean,
-        amount: row.amount as number,
+        id: row.id,
+        isExpense: row.is_expense,
+        amount: row.amount,
         notes: decryptField(row.notes),
         paymentType: mapTagJoin(row.payment_type),
         categoryTag: mapTagJoin(row.category_tag),
-        userCategory: row.user_category ? {id: row.user_category.id as number, label: row.user_category.label as string} : null,
-        dayOfMonth: row.day_of_month as number,
-        active: row.active as boolean,
-        nextRunDate: row.next_run_date as string,
+        userCategory: row.user_category ? {id: row.user_category.id, label: row.user_category.label} : null,
+        dayOfMonth: row.day_of_month,
+        active: row.active,
+        nextRunDate: row.next_run_date,
     }
 }
 

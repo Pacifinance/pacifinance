@@ -1,4 +1,5 @@
 import { ExtDate } from "../../libs/datelib"
+import { logger } from "../../libs/logger"
 
 import cache from "../cache"
 
@@ -89,14 +90,14 @@ async function buildHistoricSparkline(oldCoinData: CoinCachedData[string] | unde
         const historicDataUrl = cgApiUrl + `/coins/${newCoinData.id}/market_chart?vs_currency=eur&days=365`
         const res = await fetch(historicDataUrl, options)
         if (res.status !== 200) {
-            console.log(`Error while fetching historic data for ${newCoinData.id}`)
+            logger.info(`Error while fetching historic data for ${newCoinData.id}`)
             return []
         }
         const marketData = await res.json() as CoinFetchedMarketData
         historicData = marketData.prices
             .slice(0, -1) // ignore the last value (today's price)
             .map((value) => { return value[1] }) // keep the price (value[1]), ignore the timestamp (value[0])
-        console.log(`Fetched historic data for ${newCoinData.id}`)
+        logger.info(`Fetched historic data for ${newCoinData.id}`)
     }
 
     // When the day changes, push the last price of that day to the historic data queue
@@ -136,7 +137,7 @@ async function fetchCryptoPrices(): Promise<CoinCachedData | null> {
         `/coins/markets?vs_currency=eur&order=market_cap_desc&per_page=${TOP_N_COINS}&page=1&sparkline=true`
     const res = await fetch(currentDataUrl, options)
     if (res.status !== 200) {
-        console.log("Error while fetching crypto current data")
+        logger.info("Error while fetching crypto current data")
         return expiredCachedPrices
     }
     const coinsData = await res.json() as CoinsFetchedSimpleData[]
@@ -174,7 +175,7 @@ async function fetchCryptoPrices(): Promise<CoinCachedData | null> {
         }
     }
 
-    console.log("Crypto prices fetched")
+    logger.info("Crypto prices fetched")
 
     return data
 }

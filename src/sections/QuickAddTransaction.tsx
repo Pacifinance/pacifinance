@@ -37,13 +37,13 @@ import { learnFromTransaction, suggestCategory } from '../utils/categoryPatterns
 import { detectPlatform } from '../utils/platformDetection';
 import { useLocalizedNavigate } from '../hooks/useLocalizedNavigate';
 import { ASSET_KEYS, buildSnapshotWithDeltas } from '../constants/balanceSchema';
-import CategoryPicker from './CategoryPicker';
+import CategoryPicker from '../components/CategoryPicker';
 import {
   Overlay as ModalOverlay, ModalContainer, ModalHeader, ModalTitle, CloseButton, ModalBody,
-} from './multiInsert/SharedStyles';
+} from '../components/multiInsert/SharedStyles';
 
 const DataImportWizard = lazy(() => import('./DataImportWizard'));
-const InvestmentImportWizard = lazy(() => import('./InvestmentImportWizard'));
+const InvestmentImportWizard = lazy(() => import('../components/InvestmentImportWizard'));
 
 /* Bottom-right, above the mobile BottomNavBar (66-74px tall, see index.css). */
 const Fab = styled.button`

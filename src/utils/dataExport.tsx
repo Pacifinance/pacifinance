@@ -916,7 +916,7 @@ export const exportToJSON = (userData, language, filterOptions = null) => {
 };
 
 // Create pie chart script for PDF
-const createPieChartScript = (categoryExpenses) => {
+const createPieChartScript = (categoryExpenses, currencySymbol) => {
   const colors = [
     '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', 
     '#DDA0DD', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E9',
@@ -959,7 +959,7 @@ const createPieChartScript = (categoryExpenses) => {
                     label: function(context) {
                       const total = context.dataset.data.reduce((sum, val) => sum + val, 0);
                       const percentage = ((context.raw / total) * 100).toFixed(1);
-                      return context.label + ': €' + context.raw + ' (' + percentage + '%)';
+                      return context.label + ': ${currencySymbol}' + context.raw + ' (' + percentage + '%)';
                     }
                   }
                 }
@@ -974,7 +974,7 @@ const createPieChartScript = (categoryExpenses) => {
 };
 
 // Export in formato PDF (documento leggibile)
-export const exportToPDF = async (userData, language, filterOptions = null) => {
+export const exportToPDF = async (userData, language, filterOptions = null, formatAmount, currencySymbol) => {
   try {
     const data = prepareUserDataForExport(userData, language, filterOptions);
     
@@ -1088,11 +1088,11 @@ export const exportToPDF = async (userData, language, filterOptions = null) => {
               
               <div class="summary-stats">
                   <div class="stat-card">
-                      <div class="stat-value">€${data.detailedOutflows ? data.detailedOutflows.reduce((sum, exp) => sum + parseFloat(exp.amount || 0), 0).toFixed(2) : '0'}</div>
+                      <div class="stat-value">${formatAmount(data.detailedOutflows ? data.detailedOutflows.reduce((sum, exp) => sum + parseFloat(exp.amount || 0), 0) : 0)}</div>
                       <div class="stat-label">Total Expenses</div>
                   </div>
                   <div class="stat-card">
-                      <div class="stat-value">€${data.detailedIncomes ? data.detailedIncomes.reduce((sum, inc) => sum + parseFloat(inc.amount || 0), 0).toFixed(2) : '0'}</div>
+                      <div class="stat-value">${formatAmount(data.detailedIncomes ? data.detailedIncomes.reduce((sum, inc) => sum + parseFloat(inc.amount || 0), 0) : 0)}</div>
                       <div class="stat-label">Total Income</div>
                   </div>
                   <div class="stat-card">
@@ -1119,9 +1119,9 @@ export const exportToPDF = async (userData, language, filterOptions = null) => {
                     return `
                       <tr>
                           <td>${cat.category}</td>
-                          <td>€${cat.totalAmount}</td>
+                          <td>${formatAmount(cat.totalAmount)}</td>
                           <td>${cat.transactionCount}</td>
-                          <td>€${cat.averageAmount}</td>
+                          <td>${formatAmount(cat.averageAmount)}</td>
                           <td>${percentage}%</td>
                       </tr>
                     `;
@@ -1141,14 +1141,14 @@ export const exportToPDF = async (userData, language, filterOptions = null) => {
                   ${data.balances.map(balance => `
                       <tr>
                           <td>${balance.date || balance.userDate || 'N/A'}</td>
-                          <td>€${balance.bank || '0'}</td>
-                          <td>€${balance.cash || '0'}</td>
-                          <td>€${balance.digitalServices || '0'}</td>
-                          <td>€${balance.stocks || '0'}</td>
-                          <td>€${balance.etf || '0'}</td>
-                          <td>€${balance.bitcoin || '0'}</td>
-                          <td>€${balance.crypto || '0'}</td>
-                          <td><strong>€${balance.total || '0'}</strong></td>
+                          <td>${formatAmount(balance.bank || 0)}</td>
+                          <td>${formatAmount(balance.cash || 0)}</td>
+                          <td>${formatAmount(balance.digitalServices || 0)}</td>
+                          <td>${formatAmount(balance.stocks || 0)}</td>
+                          <td>${formatAmount(balance.etf || 0)}</td>
+                          <td>${formatAmount(balance.bitcoin || 0)}</td>
+                          <td>${formatAmount(balance.crypto || 0)}</td>
+                          <td><strong>${formatAmount(balance.total || 0)}</strong></td>
                       </tr>
                   `).join('')}
               </table>
@@ -1163,7 +1163,7 @@ export const exportToPDF = async (userData, language, filterOptions = null) => {
                   ${data.detailedIncomes.map(income => `
                       <tr>
                           <td>${income.date}</td>
-                          <td style="color: #079164; font-weight: bold;">€${income.amount}</td>
+                          <td style="color: #079164; font-weight: bold;">${formatAmount(income.amount)}</td>
                           <td>${income.category || 'N/A'}</td>
                           <td>${income.notes || ''}</td>
                       </tr>
@@ -1180,7 +1180,7 @@ export const exportToPDF = async (userData, language, filterOptions = null) => {
                   ${data.detailedOutflows.slice(0, 50).map(expense => `
                       <tr>
                           <td>${expense.date}</td>
-                          <td style="color: #dc3545; font-weight: bold;">€${expense.amount}</td>
+                          <td style="color: #dc3545; font-weight: bold;">${formatAmount(expense.amount)}</td>
                           <td>${expense.category || 'N/A'}</td>
                           <td>${expense.paymentType || 'N/A'}</td>
                           <td>${expense.notes || ''}</td>
@@ -1220,7 +1220,7 @@ export const exportToPDF = async (userData, language, filterOptions = null) => {
 
       </body>
       ${data.isFiltered && data.filterInfo?.type === 'specific' && data.categoryExpenses && data.categoryExpenses.length > 0 
-        ? createPieChartScript(data.categoryExpenses) 
+        ? createPieChartScript(data.categoryExpenses, currencySymbol)
         : ''}
       </html>
     `;

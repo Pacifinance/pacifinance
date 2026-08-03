@@ -20,7 +20,7 @@ import {
   Groups as GroupsIcon,
 } from "@mui/icons-material";
 
-const DataImportWizard = lazy(() => import("../components/DataImportWizard"));
+const DataImportWizard = lazy(() => import("./DataImportWizard"));
 const MultiOutflowInsert = lazy(() => import("../components/MultiOutflowInsert"));
 const MultiIncomeInsert = lazy(() => import("../components/MultiIncomeInsert"));
 const MultiBalanceInsert = lazy(() => import("../components/MultiBalanceInsert"));

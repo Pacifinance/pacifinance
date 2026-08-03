@@ -194,6 +194,62 @@ describe('userService', () => {
     });
   });
 
+  describe('generateRecoveryCode', () => {
+    it('should call /user/recovery-code/generate with password only', async () => {
+      mockClient.post.mockResolvedValue({
+        data: { recovery_code_base32: 'ABCD-EFGH-JKMN-PQRS', recovery_code_words: 'tiger-eagle-otter-panda-zebra-camel-koala-rhino-falcon-dolphin' },
+      });
+
+      const result = await service.generateRecoveryCode('pass');
+
+      expect(mockClient.post).toHaveBeenCalledWith('/api/user/recovery-code/generate', {
+        password: 'pass',
+      });
+      expect(result.recovery_code_base32).toBe('ABCD-EFGH-JKMN-PQRS');
+    });
+  });
+
+  describe('getRecoveryCodeStatus', () => {
+    it('should call /user/recovery-code/status', async () => {
+      mockClient.post.mockResolvedValue({ data: { configured: true, generated_at: '2026-08-01T00:00:00.000Z' } });
+
+      const result = await service.getRecoveryCodeStatus();
+
+      expect(mockClient.post).toHaveBeenCalledWith('/api/user/recovery-code/status', {});
+      expect(result).toEqual({ configured: true, generated_at: '2026-08-01T00:00:00.000Z' });
+    });
+  });
+
+  describe('resetPasswordWithRecoveryCode', () => {
+    it('should call /recovery/reset-password with user_id, recovery_code, new_pwd, repeated_pwd', async () => {
+      mockClient.post.mockResolvedValue({ status: 200 });
+
+      const result = await service.resetPasswordWithRecoveryCode('123456', 'ABCD-EFGH-JKMN-PQRS', 'newpass', 'newpass', 'token');
+
+      expect(mockClient.post).toHaveBeenCalledWith('/api/recovery/reset-password', {
+        user_id: '123456',
+        recovery_code: 'ABCD-EFGH-JKMN-PQRS',
+        new_pwd: 'newpass',
+        repeated_pwd: 'newpass',
+        turnstile_token: 'token',
+      });
+      expect(result.status).toBe(200);
+    });
+
+    it('should omit turnstile_token when not provided', async () => {
+      mockClient.post.mockResolvedValue({ status: 200 });
+
+      await service.resetPasswordWithRecoveryCode('123456', 'ABCD-EFGH-JKMN-PQRS', 'newpass', 'newpass');
+
+      expect(mockClient.post).toHaveBeenCalledWith('/api/recovery/reset-password', {
+        user_id: '123456',
+        recovery_code: 'ABCD-EFGH-JKMN-PQRS',
+        new_pwd: 'newpass',
+        repeated_pwd: 'newpass',
+      });
+    });
+  });
+
   describe('resetUsername', () => {
     it('should call /user/set-username', async () => {
       mockClient.post.mockResolvedValue({ data: { username: 'NewRandom' } });

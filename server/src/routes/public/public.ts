@@ -1,4 +1,5 @@
 import express from "express"
+import crypto from "crypto"
 
 import db from "../../db/db"
 import common from "../common"
@@ -6,6 +7,8 @@ import authCookies from "../authCookies"
 import supabase from "../../db/supabase"
 import redis from "../../cache/redisClient"
 import { TimeoutError, getTimeoutMs, withTimeout } from "../../libs/timeout"
+import { checkAndConsumeRateLimit } from "../../libs/rateLimiter"
+import { generateRecoveryCode, hashRecoveryCode, parseRecoveryCodeInput } from "../../db/recoveryCode"
 
 const publicRouter = express.Router()
 
@@ -208,10 +211,21 @@ publicRouter.post("/registration", async (req, res) => {
             res.status(500).send()
             return
         }
+        // Generate an account-recovery code as part of registration (no
+        // extra step/friction for the user) — shown once in the response,
+        // only its hash is persisted. See db/recoveryCode.ts.
+        const recoveryCode = generateRecoveryCode()
+        const recoverySaved = await db.users.setRecoveryCodeHash(insertion.id, hashRecoveryCode(recoveryCode.bytes))
+        if (recoverySaved === null)
+            console.error(`registration: failed to store recovery code hash for user ${user_id} (account still usable, just without a recovery code yet)`)
         console.log(`User ${user_id} registered`)
-        // Send the user ID to the client with status code 200 (OK)
+        // Send the user ID and recovery code to the client with status code 200 (OK)
         res.status(200)
-        res.json({user_id: user_id})
+        res.json({
+            user_id: user_id,
+            recovery_code_base32: recoverySaved ? recoveryCode.base32 : null,
+            recovery_code_words: recoverySaved ? recoveryCode.words : null,
+        })
     } catch (error) {
         if (error instanceof TimeoutError || (error instanceof Error && error.name === "AbortError")) {
             console.error("registration: external dependency timed out", error)
@@ -257,6 +271,84 @@ publicRouter.post("/login", async (req, res) => {
     // Send status code 200 (OK)
     res.status(200)
     res.send()
+})
+
+publicRouter.post("/recovery/reset-password", async (req, res) => {
+    try {
+        let user_id = req.body?.user_id
+        let recovery_code = req.body?.recovery_code
+        let new_pwd = req.body?.new_pwd
+        let repeated_pwd = req.body?.repeated_pwd
+        const turnstile_token = req.body?.turnstile_token
+        user_id = common.sanitizeInput(user_id)
+        recovery_code = common.sanitizeInput(recovery_code)
+        new_pwd = common.sanitizeInput(new_pwd)
+        repeated_pwd = common.sanitizeInput(repeated_pwd)
+        if (user_id === "" || recovery_code === "" || new_pwd === "" || repeated_pwd === "" || new_pwd !== repeated_pwd || turnstile_token == null)
+        {
+            res.status(400)
+            res.send()
+            return
+        }
+
+        // Rate-limited both per-IP and per-account, before touching the hash:
+        // this endpoint bypasses the password entirely, so it needs at least
+        // as much protection as a login attempt, if not more.
+        const ip = req.ip ?? "unknown"
+        const [ipAllowed, accountAllowed] = await Promise.all([
+            checkAndConsumeRateLimit(`recovery-reset:ip:${ip}`, 20),
+            checkAndConsumeRateLimit(`recovery-reset:user:${user_id}`, 5),
+        ])
+        if (!ipAllowed || !accountAllowed) {
+            res.status(429).send()
+            return
+        }
+
+        const [verified, response_code] = await verifyTurnstileToken(turnstile_token)
+        if (!verified) {
+            res.status(response_code).send()
+            return
+        }
+
+        // Generic 401 on any failure below (wrong id, wrong code, no code
+        // configured) — never reveal which part failed.
+        const record = await db.users.getRecoveryCodeHashByUserCode(user_id)
+        if (!record || !record.recoveryCodeHash) {
+            res.status(401).send()
+            return
+        }
+        const suppliedBytes = parseRecoveryCodeInput(recovery_code)
+        if (!suppliedBytes) {
+            res.status(401).send()
+            return
+        }
+        const suppliedHash = Buffer.from(hashRecoveryCode(suppliedBytes), "hex")
+        const storedHash = Buffer.from(record.recoveryCodeHash, "hex")
+        if (suppliedHash.length !== storedHash.length || !crypto.timingSafeEqual(suppliedHash, storedHash)) {
+            res.status(401).send()
+            return
+        }
+
+        const updated = await db.users.setPasswordOfUserId(record.id, new_pwd)
+        if (updated === null) {
+            res.status(500).send()
+            return
+        }
+        // Single-use: invalidate immediately so a code exposed during
+        // recovery (e.g. a shared/public computer) doesn't stay valid.
+        await db.users.setRecoveryCodeHash(record.id, null)
+
+        res.status(200).send()
+    } catch (error) {
+        if (error instanceof TimeoutError || (error instanceof Error && error.name === "AbortError")) {
+            console.error("recovery/reset-password: external dependency timed out", error)
+            res.status(504).send()
+            return
+        }
+
+        console.error("recovery/reset-password: unexpected failure", error)
+        res.status(500).send()
+    }
 })
 
 export default publicRouter

@@ -20,6 +20,10 @@ import type {
   BenchmarkConsentResponse,
   SeenBadgesRequest,
   SeenBadgesResponse,
+  UserGenerateRecoveryCodeRequest,
+  UserGenerateRecoveryCodeResponse,
+  UserRecoveryCodeStatusResponse,
+  RecoveryResetPasswordRequest,
 } from '../types/api';
 import { withRetry } from '../utils/retryRequest';
 
@@ -39,6 +43,15 @@ export interface UserService {
     oldPassword: string,
     newPassword: string,
     repeatedPassword: string,
+  ): Promise<AxiosResponse>;
+  generateRecoveryCode(password: string): Promise<UserGenerateRecoveryCodeResponse>;
+  getRecoveryCodeStatus(): Promise<UserRecoveryCodeStatusResponse>;
+  resetPasswordWithRecoveryCode(
+    userId: string,
+    recoveryCode: string,
+    newPassword: string,
+    repeatedPassword: string,
+    turnstileToken?: string,
   ): Promise<AxiosResponse>;
   resetUsername(): Promise<{ username: string }>;
   saveGoals(goals: UserGoalsRequest): Promise<unknown>;
@@ -120,6 +133,29 @@ export const createUserService = (apiClient: AxiosInstance): UserService => ({
       repeated_pwd: repeatedPassword,
     };
     const res = await apiClient.post('/api/user/set-password', payload);
+    return res;
+  },
+
+  async generateRecoveryCode(password) {
+    const payload: UserGenerateRecoveryCodeRequest = { password };
+    const res = await apiClient.post<UserGenerateRecoveryCodeResponse>('/api/user/recovery-code/generate', payload);
+    return res.data;
+  },
+
+  async getRecoveryCodeStatus() {
+    const res = await apiClient.post<UserRecoveryCodeStatusResponse>('/api/user/recovery-code/status', {});
+    return res.data;
+  },
+
+  async resetPasswordWithRecoveryCode(userId, recoveryCode, newPassword, repeatedPassword, turnstileToken) {
+    const payload: RecoveryResetPasswordRequest = {
+      user_id: userId,
+      recovery_code: recoveryCode,
+      new_pwd: newPassword,
+      repeated_pwd: repeatedPassword,
+      ...(turnstileToken ? { turnstile_token: turnstileToken } : {}),
+    };
+    const res = await apiClient.post('/api/recovery/reset-password', payload);
     return res;
   },
 

@@ -1,4 +1,4 @@
-import React, { useContext, useState, lazy, Suspense } from "react";
+import React, { useContext, useState, useEffect, lazy, Suspense } from "react";
 
 import { useLocalizedNavigate } from "../hooks/useLocalizedNavigate";
 import { useDemoServices } from "../hooks/useDemoServices";
@@ -61,8 +61,10 @@ import {
     faHistory,
     faTag,
     faPen,
-    faCheck
+    faCheck,
+    faLifeRing
 } from "@fortawesome/free-solid-svg-icons";
+import { openPrintableRecoveryCard, downloadRecoveryCardText } from "../utils/recoveryCard";
 import { usePastDateBalancePref, PAST_DATE_BALANCE_CHOICES } from "../hooks/usePastDateBalancePref";
 import { usePrivacyDefaultPref, PRIVACY_DEFAULT_CHOICES } from "../hooks/usePrivacyDefaultPref";
 
@@ -91,6 +93,13 @@ const SettingsPage = () => {
     // Shared account actions via DI hook
     const accountActions = useAccountActions({
         onSuccess: (key, value) => {
+            if (key === 'recoveryCodeGenerated') {
+                setRecoveryCodeResult(value);
+                setRecoveryStatus({ configured: true, generatedAt: new Date().toISOString() });
+                setSuccessMessage(translations.sidebar.recoveryCode.successPopup.message);
+                setTimeout(() => setSuccessMessage(""), MESSAGE_AUTO_DISMISS_MS);
+                return;
+            }
             const messages = {
                 passwordChanged: translations.sidebar.changePassword.successPopup.message,
                 idGenerated: translations.sidebar.changeID.successPopup.message + value,
@@ -106,6 +115,7 @@ const SettingsPage = () => {
                 changePasswordFailed: translations.sidebar?.changePassword?.error || "Cambio password fallito",
                 changePasswordError: translations.sidebar?.changePassword?.error || "Errore nel cambio password",
                 generateIdError: translations.sidebar?.changeID?.error || "Errore nel cambio ID",
+                generateRecoveryCodeError: translations.sidebar?.recoveryCode?.errorPopup?.message || "Errore nella generazione del recovery code",
             };
             setErrorMessage(messages[key] || key);
             setTimeout(() => setErrorMessage(""), MESSAGE_AUTO_DISMISS_MS);
@@ -118,6 +128,13 @@ const SettingsPage = () => {
 
     const [showChangeID, setShowChangeID] = useState(false);
     const [showChangePassword, setShowChangePassword] = useState(false);
+    const [showGenerateRecoveryCode, setShowGenerateRecoveryCode] = useState(false);
+    // Its own password field — kept separate from Change ID/Change Password's
+    // shared `password` state so the three forms can't clobber each other.
+    const [recoveryPassword, setRecoveryPassword] = useState("");
+    const [showRecoveryPassword, setShowRecoveryPassword] = useState(false);
+    const [recoveryCodeResult, setRecoveryCodeResult] = useState(null);
+    const [recoveryStatus, setRecoveryStatus] = useState(null);
     const [showDeleteAccount, setShowDeleteAccount] = useState(false);
     const [password, setPassword] = useState("");
     const [oldPassword, setOldPassword] = useState("");
@@ -150,6 +167,14 @@ const SettingsPage = () => {
 
     const isDemo = ["test", "demo"].includes(userType);
     const demoTooltip = translations?.header?.demo?.disabledTooltip || 'This feature is disabled in the demo account. Sign up for free to unlock it!';
+
+    useEffect(() => {
+        if (isDemo) return;
+        userService.getRecoveryCodeStatus()
+            .then((status) => setRecoveryStatus({ configured: status.configured, generatedAt: status.generated_at }))
+            .catch(() => {});
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isDemo]);
 
     // Guardia per verificare che theme e translations siano disponibili
     if (!theme || !translations || !translations.sidebar?.settings) {
@@ -275,6 +300,43 @@ const SettingsPage = () => {
 
     const handleDeleteAccount = async () => {
         await accountActions.deleteAccount();
+    };
+
+    const handleGenerateRecoveryCode = async (event) => {
+        event.preventDefault();
+        const code = await accountActions.generateRecoveryCode(recoveryPassword);
+        if (code) {
+            setRecoveryPassword("");
+            // Keep the section open so the user can see/download the new code —
+            // unlike Change ID/Change Password, which reset and collapse.
+        }
+    };
+
+    const recoveryCardLabels = () => ({
+        documentTitle: translations.recoveryCard.documentTitle,
+        userIdLabel: translations.recoveryCard.userIdLabel,
+        blockCodeLabel: translations.recoveryCard.blockCodeLabel,
+        wordPhraseLabel: translations.recoveryCard.wordPhraseLabel,
+        qrHint: translations.recoveryCard.qrHint,
+        warningTitle: translations.recoveryCard.warningTitle,
+        warningBody: translations.recoveryCard.warningBody,
+        generatedOnLabel: translations.recoveryCard.generatedOnLabel,
+    });
+
+    const handleDownloadRecoveryCard = () => {
+        if (!recoveryCodeResult) return;
+        openPrintableRecoveryCard(
+            { userId: userData?.userId || "", base32: recoveryCodeResult.base32, words: recoveryCodeResult.words },
+            recoveryCardLabels(),
+        );
+    };
+
+    const handleDownloadRecoveryText = () => {
+        if (!recoveryCodeResult) return;
+        downloadRecoveryCardText(
+            { userId: userData?.userId || "", base32: recoveryCodeResult.base32, words: recoveryCodeResult.words },
+            recoveryCardLabels(),
+        );
     };
 
     // Funzioni per l'export dei dati
@@ -1424,6 +1486,119 @@ const SettingsPage = () => {
                                             }
                                         </MyButton>
                                     </form>
+                                )}
+                                </div>
+
+                                <div>
+                                    <Tooltip title={isDemo ? demoTooltip : ''} arrow placement="top">
+                                    <span style={{ display: 'block', width: '100%' }}>
+                                    <MyButton
+                                        theme={theme}
+                                        onClick={() => setShowGenerateRecoveryCode(!showGenerateRecoveryCode)}
+                                        disabled={isDemo}
+                                        style={{
+                                            width: "100%",
+                                            padding: "0.7rem",
+                                            borderRadius: "10px",
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                            fontSize: "0.85rem",
+                                            fontWeight: "500",
+                                            backgroundColor: isDemo
+                                                ? "#d3d3d3"
+                                                : theme.buttonBackgroundColor,
+                                            boxShadow: isDemo
+                                                ? "none"
+                                                : "0 2px 8px rgba(7, 145, 100, 0.25)",
+                                            transition: "all 0.3s ease",
+                                            pointerEvents: isDemo ? 'none' : 'auto'
+                                        }}
+                                    >
+                                        <FontAwesomeIcon icon={faLifeRing} style={{ marginRight: "0.5rem" }} />
+                                        {translations.sidebar.recoveryCode.title}
+                                    </MyButton>
+                                    </span>
+                                    </Tooltip>
+
+                                {showGenerateRecoveryCode && (
+                                    <div style={{ marginTop: "1rem", padding: "1rem", backgroundColor: "white", borderRadius: "8px" }}>
+                                        <p style={{ fontSize: "0.85rem", marginBottom: "0.8rem", color: "#333" }}>
+                                            {recoveryStatus?.configured
+                                                ? translations.sidebar.recoveryCode.statusConfigured.replace(
+                                                    '{date}',
+                                                    recoveryStatus.generatedAt ? new Date(recoveryStatus.generatedAt).toLocaleDateString() : ''
+                                                )
+                                                : translations.sidebar.recoveryCode.statusNotConfigured}
+                                        </p>
+
+                                        {!recoveryCodeResult && (
+                                            <form onSubmit={handleGenerateRecoveryCode}>
+                                                <MuiCustomTextField
+                                                    theme={theme}
+                                                    label={translations.sidebar.recoveryCode.passwordLabel}
+                                                    type={showRecoveryPassword ? "text" : "password"}
+                                                    value={recoveryPassword}
+                                                    onChange={(e) => setRecoveryPassword(e.target.value)}
+                                                    required
+                                                    fullWidth
+                                                    InputProps={{
+                                                        endAdornment: (
+                                                            <MuiCustomInputAdornment position="end">
+                                                                <MuiCustomIconButton
+                                                                    theme={theme}
+                                                                    onClick={() => setShowRecoveryPassword(!showRecoveryPassword)}
+                                                                >
+                                                                    <FontAwesomeIcon icon={showRecoveryPassword ? faEye : faEyeSlash} />
+                                                                </MuiCustomIconButton>
+                                                            </MuiCustomInputAdornment>
+                                                        ),
+                                                    }}
+                                                />
+                                                {recoveryStatus?.configured && (
+                                                    <p style={{ fontSize: "0.78rem", color: "#b45309", marginTop: "0.6rem" }}>
+                                                        {translations.sidebar.recoveryCode.regenerateWarning}
+                                                    </p>
+                                                )}
+                                                <MyButton type="submit" theme={theme} style={{ marginTop: "1rem" }}>
+                                                    {recoveryStatus?.configured
+                                                        ? translations.sidebar.recoveryCode.regenerateButton
+                                                        : translations.sidebar.recoveryCode.generateButton}
+                                                </MyButton>
+                                            </form>
+                                        )}
+
+                                        {recoveryCodeResult && (
+                                            <div
+                                                className="p-3 rounded-lg border-2 text-center"
+                                                style={{ borderColor: theme.buttonBackgroundColor, borderStyle: 'dashed' }}
+                                            >
+                                                <div style={{ fontSize: "0.75rem", opacity: 0.7, marginBottom: 4 }}>
+                                                    {translations.recoveryCard.blockCodeLabel}
+                                                </div>
+                                                <div style={{ fontFamily: "monospace", fontWeight: 700, marginBottom: 8, color: theme.buttonBackgroundColor }}>
+                                                    {recoveryCodeResult.base32}
+                                                </div>
+                                                <div style={{ fontSize: "0.75rem", opacity: 0.7, marginBottom: 4 }}>
+                                                    {translations.recoveryCard.wordPhraseLabel}
+                                                </div>
+                                                <div style={{ fontFamily: "monospace", fontWeight: 700, marginBottom: 12, color: theme.buttonBackgroundColor, fontSize: "0.85rem" }}>
+                                                    {recoveryCodeResult.words}
+                                                </div>
+                                                <div style={{ display: "flex", gap: 8, justifyContent: "center", flexWrap: "wrap" }}>
+                                                    <MyButton theme={theme} onClick={handleDownloadRecoveryCard} style={{ fontSize: "0.78rem", padding: "0.4rem 0.8rem" }}>
+                                                        {translations.header.register.successPopup.downloadCardButton}
+                                                    </MyButton>
+                                                    <MyButton theme={theme} onClick={handleDownloadRecoveryText} style={{ fontSize: "0.78rem", padding: "0.4rem 0.8rem" }}>
+                                                        {translations.header.register.successPopup.downloadTextButton}
+                                                    </MyButton>
+                                                    <MyButton theme={theme} onClick={() => setRecoveryCodeResult(null)} style={{ fontSize: "0.78rem", padding: "0.4rem 0.8rem" }}>
+                                                        {translations.sidebar.recoveryCode.doneButton}
+                                                    </MyButton>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
                                 )}
                                 </div>
                             </div>

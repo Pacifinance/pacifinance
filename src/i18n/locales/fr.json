@@ -291,7 +291,34 @@
                 "securityMessage": "<strong>💾 Sauvegarde ces identifiants maintenant !</strong><br/>Utilise un gestionnaire de mots de passe comme Bitwarden, 1Password ou LastPass pour stocker en toute sécurité ton ID et ton mot de passe.",
                 "copied": "Copié dans le presse-papiers !",
                 "toCopy": "Copier ton ID",
-                "okButton": "ok compris"
+                "okButton": "ok compris",
+                "recoveryIntro": "Ton code de récupération (nécessaire si tu oublies ton mot de passe) :",
+                "recoveryBlockLabel": "Code en blocs :",
+                "recoveryWordsLabel": "Phrase de mots :",
+                "copyCode": "Copier le code",
+                "copiedCode": "Copié !",
+                "downloadCardButton": "Télécharger la carte de récupération (PDF)",
+                "downloadTextButton": "Télécharger en texte (.txt)"
+            }
+        },
+        "recovery": {
+            "linkText": "Mot de passe oublié ?",
+            "title": "Récupère ton compte",
+            "info": "Entre ton ID, ton code de récupération (code en blocs ou phrase de mots) et définis un nouveau mot de passe.",
+            "userIdLabel": "ID utilisateur",
+            "codeLabel": "Code de récupération",
+            "codePlaceholder": "ex. XXXX-XXXX-XXXX-XXXX ou mot-mot-mot...",
+            "newPasswordLabel": "Nouveau mot de passe",
+            "confirmPasswordLabel": "Confirmer le nouveau mot de passe",
+            "submitButton": "Réinitialiser le mot de passe",
+            "backToSignIn": "Retour à la connexion",
+            "errorPopup": {
+                "message": "Code de récupération ou ID invalide. Vérifie que tu les as saisis correctement.",
+                "passwordMismatch": "Les deux mots de passe ne correspondent pas.",
+                "turnstileRequired": "Attends la fin de la vérification de sécurité."
+            },
+            "successPopup": {
+                "message": "Mot de passe réinitialisé avec succès !"
             }
         },
         "logout": "Déconnexion",
@@ -527,6 +554,22 @@
                 "title": "Your password has been changed successfully.",
                 "message": "You will be redirected to the login page.",
                 "okButton": "ok fine"
+            }
+        },
+        "recoveryCode": {
+            "title": "Code de récupération",
+            "statusConfigured": "Code de récupération configuré le {date}.",
+            "statusNotConfigured": "Aucun code de récupération configuré. Génères-en un pour pouvoir récupérer ton compte si tu oublies ton mot de passe.",
+            "passwordLabel": "Mot de passe actuel",
+            "regenerateWarning": "⚠️ En générer un nouveau invalide immédiatement le précédent.",
+            "generateButton": "Générer un code de récupération",
+            "regenerateButton": "Générer un nouveau code de récupération",
+            "doneButton": "Terminé",
+            "successPopup": {
+                "message": "Code de récupération généré avec succès."
+            },
+            "errorPopup": {
+                "message": "Erreur lors de la génération du code de récupération. Vérifie ton mot de passe et réessaie."
             }
         },
         "settings": {
@@ -2991,5 +3034,15 @@
             "advancedTitle": "Advanced controls", "advancedHint": "Leave a control empty to disable it.", "fixedExpensesPercent": "Maximum fixed expenses as income (%)", "debtReduction": "Monthly debt reduction", "positionConcentration": "Maximum position concentration (%)", "categoryConcentration": "Maximum asset-category concentration (%)", "passiveIncome": "Annual passive-income goal", "categorySpending": "Monthly category limits", "categoryName": "Category", "categoryAmount": "Limit",
             "investmentPercent": "Minimum investment as income (%)", "bothRequired": "When both thresholds are set, both must be met.", "customNetWorthPercent": "Net-worth target (%)", "netWorthRequirement": "Net-worth threshold: {percent}% = {amount}"
         }
+    },
+    "recoveryCard": {
+        "documentTitle": "Carte de récupération de compte",
+        "userIdLabel": "ID utilisateur",
+        "blockCodeLabel": "Code en blocs",
+        "wordPhraseLabel": "Phrase de mots",
+        "qrHint": "Scanne avec un appareil photo pour ouvrir la page de récupération déjà remplie",
+        "warningTitle": "Important",
+        "warningBody": "Conserve ce document en lieu sûr. Quiconque le possède avec ton ID peut réinitialiser ton mot de passe. Sans lui, et sans ton mot de passe d'origine, la récupération du compte n'est pas possible.",
+        "generatedOnLabel": "Généré le"
     }
 }

@@ -28,12 +28,16 @@ const mocks = vi.hoisted(() => {
             },
             emailForUserCode: vi.fn((userCode: string) => `${userCode}@users.pacifinance.internal`),
             userCodeExists: vi.fn(),
+            getIdByUserCode: vi.fn(),
             insertNew: vi.fn(),
             getTypeOfUserId: vi.fn(),
             verifyPassword: vi.fn(),
             getAllBenchmarkUserIds: vi.fn(),
             setUserIdByUserId: vi.fn(),
             setPasswordOfUserId: vi.fn(),
+            setRecoveryCodeHash: vi.fn(),
+            getRecoveryCodeHashByUserCode: vi.fn(),
+            getRecoveryCodeStatusByUserId: vi.fn(),
             getPublicInfoByUserId: vi.fn(),
             setBenchmarkConsentByUserId: vi.fn(),
             setSeenBadgesByUserId: vi.fn(),
@@ -186,7 +190,9 @@ const mocks = vi.hoisted(() => {
     const redis = {
         get: vi.fn(),
         set: vi.fn(),
-        ping: vi.fn()
+        ping: vi.fn(),
+        incr: vi.fn(),
+        expire: vi.fn()
     }
 
     const cache = {
@@ -250,10 +256,14 @@ export function resetServerMocks() {
     mockSupabase.auth.admin.listUsers.mockResolvedValue({data: {users: []}, error: null})
 
     mockDb.users.userCodeExists.mockResolvedValue(false)
+    mockDb.users.getIdByUserCode.mockResolvedValue("user-uuid")
     mockDb.users.insertNew.mockResolvedValue({id: "user-uuid", userId: "123456"})
     mockDb.users.getTypeOfUserId.mockResolvedValue({type: mockDb.users.UserType.regular.value})
     mockDb.users.verifyPassword.mockResolvedValue(true)
     mockDb.users.getAllBenchmarkUserIds.mockResolvedValue([])
+    mockDb.users.setRecoveryCodeHash.mockResolvedValue({id: "user-uuid"})
+    mockDb.users.getRecoveryCodeHashByUserCode.mockResolvedValue(null)
+    mockDb.users.getRecoveryCodeStatusByUserId.mockResolvedValue({configured: false, generatedAt: null})
     mockDb.users.getPublicInfoByUserId.mockResolvedValue({userId: "123456"})
     mockDb.users.setBenchmarkConsentByUserId.mockResolvedValue({benchmarkConsent: false})
     mockDb.users.setSeenBadgesByUserId.mockResolvedValue({seenBadges: []})
@@ -348,6 +358,8 @@ export function resetServerMocks() {
     mockRedis.get.mockResolvedValue(null)
     mockRedis.set.mockResolvedValue("OK")
     mockRedis.ping.mockResolvedValue("PONG")
+    mockRedis.incr.mockResolvedValue(1)
+    mockRedis.expire.mockResolvedValue(1)
 
     mockCache.getExpectedKeys.mockReturnValue(["userAverages", "userRankings", "crypto"])
     mockCache.valueExpired.mockResolvedValue(false)

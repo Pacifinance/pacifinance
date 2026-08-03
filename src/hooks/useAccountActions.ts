@@ -91,6 +91,27 @@ export const useAccountActions = ({ onSuccess, onError, onLogout } = {}) => {
   }, [userService, onSuccess, onError]);
 
   /**
+   * Generate (or regenerate) the account's recovery code. Password-gated
+   * like generateNewId; regenerating invalidates any previous code.
+   * @param {string} password  Current password for confirmation
+   * @returns {Promise<{base32: string, words: string}|null>} The new code, or null on failure
+   */
+  const generateRecoveryCode = useCallback(async (password) => {
+    setIsLoading(true);
+    try {
+      const response = await userService.generateRecoveryCode(password);
+      const code = { base32: response.recovery_code_base32, words: response.recovery_code_words };
+      onSuccess?.('recoveryCodeGenerated', code);
+      return code;
+    } catch {
+      onError?.('generateRecoveryCodeError');
+      return null;
+    } finally {
+      setIsLoading(false);
+    }
+  }, [userService, onSuccess, onError]);
+
+  /**
    * Reset (regenerate) the username.
    * @returns {Promise<string|null>} The new username, or null on failure
    */
@@ -135,6 +156,7 @@ export const useAccountActions = ({ onSuccess, onError, onLogout } = {}) => {
     deleteAccount,
     changePassword,
     generateNewId,
+    generateRecoveryCode,
     resetUsername,
     updateProfile,
     isLoading,

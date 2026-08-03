@@ -7,6 +7,7 @@ import { ThemeContext } from "../contexts/ThemeContext";
 import { LanguageContext } from "../contexts/LanguageContext";
 import { useToast } from "../contexts/ToastContext";
 import { UserContext } from "../contexts/UserContext";
+import { openPrintableRecoveryCard, downloadRecoveryCardText } from "../utils/recoveryCard";
 
 //for the modal and styled components
 import {
@@ -26,6 +27,8 @@ import {
 } from "../styles/MyStyled";
 
 let generated_user_id = "";
+let generated_recovery_base32 = "";
+let generated_recovery_words = "";
 
 // Cloudflare Turnstile configuration
 const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY || import.meta.env.REACT_APP_TURNSTILE_SITE_KEY;
@@ -43,6 +46,7 @@ export default function SignUpForm() {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [isCopied, setIsCopied] = useState(false);
+    const [copiedCodeField, setCopiedCodeField] = useState<"block" | "words" | null>(null);
     const [turnstileToken, setTurnstileToken] = useState("");
     const [isTurnstileLoaded, setIsTurnstileLoaded] = useState(false);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -192,6 +196,37 @@ export default function SignUpForm() {
         setIsCopied(true);
     };
 
+    const copyRecoveryCode = (field: "block" | "words") => {
+        const value = field === "block" ? generated_recovery_base32 : generated_recovery_words;
+        if ("clipboard" in navigator) navigator.clipboard.writeText(value);
+        setCopiedCodeField(field);
+    };
+
+    const recoveryCardLabels = () => ({
+        documentTitle: translations.recoveryCard.documentTitle,
+        userIdLabel: translations.recoveryCard.userIdLabel,
+        blockCodeLabel: translations.recoveryCard.blockCodeLabel,
+        wordPhraseLabel: translations.recoveryCard.wordPhraseLabel,
+        qrHint: translations.recoveryCard.qrHint,
+        warningTitle: translations.recoveryCard.warningTitle,
+        warningBody: translations.recoveryCard.warningBody,
+        generatedOnLabel: translations.recoveryCard.generatedOnLabel,
+    });
+
+    const handleDownloadCard = () => {
+        openPrintableRecoveryCard(
+            { userId: generated_user_id, base32: generated_recovery_base32, words: generated_recovery_words },
+            recoveryCardLabels(),
+        );
+    };
+
+    const handleDownloadText = () => {
+        downloadRecoveryCardText(
+            { userId: generated_user_id, base32: generated_recovery_base32, words: generated_recovery_words },
+            recoveryCardLabels(),
+        );
+    };
+
     const handleCloseSuccessModal = async () => {
         setShowSuccessModal(false);
         try {
@@ -239,6 +274,8 @@ export default function SignUpForm() {
             const response = await userService.register(password, confirmPassword, turnstileToken);
             if (response.status === 200) {
                 generated_user_id = response.data.user_id;
+                generated_recovery_base32 = response.data.recovery_code_base32 || "";
+                generated_recovery_words = response.data.recovery_code_words || "";
                 setShowSuccessModal(true);
                 //window.umami.trackEvent('SignUp');
             } else {
@@ -478,8 +515,71 @@ export default function SignUpForm() {
                                     </div>
                                 </div>
                                 
+                                {/* Recovery Code Display Box */}
+                                {generated_recovery_base32 && (
+                                    <div
+                                        className="p-4 rounded-lg border-2 text-center"
+                                        style={{
+                                            backgroundColor: theme.mode === "dark" ? `${theme.secondaryColor}15` : `${theme.secondaryColor}10`,
+                                            borderColor: theme.secondaryColor,
+                                            borderStyle: 'dashed'
+                                        }}
+                                    >
+                                        <div className="text-sm opacity-70 mb-2">
+                                            {translations.header.register.successPopup.recoveryIntro}
+                                        </div>
+                                        <div className="text-xs opacity-60 mb-1">{translations.header.register.successPopup.recoveryBlockLabel}</div>
+                                        <div className="text-base font-mono font-bold mb-3" style={{ color: theme.secondaryColor }}>
+                                            {generated_recovery_base32}
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => copyRecoveryCode("block")}
+                                            className="text-xs underline mb-3"
+                                            style={{ color: theme.secondaryColor }}
+                                        >
+                                            {copiedCodeField === "block"
+                                                ? translations.header.register.successPopup.copiedCode
+                                                : translations.header.register.successPopup.copyCode}
+                                        </button>
+                                        <div className="text-xs opacity-60 mb-1">{translations.header.register.successPopup.recoveryWordsLabel}</div>
+                                        <div className="text-sm font-mono font-bold mb-1" style={{ color: theme.secondaryColor }}>
+                                            {generated_recovery_words}
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => copyRecoveryCode("words")}
+                                            className="text-xs underline"
+                                            style={{ color: theme.secondaryColor }}
+                                        >
+                                            {copiedCodeField === "words"
+                                                ? translations.header.register.successPopup.copiedCode
+                                                : translations.header.register.successPopup.copyCode}
+                                        </button>
+
+                                        <div className="flex gap-2 justify-center mt-4">
+                                            <button
+                                                type="button"
+                                                onClick={handleDownloadCard}
+                                                className="text-xs px-3 py-2 rounded-lg font-semibold"
+                                                style={{ backgroundColor: theme.secondaryColor, color: 'white' }}
+                                            >
+                                                {translations.header.register.successPopup.downloadCardButton}
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={handleDownloadText}
+                                                className="text-xs px-3 py-2 rounded-lg font-semibold border"
+                                                style={{ borderColor: theme.secondaryColor, color: theme.secondaryColor }}
+                                            >
+                                                {translations.header.register.successPopup.downloadTextButton}
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+
                                 {/* Warning */}
-                                <div 
+                                <div
                                     className="p-3 rounded-lg border-l-4 bg-orange-50 dark:bg-orange-900/20"
                                     style={{ borderLeftColor: '#ff9800' }}
                                 >
@@ -490,15 +590,15 @@ export default function SignUpForm() {
                                                 {language === 'it' ? '⚠️ Importante!' : '⚠️ Important!'}
                                             </strong>
                                             <p className="mt-1 text-orange-700 dark:text-orange-300">
-                                                {language === 'it' 
-                                                    ? 'Salva questo ID insieme alla tua password in un gestore di password sicuro. Senza questi dati il recupero account è impossibile.'
-                                                    : 'Save this ID along with your password in a secure password manager. Account recovery is impossible without this data.'
+                                                {language === 'it'
+                                                    ? 'Salva questo ID insieme alla password e al recovery code in un gestore di password sicuro (o scarica la scheda di recupero qui sopra).'
+                                                    : 'Save this ID together with the password and recovery code in a secure password manager (or download the recovery card above).'
                                                 }
                                             </p>
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <div dangerouslySetInnerHTML={{
                                     __html: translations.header.register.successPopup.securityMessage
                                 }} />

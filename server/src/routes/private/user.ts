@@ -6,6 +6,7 @@ import db from "../../db/db"
 import common from "../common"
 import authCookies from "../authCookies"
 import supabase from "../../db/supabase"
+import { generateRecoveryCode, hashRecoveryCode } from "../../db/recoveryCode"
 
 /* === /user/* === */
 
@@ -143,6 +144,67 @@ userRouter.post("/set-password", async (req, res) => {
     // update it via the Supabase Auth Admin API, then force the logout
     await db.users.setPasswordOfUserId(userId, new_pwd)
     res.redirect(307, "logout")
+})
+
+userRouter.post("/recovery-code/generate", async (req, res) => {
+    // Check if the user has the right to generate a recovery code.
+    // Send status code 403 (Forbidden) if it doesn't
+    const userId = req.userId as string
+    const type = await db.users.getTypeOfUserId(userId)
+    if (type === null || type.type === db.users.UserType.demo.value)
+    {
+        res.status(403)
+        res.send()
+        return
+    }
+    // Sanitize user input. Send status code 400 (Bad Request)
+    // in case of invalid data (empty strings after sanitization)
+    const password = common.sanitizeInput(req.body?.password)
+    if (password === "")
+    {
+        res.status(400)
+        res.send()
+        return
+    }
+    // Check if the password is correct. Send status code 401
+    // (Unauthorized) if the password is wrong
+    if (!(await db.users.verifyPassword(userId, password)))
+    {
+        res.status(401)
+        res.send()
+        return
+    }
+    // Generate a fresh code — this always overwrites (invalidates) any
+    // previous one, whether this is a first-time generation (existing
+    // account created before this feature) or an explicit regeneration.
+    const recoveryCode = generateRecoveryCode()
+    const saved = await db.users.setRecoveryCodeHash(userId, hashRecoveryCode(recoveryCode.bytes))
+    if (saved === null)
+    {
+        res.status(500).send()
+        return
+    }
+    // Shown once, exactly like at registration — only the hash persists.
+    res.status(200)
+    res.json({
+        recovery_code_base32: recoveryCode.base32,
+        recovery_code_words: recoveryCode.words,
+    })
+})
+
+userRouter.post("/recovery-code/status", async (req, res) => {
+    const userId = req.userId as string
+    const status = await db.users.getRecoveryCodeStatusByUserId(userId)
+    if (status === null)
+    {
+        res.status(500).send()
+        return
+    }
+    res.status(200)
+    res.json({
+        configured: status.configured,
+        generated_at: status.generatedAt,
+    })
 })
 
 userRouter.post("/get", async (req, res) => {

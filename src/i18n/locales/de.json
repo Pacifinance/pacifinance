@@ -291,7 +291,34 @@
                 "securityMessage": "<strong>💾 Speichern Sie diese Anmeldedaten jetzt!</strong><br/>Verwenden Sie einen Passwort-Manager wie Bitwarden, 1Password oder LastPass, um sowohl Ihre ID als auch Ihr Passwort sicher zu speichern.",
                 "copied": "In die Zwischenablage kopiert!",
                 "toCopy": "Ihre ID kopieren",
-                "okButton": "ok verstanden"
+                "okButton": "ok verstanden",
+                "recoveryIntro": "Ihr Recovery-Code (benötigt, falls Sie Ihr Passwort vergessen):",
+                "recoveryBlockLabel": "Blockcode:",
+                "recoveryWordsLabel": "Wortphrase:",
+                "copyCode": "Code kopieren",
+                "copiedCode": "Kopiert!",
+                "downloadCardButton": "Recovery-Karte herunterladen (PDF)",
+                "downloadTextButton": "Als Text herunterladen (.txt)"
+            }
+        },
+        "recovery": {
+            "linkText": "Passwort vergessen?",
+            "title": "Konto wiederherstellen",
+            "info": "Geben Sie Ihre ID, Ihren Recovery-Code (Blockcode oder Wortphrase) ein und legen Sie ein neues Passwort fest.",
+            "userIdLabel": "Benutzer-ID",
+            "codeLabel": "Recovery-Code",
+            "codePlaceholder": "z.B. XXXX-XXXX-XXXX-XXXX oder wort-wort-wort...",
+            "newPasswordLabel": "Neues Passwort",
+            "confirmPasswordLabel": "Neues Passwort bestätigen",
+            "submitButton": "Passwort zurücksetzen",
+            "backToSignIn": "Zurück zur Anmeldung",
+            "errorPopup": {
+                "message": "Ungültiger Recovery-Code oder ID. Überprüfen Sie Ihre Eingabe.",
+                "passwordMismatch": "Die beiden Passwörter stimmen nicht überein.",
+                "turnstileRequired": "Warten Sie, bis die Sicherheitsprüfung abgeschlossen ist."
+            },
+            "successPopup": {
+                "message": "Passwort erfolgreich zurückgesetzt!"
             }
         },
         "logout": "Abmelden",
@@ -527,6 +554,22 @@
                 "title": "Ihr Passwort wurde erfolgreich geändert.",
                 "message": "Sie werden zur Anmeldeseite weitergeleitet.",
                 "okButton": "ok verstanden"
+            }
+        },
+        "recoveryCode": {
+            "title": "Recovery-Code",
+            "statusConfigured": "Recovery-Code konfiguriert am {date}.",
+            "statusNotConfigured": "Kein Recovery-Code konfiguriert. Erstellen Sie einen, um Ihr Konto wiederherstellen zu können, falls Sie Ihr Passwort vergessen.",
+            "passwordLabel": "Aktuelles Passwort",
+            "regenerateWarning": "⚠️ Ein neuer Code macht den vorherigen sofort ungültig.",
+            "generateButton": "Recovery-Code erstellen",
+            "regenerateButton": "Neuen Recovery-Code erstellen",
+            "doneButton": "Fertig",
+            "successPopup": {
+                "message": "Recovery-Code erfolgreich erstellt."
+            },
+            "errorPopup": {
+                "message": "Fehler beim Erstellen des Recovery-Codes. Überprüfen Sie Ihr Passwort und versuchen Sie es erneut."
             }
         },
         "settings": {
@@ -2991,5 +3034,15 @@
             "advancedTitle": "Advanced controls", "advancedHint": "Leave a control empty to disable it.", "fixedExpensesPercent": "Maximum fixed expenses as income (%)", "debtReduction": "Monthly debt reduction", "positionConcentration": "Maximum position concentration (%)", "categoryConcentration": "Maximum asset-category concentration (%)", "passiveIncome": "Annual passive-income goal", "categorySpending": "Monthly category limits", "categoryName": "Category", "categoryAmount": "Limit",
             "investmentPercent": "Minimum investment as income (%)", "bothRequired": "When both thresholds are set, both must be met.", "customNetWorthPercent": "Net-worth target (%)", "netWorthRequirement": "Net-worth threshold: {percent}% = {amount}"
         }
+    },
+    "recoveryCard": {
+        "documentTitle": "Konto-Wiederherstellungskarte",
+        "userIdLabel": "Benutzer-ID",
+        "blockCodeLabel": "Blockcode",
+        "wordPhraseLabel": "Wortphrase",
+        "qrHint": "Mit der Kamera scannen, um die vorausgefüllte Wiederherstellungsseite zu öffnen",
+        "warningTitle": "Wichtig",
+        "warningBody": "Bewahren Sie dieses Dokument sicher auf. Wer es zusammen mit Ihrer ID besitzt, kann Ihr Passwort zurücksetzen. Ohne dieses Dokument und Ihr ursprüngliches Passwort ist eine Kontowiederherstellung nicht möglich.",
+        "generatedOnLabel": "Erstellt am"
     }
 }

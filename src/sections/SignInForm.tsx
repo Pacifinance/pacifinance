@@ -1,10 +1,12 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { ThemeContext } from "../contexts/ThemeContext";
 import { LanguageContext } from "../contexts/LanguageContext";
 import { UserContext } from "../contexts/UserContext";
 import { useToast } from "../contexts/ToastContext";
 import { useServices } from "../contexts/ServiceContext";
 import { useLocalizedNavigate } from "../hooks/useLocalizedNavigate";
+import { parseRecoveryDeepLink } from "../utils/recoveryCard";
+import RecoveryForm from "./RecoveryForm";
 import {
   MuiCustomDialog,
   MuiCustomDialogTitle,
@@ -43,6 +45,21 @@ export default function SignInForm() {
   const { showError } = useToast();
   const { userService } = useServices();
 
+  // "Recover account" flow — either opened manually via the link below, or
+  // automatically when landing here from a recovery-card QR scan (the QR
+  // encodes a #recover&id=...&code=... URL fragment, never sent to any
+  // server, only readable here).
+  const [showRecovery, setShowRecovery] = useState(false);
+  const [recoveryPrefill, setRecoveryPrefill] = useState<{ userId: string; code: string } | null>(null);
+
+  useEffect(() => {
+    const deepLink = parseRecoveryDeepLink(window.location.hash);
+    if (deepLink) {
+      setRecoveryPrefill({ userId: deepLink.userId, code: deepLink.base32 });
+      setShowRecovery(true);
+    }
+  }, []);
+
   const handleCloseModal = () => {
     setShowErrorModal(false);
   };
@@ -78,6 +95,16 @@ export default function SignInForm() {
       showError(translations.header.login.errorPopup.message, 4000);
     }
   };
+
+  if (showRecovery) {
+    return (
+      <RecoveryForm
+        initialUserId={recoveryPrefill?.userId || ""}
+        initialCode={recoveryPrefill?.code || ""}
+        onBackToSignIn={() => setShowRecovery(false)}
+      />
+    );
+  }
 
   return (
     <div>
@@ -156,6 +183,14 @@ export default function SignInForm() {
               {translations.header.login.titleButton}
             </SignInButton>
           </div>
+          <button
+            type="button"
+            onClick={() => setShowRecovery(true)}
+            className="w-full text-center text-sm underline opacity-80"
+            style={{ color: theme.secondaryColor }}
+          >
+            {translations.header.recovery.linkText}
+          </button>
         </form>
       </div>
       {showErrorModal && (

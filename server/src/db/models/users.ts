@@ -116,6 +116,24 @@ async function userCodeExists(user_code: string) {
 }
 
 /**
+ * Resolves a public user ID to its internal Supabase Auth uuid — the reverse
+ * of getUserCodeById. Needed by the recovery-code reset flow, which only
+ * knows the public code (the user typed it in), but setPasswordOfUserId
+ * needs the uuid.
+ * @param user_code Public 6-digit user ID
+ * @returns uuid, or null if not found
+ */
+async function getIdByUserCode(user_code: string) {
+    const {data, error} = await supabase.from("profiles")
+        .select("id")
+        .eq("user_code", user_code)
+        .maybeSingle()
+    if (error) console.error("users.getIdByUserCode: lookup failed", error)
+    if (error || !data) return null
+    return data.id as string
+}
+
+/**
  * Verifies a user's current password by attempting a Supabase Auth sign-in
  * with it. Used to confirm identity before sensitive operations (change ID,
  * change password) since the backend never has access to the password hash.
@@ -196,6 +214,68 @@ async function setPasswordOfUserId(user_id: string, new_password: string) {
     if (error) console.error("users.setPasswordOfUserId: failed to update password", error)
     if (error) return null
     return {id: user_id}
+}
+
+/**
+ * Sets (or clears, passing null) the account-recovery code hash for a user.
+ * Only a hash is ever stored — see server/src/db/recoveryCode.ts. Cleared
+ * immediately after a successful recovery so a code exposed during use
+ * doesn't stay valid indefinitely.
+ * @param user_id uuid of the user
+ * @param hash sha256 hex hash of the recovery code, or null to invalidate
+ */
+async function setRecoveryCodeHash(user_id: string, hash: string | null) {
+    const {data, error} = await supabase.from("profiles")
+        .update({
+            recovery_code_hash: hash,
+            recovery_code_generated_at: hash ? new Date().toISOString() : null,
+        })
+        .eq("id", user_id)
+        .select("id")
+        .maybeSingle()
+    if (error) console.error("users.setRecoveryCodeHash: update failed", error)
+    if (error || !data) return null
+    return {id: user_id}
+}
+
+/**
+ * Looks up the stored recovery-code hash (and the account's internal uuid,
+ * needed afterward to actually reset the password) by the public user code —
+ * the only identifier the user has when they've lost their password.
+ * @param user_code Public 6-digit user ID
+ */
+async function getRecoveryCodeHashByUserCode(user_code: string) {
+    const {data, error} = await supabase.from("profiles")
+        .select("id, recovery_code_hash, recovery_code_generated_at")
+        .eq("user_code", user_code)
+        .maybeSingle()
+    if (error) console.error("users.getRecoveryCodeHashByUserCode: lookup failed", error)
+    if (error || !data) return null
+    return {
+        id: data.id as string,
+        recoveryCodeHash: data.recovery_code_hash as string | null,
+        recoveryCodeGeneratedAt: data.recovery_code_generated_at as string | null,
+    }
+}
+
+/**
+ * Same lookup as getRecoveryCodeHashByUserCode, but by the internal uuid —
+ * used by authenticated routes (e.g. the Settings "is a recovery code
+ * configured?" status check), which already have req.userId and shouldn't
+ * need a round trip through the public code just to look themselves up.
+ * @param user_id uuid of the user
+ */
+async function getRecoveryCodeStatusByUserId(user_id: string) {
+    const {data, error} = await supabase.from("profiles")
+        .select("recovery_code_hash, recovery_code_generated_at")
+        .eq("id", user_id)
+        .maybeSingle()
+    if (error) console.error("users.getRecoveryCodeStatusByUserId: lookup failed", error)
+    if (error || !data) return null
+    return {
+        configured: Boolean(data.recovery_code_hash),
+        generatedAt: data.recovery_code_generated_at as string | null,
+    }
 }
 
 /**
@@ -452,11 +532,15 @@ export default {
     insertNew,
     getUserCodeById,
     userCodeExists,
+    getIdByUserCode,
     verifyPassword,
     getAllUsersIds,
     getAllBenchmarkUserIds,
     setUserIdByUserId,
     setPasswordOfUserId,
+    setRecoveryCodeHash,
+    getRecoveryCodeHashByUserCode,
+    getRecoveryCodeStatusByUserId,
     getTypeOfUserId,
     getPublicInfoByUserId,
     setBenchmarkConsentByUserId,

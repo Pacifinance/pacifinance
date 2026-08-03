@@ -291,7 +291,34 @@
                 "securityMessage": "<strong>💾 ¡Guarda estas credenciales ahora!</strong><br/>Usa un gestor de contraseñas como Bitwarden, 1Password o LastPass para guardar de forma segura tu ID y contraseña.",
                 "copied": "¡Copiado al portapapeles!",
                 "toCopy": "Copiar tu ID",
-                "okButton": "ok entendido"
+                "okButton": "ok entendido",
+                "recoveryIntro": "Tu código de recuperación (lo necesitarás si olvidas la contraseña):",
+                "recoveryBlockLabel": "Código en bloques:",
+                "recoveryWordsLabel": "Frase de palabras:",
+                "copyCode": "Copiar código",
+                "copiedCode": "¡Copiado!",
+                "downloadCardButton": "Descargar tarjeta de recuperación (PDF)",
+                "downloadTextButton": "Descargar como texto (.txt)"
+            }
+        },
+        "recovery": {
+            "linkText": "¿Olvidaste tu contraseña?",
+            "title": "Recupera tu cuenta",
+            "info": "Introduce tu ID, tu código de recuperación (código en bloques o frase de palabras) y establece una nueva contraseña.",
+            "userIdLabel": "ID de usuario",
+            "codeLabel": "Código de recuperación",
+            "codePlaceholder": "ej. XXXX-XXXX-XXXX-XXXX o palabra-palabra-palabra...",
+            "newPasswordLabel": "Nueva contraseña",
+            "confirmPasswordLabel": "Confirmar nueva contraseña",
+            "submitButton": "Restablecer contraseña",
+            "backToSignIn": "Volver a iniciar sesión",
+            "errorPopup": {
+                "message": "Código de recuperación o ID no válidos. Comprueba que los has escrito correctamente.",
+                "passwordMismatch": "Las dos contraseñas no coinciden.",
+                "turnstileRequired": "Espera a que se complete la verificación de seguridad."
+            },
+            "successPopup": {
+                "message": "¡Contraseña restablecida con éxito!"
             }
         },
         "logout": "Cerrar sesión",
@@ -527,6 +554,22 @@
                 "title": "Tu contraseña ha sido cambiada con éxito.",
                 "message": "Serás redirigido a la página de inicio de sesión.",
                 "okButton": "ok entendido"
+            }
+        },
+        "recoveryCode": {
+            "title": "Código de recuperación",
+            "statusConfigured": "Código de recuperación configurado el {date}.",
+            "statusNotConfigured": "Ningún código de recuperación configurado. Genera uno para poder recuperar tu cuenta si olvidas la contraseña.",
+            "passwordLabel": "Contraseña actual",
+            "regenerateWarning": "⚠️ Generar uno nuevo invalida inmediatamente el anterior.",
+            "generateButton": "Generar código de recuperación",
+            "regenerateButton": "Generar un nuevo código de recuperación",
+            "doneButton": "Listo",
+            "successPopup": {
+                "message": "Código de recuperación generado con éxito."
+            },
+            "errorPopup": {
+                "message": "Error al generar el código de recuperación. Comprueba tu contraseña e inténtalo de nuevo."
             }
         },
         "settings": {
@@ -2993,5 +3036,15 @@
             "advancedTitle": "Advanced controls", "advancedHint": "Leave a control empty to disable it.", "fixedExpensesPercent": "Maximum fixed expenses as income (%)", "debtReduction": "Monthly debt reduction", "positionConcentration": "Maximum position concentration (%)", "categoryConcentration": "Maximum asset-category concentration (%)", "passiveIncome": "Annual passive-income goal", "categorySpending": "Monthly category limits", "categoryName": "Category", "categoryAmount": "Limit",
             "investmentPercent": "Minimum investment as income (%)", "bothRequired": "When both thresholds are set, both must be met.", "customNetWorthPercent": "Net-worth target (%)", "netWorthRequirement": "Net-worth threshold: {percent}% = {amount}"
         }
+    },
+    "recoveryCard": {
+        "documentTitle": "Tarjeta de recuperación de cuenta",
+        "userIdLabel": "ID de usuario",
+        "blockCodeLabel": "Código en bloques",
+        "wordPhraseLabel": "Frase de palabras",
+        "qrHint": "Escanea con la cámara para abrir la página de recuperación ya rellenada",
+        "warningTitle": "Importante",
+        "warningBody": "Guarda este documento en un lugar seguro. Cualquiera que lo tenga junto con tu ID puede restablecer tu contraseña. Sin él, y sin tu contraseña original, la recuperación de la cuenta no es posible.",
+        "generatedOnLabel": "Generado el"
     }
 }

@@ -291,7 +291,34 @@
                 "securityMessage": "<strong>💾 Salve essas credenciais agora!</strong><br/>Use um gerenciador de senhas como Bitwarden, 1Password ou LastPass para armazenar com segurança seu ID e senha.",
                 "copied": "Copiado para a área de transferência!",
                 "toCopy": "Copiar seu ID",
-                "okButton": "ok, entendi"
+                "okButton": "ok, entendi",
+                "recoveryIntro": "Seu recovery code (necessário caso esqueça a senha):",
+                "recoveryBlockLabel": "Código em blocos:",
+                "recoveryWordsLabel": "Frase de palavras:",
+                "copyCode": "Copiar código",
+                "copiedCode": "Copiado!",
+                "downloadCardButton": "Baixar cartão de recuperação (PDF)",
+                "downloadTextButton": "Baixar como texto (.txt)"
+            }
+        },
+        "recovery": {
+            "linkText": "Esqueceu a senha?",
+            "title": "Recupere sua conta",
+            "info": "Digite seu ID, seu recovery code (código em blocos ou frase de palavras) e defina uma nova senha.",
+            "userIdLabel": "ID de usuário",
+            "codeLabel": "Recovery code",
+            "codePlaceholder": "ex. XXXX-XXXX-XXXX-XXXX ou palavra-palavra-palavra...",
+            "newPasswordLabel": "Nova senha",
+            "confirmPasswordLabel": "Confirmar nova senha",
+            "submitButton": "Redefinir senha",
+            "backToSignIn": "Voltar ao login",
+            "errorPopup": {
+                "message": "Recovery code ou ID inválidos. Verifique se digitou corretamente.",
+                "passwordMismatch": "As duas senhas não coincidem.",
+                "turnstileRequired": "Aguarde a conclusão da verificação de segurança."
+            },
+            "successPopup": {
+                "message": "Senha redefinida com sucesso!"
             }
         },
         "logout": "Sair",
@@ -527,6 +554,22 @@
                 "title": "Your password has been changed successfully.",
                 "message": "You will be redirected to the login page.",
                 "okButton": "ok fine"
+            }
+        },
+        "recoveryCode": {
+            "title": "Recovery Code",
+            "statusConfigured": "Recovery code configurado em {date}.",
+            "statusNotConfigured": "Nenhum recovery code configurado. Gere um para poder recuperar sua conta caso esqueça a senha.",
+            "passwordLabel": "Senha atual",
+            "regenerateWarning": "⚠️ Gerar um novo invalida imediatamente o anterior.",
+            "generateButton": "Gerar recovery code",
+            "regenerateButton": "Gerar um novo recovery code",
+            "doneButton": "Concluído",
+            "successPopup": {
+                "message": "Recovery code gerado com sucesso."
+            },
+            "errorPopup": {
+                "message": "Erro ao gerar o recovery code. Verifique sua senha e tente novamente."
             }
         },
         "settings": {
@@ -2991,5 +3034,15 @@
             "advancedTitle": "Advanced controls", "advancedHint": "Leave a control empty to disable it.", "fixedExpensesPercent": "Maximum fixed expenses as income (%)", "debtReduction": "Monthly debt reduction", "positionConcentration": "Maximum position concentration (%)", "categoryConcentration": "Maximum asset-category concentration (%)", "passiveIncome": "Annual passive-income goal", "categorySpending": "Monthly category limits", "categoryName": "Category", "categoryAmount": "Limit",
             "investmentPercent": "Minimum investment as income (%)", "bothRequired": "When both thresholds are set, both must be met.", "customNetWorthPercent": "Net-worth target (%)", "netWorthRequirement": "Net-worth threshold: {percent}% = {amount}"
         }
+    },
+    "recoveryCard": {
+        "documentTitle": "Cartão de recuperação de conta",
+        "userIdLabel": "ID de usuário",
+        "blockCodeLabel": "Código em blocos",
+        "wordPhraseLabel": "Frase de palavras",
+        "qrHint": "Escaneie com a câmera para abrir a página de recuperação já preenchida",
+        "warningTitle": "Importante",
+        "warningBody": "Guarde este documento em um lugar seguro. Quem o possuir junto com seu ID pode redefinir sua senha. Sem ele, e sem sua senha original, a recuperação da conta não é possível.",
+        "generatedOnLabel": "Gerado em"
     }
 }

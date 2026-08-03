@@ -225,6 +225,18 @@ const roadmapData: RoadmapItem[] = [
     completedDate: '2026-02',
   },
   {
+    id: 'account-recovery-code',
+    title: { it: 'Recovery Code per il Recupero Account', en: 'Account Recovery Code' },
+    description: {
+      it: 'Un secondo codice ad alta entropia, separato dalla password, generato alla registrazione (e rigenerabile dalle Impostazioni): un codice a blocchi e una frase di parole equivalenti, con card stampabile e QR, per reimpostare la password senza email e senza la vecchia password.',
+      en: 'A separate high-entropy code (not the password), generated at sign-up and regenerable from Settings: an equivalent block code and word phrase, with a printable QR card, to reset your password without email and without the old password.'
+    },
+    status: 'completed',
+    category: 'security',
+    icon: '🛟',
+    completedDate: '2026-08',
+  },
+  {
     id: 'multi-insert',
     title: { it: 'Inserimento Multiplo', en: 'Multi-Insert' },
     description: {
@@ -511,17 +523,6 @@ const roadmapData: RoadmapItem[] = [
     status: 'planned',
     category: 'security',
     icon: '🔐',
-  },
-  {
-    id: 'user-email-crypted',
-    title: { it: 'Email Criptata per Recupero', en: 'Encrypted Email for Recovery' },
-    description: {
-      it: 'Email opzionale e criptata per il recupero della password, senza compromettere la privacy.',
-      en: 'Optional encrypted email for password recovery, without compromising privacy.'
-    },
-    status: 'planned',
-    category: 'security',
-    icon: '🔑',
   },
 ];
 

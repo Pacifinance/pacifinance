@@ -236,9 +236,9 @@ export default function AuthPage() {
                       }
                     </h4>
                     <p style={{ color: '#b45309', fontWeight: 600, fontSize: '0.98rem', marginBottom: 4 }}>
-                      {language === 'it' 
-                        ? 'Salva questo ID insieme alla tua password in un gestore di password sicuro. Senza questi dati il recupero account è impossibile.'
-                        : 'Save this ID together with your password in a secure password manager. Without these, account recovery is impossible.'
+                      {language === 'it'
+                        ? 'Salva questo ID insieme alla tua password in un gestore di password sicuro. In caso di smarrimento, il recovery code generato alla registrazione permette di reimpostare la password senza email.'
+                        : 'Save this ID together with your password in a secure password manager. If lost, the recovery code generated at sign-up lets you reset your password without an email.'
                       }
                     </p>
                   </div>
@@ -369,9 +369,9 @@ export default function AuthPage() {
                           : 'Since we don\'t require email addresses to maintain your anonymity, please save your '
                         }
                         <strong>
-                          {language === 'it' ? ' ID Utente e password' : ' User ID and password'}
+                          {language === 'it' ? ' ID Utente, password e recovery code' : ' User ID, password and recovery code'}
                         </strong>
-                        {language === 'it' 
+                        {language === 'it'
                           ? ' in un gestore di password sicuro come:'
                           : ' in a secure password manager like:'
                         }
@@ -380,15 +380,15 @@ export default function AuthPage() {
                         <li>• Bitwarden ({language === 'it' ? 'Gratuito e Open Source' : 'Free & Open Source'})</li>
                         <li>• 1Password</li>
                         <li>• LastPass</li>
-                        <li>• {language === 'it' 
+                        <li>• {language === 'it'
                           ? 'Il gestore di password integrato del tuo browser'
                           : 'Your browser\'s built-in password manager'
                         }</li>
                       </ul>
                       <p className="text-sm opacity-90 mt-3 font-medium">
                         ⚠️ {language === 'it'
-                          ? 'Senza queste credenziali, il recupero dell\'account è impossibile a causa del nostro approccio privacy-first.'
-                          : 'Without these credentials, account recovery is impossible due to our privacy-first approach.'
+                          ? 'Se dimentichi la password, il recovery code (generato alla registrazione, o creabile dalle Impostazioni) permette di reimpostarla senza email. Se perdi anche quello, il recupero non è possibile.'
+                          : 'If you forget your password, the recovery code (generated at sign-up, or creatable from Settings) lets you reset it without an email. If you lose that too, recovery isn\'t possible.'
                         }
                       </p>
                     </div>

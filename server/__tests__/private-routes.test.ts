@@ -1218,4 +1218,60 @@ describe("private backend routes", () => {
         expect(response.status).toBe(400)
         expect(mockDb.investments.verifyCommunityPrice).not.toHaveBeenCalled()
     })
+
+    describe("/user/recovery-code", () => {
+        it("generates a recovery code after verifying the current password", async () => {
+            const response = await request(app, "/api/user/recovery-code/generate", {
+                method: "POST",
+                headers: {cookie: authCookie},
+                body: {password: "correct-password"}
+            })
+
+            expect(response.status).toBe(200)
+            expect(response.json.recovery_code_base32).toMatch(/^[0-9A-Z]{4}-[0-9A-Z]{4}-[0-9A-Z]{4}-[0-9A-Z]{4}$/)
+            expect(response.json.recovery_code_words.split("-")).toHaveLength(10)
+            expect(mockDb.users.verifyPassword).toHaveBeenCalledWith("user-uuid", "correct-password")
+            expect(mockDb.users.setRecoveryCodeHash).toHaveBeenCalledWith("user-uuid", expect.stringMatching(/^[0-9a-f]{64}$/))
+        })
+
+        it("rejects generation with the wrong current password", async () => {
+            mockDb.users.verifyPassword.mockResolvedValue(false)
+
+            const response = await request(app, "/api/user/recovery-code/generate", {
+                method: "POST",
+                headers: {cookie: authCookie},
+                body: {password: "wrong-password"}
+            })
+
+            expect(response.status).toBe(401)
+            expect(mockDb.users.setRecoveryCodeHash).not.toHaveBeenCalled()
+        })
+
+        it("blocks demo accounts from generating a recovery code", async () => {
+            mockDb.users.getTypeOfUserId.mockResolvedValue({type: mockDb.users.UserType.demo.value})
+
+            const response = await request(app, "/api/user/recovery-code/generate", {
+                method: "POST",
+                headers: {cookie: authCookie},
+                body: {password: "correct-password"}
+            })
+
+            expect(response.status).toBe(403)
+        })
+
+        it("reports whether a recovery code is currently configured", async () => {
+            mockDb.users.getRecoveryCodeStatusByUserId.mockResolvedValue({
+                configured: true, generatedAt: "2026-08-01T00:00:00.000Z"
+            })
+
+            const response = await request(app, "/api/user/recovery-code/status", {
+                method: "POST",
+                headers: {cookie: authCookie},
+                body: {}
+            })
+
+            expect(response.status).toBe(200)
+            expect(response.json).toEqual({configured: true, generated_at: "2026-08-01T00:00:00.000Z"})
+        })
+    })
 })

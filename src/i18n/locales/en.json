@@ -291,7 +291,34 @@
                 "securityMessage": "<strong>💾 Save these credentials now!</strong><br/>Use a password manager like Bitwarden, 1Password, or LastPass to securely store both your ID and password.",
                 "copied": "Copied to clipboard!",
                 "toCopy": "Copy your ID",
-                "okButton": "ok fine"
+                "okButton": "ok fine",
+                "recoveryIntro": "Your recovery code (you'll need it if you forget your password):",
+                "recoveryBlockLabel": "Block code:",
+                "recoveryWordsLabel": "Word phrase:",
+                "copyCode": "Copy code",
+                "copiedCode": "Copied!",
+                "downloadCardButton": "Download recovery card (PDF)",
+                "downloadTextButton": "Download as text (.txt)"
+            }
+        },
+        "recovery": {
+            "linkText": "Forgot password?",
+            "title": "Recover your account",
+            "info": "Enter your ID, your recovery code (block code or word phrase) and set a new password.",
+            "userIdLabel": "User ID",
+            "codeLabel": "Recovery code",
+            "codePlaceholder": "e.g. XXXX-XXXX-XXXX-XXXX or word-word-word...",
+            "newPasswordLabel": "New password",
+            "confirmPasswordLabel": "Confirm new password",
+            "submitButton": "Reset password",
+            "backToSignIn": "Back to sign in",
+            "errorPopup": {
+                "message": "Invalid recovery code or ID. Check that you typed them correctly.",
+                "passwordMismatch": "The two passwords don't match.",
+                "turnstileRequired": "Wait for the security check to complete."
+            },
+            "successPopup": {
+                "message": "Password reset successfully!"
             }
         },
         "logout": "Logout",
@@ -527,6 +554,22 @@
                 "title": "Your password has been changed successfully.",
                 "message": "You will be redirected to the login page.",
                 "okButton": "ok fine"
+            }
+        },
+        "recoveryCode": {
+            "title": "Recovery Code",
+            "statusConfigured": "Recovery code configured on {date}.",
+            "statusNotConfigured": "No recovery code configured. Generate one so you can recover your account if you forget your password.",
+            "passwordLabel": "Current password",
+            "regenerateWarning": "⚠️ Generating a new one immediately invalidates the previous one.",
+            "generateButton": "Generate recovery code",
+            "regenerateButton": "Generate a new recovery code",
+            "doneButton": "Done",
+            "successPopup": {
+                "message": "Recovery code generated successfully."
+            },
+            "errorPopup": {
+                "message": "Error generating the recovery code. Check your password and try again."
             }
         },
         "settings": {
@@ -3025,5 +3068,15 @@
             "advancedTitle": "Advanced controls", "advancedHint": "Leave a control empty to disable it.", "fixedExpensesPercent": "Maximum fixed expenses as income (%)", "debtReduction": "Monthly debt reduction", "positionConcentration": "Maximum position concentration (%)", "categoryConcentration": "Maximum asset-category concentration (%)", "passiveIncome": "Annual passive-income goal", "categorySpending": "Monthly category limits", "categoryName": "Category", "categoryAmount": "Limit",
             "investmentPercent": "Minimum investment as income (%)", "bothRequired": "When both thresholds are set, both must be met.", "customNetWorthPercent": "Net-worth target (%)", "netWorthRequirement": "Net-worth threshold: {percent}% = {amount}"
         }
+    },
+    "recoveryCard": {
+        "documentTitle": "Account recovery card",
+        "userIdLabel": "User ID",
+        "blockCodeLabel": "Block code",
+        "wordPhraseLabel": "Word phrase",
+        "qrHint": "Scan with a camera to open the recovery page pre-filled",
+        "warningTitle": "Important",
+        "warningBody": "Keep this document somewhere safe. Anyone who has it together with your ID can reset your password. Without it, and without your original password, account recovery isn't possible.",
+        "generatedOnLabel": "Generated on"
     }
 }

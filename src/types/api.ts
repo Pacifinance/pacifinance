@@ -284,6 +284,19 @@ export interface UserSetPasswordRequest {
   repeated_pwd: string;
 }
 
+/** POST /user/recovery-code/generate — password-gated, mirrors set-id/set-password. */
+export interface UserGenerateRecoveryCodeRequest { password: string; }
+export interface UserGenerateRecoveryCodeResponse {
+  recovery_code_base32: string;
+  recovery_code_words: string;
+}
+
+/** POST /user/recovery-code/status — whether a recovery code is currently configured. */
+export interface UserRecoveryCodeStatusResponse {
+  configured: boolean;
+  generated_at: string | null;
+}
+
 export interface UserGoalsRequest {
   expenses_limit?: number;
   savings_percent?: number;
@@ -318,7 +331,20 @@ export interface RegistrationRequest {
   turnstile_token?: string;
 }
 
-export interface RegistrationResponse { user_id: string; }
+export interface RegistrationResponse {
+  user_id: string;
+  recovery_code_base32: string | null;
+  recovery_code_words: string | null;
+}
+
+/** POST /recovery/reset-password — public/unauthenticated, no old password needed. */
+export interface RecoveryResetPasswordRequest {
+  user_id: string;
+  recovery_code: string;
+  new_pwd: string;
+  repeated_pwd: string;
+  turnstile_token?: string;
+}
 
 /* ═══════════════════════════════════════════════════════════════════════════
  * /tags

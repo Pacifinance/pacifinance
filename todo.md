@@ -4,6 +4,7 @@
 > Per analisi, idee e feature planning vedi [docs/ANALYSES.md](docs/ANALYSES.md)
 > Roadmap status rapido: [x] completato · [~] in sviluppo · [ ] pianificato (con marker <!-- roadmap:id -->)
 
+- [x] Recovery code per il recupero account: codice a blocchi + frase di parole, card stampabile con QR, generabile anche dalle Impostazioni <!-- roadmap:account-recovery-code -->
 - [x] Grafici investimenti interattivi: categorie richiudibili/selezionabili, dettagli asset e feed Novità progressivo <!-- roadmap:interactive-investment-chart-legends -->
 
 ---
@@ -159,7 +160,11 @@
 - [ ] Floating point e centesimi: il DB mandera valori interi (* 100), gestire la conversione
 
 ### Sicurezza
-- [ ] gestione email per utenze criptate, solo per recupero password e verifiche di sicurezza, no email marketing <!-- roadmap:user-email-crypted -->
+<!-- Idea di email di recupero criptata valutata e scartata: anche opzionale non
+     impedirebbe a un utente di scrivere nome.cognome@..., reintroducendo
+     l'esposizione di dati identificativi che l'account anonimo evita. Il
+     recovery code (vedi sopra, completato) risolve lo stesso problema restando
+     coerente con "nessun dato personale mai". -->
 
 
 ### Mobile

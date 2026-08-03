@@ -291,7 +291,34 @@
                 "securityMessage": "<strong>💾 Salva queste credenziali ora!</strong><br/>Utilizza un gestore di password come Bitwarden, 1Password o LastPass per conservare in sicurezza sia l'ID che la password.",
                 "copied": "Copiato negli appunti!",
                 "toCopy": "Copia il tuo ID",
-                "okButton": "ok va bene"
+                "okButton": "ok va bene",
+                "recoveryIntro": "Il tuo recovery code (ti serve se dimentichi la password):",
+                "recoveryBlockLabel": "Codice a blocchi:",
+                "recoveryWordsLabel": "Frase di parole:",
+                "copyCode": "Copia codice",
+                "copiedCode": "Copiato!",
+                "downloadCardButton": "Scarica scheda di recupero (PDF)",
+                "downloadTextButton": "Scarica come testo (.txt)"
+            }
+        },
+        "recovery": {
+            "linkText": "Password dimenticata?",
+            "title": "Recupera il tuo account",
+            "info": "Inserisci il tuo ID, il recovery code (codice a blocchi o frase di parole) e imposta una nuova password.",
+            "userIdLabel": "ID Utente",
+            "codeLabel": "Recovery code",
+            "codePlaceholder": "es. XXXX-XXXX-XXXX-XXXX oppure parola-parola-parola...",
+            "newPasswordLabel": "Nuova password",
+            "confirmPasswordLabel": "Conferma nuova password",
+            "submitButton": "Reimposta password",
+            "backToSignIn": "Torna al login",
+            "errorPopup": {
+                "message": "Recovery code o ID non validi. Controlla di averli digitati correttamente.",
+                "passwordMismatch": "Le due password non corrispondono.",
+                "turnstileRequired": "Attendi il completamento della verifica di sicurezza."
+            },
+            "successPopup": {
+                "message": "Password reimpostata con successo!"
             }
         },
         "logout": "Esci",
@@ -527,6 +554,22 @@
                 "title": "La tua password è stata reimpostata correttamente",
                 "message": "Verrai renderizzato alla pagina di accesso.",
                 "okButton": "ok va bene"
+            }
+        },
+        "recoveryCode": {
+            "title": "Recovery Code",
+            "statusConfigured": "Recovery code configurato il {date}.",
+            "statusNotConfigured": "Nessun recovery code configurato. Generane uno per poter recuperare l'account in caso di password dimenticata.",
+            "passwordLabel": "Password attuale",
+            "regenerateWarning": "⚠️ Generandone uno nuovo, quello precedente smetterà immediatamente di funzionare.",
+            "generateButton": "Genera recovery code",
+            "regenerateButton": "Genera un nuovo recovery code",
+            "doneButton": "Fatto",
+            "successPopup": {
+                "message": "Recovery code generato con successo."
+            },
+            "errorPopup": {
+                "message": "Errore nella generazione del recovery code. Controlla la password e riprova."
             }
         },
         "settings": {
@@ -3025,5 +3068,15 @@
             "advancedTitle": "Controlli avanzati", "advancedHint": "Lascia vuoto un controllo per disattivarlo.", "fixedExpensesPercent": "Spese fisse massime sulle entrate (%)", "debtReduction": "Riduzione debiti mensile", "positionConcentration": "Concentrazione massima per posizione (%)", "categoryConcentration": "Concentrazione massima per asset (%)", "passiveIncome": "Obiettivo rendita passiva annuale", "categorySpending": "Limiti mensili per categoria", "categoryName": "Categoria", "categoryAmount": "Limite",
             "investmentPercent": "Investimento minimo sulle entrate (%)", "bothRequired": "Se imposti entrambe le soglie, devono essere rispettate entrambe.", "customNetWorthPercent": "Target sul patrimonio netto (%)", "netWorthRequirement": "Soglia patrimoniale: {percent}% = {amount}"
         }
+    },
+    "recoveryCard": {
+        "documentTitle": "Scheda di recupero account",
+        "userIdLabel": "ID Utente",
+        "blockCodeLabel": "Codice a blocchi",
+        "wordPhraseLabel": "Frase di parole",
+        "qrHint": "Inquadra con la fotocamera per aprire la pagina di recupero già compilata",
+        "warningTitle": "Importante",
+        "warningBody": "Conserva questo documento in un posto sicuro. Chiunque lo possieda insieme all'ID può reimpostare la tua password. Senza di esso, e senza la password originale, il recupero dell'account non è possibile.",
+        "generatedOnLabel": "Generato il"
     }
 }

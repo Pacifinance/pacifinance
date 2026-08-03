@@ -70,6 +70,8 @@ export const useDemoServices = () => {
         deleteAccount: async () => { throw new Error('Not available in demo mode'); },
         changeUserId: async () => { throw new Error('Not available in demo mode'); },
         changePassword: async () => { throw new Error('Not available in demo mode'); },
+        generateRecoveryCode: async () => { throw new Error('Not available in demo mode'); },
+        getRecoveryCodeStatus: async () => ({ configured: false, generated_at: null }),
       },
       investmentService: {
         ...services.investmentService,

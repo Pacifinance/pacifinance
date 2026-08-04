@@ -190,14 +190,20 @@ const TabButton = styled.button`
   }
   
   @media (max-width: 480px) {
-    padding: 0.55rem 0.4rem;
-    
+    flex-direction: column;
+    gap: 0.15rem;
+    padding: 0.5rem 0.3rem;
+
     & > span {
-      display: none;
+      font-size: 0.62rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
     }
-    
+
     & > svg {
-      font-size: 1.2rem;
+      font-size: 1.15rem;
     }
   }
 `;

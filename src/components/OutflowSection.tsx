@@ -16,6 +16,7 @@ import {
   faChartBar,
   faTableCells,
   faThLarge,
+  faUsers,
 } from '@fortawesome/free-solid-svg-icons';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
@@ -100,6 +101,35 @@ const RecurringCheckboxLabel = styled.label`
     height: 1.05rem;
     cursor: pointer;
     accent-color: ${p => p.theme.buttonBackgroundColor};
+  }
+`;
+
+const SharedExpenseToggle = styled.button<{ $active?: boolean }>`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  align-self: flex-start;
+  padding: 0.4rem 0.75rem;
+  border: 1px solid ${p => p.$active
+    ? p.theme.buttonBackgroundColor
+    : p.theme.mode === 'dark' ? 'rgba(255,255,255,0.14)' : '#e2e8f0'};
+  border-radius: 20px;
+  background: ${p => p.$active ? `${p.theme.buttonBackgroundColor}15` : 'transparent'};
+  color: ${p => p.$active ? p.theme.buttonBackgroundColor : p.theme.textColor};
+  opacity: ${p => p.$active ? 1 : 0.75};
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    opacity: 1;
+    border-color: ${p => p.theme.buttonBackgroundColor};
+  }
+
+  svg {
+    font-size: 0.85em;
   }
 `;
 
@@ -1607,16 +1637,21 @@ export default function OutflowSection({
           </FormField>
         )}
 
-        {/* Shared expense — e.g. paying an Uber/dinner for the whole group */}
+        {/* Shared expense — e.g. paying an Uber/dinner for the whole group.
+            Collapsed by default (most outflows aren't shared) — a chip toggle
+            instead of an always-visible checkbox keeps the common case clean. */}
         <FormField style={{ gridColumn: '1 / -1' }}>
-          <RecurringCheckboxLabel theme={theme}>
-            <input
-              type="checkbox"
-              checked={isSharedExpense}
-              onChange={(e) => setIsSharedExpense?.(e.target.checked)}
-            />
-            {translations.insert.outflowSection.sharedExpense?.toggleLabel || 'Ho pagato per il gruppo (dividi questa spesa)'}
-          </RecurringCheckboxLabel>
+          <SharedExpenseToggle
+            type="button"
+            theme={theme}
+            $active={isSharedExpense}
+            onClick={() => setIsSharedExpense?.(!isSharedExpense)}
+          >
+            <FontAwesomeIcon icon={isSharedExpense ? faTimes : faUsers} />
+            {isSharedExpense
+              ? (translations.insert.outflowSection.sharedExpense?.activeLabel || 'Spesa condivisa')
+              : (translations.insert.outflowSection.sharedExpense?.toggleLabel || 'Dividi con il gruppo')}
+          </SharedExpenseToggle>
           {isSharedExpense && (
             <SharedExpenseFields theme={theme}>
               <label>

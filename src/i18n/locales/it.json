@@ -1102,7 +1102,8 @@
             "decreaseWhichBalance": "Sottrai da",
             "makeRecurring": "Rendi ricorrente ogni mese",
             "sharedExpense": {
-                "toggleLabel": "Ho pagato per il gruppo (dividi questa spesa)",
+                "toggleLabel": "Dividi con il gruppo",
+                "activeLabel": "Spesa condivisa",
                 "peopleLabel": "Persone totali (incluso te)",
                 "previewShare": "La tua quota",
                 "previewReceivable": "Credito verso gli altri"

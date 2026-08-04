@@ -1039,7 +1039,8 @@
             "decreaseWhichBalance": "Soustraire de",
             "makeRecurring": "Rendre récurrent chaque mois",
             "sharedExpense": {
-                "toggleLabel": "J'ai payé pour le groupe (répartir cette dépense)",
+                "toggleLabel": "Partager avec le groupe",
+                "activeLabel": "Dépense partagée",
                 "peopleLabel": "Nombre total de personnes (toi inclus)",
                 "previewShare": "Ta part",
                 "previewReceivable": "Dû par les autres"

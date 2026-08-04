@@ -1102,7 +1102,8 @@
             "decreaseWhichBalance": "Subtract from",
             "makeRecurring": "Make it recurring every month",
             "sharedExpense": {
-                "toggleLabel": "I paid for the group (split this expense)",
+                "toggleLabel": "Split with the group",
+                "activeLabel": "Shared expense",
                 "peopleLabel": "Total people (including you)",
                 "previewShare": "Your share",
                 "previewReceivable": "Owed by others"

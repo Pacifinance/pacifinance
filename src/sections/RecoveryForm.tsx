@@ -53,12 +53,22 @@ export default function RecoveryForm({ initialUserId = "", initialCode = "", onB
         setIsTurnstileLoaded(true);
     };
 
-    const onTurnstileError = () => {
+    const onTurnstileError = (errorCode?: string) => {
+        console.error("Turnstile error", { code: errorCode, hostname: window.location.hostname });
         setTurnstileToken("");
         setIsTurnstileLoaded(false);
+        showError(t.errorPopup.turnstileRequired, 5000);
     };
 
     const onTurnstileExpired = () => {
+        setTurnstileToken("");
+        setIsTurnstileLoaded(false);
+        if (window.turnstile && turnstileWidgetIdRef.current) {
+            window.turnstile.reset(turnstileWidgetIdRef.current);
+        }
+    };
+
+    const onTurnstileTimeout = () => {
         setTurnstileToken("");
         setIsTurnstileLoaded(false);
         if (window.turnstile && turnstileWidgetIdRef.current) {
@@ -95,6 +105,12 @@ export default function RecoveryForm({ initialUserId = "", initialCode = "", onB
                         callback: onTurnstileSuccess,
                         "error-callback": onTurnstileError,
                         "expired-callback": onTurnstileExpired,
+                        "timeout-callback": onTurnstileTimeout,
+                        "unsupported-callback": () => onTurnstileError("unsupported-browser"),
+                        retry: "auto",
+                        "retry-interval": 2000,
+                        "refresh-expired": "auto",
+                        "refresh-timeout": "auto",
                         theme: theme.mode === "dark" ? "dark" : "light",
                     });
                 } catch (error) {

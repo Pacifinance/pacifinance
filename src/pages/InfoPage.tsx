@@ -19,14 +19,6 @@ function InfoPage() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Matomo Tag Manager
-  // React.useEffect(() => {
-  //   var _mtm = window._mtm = window._mtm || [];
-  //   _mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});
-  //   var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-  //   g.async=true; g.src='https://cdn.matomo.cloud/pacifinance.matomo.cloud/container_geUS8Fsk.js'; s.parentNode.insertBefore(g,s);
-  // }, [])
-
   return (
     <div style={{ display: 'flex', height: '100vh', position: 'relative' }}>
       <Sidebar userData={userData} handleSetIsUpdated={handleSetIsUpdated} handleSetIsAuthenticated={handleSetIsAuthenticated}  />

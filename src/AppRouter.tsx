@@ -135,17 +135,6 @@ function AppRouter() {
   usePublicPreloading();
 
   useEffect(() => {
-    const _mtm = (window._mtm = window._mtm || []);
-    _mtm.push({ "mtm.startTime": new Date().getTime(), event: "mtm.Start" });
-    const d = document,
-      g = d.createElement("script"),
-      s = d.getElementsByTagName("script")[0];
-    g.async = true;
-    g.src = "https://pacifinance.com:8000/js/container_fkJBXVc1.js";
-    s.parentNode.insertBefore(g, s);
-  }, []);
-
-  useEffect(() => {
     handleSetIsUpdated(false); // Initial load of user data
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

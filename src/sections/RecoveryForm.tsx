@@ -68,14 +68,6 @@ export default function RecoveryForm({ initialUserId = "", initialCode = "", onB
         }
     };
 
-    const onTurnstileTimeout = () => {
-        setTurnstileToken("");
-        setIsTurnstileLoaded(false);
-        if (window.turnstile && turnstileWidgetIdRef.current) {
-            window.turnstile.reset(turnstileWidgetIdRef.current);
-        }
-    };
-
     useEffect(() => {
         if (!TURNSTILE_SITE_KEY && IS_DEV) {
             setTurnstileToken('dev-bypass-token');
@@ -105,12 +97,6 @@ export default function RecoveryForm({ initialUserId = "", initialCode = "", onB
                         callback: onTurnstileSuccess,
                         "error-callback": onTurnstileError,
                         "expired-callback": onTurnstileExpired,
-                        "timeout-callback": onTurnstileTimeout,
-                        "unsupported-callback": () => onTurnstileError("unsupported-browser"),
-                        retry: "auto",
-                        "retry-interval": 2000,
-                        "refresh-expired": "auto",
-                        "refresh-timeout": "auto",
                         theme: theme.mode === "dark" ? "dark" : "light",
                     });
                 } catch (error) {

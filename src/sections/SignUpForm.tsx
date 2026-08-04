@@ -95,14 +95,6 @@ export default function SignUpForm() {
         }
     };
 
-    const onTurnstileTimeout = () => {
-        setTurnstileToken("");
-        setIsTurnstileLoaded(false);
-        if (window.turnstile && turnstileWidgetIdRef.current) {
-            window.turnstile.reset(turnstileWidgetIdRef.current);
-        }
-    };
-
     // Initialize Turnstile when component mounts
     useEffect(() => {
         // Skip Turnstile in dev mode if no site key is configured
@@ -136,12 +128,6 @@ export default function SignUpForm() {
                         callback: onTurnstileSuccess,
                         "error-callback": onTurnstileError,
                         "expired-callback": onTurnstileExpired,
-                        "timeout-callback": onTurnstileTimeout,
-                        "unsupported-callback": () => onTurnstileError("unsupported-browser"),
-                        retry: "auto",
-                        "retry-interval": 2000,
-                        "refresh-expired": "auto",
-                        "refresh-timeout": "auto",
                         theme: theme.mode === "dark" ? "dark" : "light",
                     });
                 } catch (error) {

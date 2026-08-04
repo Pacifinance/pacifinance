@@ -1,14 +1,16 @@
 import React, { useContext, useMemo, useState } from 'react';
 import styled from 'styled-components';
-import { PieChart } from 'recharts/lib/chart/PieChart';
-import { Pie } from 'recharts/lib/polar/Pie';
+import { BarChart } from 'recharts/lib/chart/BarChart';
+import { Bar } from 'recharts/lib/cartesian/Bar';
+import { XAxis } from 'recharts/lib/cartesian/XAxis';
+import { YAxis } from 'recharts/lib/cartesian/YAxis';
+import { CartesianGrid } from 'recharts/lib/cartesian/CartesianGrid';
 import { Cell } from 'recharts/lib/component/Cell';
 import { Tooltip } from 'recharts/lib/component/Tooltip';
 import { ResponsiveContainer } from 'recharts/lib/component/ResponsiveContainer';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
-import { MediaQueryContext } from '../contexts/MediaQueryContext';
-import { RenderCustomizedLabel } from '../utils/customGraphsInfo';
+import { compactNumber } from '../utils/customGraphsInfo';
 import { getHoldingValue, getHoldingLabel, paletteColor, OTHER_SLICE_COLOR, ASSET_CATEGORY_ORDER } from '../utils/holdingsChartHelpers';
 import { getRandomGrayscaleColor } from '../utils/colorUtils';
 import HoldingAssetDetails from './HoldingAssetDetails';
@@ -145,7 +147,6 @@ const OVERWEIGHT_MULTIPLIER = 1.5;
 export default function HoldingsBreakdownChart({ theme, holdings, assetKey, isHidden, positionLimitPercent, categoryLimitPercent, dividends = [] }: HoldingsBreakdownChartProps) {
   const { translations } = useContext(LanguageContext);
   const { formatAmount } = useContext(CurrencyContext);
-  const { isMobileScreen } = useContext(MediaQueryContext);
   const t = translations.graphs.statsHoldings;
   const [hiddenIds, setHiddenIds] = useState<Set<number>>(new Set());
   const [detailId, setDetailId] = useState<number | null>(null);
@@ -169,21 +170,8 @@ export default function HoldingsBreakdownChart({ theme, holdings, assetKey, isHi
       ? [...top, { id: 'other', label: translations.general.other, value: otherValue, isOther: true, assetKey: null as InvestmentAssetKey | null }]
       : top;
 
-    // Only when viewing everything together: cluster slices by asset category
-    // (fixed order, "other" always last) instead of pure value order — lets
-    // the pie and legend show each category's total share directly (a thicker
-    // border between groups, a subtotal per category), even though individual
-    // positions still keep their own distinct color. A single category's own
-    // view (assetKey set) has no categories to cluster, so it's left as-is.
-    if (!assetKey) {
-      return withOther.slice().sort((a, b) => {
-        if (a.isOther) return 1;
-        if (b.isOther) return -1;
-        return ASSET_CATEGORY_ORDER.indexOf(a.assetKey as InvestmentAssetKey) - ASSET_CATEGORY_ORDER.indexOf(b.assetKey as InvestmentAssetKey);
-      });
-    }
     return withOther;
-  }, [allRows, assetKey, translations.general.other, hiddenIds]);
+  }, [allRows, translations.general.other, hiddenIds]);
 
   const portfolioTotal = allRows.reduce((sum, r) => sum + r.value, 0);
   const total = rows.reduce((sum, r) => sum + r.value, 0);
@@ -208,9 +196,6 @@ export default function HoldingsBreakdownChart({ theme, holdings, assetKey, isHi
     const originalIndex = allRows.findIndex((candidate) => candidate.id === row.id);
     return paletteColor(originalIndex >= 0 ? originalIndex : index);
   };
-
-  const strokeColor = theme.mode === 'dark' ? '#1e1e2e' : '#ffffff';
-  const groupBorderColor = theme.mode === 'dark' ? 'rgba(255,255,255,0.85)' : 'rgba(0,0,0,0.65)';
 
   const renderLegendItem = (row: (typeof allRows)[number], index: number) => {
     const pct = portfolioTotal > 0 ? (row.value / portfolioTotal) * 100 : 0;
@@ -241,38 +226,15 @@ export default function HoldingsBreakdownChart({ theme, holdings, assetKey, isHi
       <Description theme={theme}>{t.breakdownDescription}</Description>
       <ChartStage>
         <ResponsiveContainer width="100%" height="100%">
-          <PieChart>
-          <Pie
-            data={rows}
-            cx="50%"
-            cy="50%"
-            labelLine={false}
-            label={RenderCustomizedLabel}
-            outerRadius={isMobileScreen ? 88 : 155}
-            dataKey="value"
-          >
-            {rows.map((row, index) => {
-              const prevRow = rows[index - 1];
-              const isGroupStart = !assetKey && index > 0 && prevRow?.assetKey !== row.assetKey;
-              return (
-                <Cell
-                  key={row.id}
-                  onClick={() => typeof row.id === 'number' && setDetailId(row.id)}
-                  style={{ cursor: typeof row.id === 'number' && !isHidden ? 'pointer' : 'default' }}
-                  fill={isHidden ? getRandomGrayscaleColor() : colorFor(row, index)}
-                  stroke={isGroupStart ? groupBorderColor : strokeColor}
-                  strokeWidth={isGroupStart ? 3 : 1}
-                />
-              );
-            })}
-          </Pie>
-          <Tooltip
-            formatter={(value: number, _name: string, entry: any) => [
-              isHidden ? '****' : `${formatAmount(value)} (${((value / total) * 100).toFixed(1)}%)`,
-              isHidden ? '****' : (holdings.find((item) => item.id === entry?.payload?.id)?.instrument?.name || entry?.payload?.label),
-            ]}
-          />
-          </PieChart>
+          <BarChart data={rows} layout="vertical" margin={{ top: 4, right: 16, bottom: 4, left: 6 }}>
+            <CartesianGrid horizontal={false} strokeDasharray="3 5" stroke={theme.mode === 'dark' ? 'rgba(255,255,255,.08)' : 'rgba(15,23,42,.08)'}/>
+            <XAxis type="number" tickFormatter={(value) => isHidden ? '••••' : compactNumber(value)} tick={{fill: theme.textColor, fontSize: 10}} axisLine={false} tickLine={false}/>
+            <YAxis type="category" dataKey="label" width={92} tick={{fill: theme.textColor, fontSize: 10}} axisLine={false} tickLine={false} tickFormatter={(value) => isHidden ? '••••' : String(value)}/>
+            <Tooltip formatter={(value: number) => [isHidden ? '••••' : `${formatAmount(value)} (${total > 0 ? ((value / total) * 100).toFixed(1) : '0.0'}%)`, t.breakdownValue]}/>
+            <Bar dataKey="value" radius={[0, 5, 5, 0]}>
+              {rows.map((row, index) => <Cell key={row.id} onClick={() => typeof row.id === 'number' && setDetailId(row.id)} style={{cursor: typeof row.id === 'number' && !isHidden ? 'pointer' : 'default'}} fill={isHidden ? getRandomGrayscaleColor() : colorFor(row, index)}/>)}
+            </Bar>
+          </BarChart>
         </ResponsiveContainer>
         {detailId != null && (() => {
           const holding = holdings.find((item) => item.id === detailId);

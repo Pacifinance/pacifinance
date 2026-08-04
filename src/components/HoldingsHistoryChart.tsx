@@ -14,7 +14,7 @@ import { CurrencyContext } from '../contexts/CurrencyContext';
 import { MediaQueryContext } from '../contexts/MediaQueryContext';
 import { CustomTick, compactNumber } from '../utils/customGraphsInfo';
 import { getHoldingValue, paletteColor, ASSET_CATEGORY_ORDER } from '../utils/holdingsChartHelpers';
-import { Eye, EyeOff, Info, ShieldCheck, Users } from 'lucide-react';
+import { Eye, EyeOff, Info, ShieldCheck } from 'lucide-react';
 import HoldingAssetDetails from './HoldingAssetDetails';
 import type { InvestmentDividendSummaryDto, InvestmentHoldingDto, InvestmentHoldingHistoryDto, InvestmentAssetKey } from '../types/api';
 
@@ -24,7 +24,6 @@ interface HoldingsHistoryChartProps {
   assetKey: InvestmentAssetKey | null;
   isHidden: boolean;
   type?: 'area' | 'bar';
-  onContribute?: () => void;
   holdings?: InvestmentHoldingDto[];
   dividends?: InvestmentDividendSummaryDto[];
 }
@@ -43,39 +42,6 @@ const Description = styled.p`
   opacity: 0.6;
   text-align: center;
   color: ${(p) => p.theme.textColor};
-`;
-
-const PriceTrustCard = styled.div`
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  gap: 0.7rem;
-  align-items: center;
-  margin: 0 0 1rem;
-  padding: 0.75rem;
-  border: 1px solid ${(p) => (p.theme.mode === 'dark' ? 'rgba(16,185,129,0.24)' : 'rgba(5,150,105,0.2)')};
-  border-radius: 12px;
-  background: ${(p) => (p.theme.mode === 'dark' ? 'rgba(16,185,129,0.07)' : 'rgba(16,185,129,0.045)')};
-  color: ${(p) => p.theme.textColor};
-
-  .copy { min-width: 0; }
-  strong { display: block; font-size: 0.78rem; margin-bottom: 0.15rem; }
-  p { margin: 0; font-size: 0.7rem; line-height: 1.4; opacity: 0.72; }
-  button {
-    border: none;
-    border-radius: 8px;
-    padding: 0.45rem 0.65rem;
-    background: ${(p) => p.theme.buttonBackgroundColor};
-    color: white;
-    font-size: 0.7rem;
-    font-weight: 700;
-    cursor: pointer;
-    white-space: nowrap;
-  }
-
-  @media (max-width: 520px) {
-    grid-template-columns: auto 1fr;
-    button { grid-column: 1 / -1; width: 100%; }
-  }
 `;
 
 const TrustLegend = styled.div`
@@ -193,7 +159,7 @@ const EmptyState = styled.div`
 
 const DEFAULT_VISIBLE_COUNT = 6;
 
-export default function HoldingsHistoryChart({ theme, history, assetKey, isHidden, type = 'area', onContribute, holdings = [], dividends = [] }: HoldingsHistoryChartProps) {
+export default function HoldingsHistoryChart({ theme, history, assetKey, isHidden, type = 'area', holdings = [], dividends = [] }: HoldingsHistoryChartProps) {
   const { translations } = useContext(LanguageContext);
   const { formatAmount, fromEUR } = useContext(CurrencyContext);
   const { isMobileScreen } = useContext(MediaQueryContext);
@@ -287,22 +253,10 @@ export default function HoldingsHistoryChart({ theme, history, assetKey, isHidde
     setLineVisibility((previous) => ({ ...previous, ...Object.fromEntries(categoryIds.map((id) => [id, !shouldHide])) }));
   };
 
-  const trustCard = (
-    <PriceTrustCard theme={theme}>
-      <Users size={19} color={theme.buttonBackgroundColor} />
-      <div className="copy">
-        <strong>{t.communityDataTitle}</strong>
-        <p>{t.communityDataDescription}</p>
-      </div>
-      {onContribute && <button type="button" onClick={onContribute} data-umami-event="holdings-history-contribute-price">{t.communityDataAction}</button>}
-    </PriceTrustCard>
-  );
-
   if (distinctMonths.length <= 1) {
     return (
       <>
         <Title theme={theme}>{t.historyTitle}</Title>
-        {trustCard}
         <EmptyState theme={theme}>
           <h5>{t.sparseHistoryTitle}</h5>
           <p>{t.sparseHistoryDescription}</p>
@@ -342,7 +296,6 @@ export default function HoldingsHistoryChart({ theme, history, assetKey, isHidde
     <>
       <Title theme={theme}>{t.historyTitle}</Title>
       <Description theme={theme}>{t.historyDescription}</Description>
-      {trustCard}
       <ChartArea>
       <ResponsiveContainer width="100%" height={isMobileScreen ? 220 : 320}>
         <ChartComponent data={rows} margin={{ top: 8, right: 12, left: 0, bottom: 0 }}>

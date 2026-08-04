@@ -10,7 +10,7 @@ import styled from 'styled-components';
 import InOutStats from './InOutStats';
 import { PrivacyContext } from '../contexts/PrivacyContext';
 import { LanguageContext } from '../contexts/LanguageContext';
-import { TrendingUp, BarChart3, PieChart, LineChart, DollarSign, TrendingDown, Brain, RefreshCw } from 'lucide-react';
+import { TrendingUp, BarChart3, PieChart, LineChart, DollarSign, TrendingDown, Brain, RefreshCw, ShieldCheck, Users } from 'lucide-react';
 import AdvancedInsightsSection from '../components/AdvancedInsightsSection';
 import DetailedExpenseAnalysis from './DetailedOutflowsAnalysis';
 import HoldingsBreakdownChart from '../components/HoldingsBreakdownChart';
@@ -321,7 +321,7 @@ const RefreshPricesButton = styled.button`
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  margin: 0 auto 1.5rem auto;
+  margin: 0;
   padding: 0.5rem 1.1rem;
   border-radius: 999px;
   font-size: 0.85rem;
@@ -345,22 +345,44 @@ const RefreshPricesButton = styled.button`
   svg { font-size: 0.9rem; }
 `;
 
-const ActionButtonsRow = styled.div`
+const PortfolioToolbar = styled.div`
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
+  align-items: center;
   flex-wrap: wrap;
-  gap: 0.6rem;
-  margin-bottom: 1.5rem;
-
-  ${RefreshPricesButton} { margin: 0; }
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  padding: 0.7rem;
+  border-radius: 12px;
+  background: ${(props) => props.theme.mode === 'dark' ? 'rgba(255,255,255,.04)' : 'rgba(15,23,42,.035)'};
+  border: 1px solid ${(props) => props.theme.mode === 'dark' ? 'rgba(255,255,255,.08)' : 'rgba(15,23,42,.07)'};
+  ${CategoryPillsRow} { justify-content: flex-start; margin: 0; }
+  @media (max-width: 640px) {
+    align-items: stretch;
+    ${CategoryPillsRow} { width: 100%; overflow-x: auto; flex-wrap: nowrap; padding-bottom: 0.2rem; }
+    ${RefreshPricesButton} { justify-content: center; width: 100%; }
+  }
 `;
 
-const ActionResultLine = styled.p`
-  text-align: center;
-  font-size: 0.8rem;
-  opacity: 0.65;
-  margin: -1rem 0 1.5rem 0;
+const CommunitySpotlight = styled.div`
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.85rem;
+  margin-bottom: 1rem;
+  padding: 0.9rem 1rem;
+  border-radius: 14px;
+  border: 1px solid ${(props) => props.theme.mode === 'dark' ? 'rgba(16,185,129,.28)' : 'rgba(5,150,105,.22)'};
+  background: ${(props) => props.theme.mode === 'dark' ? 'linear-gradient(135deg, rgba(16,185,129,.12), rgba(16,185,129,.045))' : 'linear-gradient(135deg, rgba(16,185,129,.1), rgba(16,185,129,.035))'};
   color: ${(props) => props.theme.textColor};
+  .icon { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 11px; background: rgba(16,185,129,.14); color: ${(props) => props.theme.buttonBackgroundColor}; }
+  strong { display: flex; align-items: center; gap: .35rem; font-size: .88rem; }
+  p { margin: .22rem 0 0; opacity: .72; font-size: .76rem; line-height: 1.45; }
+  button { border: 0; border-radius: 9px; padding: .55rem .8rem; background: ${(props) => props.theme.buttonBackgroundColor}; color: #fff; font-size: .74rem; font-weight: 700; cursor: pointer; white-space: nowrap; }
+  @media (max-width: 640px) {
+    grid-template-columns: auto 1fr;
+    button { grid-column: 1 / -1; width: 100%; }
+  }
 `;
 
 const CategoryPill = styled.button`
@@ -506,8 +528,6 @@ export default function StatsCharts() {
     const [holdingsLoaded, setHoldingsLoaded] = useState(false);
     const [selectedHoldingAssetKey, setSelectedHoldingAssetKey] = useState(null);
     const [refreshingPrices, setRefreshingPrices] = useState(false);
-    const [backfillingHistoricalPrices, setBackfillingHistoricalPrices] = useState(false);
-    const [historicalBackfillResult, setHistoricalBackfillResult] = useState(null);
 
     // Lazy fetch: only pulled once the Portfolio Holdings tab is actually opened,
     // so users who never visit it never pay for the extra requests.
@@ -556,29 +576,6 @@ export default function StatsCharts() {
             setHoldingHistory(Array.isArray(history) ? history : []);
         } finally {
             setRefreshingPrices(false);
-        }
-    };
-
-    // Heavier, occasional operation (one provider call per instrument,
-    // covering its whole history) - deliberately separate from "Refresh
-    // prices" (meant to be clicked often) rather than folded into it. Fills
-    // in real market value for past months that only have cost-basis history
-    // - partial/best-effort by design, some instruments may not have
-    // historical data available depending on the provider's plan/coverage.
-    const handleBackfillHistoricalPrices = async () => {
-        if (backfillingHistoricalPrices) return;
-        setBackfillingHistoricalPrices(true);
-        setHistoricalBackfillResult(null);
-        try {
-            const results = await investmentService.backfillHistoricalPrices();
-            const [history] = await Promise.all([
-                investmentService.getHoldingHistory(),
-            ]);
-            setHoldingHistory(Array.isArray(history) ? history : []);
-            const monthsFilled = results.reduce((sum, r) => sum + r.monthsFilled, 0);
-            setHistoricalBackfillResult({ holdingsCount: results.length, monthsFilled });
-        } finally {
-            setBackfillingHistoricalPrices(false);
         }
     };
 
@@ -785,12 +782,7 @@ export default function StatsCharts() {
         return (
             <>
                 <SectionContainer>
-                    <SectionHeader>
-                        <SectionTitle theme={theme}>{t.title}</SectionTitle>
-                        <SectionDescription theme={theme}>{t.description}</SectionDescription>
-                    </SectionHeader>
-
-                    {availableAssetKeys.length > 1 && (
+                    <PortfolioToolbar theme={theme}>
                         <CategoryPillsRow>
                             <CategoryPill
                                 theme={theme}
@@ -810,41 +802,20 @@ export default function StatsCharts() {
                                 </CategoryPill>
                             ))}
                         </CategoryPillsRow>
-                    )}
 
-                    {(availableAssetKeys.includes('stocks') || availableAssetKeys.includes('etf')
-                        || availableAssetKeys.includes('bitcoin') || availableAssetKeys.includes('crypto')) && (
-                        <ActionButtonsRow>
-                            {(availableAssetKeys.includes('stocks') || availableAssetKeys.includes('etf')) && (
-                                <RefreshPricesButton theme={theme} type="button" onClick={handleRefreshPrices} disabled={refreshingPrices} data-umami-event="stats-refresh-prices">
-                                    <RefreshCw size={14} style={refreshingPrices ? { animation: 'spin 1s linear infinite' } : undefined} />
-                                    {refreshingPrices ? (t.refreshingPrices || 'Refreshing…') : (t.refreshPrices || 'Refresh prices')}
-                                </RefreshPricesButton>
-                            )}
-                            <RefreshPricesButton
-                                theme={theme}
-                                type="button"
-                                onClick={handleBackfillHistoricalPrices}
-                                disabled={backfillingHistoricalPrices}
-                                data-umami-event="stats-backfill-historical-prices"
-                            >
-                                <RefreshCw size={14} style={backfillingHistoricalPrices ? { animation: 'spin 1s linear infinite' } : undefined} />
-                                {backfillingHistoricalPrices
-                                    ? (t.backfillingHistoricalPrices || 'Fetching historical prices…')
-                                    : (t.backfillHistoricalPrices || 'Fetch historical prices')}
-                            </RefreshPricesButton>
-                        </ActionButtonsRow>
+                    {(availableAssetKeys.includes('stocks') || availableAssetKeys.includes('etf')) && (
+                        <RefreshPricesButton theme={theme} type="button" onClick={handleRefreshPrices} disabled={refreshingPrices} data-umami-event="stats-refresh-prices">
+                            <RefreshCw size={14} style={refreshingPrices ? { animation: 'spin 1s linear infinite' } : undefined} />
+                            {refreshingPrices ? t.refreshingPrices : t.refreshPrices}
+                        </RefreshPricesButton>
                     )}
+                    </PortfolioToolbar>
 
-                    {historicalBackfillResult && (
-                        <ActionResultLine theme={theme}>
-                            {historicalBackfillResult.monthsFilled > 0
-                                ? (t.backfillResultFilled || '{months} months filled in across {holdings} positions.')
-                                    .replace('{months}', String(historicalBackfillResult.monthsFilled))
-                                    .replace('{holdings}', String(historicalBackfillResult.holdingsCount))
-                                : (t.backfillResultEmpty || "No historical prices were available for your positions right now.")}
-                        </ActionResultLine>
-                    )}
+                    <CommunitySpotlight theme={theme}>
+                        <span className="icon"><Users size={21}/></span>
+                        <div><strong><ShieldCheck size={15}/>{t.communityDataTitle}</strong><p>{t.communityDataDescription}</p></div>
+                        <button type="button" onClick={() => navigate('/dashboard')} data-umami-event="holdings-community-contribute">{t.communityDataAction}</button>
+                    </CommunitySpotlight>
 
                     <ChartGrid columns={2}>
                         <ChartCard theme={theme} className="slide-in-left">
@@ -862,7 +833,6 @@ export default function StatsCharts() {
                                 assetKey={availableAssetKeys.length > 1 ? selectedHoldingAssetKey : availableAssetKeys[0]}
                                 isHidden={isHidden}
                                 type="area"
-                                onContribute={() => navigate('/dashboard')}
                                 holdings={investmentHoldings}
                                 dividends={investmentDividends}
                             />

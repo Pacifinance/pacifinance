@@ -800,6 +800,7 @@
             },
             "breakdownTitle": "Composição por posição",
             "breakdownDescription": "Descubra se você está sobreexposto em uma única posição",
+            "breakdownValue": "Valor da posição",
             "overweightWarning": "Posição sobreponderada", "assetDetails": "Mostrar detalhes do ativo", "toggleCategory": "Ativar ou desativar toda a categoria", "assetDetailLabels": { "details": "Detalhes do ativo", "close": "Fechar", "value": "Valor atual", "invested": "Investido", "quantity": "Quantidade", "sector": "Setor", "industry": "Indústria", "country": "País", "exchange": "Mercado", "isin": "ISIN", "dividends": "Dividendos recebidos", "payments": "pagamentos", "lastDividend": "Último dividendo", "notes": "Notas", "stocks": "Ações", "etf": "ETF", "bitcoin": "Bitcoin", "crypto": "Cripto", "bonds": "Títulos", "funds": "Fundos", "commodities": "Commodities" },
             "historyTitle": "Evolução ao longo do tempo",
             "historyDescription": "O valor das suas posições, mês a mês",

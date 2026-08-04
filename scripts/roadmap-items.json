@@ -480,24 +480,12 @@
     "completedDate": "2026-07"
   },
   {
-    "id": "historical-price-backfill",
-    "todoMatch": "Recupera prezzi storici",
-    "title": { "it": "Recupero Prezzi Storici", "en": "Historical Price Backfill" },
-    "description": {
-      "it": "Un pulsante dedicato recupera un prezzo di mercato mensile per ogni azione/ETF (Finnhub) e crypto (CoinGecko), moltiplicato per la quantità effettivamente posseduta in quel mese — trasforma l'andamento del portafoglio da una semplice curva di costo storico a un vero andamento di mercato, anche per i mesi precedenti al primo utilizzo di \"Aggiorna prezzi\".",
-      "en": "A dedicated button fetches one monthly market price per stock/ETF (Finnhub) and crypto (CoinGecko), multiplied by the quantity actually held that month — turns the portfolio's value-over-time from a plain cost-basis curve into a real market trend, even for months before \"Refresh prices\" was first used."
-    },
-    "category": "feature",
-    "icon": "🕰️",
-    "completedDate": "2026-07"
-  },
-  {
     "id": "community-historical-prices",
     "todoMatch": "Prezzi storici verificati dalla community",
     "title": { "it": "Prezzi Storici Verificati dalla Community", "en": "Community-Verified Historical Prices" },
     "description": {
-      "it": "Hai posseduto un titolo o una crypto in un mese passato? Proponi il prezzo che ricordi: resta tuo finché un amministratore non lo verifica confrontandolo con un provider di mercato reale — una volta approvato diventa il prezzo condiviso da tutti gli utenti per quel mese, un'alternativa gratuita e costruita insieme ai dati storici a pagamento.",
-      "en": "Held a stock or crypto in a past month? Submit the price you remember: it stays yours until an admin verifies it against a real market provider — once approved, it becomes the shared price for every user that month, a free, community-built alternative to paid historical data."
+      "it": "La sezione portafoglio mette in primo piano lo storico gratuito costruito insieme: proponi il prezzo di un titolo o di una crypto per un mese passato e, dopo la verifica di un amministratore, diventa un dato condiviso che completa lo storico di tutti.",
+      "en": "The portfolio section highlights free community-built history: submit a stock or crypto price for a past month and, after administrator verification, it becomes shared data that fills history for everyone."
     },
     "category": "feature",
     "icon": "🤲",

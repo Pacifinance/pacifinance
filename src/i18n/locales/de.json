@@ -730,6 +730,19 @@
             "variation": "Veränderung ",
             "titleDetailsYear": "Ihre Einnahmen, Ausgaben und Ersparnisse im Vergleich zum Vorjahr ",
             "compareMonths": "Monate vergleichen",
+            "explorer": {
+                "title": "Einnahmen- und Ausgabenanalyse", "subtitle": "Analysiere Trends, Netto-Cashflow und Kategorien im gewählten Zeitraum",
+                "viewTrend": "Verlauf", "viewNet": "Netto-Cashflow", "viewCategories": "Kategorien", "viewTable": "Tabelle",
+                "totalIncomes": "Einnahmen gesamt", "totalOutflows": "Ausgaben gesamt", "netCashFlow": "Netto-Cashflow", "savingsRate": "Sparquote",
+                "selectedPeriod": "Gewählter Zeitraum", "average": "Monatsdurchschnitt", "deficitMonths": "Defizitmonate",
+                "incomes": "Einnahmen", "outflows": "Ausgaben", "net": "Netto", "month": "Monat", "value": "Betrag", "percentage": "Prozent", "other": "Sonstige",
+                "notAvailable": "k. A.", "noComparison": "Vergleich nicht verfügbar", "vsPrevious": "zum vorherigen Zeitraum", "comparePrevious": "Vorherigen Zeitraum vergleichen", "compareMonths": "Monate vergleichen",
+                "customRange": "Eigener Zeitraum", "from": "Von", "to": "Bis", "loading": "Monatsdaten werden geladen…", "insightsTitle": "Zeitraumindikatoren",
+                "positiveNetInsight": "Der Zeitraum erzielte einen Nettoüberschuss von {value}.", "negativeNetInsight": "Der Zeitraum ergab ein Nettodefizit von {value}.",
+                "deficitInsight": "{count} von {total} Monaten endeten im Defizit.", "rateInsight": "Die gesamte Sparquote beträgt {value}.",
+                "monthDetails": "Monatsdetails", "closeDetails": "Details schließen", "exportCsv": "CSV exportieren", "exportExcel": "Excel exportieren",
+                "periods": {"3m": "3M", "6m": "6M", "1y": "1J", "2y": "2J", "all": "Alle"}
+            },
             "compareMonthsModal": {
                 "title": "Monatsvergleich",
                 "subtitle": "Vergleichen Sie die Kategorien zweier verschiedener Monate",

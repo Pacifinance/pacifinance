@@ -380,6 +380,18 @@ const roadmapData: RoadmapItem[] = [
     icon: '🤲',
     completedDate: '2026-07',
   },
+  {
+    id: 'income-outflow-explorer',
+    title: { it: 'Esploratore Entrate e Uscite', en: 'Income and Outflow Explorer' },
+    description: {
+      it: 'Un\'unica analisi responsive combina KPI, andamento mensile, flusso netto con mesi in deficit, categorie ordinate, confronto con il periodo precedente e tabella esportabile.',
+      en: 'One responsive analysis combines KPIs, monthly trends, net cash flow with deficit months, ranked categories, previous-period comparison, and an exportable table.'
+    },
+    status: 'completed',
+    category: 'feature',
+    icon: '📊',
+    completedDate: '2026-08',
+  },
   /* ──────────── IN PROGRESS ──────────── */
   {
     id: 'onboarding',

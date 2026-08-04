@@ -730,6 +730,19 @@
             "variation": "Variation ",
             "titleDetailsYear": "Vos revenus, dépenses et épargne par rapport à l'année dernière ",
             "compareMonths": "Comparer les mois",
+            "explorer": {
+                "title": "Explorateur des revenus et dépenses", "subtitle": "Analysez les tendances, le flux net et les catégories sur la période choisie",
+                "viewTrend": "Évolution", "viewNet": "Flux net", "viewCategories": "Catégories", "viewTable": "Tableau",
+                "totalIncomes": "Revenus totaux", "totalOutflows": "Dépenses totales", "netCashFlow": "Flux net", "savingsRate": "Taux d’épargne",
+                "selectedPeriod": "Période sélectionnée", "average": "Moyenne mensuelle", "deficitMonths": "mois déficitaires",
+                "incomes": "Revenus", "outflows": "Dépenses", "net": "Net", "month": "Mois", "value": "Montant", "percentage": "Pourcentage", "other": "Autres",
+                "notAvailable": "N/D", "noComparison": "Comparaison indisponible", "vsPrevious": "par rapport à la période précédente", "comparePrevious": "Comparer la période précédente", "compareMonths": "Comparer les mois",
+                "customRange": "Période personnalisée", "from": "De", "to": "À", "loading": "Chargement des données du mois…", "insightsTitle": "Indicateurs de la période",
+                "positiveNetInsight": "La période a généré un excédent net de {value}.", "negativeNetInsight": "La période a généré un déficit net de {value}.",
+                "deficitInsight": "{count} mois sur {total} se sont terminés en déficit.", "rateInsight": "Le taux d’épargne global est de {value}.",
+                "monthDetails": "Détail mensuel", "closeDetails": "Fermer le détail", "exportCsv": "Exporter en CSV", "exportExcel": "Exporter vers Excel",
+                "periods": {"3m": "3M", "6m": "6M", "1y": "1A", "2y": "2A", "all": "Tout"}
+            },
             "compareMonthsModal": {
                 "title": "Comparaison des mois",
                 "subtitle": "Comparez les catégories de deux mois différents",

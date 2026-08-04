@@ -730,6 +730,19 @@
             "variation": "Variação ",
             "titleDetailsYear": "Suas receitas, despesas e economias comparadas ao ano passado ",
             "compareMonths": "Comparar meses",
+            "explorer": {
+                "title": "Explorador de receitas e despesas", "subtitle": "Analise tendências, fluxo líquido e categorias no período selecionado",
+                "viewTrend": "Tendência", "viewNet": "Fluxo líquido", "viewCategories": "Categorias", "viewTable": "Tabela",
+                "totalIncomes": "Receitas totais", "totalOutflows": "Despesas totais", "netCashFlow": "Fluxo líquido", "savingsRate": "Taxa de poupança",
+                "selectedPeriod": "Período selecionado", "average": "Média mensal", "deficitMonths": "meses com déficit",
+                "incomes": "Receitas", "outflows": "Despesas", "net": "Líquido", "month": "Mês", "value": "Valor", "percentage": "Percentual", "other": "Outros",
+                "notAvailable": "N/D", "noComparison": "Comparação indisponível", "vsPrevious": "em relação ao período anterior", "comparePrevious": "Comparar período anterior", "compareMonths": "Comparar meses",
+                "customRange": "Intervalo personalizado", "from": "De", "to": "Até", "loading": "Carregando dados do mês…", "insightsTitle": "Indicadores do período",
+                "positiveNetInsight": "O período gerou um superávit líquido de {value}.", "negativeNetInsight": "O período gerou um déficit líquido de {value}.",
+                "deficitInsight": "{count} de {total} meses terminaram com déficit.", "rateInsight": "A taxa de poupança total é {value}.",
+                "monthDetails": "Detalhes mensais", "closeDetails": "Fechar detalhes", "exportCsv": "Exportar CSV", "exportExcel": "Exportar Excel",
+                "periods": {"3m": "3M", "6m": "6M", "1y": "1A", "2y": "2A", "all": "Tudo"}
+            },
             "compareMonthsModal": {
                 "title": "Comparação entre meses",
                 "subtitle": "Compare as categorias de dois meses diferentes",

@@ -9,7 +9,6 @@ import { StandardPageTitle, StyledSectionStats, SecondaryTitle } from '../styles
 import styled from 'styled-components';
 import InOutStats from './InOutStats';
 import { PrivacyContext } from '../contexts/PrivacyContext';
-import { CustomTick } from '../utils/customGraphsInfo';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { TrendingUp, BarChart3, PieChart, LineChart, DollarSign, TrendingDown, Brain, RefreshCw } from 'lucide-react';
 import AdvancedInsightsSection from '../components/AdvancedInsightsSection';
@@ -709,21 +708,12 @@ export default function StatsCharts() {
                         </SectionDescription>
                     </SectionHeader>
                     
-                    <ChartGrid columns={2}>
+                    <ChartGrid columns={1}>
                         <ChartCard theme={theme} className="slide-in-left">
                             <InOutCharts 
                                 theme={theme} 
                                 userData={userData} 
                                 isHidden={isHidden} 
-                                CustomTick={CustomTick}
-                            />
-                        </ChartCard>
-                        <ChartCard theme={theme} className="slide-in-right">
-                            <InOutCharts 
-                                theme={theme} 
-                                userData={userData} 
-                                isHidden={isHidden}
-                                type="pie"
                             />
                         </ChartCard>
                     </ChartGrid>

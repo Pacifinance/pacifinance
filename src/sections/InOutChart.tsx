@@ -1,1027 +1,321 @@
-import React, {useState, useEffect, useContext} from "react";
-import { CartesianGrid } from 'recharts/lib/cartesian/CartesianGrid';
-import { Tooltip } from 'recharts/lib/component/Tooltip';
-import { XAxis } from 'recharts/lib/cartesian/XAxis';
-import { YAxis } from 'recharts/lib/cartesian/YAxis';
-import { LineChart } from 'recharts/lib/chart/LineChart';
-import { Line } from 'recharts/lib/cartesian/Line';
-import { PieChart } from 'recharts/lib/chart/PieChart';
-import { Pie } from 'recharts/lib/polar/Pie';
-import { Cell } from 'recharts/lib/component/Cell';
-import { ReferenceLine } from 'recharts/lib/cartesian/ReferenceLine';
-import { ResponsiveContainer } from 'recharts/lib/component/ResponsiveContainer';
-import { SectionInOut, PercentageOutflowsChartContainer } from '../styles/MyStyled';
-import { CSVLink } from 'react-csv';
-import { BsFiletypeCsv, BsCalendarRange } from "react-icons/bs";
-import { LanguageContext } from '../contexts/LanguageContext';
-import { CurrencyContext } from '../contexts/CurrencyContext';
-import { UserContext } from '../contexts/UserContext';
+import React, {useContext, useEffect, useMemo, useRef, useState} from 'react';
+import styled from 'styled-components';
+import {BarChart} from 'recharts/lib/chart/BarChart';
+import {ComposedChart} from 'recharts/lib/chart/ComposedChart';
+import {Bar} from 'recharts/lib/cartesian/Bar';
+import {Line} from 'recharts/lib/cartesian/Line';
+import {CartesianGrid} from 'recharts/lib/cartesian/CartesianGrid';
+import {ReferenceLine} from 'recharts/lib/cartesian/ReferenceLine';
+import {XAxis} from 'recharts/lib/cartesian/XAxis';
+import {YAxis} from 'recharts/lib/cartesian/YAxis';
+import {Tooltip} from 'recharts/lib/component/Tooltip';
+import {ResponsiveContainer} from 'recharts/lib/component/ResponsiveContainer';
+import {Cell} from 'recharts/lib/component/Cell';
+import {CSVLink} from 'react-csv';
+import {BarChart3, CalendarRange, Columns3, LineChart, Table2, TrendingDown, TrendingUp, WalletCards, X} from 'lucide-react';
+import {BsFiletypeCsv} from 'react-icons/bs';
+import {RiFileExcel2Line} from 'react-icons/ri';
+import {LanguageContext} from '../contexts/LanguageContext';
+import {CurrencyContext} from '../contexts/CurrencyContext';
+import {UserContext} from '../contexts/UserContext';
+import {assetColors} from '../data/assetColors';
+import {getCategoryColor} from '../data/categoryColors';
+import {resolveTagKeyFromLocalized, translateTag} from '../data/tagTranslations';
 import {
-  getIncomesArray,
-  getOutflowsArray,
-  getMonthlyTotalsAllTime,
-  getEntriesForMonthKey,
   getCategoryBreakdownForEntries,
+  getEntriesForMonthKey,
+  getIncomesArray,
+  getMonthlyTotalsAllTime,
+  getOutflowsArray,
   indexToMonthKey,
 } from '../utils/userDataSelectors';
-import { downloadExcel } from '../utils/downloadData.jsx';
-import { RiFileExcel2Line } from "react-icons/ri";
-
-import { getCategoryColor } from '../data/categoryColors';
-import { assetColors } from '../data/assetColors';
-import { compactNumber } from '../utils/customGraphsInfo.jsx';
-import { getLighterSolidColor, getGrayscaleColor, getRandomGrayscaleColor } from '../utils/colorUtils';
-import { resolveTagKeyFromLocalized, translateTag } from '../data/tagTranslations';
+import {compactNumber} from '../utils/customGraphsInfo.jsx';
+import {downloadExcel} from '../utils/downloadData.jsx';
+import {
+  buildIncomeOutflowComparison,
+  calculateIncomeOutflowKpis,
+  normalizeIncomeOutflowRows,
+  rankCategoryBreakdown,
+  type IncomeOutflowChartRow,
+  type IncomeOutflowInputRow,
+} from '../utils/incomeOutflowChartAnalytics';
 import MonthComparisonModal from './MonthComparisonModal.jsx';
-function InOutChart({theme, userData, isHidden, type = "line"}) {
-  const { language, translations } = useContext(LanguageContext);
-  const { formatAmount, fromEUR, currencySymbol } = useContext(CurrencyContext);
-  const { fetchAllTimeMonthlyTotals, fetchMonthDetail } = useContext(UserContext) || {};
 
-  // Line chart state
-  const [incomesArray, setIncomesArray] = useState([]);
-  const [outflowsArray, setOutflowsArray] = useState([]);
-  const [monthlyTotalsAllTime, setMonthlyTotalsAllTime] = useState([]);
-  const [isLoadingFullHistory, setIsLoadingFullHistory] = useState(false);
-  const [hasFullHistory, setHasFullHistory] = useState(false);
+interface InOutChartProps {
+  theme: {mode: string; textColor: string; buttonBackgroundColor: string};
+  userData: Record<string, unknown> | null | undefined;
+  isHidden: boolean;
+}
 
-  // Pie chart state
-  const [selectedMonth, setSelectedMonth] = useState(indexToMonthKey(0)); // 'YYYY-MM', defaults to current month
-  const [selectedPieFlow, setSelectedPieFlow] = useState('outflows');
-  const [isLoadingMonth, setIsLoadingMonth] = useState(false);
+type ViewMode = 'trend' | 'net' | 'categories' | 'table';
+type FlowMode = 'outflows' | 'incomes';
+
+const Explorer = styled.section`
+  display: grid; gap: 1rem; width: 100%; color: ${(p) => p.theme.textColor};
+`;
+const Header = styled.div`
+  display: flex; justify-content: space-between; gap: 1rem; align-items: flex-start; flex-wrap: wrap;
+  h2 { margin: 0 0 .25rem; font-size: 1.08rem; }
+  p { margin: 0; opacity: .68; font-size: .82rem; }
+`;
+const KpiGrid = styled.div`
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .65rem;
+  @media (max-width: 760px) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+`;
+const Kpi = styled.div`
+  border: 1px solid ${(p) => p.theme.mode === 'dark' ? 'rgba(255,255,255,.1)' : 'rgba(15,23,42,.09)'};
+  border-radius: 12px; padding: .72rem; min-width: 0;
+  background: ${(p) => p.theme.mode === 'dark' ? 'rgba(255,255,255,.035)' : 'rgba(248,250,252,.8)'};
+  span, small { display: block; opacity: .65; font-size: .69rem; }
+  strong { display: block; margin: .22rem 0; font-size: clamp(.92rem, 2vw, 1.2rem); overflow: hidden; text-overflow: ellipsis; }
+`;
+const Toolbar = styled.div`
+  display: grid; gap: .55rem; padding: .65rem; border-radius: 12px;
+  background: ${(p) => p.theme.mode === 'dark' ? 'rgba(255,255,255,.04)' : 'rgba(15,23,42,.035)'};
+`;
+const ToolbarRow = styled.div`
+  display: flex; justify-content: space-between; align-items: center; gap: .55rem; flex-wrap: wrap;
+`;
+const Segments = styled.div`
+  display: flex; gap: .3rem; flex-wrap: wrap; align-items: center;
+`;
+const Segment = styled.button<{$active?: boolean}>`
+  display: inline-flex; align-items: center; justify-content: center; gap: .32rem; min-height: 34px;
+  border: 1px solid ${(p) => p.$active ? p.theme.buttonBackgroundColor : p.theme.mode === 'dark' ? 'rgba(255,255,255,.14)' : 'rgba(15,23,42,.12)'};
+  border-radius: 8px; padding: .4rem .62rem; cursor: pointer; font-size: .72rem; font-weight: 700;
+  background: ${(p) => p.$active ? p.theme.buttonBackgroundColor : 'transparent'};
+  color: ${(p) => p.$active ? '#fff' : p.theme.textColor};
+  svg { width: 15px; height: 15px; }
+  &:disabled { opacity: .55; cursor: wait; }
+  @media (max-width: 520px) { min-width: 36px; padding: .38rem .48rem; span { display: none; } }
+`;
+const IconButton = styled.button`
+  width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center;
+  border: 1px solid ${(p) => p.theme.mode === 'dark' ? 'rgba(255,255,255,.14)' : 'rgba(15,23,42,.12)'};
+  border-radius: 8px; background: transparent; color: ${(p) => p.theme.buttonBackgroundColor}; cursor: pointer;
+`;
+const RangeRow = styled.div`
+  display: flex; justify-content: center; align-items: center; gap: .4rem; flex-wrap: wrap; font-size: .72rem;
+  input { min-height: 34px; border-radius: 7px; border: 1px solid ${(p) => p.theme.mode === 'dark' ? 'rgba(255,255,255,.15)' : 'rgba(15,23,42,.13)'}; background: transparent; color: ${(p) => p.theme.textColor}; padding: .25rem .4rem; color-scheme: ${(p) => p.theme.mode}; }
+`;
+const ChartStage = styled.div`
+  width: 100%; height: 360px;
+  @media (max-width: 760px) { height: 300px; }
+`;
+const DataTable = styled.div`
+  overflow: auto; max-height: 430px; border-radius: 10px;
+  table { width: 100%; border-collapse: collapse; min-width: 560px; font-size: .76rem; }
+  th { position: sticky; top: 0; z-index: 1; background: ${(p) => p.theme.mode === 'dark' ? '#303030' : '#fff'}; }
+  th, td { padding: .58rem; text-align: right; border-bottom: 1px solid ${(p) => p.theme.mode === 'dark' ? 'rgba(255,255,255,.07)' : 'rgba(15,23,42,.07)'}; }
+  th:first-child, td:first-child { text-align: left; position: sticky; left: 0; background: ${(p) => p.theme.mode === 'dark' ? '#303030' : '#fff'}; }
+`;
+const InsightGrid = styled.div`
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .55rem;
+  @media (max-width: 720px) { grid-template-columns: 1fr; }
+`;
+const Insight = styled.div<{$tone: 'positive' | 'negative' | 'neutral'}>`
+  display: flex; align-items: flex-start; gap: .5rem; border-radius: 10px; padding: .65rem; font-size: .74rem;
+  background: ${(p) => p.$tone === 'positive' ? 'rgba(16,185,129,.1)' : p.$tone === 'negative' ? 'rgba(239,68,68,.1)' : 'rgba(59,130,246,.1)'};
+  svg { width: 16px; flex: 0 0 auto; }
+`;
+const TooltipCard = styled.div`
+  min-width: 180px; border-radius: 10px; padding: .65rem; color: #172033; background: rgba(255,255,255,.97); box-shadow: 0 8px 28px rgba(0,0,0,.18);
+  h4 { margin: 0 0 .4rem; }
+  div { display: flex; justify-content: space-between; gap: 1rem; font-size: .74rem; margin-top: .25rem; }
+`;
+const MobileSheet = styled.div`
+  position: fixed; z-index: 1200; left: .75rem; right: .75rem; bottom: .75rem; border-radius: 16px; padding: 1rem;
+  background: ${(p) => p.theme.mode === 'dark' ? '#252525' : '#fff'}; color: ${(p) => p.theme.textColor}; box-shadow: 0 14px 45px rgba(0,0,0,.35);
+  header { display: flex; justify-content: space-between; align-items: center; margin-bottom: .5rem; }
+  button { border: 0; background: transparent; color: inherit; }
+  div { display: flex; justify-content: space-between; gap: 1rem; padding: .28rem 0; font-size: .82rem; }
+`;
+
+const PERIODS = ['3m', '6m', '1y', '2y', 'all'] as const;
+
+function InOutChart({theme, userData, isHidden}: InOutChartProps) {
+  const {language, translations} = useContext(LanguageContext);
+  const {formatAmount, fromEUR} = useContext(CurrencyContext);
+  const {fetchAllTimeMonthlyTotals, fetchMonthDetail} = useContext(UserContext) || {};
+  const t = translations.graphs.statsOutflows.explorer;
+  const hostRef = useRef<HTMLElement | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+  const [view, setView] = useState<ViewMode>('trend');
+  const [period, setPeriod] = useState<string>('6m');
+  const [showRange, setShowRange] = useState(false);
+  const [startMonth, setStartMonth] = useState('');
+  const [endMonth, setEndMonth] = useState('');
+  const [fullHistoryLoaded, setFullHistoryLoaded] = useState(false);
+  const [loadingHistory, setLoadingHistory] = useState(false);
+  const [compare, setCompare] = useState(false);
+  const [selectedRow, setSelectedRow] = useState<IncomeOutflowChartRow | null>(null);
+  const [flow, setFlow] = useState<FlowMode>('outflows');
+  const [categoryMonth, setCategoryMonth] = useState(indexToMonthKey(0));
+  const [categoryLimit, setCategoryLimit] = useState(5);
+  const [categoryUnit, setCategoryUnit] = useState<'value' | 'percent'>('value');
+  const [loadingMonth, setLoadingMonth] = useState(false);
   const [showComparisonModal, setShowComparisonModal] = useState(false);
-  
-  // Common state
-  const [containerWidth, setContainerWidth] = useState(800);
-  const [selectedPeriod, setSelectedPeriod] = useState('6m');
-  const [customStartMonth, setCustomStartMonth] = useState('');
-  const [customEndMonth, setCustomEndMonth] = useState('');
-  const [showCustomRange, setShowCustomRange] = useState(false);
-  const isMobile = containerWidth < 500;
 
-  // Line visibility state for legend toggle
-  const [lineVisibility, setLineVisibility] = useState({
-    incomes: true,
-    outflows: true,
-    saved: true
-  });
-
-  const greyColor1 = getRandomGrayscaleColor(1);
-  const greyColor2 = getRandomGrayscaleColor(2);
-
-  // Funzione per gestire il toggle delle linee tramite click sulla legenda
-  const handleLegendClick = (data) => {
-    const key = data.dataKey;
-    let lineKey;
-    
-    // Mappa le dataKeys alle keys di visibilità
-    if (key === translations.general.incomes) {
-      lineKey = 'incomes';
-    } else if (key === translations.general.outflows) {
-      lineKey = 'outflows';
-    } else if (key === translations.general.saved) {
-      lineKey = 'saved';
-    }
-    
-    if (lineKey) {
-      setLineVisibility(prev => ({
-        ...prev,
-        [lineKey]: !prev[lineKey]
-      }));
-    }
-  };
-
-  // Gestione responsive
   useEffect(() => {
-    const handleResize = () => {
-      const width = window.innerWidth;
-      if (type === "line") {
-        const dataLength = getFilteredData().length;
-        
-        let baseWidth;
-        if (width < 768) {
-          baseWidth = Math.min(width - 20, 500); // Ridotto da 40 a 20
-        } else if (width < 1024) {
-          baseWidth = Math.min(width - 80, 750);
-        } else {
-          baseWidth = Math.min(width - 120, 1000);
-        }
-        
-        // Riduci la larghezza per periodi più corti per una migliore visualizzazione
-        if (dataLength <= 3) {
-          setContainerWidth(Math.min(baseWidth * 0.7, 500));
-        } else if (dataLength <= 6) {
-          setContainerWidth(Math.min(baseWidth * 0.85, 650));
-        } else {
-          setContainerWidth(baseWidth);
-        }
-      } else {
-        if (width < 768) {
-          setContainerWidth(Math.min(width - 30, 350)); // Ridotto da 60 a 30
-        } else if (width < 1024) {
-          setContainerWidth(Math.min(width - 120, 500));
-        } else {
-          setContainerWidth(Math.min(width - 200, 700));
-        }
-      }
-    };
+    if (!hostRef.current || typeof ResizeObserver === 'undefined') return;
+    const observer = new ResizeObserver(([entry]) => setIsMobile(entry.contentRect.width < 560));
+    observer.observe(hostRef.current);
+    return () => observer.disconnect();
+  }, []);
 
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [type, selectedPeriod, incomesArray, outflowsArray]);
-
-  //impostare i dati presi dell'utente per le spese e le entrate
-  useEffect(() => {
-    if (!userData || type !== "line") return;
-    try {
-      setIncomesArray(getIncomesArray(userData) ? [...getIncomesArray(userData)] : []);
-      setOutflowsArray(getOutflowsArray(userData) ? [...getOutflowsArray(userData)] : []);
-      setMonthlyTotalsAllTime(getMonthlyTotalsAllTime(userData));
-    } catch (error) {
-      console.error('Error during operations:', error);
+  const recentRows = useMemo(() => {
+    const incomes = getIncomesArray(userData) || [];
+    const outflows = getOutflowsArray(userData) || [];
+    const raw: IncomeOutflowInputRow[] = [];
+    const now = new Date();
+    for (let offset = 11; offset >= 0; offset -= 1) {
+      const date = new Date(now.getFullYear(), now.getMonth() - offset, 1);
+      raw.push({
+        name: `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`,
+        incomes: Number(incomes[offset] || 0),
+        outflows: Number(outflows[offset] || 0),
+      });
     }
-  }, [userData, type]);
+    return normalizeIncomeOutflowRows(raw);
+  }, [userData]);
 
-  // Fetches the selected month's data on demand if it falls outside the
-  // already-loaded window (see fetchMonthDetail in UserContext).
-  useEffect(() => {
-    if (type !== "pie" || !userData || !fetchMonthDetail) return;
-    const flow = selectedPieFlow === 'incomes' ? 'incomes' : 'outflows';
-    if (getEntriesForMonthKey(userData, selectedMonth, flow) !== null) return;
-
-    const [year, month] = selectedMonth.split('-').map(Number);
-    setIsLoadingMonth(true);
-    fetchMonthDetail(year, month).finally(() => setIsLoadingMonth(false));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [type, userData, selectedMonth, selectedPieFlow]);
-
-  const headers = [
-    { label: translations?.graphs?.statsOutflows?.titleGraph || 'Month', key: 'name' },
-    { label: translations?.general?.incomes || 'Inflows', key: 'incomes' },
-    { label: translations?.general?.outflows || 'Outflows', key: 'outflows' },
-  ];
-
-  const today = new Date();
-
-  // "2Y"/"ALL" richiedono i totali mensili aggregati oltre i 12 mesi già
-  // disponibili di default: li richiediamo una sola volta, on-demand, per
-  // non gravare sull'egress ad ogni caricamento pagina (nessun dettaglio di
-  // singola transazione viene trasferito, solo somme mensili).
-  const ensureFullHistory = async () => {
-    if (!hasFullHistory && fetchAllTimeMonthlyTotals) {
-      setIsLoadingFullHistory(true);
-      await fetchAllTimeMonthlyTotals();
-      setHasFullHistory(true);
-      setIsLoadingFullHistory(false);
-    }
-  };
-
-  const handlePeriodSelect = async (period) => {
-    if (period === '2y' || period === 'all') {
-      await ensureFullHistory();
-    }
-    setSelectedPeriod(period);
-  };
-
-  const handleCustomRangeChange = async (field, value) => {
-    if (field === 'start') setCustomStartMonth(value);
-    if (field === 'end') setCustomEndMonth(value);
-    setSelectedPeriod('custom');
-    await ensureFullHistory();
-  };
-
-  // Converte i totali mensili aggregati (monthlyTotalsAllTime) nello stesso
-  // formato usato dal grafico, ordinati cronologicamente.
-  const buildDataFromMonthlyTotals = (totals) => {
-    return [...totals]
+  const allRows = useMemo(() => {
+    const totals = getMonthlyTotalsAllTime(userData) || [];
+    if (totals.length === 0) return recentRows;
+    return normalizeIncomeOutflowRows([...totals]
       .sort((a, b) => a.monthStart.localeCompare(b.monthStart))
-      .map((t) => {
-        const incomesValue = Math.abs(t.totalIncomes || 0);
-        const outflowsValue = Math.abs(t.totalOutflows || 0);
-        return {
-          name: t.monthStart.slice(0, 7),
-          [translations.general.outflows]: outflowsValue,
-          [translations.general.incomes]: incomesValue,
-          [translations.general.saved]: Math.max(incomesValue - outflowsValue, 0),
-          amt: 0,
-        };
-      });
-  };
+      .map((row) => ({name: row.monthStart.slice(0, 7), incomes: row.totalIncomes, outflows: row.totalOutflows})));
+  }, [recentRows, userData]);
 
-  const buildLastTwelveMonthsData = () => {
-    const lastTwelveMonths = [];
-
-    // Crea array da 11 mesi fa al mese corrente (ordine cronologico corretto)
-    for (let i = 11; i >= 0; i--) {
-      // Usa Date constructor per gestire correttamente i mesi negativi
-      const targetDate = new Date(today.getFullYear(), today.getMonth() - i, 1);
-      const year = targetDate.getFullYear();
-      const month = targetDate.getMonth();
-
-      // Usa formato anno-mese per coerenza con BalancesChart
-      const displayName = `${year}-${String(month + 1).padStart(2, '0')}`;
-      
-      // UserContext: incomesArray[0] = mese corrente, incomesArray[11] = 11 mesi fa
-      // Loop: i=11 (11 mesi fa) → i=0 (mese corrente) 
-      // Mappatura: i=11 → arrayIndex=11 (11 mesi fa), i=0 → arrayIndex=0 (mese corrente)
-      // Risultato grafico: da sinistra (11 mesi fa) a destra (mese corrente) ✅
-      const arrayIndex = i;
-      
-      // Usa dati solo se l'indice è valido nell'array
-      const incomesValue = arrayIndex < incomesArray.length ? Math.abs(incomesArray[arrayIndex] || 0) : 0;
-      const outflowsValue = arrayIndex < outflowsArray.length ? Math.abs(outflowsArray[arrayIndex] || 0) : 0;
-
-      lastTwelveMonths.push({
-        name: displayName,
-        [translations.general.outflows]: outflowsValue,
-        [translations.general.incomes]: incomesValue,
-        [translations.general.saved]: Math.max(incomesValue - outflowsValue, 0),
-        amt: 0, // Aggiungi eventuali dati aggiuntivi
-      });
+  const rows = useMemo(() => {
+    if (period === 'custom') {
+      const from = startMonth || allRows[0]?.name;
+      const to = endMonth || allRows[allRows.length - 1]?.name;
+      if (!from || !to) return allRows;
+      const [min, max] = from <= to ? [from, to] : [to, from];
+      return allRows.filter((row) => row.name >= min && row.name <= max);
     }
+    const sizes: Record<string, number> = { '3m': 3, '6m': 6, '1y': 12, '2y': 24 };
+    return sizes[period] ? allRows.slice(-sizes[period]) : allRows;
+  }, [allRows, endMonth, period, startMonth]);
 
-    return lastTwelveMonths;
+  const kpis = useMemo(() => calculateIncomeOutflowKpis(rows), [rows]);
+  const comparisonRows = useMemo(() => buildIncomeOutflowComparison(allRows, rows), [allRows, rows]);
+  const previousKpis = useMemo(() => {
+    const first = allRows.findIndex((row) => row.name === rows[0]?.name);
+    return calculateIncomeOutflowKpis(first >= rows.length ? allRows.slice(first - rows.length, first) : []);
+  }, [allRows, rows]);
+
+  useEffect(() => {
+    if (view !== 'categories' || !fetchMonthDetail) return;
+    const entries = getEntriesForMonthKey(userData, categoryMonth, flow);
+    if (entries !== null) return;
+    const [year, month] = categoryMonth.split('-').map(Number);
+    setLoadingMonth(true);
+    fetchMonthDetail(year, month).finally(() => setLoadingMonth(false));
+  }, [categoryMonth, fetchMonthDetail, flow, userData, view]);
+
+  const categoryRows = useMemo(() => {
+    const categoryType = flow === 'incomes' ? 'income' : 'expense';
+    const entries = getEntriesForMonthKey(userData, categoryMonth, flow);
+    const breakdown = entries ? getCategoryBreakdownForEntries(entries, categoryType) : null;
+    const amounts: Record<string, number> = {};
+    Object.entries(breakdown || {}).forEach(([key, value]) => { amounts[key] = Number(value?.amount || 0); });
+    return rankCategoryBreakdown(amounts, categoryLimit).map((row) => {
+      if (row.key === '__other__') return {...row, name: t.other, chartValue: categoryUnit === 'percent' ? row.percentage : row.value};
+      const resolved = resolveTagKeyFromLocalized(row.key, 'en', categoryType);
+      return {
+        ...row,
+        name: resolved ? translateTag(resolved, language, categoryType) : row.key,
+        chartValue: categoryUnit === 'percent' ? row.percentage : row.value,
+      };
+    });
+  }, [categoryLimit, categoryMonth, categoryUnit, flow, language, t.other, userData]);
+
+  const ensureFullHistory = async () => {
+    if (fullHistoryLoaded || !fetchAllTimeMonthlyTotals) return;
+    setLoadingHistory(true);
+    try { await fetchAllTimeMonthlyTotals(); setFullHistoryLoaded(true); }
+    finally { setLoadingHistory(false); }
+  };
+  const selectPeriod = async (next: string) => {
+    if (next === '2y' || next === 'all') await ensureFullHistory();
+    setPeriod(next);
   };
 
-  const getExtendedData = () => {
-    const extended = buildDataFromMonthlyTotals(monthlyTotalsAllTime);
-    return extended.length > 0 ? extended : buildLastTwelveMonthsData();
+  const locale = language === 'it' ? 'it-IT' : language;
+  const monthLabel = (value: string) => {
+    const date = new Date(`${value}-01T00:00:00`);
+    return Number.isNaN(date.getTime()) ? value : date.toLocaleDateString(locale, {month: 'short', year: '2-digit'});
+  };
+  const money = (value: number) => isHidden ? '••••' : formatAmount(value, {maximumFractionDigits: 0});
+  const percent = (value: number | null) => isHidden ? '••••' : value === null ? t.notAvailable : `${value >= 0 ? '+' : ''}${value.toFixed(1)}%`;
+  const axisMoney = (value: number) => isHidden ? '••••' : compactNumber(Math.round(fromEUR(value)));
+  const periodDelta = previousKpis.totalOutflows === 0 ? null : ((kpis.totalOutflows - previousKpis.totalOutflows) / previousKpis.totalOutflows) * 100;
+
+  const tooltip = ({active, payload}: {active?: boolean; payload?: Array<{payload: IncomeOutflowChartRow}>}) => {
+    const row = payload?.[0]?.payload;
+    if (!active || !row) return null;
+    return <TooltipCard><h4>{monthLabel(row.name)}</h4><div><span>{t.incomes}</span><strong>{money(row.incomes)}</strong></div><div><span>{t.outflows}</span><strong>{money(row.outflows)}</strong></div><div><span>{t.net}</span><strong>{money(row.net)}</strong></div><div><span>{t.savingsRate}</span><strong>{percent(row.savingsRate)}</strong></div></TooltipCard>;
   };
 
-  // Funzione per filtrare i dati in base al periodo selezionato
-  const getFilteredData = () => {
-    const lastTwelveMonths = buildLastTwelveMonthsData();
+  const commonChart = {
+    margin: {top: 12, right: isMobile ? 2 : 18, left: isMobile ? -20 : 5, bottom: 12},
+    onClick: (state: {activePayload?: Array<{payload: IncomeOutflowChartRow}>}) => {
+      const row = state?.activePayload?.[0]?.payload;
+      if (row) setSelectedRow(row);
+    },
+  };
+  const axes = <>
+    <CartesianGrid vertical={false} strokeDasharray="3 5" stroke={theme.mode === 'dark' ? 'rgba(255,255,255,.08)' : 'rgba(15,23,42,.08)'} />
+    <XAxis dataKey="name" tickFormatter={monthLabel} minTickGap={26} tick={{fill: theme.textColor, fontSize: isMobile ? 9 : 11}} axisLine={false} tickLine={false} />
+    <YAxis tickFormatter={axisMoney} width={isMobile ? 48 : 66} tick={{fill: theme.textColor, fontSize: isMobile ? 9 : 11}} axisLine={false} tickLine={false} />
+    {!isMobile && <Tooltip content={tooltip} cursor={{fill: theme.mode === 'dark' ? 'rgba(255,255,255,.04)' : 'rgba(15,23,42,.04)'}} />}
+  </>;
 
-    // Filtra in base al periodo selezionato
-    switch(selectedPeriod) {
-      case '3m':
-        return lastTwelveMonths.slice(-3); // Ultimi 3 mesi
-      case '6m':
-        return lastTwelveMonths.slice(-6); // Ultimi 6 mesi
-      case '1y':
-        return lastTwelveMonths; // Tutti i 12 mesi
-      case '2y': {
-        const extended = getExtendedData();
-        return extended.length > 0 ? extended.slice(-24) : lastTwelveMonths;
-      }
-      case 'all': {
-        const extended = getExtendedData();
-        return extended.length > 0 ? extended : lastTwelveMonths;
-      }
-      case 'custom': {
-        const extended = getExtendedData();
-        const start = customStartMonth || extended[0]?.name;
-        const end = customEndMonth || extended[extended.length - 1]?.name;
-        if (!start || !end) return extended;
-        const [from, to] = start <= end ? [start, end] : [end, start];
-        return extended.filter((item) => item.name >= from && item.name <= to);
-      }
-      default:
-        return lastTwelveMonths;
-    }
+  const renderChart = () => {
+    if (view === 'categories') return loadingMonth ? <div aria-live="polite">{t.loading}</div> : <ResponsiveContainer width="100%" height="100%"><BarChart data={categoryRows} layout="vertical" margin={{top: 5, right: 25, left: isMobile ? 2 : 35, bottom: 5}}>
+      <CartesianGrid horizontal={false} strokeDasharray="3 5" stroke={theme.mode === 'dark' ? 'rgba(255,255,255,.08)' : 'rgba(15,23,42,.08)'} />
+      <XAxis type="number" tickFormatter={(value) => categoryUnit === 'percent' ? `${Math.round(value)}%` : axisMoney(value)} tick={{fill: theme.textColor, fontSize: 10}} axisLine={false} tickLine={false} />
+      <YAxis type="category" dataKey="name" width={isMobile ? 88 : 130} tick={{fill: theme.textColor, fontSize: isMobile ? 9 : 11}} axisLine={false} tickLine={false} />
+      <Tooltip formatter={(value: number) => categoryUnit === 'percent' ? `${value.toFixed(1)}%` : money(value)} contentStyle={{background: '#fff', color: '#172033', borderRadius: 8, fontSize: 12}} />
+      <Bar dataKey="chartValue" radius={[0, 5, 5, 0]}>{categoryRows.map((row) => <Cell key={row.key} fill={row.key === '__other__' ? theme.textColor : getCategoryColor(row.key, language)} />)}</Bar>
+    </BarChart></ResponsiveContainer>;
+    if (view === 'net') return <ResponsiveContainer width="100%" height="100%"><BarChart data={compare ? comparisonRows : rows} {...commonChart}>{axes}<ReferenceLine y={0} stroke={theme.textColor} strokeOpacity={.5}/>{compare && <Bar dataKey="comparisonNet" fill={theme.textColor} fillOpacity={.2} radius={[4,4,4,4]}/>}<Bar dataKey="net" radius={[4,4,4,4]}>{rows.map((row) => <Cell key={row.name} fill={row.net >= 0 ? assetColors.income : assetColors.expense}/>)}</Bar></BarChart></ResponsiveContainer>;
+    return <ResponsiveContainer width="100%" height="100%"><ComposedChart data={rows} {...commonChart}>{axes}<Bar dataKey="incomes" fill={assetColors.income} fillOpacity={.7} radius={[4,4,0,0]}/><Bar dataKey="outflows" fill={assetColors.expense} fillOpacity={.7} radius={[4,4,0,0]}/><Line type="linear" dataKey="net" stroke="#06b6d4" strokeWidth={2.5} dot={false} activeDot={{r: 5}}/>{userData?.limits?.monthlySpendingLimit && <ReferenceLine y={Number(userData.limits.monthlySpendingLimit)} stroke="#f97316" strokeDasharray="6 5"/>}</ComposedChart></ResponsiveContainer>;
   };
 
-  const data = getFilteredData();
-  const rangeData = getExtendedData();
-  const minMonth = rangeData[0]?.name || '';
-  const maxMonth = rangeData[rangeData.length - 1]?.name || '';
-  const isLongRange = data.length > 18;
-  const xAxisInterval = data.length > 60 ? Math.ceil(data.length / 8) : data.length > 36 ? 5 : data.length > 24 ? 3 : data.length > 12 ? 1 : 0;
-  const formatXAxisTick = (value, index) => {
-    if (!value || isHidden) return isHidden ? '****' : value;
-    const [year, month] = String(value).split('-');
-    if (!year || !month) return value;
-    if (data.length > 18) {
-      return month === '01' || index === 0 || index === data.length - 1 ? `${month}/${year.slice(2)}` : month;
-    }
-    return `${month}/${year.slice(2)}`;
-  };
+  const exportRows = rows.map((row) => ({month: row.name, incomes: row.incomes, outflows: row.outflows, net: row.net, savingsRate: row.savingsRate ?? ''}));
+  const headers = [{label: t.month, key: 'month'}, {label: t.incomes, key: 'incomes'}, {label: t.outflows, key: 'outflows'}, {label: t.net, key: 'net'}, {label: t.savingsRate, key: 'savingsRate'}];
 
-  // Pie Chart Functions
-  const renderPieChart = () => {
-    let pieData = [];
-    const categoryType = selectedPieFlow === 'incomes' ? 'income' : 'expense';
-    const monthEntries = getEntriesForMonthKey(userData, selectedMonth, selectedPieFlow === 'incomes' ? 'incomes' : 'outflows');
-    const monthBreakdown = monthEntries ? getCategoryBreakdownForEntries(monthEntries, categoryType) : null;
-
-    if (monthBreakdown) {
-      pieData = Object.entries(monthBreakdown)
-        .filter(([, data]) => data?.amount > 0)
-        .map(([key, data], index) => {
-          const tagLabel = resolveTagKeyFromLocalized(key, 'en', categoryType);
-          const translatedName = tagLabel ? translateTag(tagLabel, language, categoryType) : key;
-          const subcategories = Object.entries(data.subcategories || {})
-            .filter(([, amount]) => amount > 0)
-            .sort((a, b) => b[1] - a[1])
-            .map(([label, amount]) => ({ label, amount }));
-          return {
-          name: translatedName,
-          parentKey: key,
-          value: isHidden ? Math.floor(Math.random() * 1000) : data.amount,
-          realValue: data.amount,
-          subcategories,
-          fill: isHidden 
-            ? getGrayscaleColor(getCategoryColor(key, language), index)
-            : getLighterSolidColor(getCategoryColor(key, language))
-        };});
-    }
-
-    // Label interna: solo % dentro la fetta (come nella Dashboard)
-    const RADIAN = Math.PI / 180;
-    const renderInternalLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
-      if (percent === 0) return null;
-      if (isHidden) {
-        const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
-        const x = cx + radius * Math.cos(-midAngle * RADIAN);
-        const y = cy + radius * Math.sin(-midAngle * RADIAN);
-        return <text x={x} y={y} fill="white" textAnchor="middle" dominantBaseline="central" fontSize={isMobile ? 10 : 12}>****</text>;
-      }
-      const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
-      const x = cx + radius * Math.cos(-midAngle * RADIAN);
-      const y = cy + radius * Math.sin(-midAngle * RADIAN);
-      const pct = (percent * 100).toFixed(0);
-      // Nascondi label se fetta troppo piccola
-      if (percent < 0.04) return null;
-      return (
-        <text x={x} y={y} fill="white" textAnchor="middle" dominantBaseline="central" fontSize={isMobile ? 10 : 12} fontWeight={600}>
-          {pct}%
-        </text>
-      );
-    };
-
-    return (
-      <div style={{ 
-        width: '100%', 
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: isMobile ? '0.5rem 0' : '1rem 0'
-      }}>
-        <div style={{ width: '100%', height: isMobile ? 300 : 400 }}>
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Pie
-                data={pieData}
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                label={renderInternalLabel}
-                outerRadius="75%"
-                fill="#8884d8"
-                dataKey="value"
-              >
-                {pieData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.fill} />
-                ))}
-              </Pie>
-              <Tooltip 
-                contentStyle={{
-                  backgroundColor:'rgba(255,255,255,0.95)',
-                  border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)'}`,
-                  borderRadius: '8px',
-                  padding: '10px',
-                  fontSize: '13px',
-                  fontWeight: '500',
-                  boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
-                  color: '#333'
-                }}
-                formatter={(value, name) => {
-                  if (isHidden) return ['****', name];
-                  const formattedValue = formatAmount(value, { maximumFractionDigits: 0 });
-                  const total = pieData.reduce((sum, item) => sum + item.value, 0);
-                  const pct = ((value / total) * 100).toFixed(1);
-                  return [`${formattedValue} (${pct}%)`, name];
-                }}
-                labelStyle={{
-                  color: '#333',
-                  fontWeight: 'bold',
-                  marginBottom: '4px'
-                }}
-              />
-            </PieChart>
-          </ResponsiveContainer>
-        </div>
-        {/* Legenda sotto il grafico a torta */}
-        <div style={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          justifyContent: 'center',
-          gap: isMobile ? '6px 12px' : '8px 16px',
-          padding: isMobile ? '0.5rem 0.5rem 0' : '0.75rem 1rem 0',
-          maxWidth: '100%'
-        }}>
-          {pieData.map((entry, index) => {
-            const total = pieData.reduce((sum, item) => sum + item.value, 0);
-            const pct = ((entry.value / total) * 100).toFixed(1);
-            return (
-              <div key={index} style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '3px',
-                fontSize: isMobile ? '0.7rem' : '0.8rem',
-                color: theme.mode === 'dark' ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.7)',
-                maxWidth: isMobile ? '140px' : '190px'
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '5px', whiteSpace: 'nowrap' }}>
-                  <div style={{
-                    width: isMobile ? 8 : 10,
-                    height: isMobile ? 8 : 10,
-                    borderRadius: '50%',
-                    backgroundColor: entry.fill,
-                    flexShrink: 0
-                  }} />
-                  <span>{isHidden ? '****' : `${entry.name} ${pct}%`}</span>
-                </div>
-                {!isHidden && entry.subcategories.length > 0 && (
-                  <div style={{
-                    paddingLeft: isMobile ? 13 : 15,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: 2,
-                    color: theme.mode === 'dark' ? 'rgba(255,255,255,0.55)' : 'rgba(0,0,0,0.5)',
-                    fontSize: isMobile ? '0.64rem' : '0.72rem',
-                    lineHeight: 1.25,
-                  }}>
-                    {entry.subcategories.slice(0, 3).map((sub) => (
-                      <span key={sub.label} style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        ↳ {sub.label} · {formatAmount(sub.amount, { maximumFractionDigits: 0 })}
-                      </span>
-                    ))}
-                    {entry.subcategories.length > 3 && (
-                      <span>+{entry.subcategories.length - 3}</span>
-                    )}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    );
-  };
-
-  const handleMonthChange = (event) => {
-    if (event.target.value) setSelectedMonth(event.target.value);
-  };
-
-  // Bounds for the month picker: any month up to the current one, generous
-  // 10-year floor (older months just return an empty state if there's no data).
-  const pieMonthMax = indexToMonthKey(0);
-  const pieMonthMin = indexToMonthKey(120);
-
-  const renderMonthSelector = () => (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-      <input
-        type="month"
-        value={selectedMonth}
-        min={pieMonthMin}
-        max={pieMonthMax}
-        onChange={handleMonthChange}
-        style={{
-          padding: '0.4rem 0.75rem',
-          borderRadius: '8px',
-          border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)'}`,
-          background: 'rgba(255,255,255,0.95)',
-          color: '#333',
-          fontSize: '0.85rem',
-          fontWeight: '500',
-          cursor: 'pointer',
-          outline: 'none',
-          colorScheme: 'light',
-        }}
-      />
-      <button
-        type="button"
-        onClick={() => setShowComparisonModal(true)}
-        style={{
-          border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.14)' : 'rgba(0,0,0,0.12)'}`,
-          borderRadius: 999,
-          padding: '0.35rem 0.75rem',
-          cursor: 'pointer',
-          fontSize: '0.78rem',
-          fontWeight: 700,
-          background: 'transparent',
-          color: theme.textColor,
-        }}
-      >
-        {translations?.graphs?.statsOutflows?.compareMonths || 'Confronta mesi'}
-      </button>
-    </div>
-  );
-
-  // Conditional rendering based on type
-  if (type === "pie") {
-    return (
-      <PercentageOutflowsChartContainer style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-        <div style={{
-          padding: isMobile ? '0.5rem' : '0.75rem',
-          textAlign: 'center',
-          borderBottom: theme.mode === 'dark' ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.1)'
-        }}>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: 6, marginBottom: 8 }}>
-            {[
-              { key: 'outflows', label: translations.general.outflows },
-              { key: 'incomes', label: translations.general.incomes },
-            ].map((option) => {
-              const active = selectedPieFlow === option.key;
-              return (
-                <button
-                  key={option.key}
-                  type="button"
-                  onClick={() => setSelectedPieFlow(option.key)}
-                  style={{
-                    border: `1px solid ${active ? theme.buttonBackgroundColor : (theme.mode === 'dark' ? 'rgba(255,255,255,0.14)' : 'rgba(0,0,0,0.12)')}`,
-                    borderRadius: 999,
-                    padding: '0.35rem 0.75rem',
-                    cursor: 'pointer',
-                    fontSize: '0.78rem',
-                    fontWeight: 700,
-                    background: active ? theme.buttonBackgroundColor : 'transparent',
-                    color: active ? '#fff' : theme.textColor,
-                  }}
-                >
-                  {option.label}
-                </button>
-              );
-            })}
-          </div>
-          {renderMonthSelector()}
-        </div>
-        <div style={{ flex: 1, minHeight: 0, position: 'relative' }}>
-          {isLoadingMonth ? (
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: theme.textColor, opacity: 0.6, fontSize: '0.85rem' }}>
-              {translations?.graphs?.loading?.incomeOutflow || 'Caricamento...'}
-            </div>
-          ) : renderPieChart()}
-        </div>
-        {showComparisonModal && (
-          <MonthComparisonModal
-            theme={theme}
-            userData={userData}
-            isHidden={isHidden}
-            initialFlow={selectedPieFlow}
-            onClose={() => setShowComparisonModal(false)}
-          />
-        )}
-      </PercentageOutflowsChartContainer>
-    );
-  }
-
-  // Default LineChart rendering
-  return (
-    <SectionInOut style={{ position: 'relative', width: '100%', display: 'flex', justifyContent: 'center', height: '100%' }}>
-      <div style={{ width: '100%', maxWidth: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        {/* Toolbar: period selector + export buttons (row 1), custom date range (row 2, secondary) */}
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          width: '100%',
-          padding: isMobile ? '0' : '0 0.5rem',
-          marginBottom: isMobile ? '0.5rem' : '0.85rem',
-          gap: isMobile ? '0.35rem' : '0.4rem'
-        }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: isMobile ? '0.35rem' : '0.75rem', flexWrap: 'wrap' }}>
-          {/* Time Period Selector */}
-          <div className="flex gap-1 z-10" style={{ flexWrap: 'wrap', gap: isMobile ? '0.2rem' : undefined, flex: '1 1 auto', minWidth: 0 }}>
-            {['3m', '6m', '1y', '2y', 'all'].map((period) => {
-              const isActive = selectedPeriod === period;
-              const isBusy = (period === '2y' || period === 'all') && isLoadingFullHistory;
-
-              return (
-                <button
-                  key={period}
-                  onClick={() => handlePeriodSelect(period)}
-                  disabled={isBusy}
-                  className={`font-medium rounded-md transition-all duration-200 ${
-                    isBusy ? 'cursor-wait opacity-70' : 'hover:scale-105'
-                  }`}
-                  style={{
-                    padding: isMobile ? '0.3rem 0.5rem' : '0.35rem 0.65rem',
-                    backgroundColor: isActive
-                      ? (theme.mode === 'dark' ? 'rgba(7, 145, 100, 0.8)' : 'rgba(7, 145, 100, 0.9)')
-                      : (theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.9)'),
-                    color: isActive
-                      ? '#ffffff'
-                      : (theme.mode === 'dark' ? '#ffffff' : '#333333'),
-                    border: `1px solid ${isActive
-                      ? 'rgba(7, 145, 100, 0.8)'
-                      : (theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)')}`,
-                    backdropFilter: 'blur(10px)'
-                  }}
-                >
-                  {isBusy ? '…' : period.toUpperCase()}
-                </button>
-              );
-            })}
-
-            {/* Custom date range toggle — aligned with the period buttons */}
-            <button
-              type="button"
-              onClick={() => setShowCustomRange((prev) => !prev)}
-              title={translations.general.filterByDate || 'Filtra per data'}
-              aria-label={translations.general.filterByDate || 'Filtra per data'}
-              className="flex items-center justify-center rounded-md transition-all duration-200 hover:scale-105"
-              style={{
-                padding: isMobile ? '0.3rem 0.5rem' : '0.35rem 0.65rem',
-                backgroundColor: selectedPeriod === 'custom'
-                  ? (theme.mode === 'dark' ? 'rgba(7, 145, 100, 0.8)' : 'rgba(7, 145, 100, 0.9)')
-                  : (theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.9)'),
-                color: selectedPeriod === 'custom' ? '#ffffff' : (theme.mode === 'dark' ? '#ffffff' : '#333333'),
-                border: `1px solid ${selectedPeriod === 'custom'
-                  ? 'rgba(7, 145, 100, 0.8)'
-                  : (theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)')}`,
-                backdropFilter: 'blur(10px)'
-              }}
-            >
-              <BsCalendarRange />
-            </button>
-          </div>
-
-          {/* Export buttons — small, top-right */}
-          <div className="flex gap-1 z-10" style={{ flexShrink: 0, gap: isMobile ? '0.2rem' : '0.3rem' }}>
-            <CSVLink
-              data={data}
-              headers={headers}
-              filename={`incomeOutflows_${today.getMonth() + 1}-${today.getFullYear().toString().slice(-2)}.csv`}
-              className="flex items-center justify-center rounded-lg border transition-all duration-200 hover:scale-105"
-              style={{
-                backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.9)',
-                borderColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)',
-                backdropFilter: 'blur(10px)',
-              width: isMobile ? 24 : 28,
-              height: isMobile ? 24 : 28
-              }}
-            >
-              <BsFiletypeCsv className="text-paciGreen text-sm" />
-            </CSVLink>
-
-            <button
-              onClick={async () => await downloadExcel(data, headers, `incomesOutflows_${today.getMonth() + 1}-${today.getFullYear().toString().slice(-2)}.xlsx`)}
-              className="flex items-center justify-center rounded-lg border transition-all duration-200 hover:scale-105"
-              style={{
-                backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.9)',
-                borderColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)',
-                backdropFilter: 'blur(10px)',
-              width: isMobile ? 24 : 28,
-              height: isMobile ? 24 : 28
-              }}
-            >
-              <RiFileExcel2Line className="text-paciGreen text-sm" />
-            </button>
-          </div>
-        </div>
-
-        {showCustomRange && (
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: isMobile ? 4 : 6, flexWrap: 'wrap', fontSize: isMobile ? '0.62rem' : '0.68rem', color: theme.textColor, opacity: 0.8 }}>
-            <span style={{ opacity: 0.7 }}>{translations.general.from || 'Da'}</span>
-            <input
-              type="month"
-              value={customStartMonth}
-              min={minMonth}
-              max={maxMonth}
-              onChange={(e) => handleCustomRangeChange('start', e.target.value)}
-              style={{
-                border: `1px solid ${selectedPeriod === 'custom' ? theme.buttonBackgroundColor : (theme.mode === 'dark' ? 'rgba(255,255,255,0.14)' : 'rgba(0,0,0,0.1)')}`,
-                borderRadius: 6,
-                padding: '0.2rem 0.3rem',
-                fontSize: isMobile ? '0.64rem' : '0.68rem',
-                minWidth: 0,
-                maxWidth: '6.5rem',
-                background: theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.8)',
-                color: theme.textColor,
-                colorScheme: theme.mode === 'dark' ? 'dark' : 'light',
-              }}
-            />
-            <span style={{ opacity: 0.7 }}>{translations.general.to || 'A'}</span>
-            <input
-              type="month"
-              value={customEndMonth}
-              min={minMonth}
-              max={maxMonth}
-              onChange={(e) => handleCustomRangeChange('end', e.target.value)}
-              style={{
-                border: `1px solid ${selectedPeriod === 'custom' ? theme.buttonBackgroundColor : (theme.mode === 'dark' ? 'rgba(255,255,255,0.14)' : 'rgba(0,0,0,0.1)')}`,
-                borderRadius: 6,
-                padding: '0.2rem 0.3rem',
-                fontSize: isMobile ? '0.64rem' : '0.68rem',
-                minWidth: 0,
-                maxWidth: '6.5rem',
-                background: theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.8)',
-                color: theme.textColor,
-                colorScheme: theme.mode === 'dark' ? 'dark' : 'light',
-              }}
-            />
-          </div>
-        )}
-        </div>
-
-        {/* Responsive chart container */}
-        <div style={{ 
-          width: '100%', 
-          height: isMobile ? '320px' : '460px',
-          padding: isMobile ? '0' : '0 0.5rem'
-        }}>
-          <ResponsiveContainer width="100%" height="100%">
-          <LineChart
-            data={data}
-            margin={{
-              top: isMobile ? 10 : 20,
-              right: isMobile ? 5 : 30,
-              left: isMobile ? -15 : 10,
-              bottom: data.length > 18 ? 8 : (isMobile ? 5 : 20)
-            }}
-            syncId="incomeOutflowChart"
-          >
-            <defs>
-              <linearGradient id="incomeGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor={assetColors.income} stopOpacity={0.3}/>
-                <stop offset="95%" stopColor={assetColors.income} stopOpacity={0.1}/>
-              </linearGradient>
-              <linearGradient id="outflowGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor={assetColors.expense} stopOpacity={0.3}/>
-                <stop offset="95%" stopColor={assetColors.expense} stopOpacity={0.1}/>
-              </linearGradient>
-            </defs>
-            
-            <CartesianGrid 
-              strokeDasharray="3 3" 
-              stroke={theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'} 
-              vertical={false}
-            />
-            
-            <XAxis 
-              dataKey="name"
-              type="category"
-              interval={isMobile ? Math.max(1, xAxisInterval) : xAxisInterval}
-              tickFormatter={formatXAxisTick}
-              tick={{
-                fontSize: containerWidth < 500 ? 8 : isLongRange ? 10 : containerWidth < 768 ? 10 : 12, 
-                fill: theme.mode === 'dark' ? '#fff' : '#333',
-                fontWeight: 500
-              }} 
-              angle={containerWidth < 500 || isLongRange ? -35 : 0}
-              textAnchor={containerWidth < 500 || isLongRange ? 'end' : 'middle'}
-              height={containerWidth < 500 || isLongRange ? 58 : 46}
-              axisLine={{ 
-                stroke: theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)',
-                strokeWidth: 1
-              }}
-              tickLine={{ 
-                stroke: theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)'
-              }}
-              allowDuplicatedCategory={false}
-            />
-            
-                        <YAxis 
-              tick={{
-                fontSize: containerWidth < 500 ? 10 : containerWidth < 768 ? 12 : 16,
-                fill: theme.mode === 'dark' ? '#fff' : '#333'
-              }}
-              tickFormatter={(value) => isHidden ? '****' : compactNumber(Math.round(fromEUR(value)))}
-              axisLine={{ 
-                stroke: theme.mode === 'dark' ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)', 
-                strokeWidth: 1 
-              }}
-              tickLine={{ 
-                stroke: theme.mode === 'dark' ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)', 
-                strokeWidth: 1 
-              }}
-            />
-            
-                        <Tooltip
-              contentStyle={{
-                backgroundColor: 'rgba(255,255,255,0.95)',
-                border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)'}`,
-                borderRadius: '8px',
-                padding: isMobile ? '8px 10px' : '10px 12px',
-                fontSize: isMobile ? '12px' : '13px',
-                fontWeight: '500',
-                boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
-                color: '#333',
-                maxHeight: isMobile ? 220 : 280,
-                overflowY: 'auto'
-              }}
-              wrapperStyle={{ zIndex: 20 }}
-              labelStyle={{
-                color: '#333',
-                fontWeight: 'bold',
-                marginBottom: '4px'
-              }}
-              formatter={(value, name) => {
-                if (isHidden) return ['****', name];
-                
-                const formattedValue = formatAmount(value, { maximumFractionDigits: 0 });
-                
-                return [formattedValue, name];
-              }}
-              labelFormatter={(label) => {
-                if (isHidden) return '****';
-                
-                // Converti formato YYYY-MM in nome mese tradotto + anno
-                const [year, monthNum] = label.split('-');
-                const monthIndex = parseInt(monthNum);
-                
-                const monthNames = {
-                  1: translations.months.january,
-                  2: translations.months.february,
-                  3: translations.months.march,
-                  4: translations.months.april,
-                  5: translations.months.may,
-                  6: translations.months.june,
-                  7: translations.months.july,
-                  8: translations.months.august,
-                  9: translations.months.september,
-                  10: translations.months.october,
-                  11: translations.months.november,
-                  12: translations.months.december
-                };
-                
-                const monthName = monthNames[monthIndex] || monthNum;
-                return `${monthName} ${year}`;
-              }}
-            />
-            
-
-            
-            {lineVisibility.incomes && (
-              <Line 
-                type="monotone" 
-                dataKey={translations.general.incomes} 
-                stroke={isHidden ? greyColor1 : assetColors.income} 
-                strokeWidth={isMobile ? 2 : 3}
-                connectNulls={false}
-                isAnimationActive={false}
-                dot={{ 
-                  r: isLongRange ? 0 : (isMobile ? 3 : 5),
-                  fill: isHidden ? greyColor1 : assetColors.income, 
-                  strokeWidth: isLongRange ? 0 : (isMobile ? 1 : 2)
-                }}
-                activeDot={{ 
-                  r: isMobile ? 6 : 10, 
-                  fill: isHidden ? greyColor1 : assetColors.income,
-                  stroke: '#fff',
-                  strokeWidth: isMobile ? 2 : 4,
-                  style: { 
-                    cursor: 'pointer',
-                    filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))'
-                  }
-                }} 
-              />
-            )}
-            
-            {lineVisibility.outflows && (
-              <Line 
-                type="monotone" 
-                dataKey={translations.general.outflows} 
-                stroke={isHidden ? greyColor2 : assetColors.expense} 
-                strokeWidth={isMobile ? 2 : 3}
-                connectNulls={false}
-                isAnimationActive={false}
-                dot={{ 
-                  r: isLongRange ? 0 : (isMobile ? 3 : 5),
-                  fill: isHidden ? greyColor2 : assetColors.expense, 
-                  strokeWidth: isLongRange ? 0 : (isMobile ? 1 : 2)
-                }}
-                activeDot={{ 
-                  r: isMobile ? 6 : 10, 
-                  fill: isHidden ? greyColor2 : assetColors.expense,
-                  stroke: '#fff',
-                  strokeWidth: isMobile ? 2 : 4,
-                  style: { 
-                    cursor: 'pointer',
-                    filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))'
-                  }
-                }}
-              />
-            )}
-
-            {lineVisibility.saved && (
-              <Line 
-                type="monotone" 
-                dataKey={translations.general.saved} 
-                stroke={isHidden ? greyColor1 : "#06b6d4"} 
-                strokeWidth={isMobile ? 2 : 3}
-                connectNulls={false}
-                isAnimationActive={false}
-                dot={{ 
-                  r: isLongRange ? 0 : (isMobile ? 3 : 5),
-                  fill: isHidden ? greyColor1 : "#06b6d4", 
-                  strokeWidth: isLongRange ? 0 : (isMobile ? 1 : 2)
-                }}
-                activeDot={{ 
-                  r: isMobile ? 6 : 10, 
-                  fill: isHidden ? greyColor1 : "#06b6d4",
-                  stroke: '#fff',
-                  strokeWidth: isMobile ? 2 : 4,
-                  style: { 
-                    cursor: 'pointer',
-                    filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))'
-                  }
-                }}
-              />
-            )}
-            
-            {/* Limite di spesa mensile - solo se abilitato dall'utente */}
-            {userData?.limits?.notificationsEnabled && userData?.limits?.monthlySpendingLimitEnabled !== false && userData?.limits?.monthlySpendingLimit && !isHidden && (
-              <ReferenceLine 
-                y={userData.limits.monthlySpendingLimit} 
-                stroke="#ff6b35"
-                strokeDasharray="8 4"
-                strokeWidth={2}
-                label={{ 
-                  value: data.length > 18
-                    ? `${language === 'it' ? 'Limite' : 'Limit'} ${currencySymbol}${fromEUR(userData.limits.monthlySpendingLimit).toLocaleString()}`
-                    : `${language === 'it' ? 'Limite spesa' : 'Spending limit'}: ${currencySymbol}${fromEUR(userData.limits.monthlySpendingLimit).toLocaleString()}`,
-                  position: data.length > 18 ? "insideTopRight" : "top",
-                  offset: isMobile ? 8 : 16,
-                  fill: "#ff6b35",
-                  fontSize: isMobile ? 8 : data.length > 18 ? 10 : 12,
-                  fontWeight: 600,
-                  textAnchor: data.length > 18 ? 'end' : 'middle'
-                }}
-              />
-            )}
-            
-            {/* Obiettivo di risparmio mensile - calcolato dalle entrate */}
-            {userData?.limits?.notificationsEnabled && userData?.limits?.savingsGoalPercentage && !isHidden && (
-              (() => {
-                // Calcola la media delle entrate per determinare l'obiettivo di risparmio
-                const avgIncome = data.length > 0 ? 
-                  data.reduce((sum, item) => sum + (item[translations.general.incomes] || 0), 0) / data.length : 0;
-                const savingsTarget = (avgIncome * userData.limits.savingsGoalPercentage) / 100;
-                
-                return savingsTarget > 0 ? (
-                  <ReferenceLine 
-                    y={savingsTarget} 
-                    stroke="#10b981"
-                    strokeDasharray="6 6"
-                    strokeWidth={2}
-                    label={{ 
-                      value: data.length > 18
-                        ? `${language === 'it' ? 'Obiettivo' : 'Goal'} ${currencySymbol}${fromEUR(savingsTarget).toFixed(0)}`
-                        : `${language === 'it' ? 'Obiettivo risparmio' : 'Savings goal'}: ${currencySymbol}${fromEUR(savingsTarget).toFixed(0)} (${userData.limits.savingsGoalPercentage}%)`,
-                      position: data.length > 18 ? "insideBottomRight" : "bottom",
-                      offset: isMobile ? 8 : 16,
-                      fill: "#10b981",
-                      fontSize: isMobile ? 8 : data.length > 18 ? 10 : 12,
-                      fontWeight: 600,
-                      textAnchor: data.length > 18 ? 'end' : 'middle'
-                    }}
-                  />
-                ) : null;
-              })()
-            )}
-          </LineChart>
-          </ResponsiveContainer>
-        </div>
-        
-        {/* Legenda personalizzata - posizionata sotto il grafico */}
-        <div style={{ 
-          display: 'flex', 
-          justifyContent: 'center', 
-          gap: isMobile ? '12px' : '20px', 
-          paddingTop: isMobile ? '2px' : '8px',
-          flexWrap: 'wrap',
-          width: '100%'
-        }}>
-          {[
-            { key: 'incomes', label: translations.general.incomes, color: assetColors.income },
-            { key: 'outflows', label: translations.general.outflows, color: assetColors.expense },
-            { key: 'saved', label: translations.general.saved, color: "#06b6d4" }
-          ].map(({ key, label, color }) => (
-            <div
-              key={key}
-              onClick={() => handleLegendClick({ dataKey: label })}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: isMobile ? '5px' : '8px',
-                cursor: 'pointer',
-                fontSize: isMobile ? '12px' : '15px',
-                fontWeight: 500,
-                opacity: lineVisibility[key] ? 1 : 0.5,
-                textDecoration: lineVisibility[key] ? 'none' : 'line-through',
-                color: theme.mode === 'dark' ? '#ffffff' : '#333333'
-              }}
-            >
-              <div
-                style={{
-                  width: isMobile ? '12px' : '16px',
-                  height: '3px',
-                  backgroundColor: (isHidden ? (key === 'incomes' ? greyColor1 : key === 'outflows' ? greyColor2 : greyColor1) : color),
-                  opacity: lineVisibility[key] ? 1 : 0.3
-                }}
-              />
-              <span>{label}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </SectionInOut>
-  );
+  return <Explorer ref={hostRef} theme={theme}>
+    <Header><div><h2>{t.title}</h2><p>{t.subtitle}</p></div><Segments><CSVLink data={exportRows} headers={headers} filename="income-outflow-history.csv" aria-label={t.exportCsv}><IconButton as="span" theme={theme}><BsFiletypeCsv/></IconButton></CSVLink><IconButton theme={theme} onClick={() => downloadExcel(exportRows, headers, 'income-outflow-history.xlsx')} aria-label={t.exportExcel}><RiFileExcel2Line/></IconButton></Segments></Header>
+    <KpiGrid>
+      <Kpi theme={theme}><span>{t.totalIncomes}</span><strong>{money(kpis.totalIncomes)}</strong><small>{t.selectedPeriod}</small></Kpi>
+      <Kpi theme={theme}><span>{t.totalOutflows}</span><strong>{money(kpis.totalOutflows)}</strong><small>{periodDelta === null ? t.noComparison : `${periodDelta >= 0 ? '+' : ''}${periodDelta.toFixed(1)}% ${t.vsPrevious}`}</small></Kpi>
+      <Kpi theme={theme}><span>{t.netCashFlow}</span><strong style={{color: kpis.net >= 0 ? assetColors.income : assetColors.expense}}>{money(kpis.net)}</strong><small>{t.average}: {money(kpis.averageMonthlyNet)}</small></Kpi>
+      <Kpi theme={theme}><span>{t.savingsRate}</span><strong>{percent(kpis.savingsRate)}</strong><small>{kpis.deficitMonths} {t.deficitMonths}</small></Kpi>
+    </KpiGrid>
+    <Toolbar theme={theme}>
+      <ToolbarRow><Segments>
+        <Segment theme={theme} $active={view === 'trend'} onClick={() => setView('trend')} aria-label={t.viewTrend}><Columns3/><span>{t.viewTrend}</span></Segment>
+        <Segment theme={theme} $active={view === 'net'} onClick={() => setView('net')} aria-label={t.viewNet}><BarChart3/><span>{t.viewNet}</span></Segment>
+        <Segment theme={theme} $active={view === 'categories'} onClick={() => setView('categories')} aria-label={t.viewCategories}><LineChart/><span>{t.viewCategories}</span></Segment>
+        <Segment theme={theme} $active={view === 'table'} onClick={() => setView('table')} aria-label={t.viewTable}><Table2/><span>{t.viewTable}</span></Segment>
+      </Segments><Segments>{PERIODS.map((item) => <Segment key={item} theme={theme} $active={period === item} disabled={(item === '2y' || item === 'all') && loadingHistory} onClick={() => selectPeriod(item)}>{loadingHistory && (item === '2y' || item === 'all') ? '…' : t.periods[item]}</Segment>)}<Segment theme={theme} $active={period === 'custom'} onClick={() => setShowRange((value) => !value)} aria-label={t.customRange}><CalendarRange/></Segment></Segments></ToolbarRow>
+      {showRange && <RangeRow theme={theme}><span>{t.from}</span><input type="month" value={startMonth} min={allRows[0]?.name} max={allRows[allRows.length - 1]?.name} onChange={async (event) => {setStartMonth(event.target.value); setPeriod('custom'); await ensureFullHistory();}}/><span>{t.to}</span><input type="month" value={endMonth} min={allRows[0]?.name} max={allRows[allRows.length - 1]?.name} onChange={async (event) => {setEndMonth(event.target.value); setPeriod('custom'); await ensureFullHistory();}}/></RangeRow>}
+      {view === 'net' && <ToolbarRow><Segment theme={theme} $active={compare} onClick={() => setCompare((value) => !value)}>{t.comparePrevious}</Segment></ToolbarRow>}
+      {view === 'categories' && <ToolbarRow><Segments><Segment theme={theme} $active={flow === 'outflows'} onClick={() => setFlow('outflows')}>{t.outflows}</Segment><Segment theme={theme} $active={flow === 'incomes'} onClick={() => setFlow('incomes')}>{t.incomes}</Segment><Segment theme={theme} $active={categoryUnit === 'value'} onClick={() => setCategoryUnit('value')}>{t.value}</Segment><Segment theme={theme} $active={categoryUnit === 'percent'} onClick={() => setCategoryUnit('percent')}>{t.percentage}</Segment></Segments><Segments><input aria-label={t.month} type="month" value={categoryMonth} max={indexToMonthKey(0)} onChange={(event) => setCategoryMonth(event.target.value)}/><Segment theme={theme} $active={categoryLimit === 5} onClick={() => setCategoryLimit(5)}>{translations.graphs.statsOutflows.outflowAnalysis.topCategories} 5</Segment><Segment theme={theme} $active={categoryLimit === 10} onClick={() => setCategoryLimit(10)}>{translations.graphs.statsOutflows.outflowAnalysis.topCategories} 10</Segment><Segment theme={theme} onClick={() => setShowComparisonModal(true)}>{t.compareMonths}</Segment></Segments></ToolbarRow>}
+    </Toolbar>
+    {view === 'table' ? <DataTable theme={theme}><table><thead><tr><th>{t.month}</th><th>{t.incomes}</th><th>{t.outflows}</th><th>{t.net}</th><th>{t.savingsRate}</th></tr></thead><tbody>{[...rows].reverse().map((row) => <tr key={row.name}><td>{monthLabel(row.name)}</td><td>{money(row.incomes)}</td><td>{money(row.outflows)}</td><td style={{color: row.net >= 0 ? assetColors.income : assetColors.expense}}>{money(row.net)}</td><td>{percent(row.savingsRate)}</td></tr>)}</tbody></table></DataTable> : <ChartStage>{renderChart()}</ChartStage>}
+    <div><strong style={{display: 'block', fontSize: '.78rem', marginBottom: '.5rem'}}>{t.insightsTitle}</strong><InsightGrid>
+      <Insight $tone={kpis.net >= 0 ? 'positive' : 'negative'}>{kpis.net >= 0 ? <TrendingUp/> : <TrendingDown/>}<span>{(kpis.net >= 0 ? t.positiveNetInsight : t.negativeNetInsight).replace('{value}', money(Math.abs(kpis.net)))}</span></Insight>
+      <Insight $tone={kpis.deficitMonths > 0 ? 'negative' : 'positive'}><WalletCards/><span>{t.deficitInsight.replace('{count}', String(kpis.deficitMonths)).replace('{total}', String(rows.length))}</span></Insight>
+      <Insight $tone="neutral"><TrendingUp/><span>{t.rateInsight.replace('{value}', percent(kpis.savingsRate))}</span></Insight>
+    </InsightGrid></div>
+    {isMobile && selectedRow && <MobileSheet theme={theme} role="dialog" aria-label={t.monthDetails}><header><strong>{monthLabel(selectedRow.name)}</strong><button type="button" onClick={() => setSelectedRow(null)} aria-label={t.closeDetails}><X/></button></header><div><span>{t.incomes}</span><strong>{money(selectedRow.incomes)}</strong></div><div><span>{t.outflows}</span><strong>{money(selectedRow.outflows)}</strong></div><div><span>{t.net}</span><strong>{money(selectedRow.net)}</strong></div><div><span>{t.savingsRate}</span><strong>{percent(selectedRow.savingsRate)}</strong></div></MobileSheet>}
+    {showComparisonModal && <MonthComparisonModal theme={theme} userData={userData} isHidden={isHidden} initialFlow={flow} onClose={() => setShowComparisonModal(false)}/>}
+  </Explorer>;
 }
 
 export default React.memo(InOutChart);

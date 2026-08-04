@@ -732,6 +732,19 @@
             "variation": "Variación ",
             "titleDetailsYear": "Tus ingresos, gastos y ahorros comparados con el año pasado ",
             "compareMonths": "Comparar meses",
+            "explorer": {
+                "title": "Explorador de ingresos y gastos", "subtitle": "Analiza tendencias, flujo neto y categorías en el periodo seleccionado",
+                "viewTrend": "Tendencia", "viewNet": "Flujo neto", "viewCategories": "Categorías", "viewTable": "Tabla",
+                "totalIncomes": "Ingresos totales", "totalOutflows": "Gastos totales", "netCashFlow": "Flujo neto", "savingsRate": "Tasa de ahorro",
+                "selectedPeriod": "Periodo seleccionado", "average": "Media mensual", "deficitMonths": "meses con déficit",
+                "incomes": "Ingresos", "outflows": "Gastos", "net": "Neto", "month": "Mes", "value": "Importe", "percentage": "Porcentaje", "other": "Otros",
+                "notAvailable": "N/D", "noComparison": "Comparación no disponible", "vsPrevious": "frente al periodo anterior", "comparePrevious": "Comparar periodo anterior", "compareMonths": "Comparar meses",
+                "customRange": "Rango personalizado", "from": "Desde", "to": "Hasta", "loading": "Cargando datos del mes…", "insightsTitle": "Indicadores del periodo",
+                "positiveNetInsight": "El periodo generó un superávit neto de {value}.", "negativeNetInsight": "El periodo generó un déficit neto de {value}.",
+                "deficitInsight": "{count} de {total} meses terminaron con déficit.", "rateInsight": "La tasa de ahorro total es {value}.",
+                "monthDetails": "Detalle mensual", "closeDetails": "Cerrar detalle", "exportCsv": "Exportar CSV", "exportExcel": "Exportar Excel",
+                "periods": {"3m": "3M", "6m": "6M", "1y": "1A", "2y": "2A", "all": "Todo"}
+            },
             "compareMonthsModal": {
                 "title": "Comparación entre meses",
                 "subtitle": "Compara las categorías de dos meses diferentes",

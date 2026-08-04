@@ -8,6 +8,7 @@ import { LanguageContext } from "../contexts/LanguageContext";
 import { useToast } from "../contexts/ToastContext";
 import { UserContext } from "../contexts/UserContext";
 import { openPrintableRecoveryCard, downloadRecoveryCardText } from "../utils/recoveryCard";
+import { normalizeTurnstileSiteKey } from "../utils/turnstileConfig";
 
 //for the modal and styled components
 import {
@@ -31,7 +32,7 @@ let generated_recovery_base32 = "";
 let generated_recovery_words = "";
 
 // Cloudflare Turnstile configuration
-const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY;
+const TURNSTILE_SITE_KEY = normalizeTurnstileSiteKey(import.meta.env.VITE_TURNSTILE_SITE_KEY);
 const IS_DEV = import.meta.env.DEV || import.meta.env.VITE_DEV_MODE === 'true';
 
 // export { generated_user_id };
@@ -104,6 +105,12 @@ export default function SignUpForm() {
             return;
         }
 
+        if (!TURNSTILE_SITE_KEY) {
+            console.error("Turnstile configuration error: VITE_TURNSTILE_SITE_KEY is missing or invalid");
+            showError(translations.header.register.errorPopup.message, 7000);
+            return;
+        }
+
         const initTurnstile = () => {
             if (window.turnstile && turnstileRef.current && TURNSTILE_SITE_KEY) {
                 if (turnstileWidgetIdRef.current) {
@@ -115,13 +122,20 @@ export default function SignUpForm() {
                     turnstileWidgetIdRef.current = null;
                 }
 
-                turnstileWidgetIdRef.current = window.turnstile.render(turnstileRef.current, {
-                    sitekey: TURNSTILE_SITE_KEY,
-                    callback: onTurnstileSuccess,
-                    "error-callback": onTurnstileError,
-                    "expired-callback": onTurnstileExpired,
-                    theme: theme.mode === "dark" ? "dark" : "light",
-                });
+                try {
+                    turnstileWidgetIdRef.current = window.turnstile.render(turnstileRef.current, {
+                        sitekey: TURNSTILE_SITE_KEY,
+                        callback: onTurnstileSuccess,
+                        "error-callback": onTurnstileError,
+                        "expired-callback": onTurnstileExpired,
+                        theme: theme.mode === "dark" ? "dark" : "light",
+                    });
+                } catch (error) {
+                    console.error("Turnstile widget configuration error", { hostname: window.location.hostname, error });
+                    setTurnstileToken("");
+                    setIsTurnstileLoaded(false);
+                    showError(translations.header.register.errorPopup.message, 7000);
+                }
             }
         };
 

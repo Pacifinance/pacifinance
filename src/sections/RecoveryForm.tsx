@@ -5,6 +5,7 @@ import { ThemeContext } from "../contexts/ThemeContext";
 import { LanguageContext } from "../contexts/LanguageContext";
 import { useToast } from "../contexts/ToastContext";
 import { UserContext } from "../contexts/UserContext";
+import { normalizeTurnstileSiteKey } from "../utils/turnstileConfig";
 import {
     MuiCustomTextField,
     MuiCustomInputAdornment,
@@ -17,7 +18,7 @@ import {
 // Cloudflare Turnstile configuration — same pattern as SignUpForm.tsx (not
 // shared as a hook there either; kept consistent rather than introducing a
 // new abstraction for just these two callers).
-const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY;
+const TURNSTILE_SITE_KEY = normalizeTurnstileSiteKey(import.meta.env.VITE_TURNSTILE_SITE_KEY);
 const IS_DEV = import.meta.env.DEV || import.meta.env.VITE_DEV_MODE === 'true';
 
 interface RecoveryFormProps {
@@ -72,6 +73,12 @@ export default function RecoveryForm({ initialUserId = "", initialCode = "", onB
             return;
         }
 
+        if (!TURNSTILE_SITE_KEY) {
+            console.error("Turnstile configuration error: VITE_TURNSTILE_SITE_KEY is missing or invalid");
+            showError(t.errorPopup.turnstileRequired, 7000);
+            return;
+        }
+
         const initTurnstile = () => {
             if (window.turnstile && turnstileRef.current && TURNSTILE_SITE_KEY) {
                 if (turnstileWidgetIdRef.current) {
@@ -82,13 +89,20 @@ export default function RecoveryForm({ initialUserId = "", initialCode = "", onB
                     }
                     turnstileWidgetIdRef.current = null;
                 }
-                turnstileWidgetIdRef.current = window.turnstile.render(turnstileRef.current, {
-                    sitekey: TURNSTILE_SITE_KEY,
-                    callback: onTurnstileSuccess,
-                    "error-callback": onTurnstileError,
-                    "expired-callback": onTurnstileExpired,
-                    theme: theme.mode === "dark" ? "dark" : "light",
-                });
+                try {
+                    turnstileWidgetIdRef.current = window.turnstile.render(turnstileRef.current, {
+                        sitekey: TURNSTILE_SITE_KEY,
+                        callback: onTurnstileSuccess,
+                        "error-callback": onTurnstileError,
+                        "expired-callback": onTurnstileExpired,
+                        theme: theme.mode === "dark" ? "dark" : "light",
+                    });
+                } catch (error) {
+                    console.error("Turnstile widget configuration error", { hostname: window.location.hostname, error });
+                    setTurnstileToken("");
+                    setIsTurnstileLoaded(false);
+                    showError(t.errorPopup.turnstileRequired, 7000);
+                }
             }
         };
 

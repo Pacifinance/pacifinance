@@ -283,6 +283,7 @@
                 "title": "Errore in fase di registrazione",
                 "message": "Si è verificato un errore nella registrazione del tuo account.",
                 "message2": "Per favore riprova tra un istante.",
+                "turnstileUnavailable": "La verifica di sicurezza non è ancora disponibile. Ricarica la pagina e riprova.",
                 "okButton": "ok va bene"
             },
             "successPopup": {

@@ -283,6 +283,7 @@
                 "title": "Erreur lors de l'inscription",
                 "message": "Une erreur s'est produite lors de l'inscription de ton compte.",
                 "message2": "Réessaie dans un instant.",
+                "turnstileUnavailable": "La vérification de sécurité n’est pas encore disponible. Recharge la page et réessaie.",
                 "okButton": "ok compris"
             },
             "successPopup": {

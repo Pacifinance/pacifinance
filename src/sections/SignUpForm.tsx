@@ -34,6 +34,7 @@ let generated_recovery_words = "";
 // Cloudflare Turnstile configuration
 const TURNSTILE_SITE_KEY = normalizeTurnstileSiteKey(import.meta.env.VITE_TURNSTILE_SITE_KEY);
 const IS_DEV = import.meta.env.DEV || import.meta.env.VITE_DEV_MODE === 'true';
+const isTurnstileReady = () => Boolean(window.turnstile && typeof window.turnstile.render === "function");
 
 // export { generated_user_id };
 export default function SignUpForm() {
@@ -107,12 +108,12 @@ export default function SignUpForm() {
 
         if (!TURNSTILE_SITE_KEY) {
             console.error("Turnstile configuration error: VITE_TURNSTILE_SITE_KEY is missing or invalid");
-            showError(translations.header.register.errorPopup.message, 7000);
+            showError(translations.header.register.errorPopup.turnstileUnavailable, 7000);
             return;
         }
 
         const initTurnstile = () => {
-            if (window.turnstile && turnstileRef.current && TURNSTILE_SITE_KEY) {
+            if (isTurnstileReady() && turnstileRef.current && TURNSTILE_SITE_KEY) {
                 if (turnstileWidgetIdRef.current) {
                     try {
                         window.turnstile.remove(turnstileWidgetIdRef.current);
@@ -134,18 +135,18 @@ export default function SignUpForm() {
                     console.error("Turnstile widget configuration error", { hostname: window.location.hostname, error });
                     setTurnstileToken("");
                     setIsTurnstileLoaded(false);
-                    showError(translations.header.register.errorPopup.message, 7000);
+                    showError(translations.header.register.errorPopup.turnstileUnavailable, 7000);
                 }
             }
         };
 
         // Check if Turnstile is already loaded
-        if (window.turnstile) {
+        if (isTurnstileReady()) {
             initTurnstile();
         } else {
-            // Wait for Turnstile to load
+            // The global object can exist before its rendering API is ready.
             const checkTurnstile = setInterval(() => {
-                if (window.turnstile) {
+                if (isTurnstileReady()) {
                     clearInterval(checkTurnstile);
                     initTurnstile();
                 }
@@ -154,7 +155,7 @@ export default function SignUpForm() {
             // Cleanup interval after 10 seconds
             setTimeout(() => {
                 clearInterval(checkTurnstile);
-                if (!window.turnstile) {
+                if (!isTurnstileReady()) {
                     showError(
                         `
                         <div>

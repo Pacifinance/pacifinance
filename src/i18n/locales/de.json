@@ -283,6 +283,7 @@
                 "title": "Fehler bei der Registrierung",
                 "message": "Bei der Registrierung Ihres Kontos ist ein Fehler aufgetreten.",
                 "message2": "Bitte versuchen Sie es in einem Moment erneut.",
+                "turnstileUnavailable": "Die Sicherheitsprüfung ist noch nicht verfügbar. Laden Sie die Seite neu und versuchen Sie es erneut.",
                 "okButton": "ok verstanden"
             },
             "successPopup": {

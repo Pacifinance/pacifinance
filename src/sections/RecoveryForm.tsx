@@ -20,6 +20,7 @@ import {
 // new abstraction for just these two callers).
 const TURNSTILE_SITE_KEY = normalizeTurnstileSiteKey(import.meta.env.VITE_TURNSTILE_SITE_KEY);
 const IS_DEV = import.meta.env.DEV || import.meta.env.VITE_DEV_MODE === 'true';
+const isTurnstileReady = () => Boolean(window.turnstile && typeof window.turnstile.render === "function");
 
 interface RecoveryFormProps {
     initialUserId?: string;
@@ -82,7 +83,7 @@ export default function RecoveryForm({ initialUserId = "", initialCode = "", onB
         }
 
         const initTurnstile = () => {
-            if (window.turnstile && turnstileRef.current && TURNSTILE_SITE_KEY) {
+            if (isTurnstileReady() && turnstileRef.current && TURNSTILE_SITE_KEY) {
                 if (turnstileWidgetIdRef.current) {
                     try {
                         window.turnstile.remove(turnstileWidgetIdRef.current);
@@ -108,11 +109,11 @@ export default function RecoveryForm({ initialUserId = "", initialCode = "", onB
             }
         };
 
-        if (window.turnstile) {
+        if (isTurnstileReady()) {
             initTurnstile();
         } else {
             const checkTurnstile = setInterval(() => {
-                if (window.turnstile) {
+                if (isTurnstileReady()) {
                     clearInterval(checkTurnstile);
                     initTurnstile();
                 }

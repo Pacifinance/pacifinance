@@ -283,6 +283,7 @@
                 "title": "Error during registration",
                 "message": "An error occurred while registering your account.",
                 "message2": "Please try again in a moment.",
+                "turnstileUnavailable": "The security check is not available yet. Reload the page and try again.",
                 "okButton": "ok fine"
             },
             "successPopup": {

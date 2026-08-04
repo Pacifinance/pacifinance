@@ -283,6 +283,7 @@
                 "title": "Error durante el registro",
                 "message": "Se produjo un error al registrar tu cuenta.",
                 "message2": "Por favor, inténtalo de nuevo en un momento.",
+                "turnstileUnavailable": "La verificación de seguridad aún no está disponible. Recarga la página e inténtalo de nuevo.",
                 "okButton": "ok entendido"
             },
             "successPopup": {

@@ -283,6 +283,7 @@
                 "title": "Erro durante o cadastro",
                 "message": "Ocorreu um erro ao cadastrar sua conta.",
                 "message2": "Por favor, tente novamente em instantes.",
+                "turnstileUnavailable": "A verificação de segurança ainda não está disponível. Recarregue a página e tente novamente.",
                 "okButton": "ok, entendi"
             },
             "successPopup": {

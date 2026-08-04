@@ -6,6 +6,7 @@ import { LanguageContext } from "../contexts/LanguageContext";
 import { useToast } from "../contexts/ToastContext";
 import { UserContext } from "../contexts/UserContext";
 import { normalizeTurnstileSiteKey } from "../utils/turnstileConfig";
+import { loadTurnstileApi } from "../utils/turnstileLoader";
 import {
     MuiCustomTextField,
     MuiCustomInputAdornment,
@@ -20,7 +21,6 @@ import {
 // new abstraction for just these two callers).
 const TURNSTILE_SITE_KEY = normalizeTurnstileSiteKey(import.meta.env.VITE_TURNSTILE_SITE_KEY);
 const IS_DEV = import.meta.env.DEV || import.meta.env.VITE_DEV_MODE === 'true';
-const isTurnstileReady = () => Boolean(window.turnstile && typeof window.turnstile.render === "function");
 
 interface RecoveryFormProps {
     initialUserId?: string;
@@ -83,7 +83,7 @@ export default function RecoveryForm({ initialUserId = "", initialCode = "", onB
         }
 
         const initTurnstile = () => {
-            if (isTurnstileReady() && turnstileRef.current && TURNSTILE_SITE_KEY) {
+            if (window.turnstile && turnstileRef.current && TURNSTILE_SITE_KEY) {
                 if (turnstileWidgetIdRef.current) {
                     try {
                         window.turnstile.remove(turnstileWidgetIdRef.current);
@@ -109,19 +109,19 @@ export default function RecoveryForm({ initialUserId = "", initialCode = "", onB
             }
         };
 
-        if (isTurnstileReady()) {
-            initTurnstile();
-        } else {
-            const checkTurnstile = setInterval(() => {
-                if (isTurnstileReady()) {
-                    clearInterval(checkTurnstile);
-                    initTurnstile();
-                }
-            }, 100);
-            setTimeout(() => clearInterval(checkTurnstile), 10000);
-        }
+        let cancelled = false;
+        loadTurnstileApi()
+            .then(() => {
+                if (!cancelled) initTurnstile();
+            })
+            .catch((error: unknown) => {
+                if (cancelled) return;
+                console.error("Turnstile API loading error", error);
+                showError(t.errorPopup.turnstileRequired, 7000);
+            });
 
         return () => {
+            cancelled = true;
             if (window.turnstile && turnstileWidgetIdRef.current) {
                 try {
                     window.turnstile.remove(turnstileWidgetIdRef.current);

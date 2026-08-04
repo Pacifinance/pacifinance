@@ -9,6 +9,7 @@ import { useToast } from "../contexts/ToastContext";
 import { UserContext } from "../contexts/UserContext";
 import { openPrintableRecoveryCard, downloadRecoveryCardText } from "../utils/recoveryCard";
 import { normalizeTurnstileSiteKey } from "../utils/turnstileConfig";
+import { loadTurnstileApi } from "../utils/turnstileLoader";
 
 //for the modal and styled components
 import {
@@ -34,7 +35,6 @@ let generated_recovery_words = "";
 // Cloudflare Turnstile configuration
 const TURNSTILE_SITE_KEY = normalizeTurnstileSiteKey(import.meta.env.VITE_TURNSTILE_SITE_KEY);
 const IS_DEV = import.meta.env.DEV || import.meta.env.VITE_DEV_MODE === 'true';
-const isTurnstileReady = () => Boolean(window.turnstile && typeof window.turnstile.render === "function");
 
 // export { generated_user_id };
 export default function SignUpForm() {
@@ -113,7 +113,7 @@ export default function SignUpForm() {
         }
 
         const initTurnstile = () => {
-            if (isTurnstileReady() && turnstileRef.current && TURNSTILE_SITE_KEY) {
+            if (window.turnstile && turnstileRef.current && TURNSTILE_SITE_KEY) {
                 if (turnstileWidgetIdRef.current) {
                     try {
                         window.turnstile.remove(turnstileWidgetIdRef.current);
@@ -140,36 +140,19 @@ export default function SignUpForm() {
             }
         };
 
-        // Check if Turnstile is already loaded
-        if (isTurnstileReady()) {
-            initTurnstile();
-        } else {
-            // The global object can exist before its rendering API is ready.
-            const checkTurnstile = setInterval(() => {
-                if (isTurnstileReady()) {
-                    clearInterval(checkTurnstile);
-                    initTurnstile();
-                }
-            }, 100);
-
-            // Cleanup interval after 10 seconds
-            setTimeout(() => {
-                clearInterval(checkTurnstile);
-                if (!isTurnstileReady()) {
-                    showError(
-                        `
-                        <div>
-                            <strong>Errore di Caricamento</strong><br/>
-                            Impossibile caricare il sistema di sicurezza. Ricarica la pagina.
-                        </div>
-                    `,
-                        5000,
-                    );
-                }
-            }, 10000);
-        }
+        let cancelled = false;
+        loadTurnstileApi()
+            .then(() => {
+                if (!cancelled) initTurnstile();
+            })
+            .catch((error: unknown) => {
+                if (cancelled) return;
+                console.error("Turnstile API loading error", error);
+                showError(translations.header.register.errorPopup.turnstileUnavailable, 7000);
+            });
 
         return () => {
+            cancelled = true;
             // Cleanup on unmount
             if (window.turnstile && turnstileWidgetIdRef.current) {
                 try {

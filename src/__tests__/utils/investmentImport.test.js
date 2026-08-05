@@ -218,6 +218,25 @@ describe('detectPlatform / parseInvestmentCsv', () => {
     expect(parsed.skippedRows).toBe(1);
   });
 
+  it('handles Ledger fee, zero-value and missing-countervalue rows from current exports', () => {
+    const raw = [
+      'Operation Date,Status,Currency Ticker,Operation Type,Operation Amount,Operation Fees,Operation Hash,Account Name,Account xpub,Countervalue Ticker,Countervalue at Operation Date,Countervalue at CSV Export',
+      '2026-08-03T06:13:06.000Z,Confirmed,BTC,IN,0.00187751,0.0000288,hash-in,Bitcoin Main,xpub,EUR,,104.60',
+      '2026-07-08T19:31:59.000Z,Confirmed,USDT,OUT,0,0,hash-zero,Binance Main,xpub,EUR,,',
+      '2026-07-08T19:31:59.000Z,Confirmed,USDT,FEES,1,0,hash-fee,Binance Main,xpub,EUR,1,1',
+      '2026-07-08T19:31:59.000Z,Failed,BTC,IN,1,0,hash-failed,Bitcoin Main,xpub,EUR,50000,50000',
+    ].join('\n');
+
+    const parsed = parseInvestmentCsv(raw);
+    expect(parsed.platform).toBe('ledger');
+    expect(parsed.transactions).toHaveLength(1);
+    expect(parsed.transactions[0]).toMatchObject({
+      side: 'buy', ticker: 'BTC', quantity: 0.00187751, price: null, total: null,
+      currency: 'BTC', totalCurrency: 'EUR',
+    });
+    expect(parsed.skippedRows).toBe(3);
+  });
+
   it('parses the official Ledger Wallet operation export and preserves historical countervalues', () => {
     const raw = [
       'Operation Date,Status,Currency Ticker,Operation Type,Operation Amount,Operation Fees,Operation Hash,Account Name,Account xpub,Countervalue Ticker,Countervalue at Operation Date,Countervalue at CSV Export',

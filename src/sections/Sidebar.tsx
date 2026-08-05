@@ -376,9 +376,14 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                         >
                             <FontAwesomeIcon icon={isHidden ? faEyeSlash : faEye} />
                         </button>
-                        <div
+                        <button
+                            type="button"
+                            className="account-container"
                             title={levelTitle}
                             aria-label={levelTitle}
+                            aria-haspopup="menu"
+                            aria-expanded={showDropdown}
+                            onClick={() => setShowDropdown((open) => !open)}
                             style={{
                                 position: 'relative',
                                 width: '42px',
@@ -390,24 +395,101 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                 flexShrink: 0,
                                 background: `conic-gradient(${levelColor} ${levelProgress}%, ${theme.mode === 'dark' ? 'rgba(255,255,255,0.14)' : 'rgba(15,23,42,0.14)'} 0)`,
                                 boxShadow: `0 2px 8px ${levelColor}30`,
+                                border: 'none',
+                                cursor: 'pointer',
                             }}
                         >
                             <AvatarIcon
                                 size={36}
                                 theme={theme}
                                 title={levelTitle}
-                                style={{ display: 'block' }}
-                                onClick={() => navigate('/profile')}
+                                style={{ display: 'block', pointerEvents: 'none' }}
                             />
                             <span style={{
                                 position: 'absolute', right: '-2px', bottom: '-3px', minWidth: '20px', height: '15px',
                                 padding: '0 3px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center',
                                 background: levelColor, color: '#fff', border: `2px solid ${theme.backgroundColor}`,
                                 fontSize: '8px', lineHeight: 1, fontWeight: 800, boxSizing: 'content-box',
+                                pointerEvents: 'none',
                             }}>
                                 {translations?.gamification?.levelShort} {gamification.level}
                             </span>
-                        </div>
+                        </button>
+                        {showDropdown && (
+                            <div
+                                className="dropdown-menu"
+                                role="menu"
+                                style={{
+                                    position: 'fixed',
+                                    top: '54px',
+                                    right: '8px',
+                                    width: 'min(230px, calc(100vw - 16px))',
+                                    padding: '10px',
+                                    borderRadius: '12px',
+                                    backgroundColor: theme.backgroundColor,
+                                    border: `1px solid ${theme.borderColor}`,
+                                    boxShadow: '0 12px 30px rgba(0, 0, 0, 0.28)',
+                                    zIndex: 10002,
+                                }}
+                            >
+                                <button
+                                    type="button"
+                                    role="menuitem"
+                                    className="dropdown-option"
+                                    style={{
+                                        width: '100%', display: 'flex', alignItems: 'center', gap: '10px',
+                                        padding: '11px 12px', border: 'none', borderRadius: '8px',
+                                        color: theme.textColor, background: 'transparent', cursor: 'pointer',
+                                        textAlign: 'left',
+                                    }}
+                                    onClick={() => {
+                                        setShowDropdown(false);
+                                        navigate('/profile');
+                                    }}
+                                >
+                                    <FaUser size={14} />
+                                    {translations.sidebar.account.title}
+                                </button>
+                                <button
+                                    type="button"
+                                    role="menuitem"
+                                    className="dropdown-option"
+                                    style={{
+                                        width: '100%', display: 'flex', alignItems: 'center', gap: '10px',
+                                        padding: '11px 12px', border: 'none', borderRadius: '8px',
+                                        color: theme.textColor, background: 'transparent', cursor: 'pointer',
+                                        textAlign: 'left',
+                                    }}
+                                    onClick={() => {
+                                        setShowDropdown(false);
+                                        navigate('/settings');
+                                    }}
+                                >
+                                    <FontAwesomeIcon icon={faUserCog} />
+                                    {translations.sidebar.settings.title}
+                                </button>
+                                <button
+                                    type="button"
+                                    role="menuitem"
+                                    className="dropdown-option logout"
+                                    data-umami-event="mobile-logout-button"
+                                    style={{
+                                        width: '100%', display: 'flex', alignItems: 'center', gap: '10px',
+                                        marginTop: '4px', padding: '11px 12px', borderRadius: '8px',
+                                        color: '#dc2626', background: 'rgba(220, 38, 38, 0.06)',
+                                        border: '1px solid rgba(220, 38, 38, 0.2)', cursor: 'pointer',
+                                        textAlign: 'left',
+                                    }}
+                                    onClick={(event) => {
+                                        setShowDropdown(false);
+                                        void handleLogout(event);
+                                    }}
+                                >
+                                    <FontAwesomeIcon icon={faSignOutAlt} />
+                                    {translations.sidebar.logout}
+                                </button>
+                            </div>
+                        )}
                     </div>
                 ) : (
                     <>

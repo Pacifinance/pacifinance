@@ -62,6 +62,7 @@ import ImportPlatformGuide from '../components/ImportPlatformGuide';
 import MonthTransactionsViewer from './MonthTransactionsViewer';
 import CategoryPicker from '../components/CategoryPicker';
 import { findLikelyDuplicates, findDuplicatesWithinBatch, findLikelyTransfers } from '../utils/duplicateDetection';
+import { suggestNoteFromHistory } from '../utils/transactionNoteSuggestions';
 
 // ═══════════════════════════════════════════
 // Styled Components
@@ -410,6 +411,20 @@ const NoteInput = styled.input`
     outline: none;
     border-color: ${p => p.theme.secondaryColor};
   }
+`;
+
+const NoteSuggestionButton = styled.button`
+  width: fit-content;
+  max-width: 100%;
+  border: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(16,185,129,0.4)' : 'rgba(5,150,105,0.35)'};
+  border-radius: 7px;
+  padding: 0.3rem 0.5rem;
+  background: ${p => p.theme.mode === 'dark' ? 'rgba(16,185,129,0.12)' : 'rgba(5,150,105,0.08)'};
+  color: ${p => p.theme.textColor};
+  font-size: 0.72rem;
+  text-align: left;
+  overflow-wrap: anywhere;
+  cursor: pointer;
 `;
 
 const TransactionDetails = styled.div`
@@ -1058,9 +1073,9 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
     const validOutflows = valid.filter(tx => tx.isOutflow);
     const validIncomes = valid.filter(tx => !tx.isOutflow);
     const historyOutflows = getAllOutflows(userData).flat().filter(Boolean)
-      .map(e => ({ date: e.date ? e.date.slice(0, 10) : null, amount: e.amount, notes: e.notes }));
+      .map(e => ({ date: e.date ? e.date.slice(0, 10) : null, amount: e.amount, notes: e.notes, categoryIndex: e.categoryTag?.index ?? null, userCategoryId: e.userCategory?.id ?? null }));
     const historyIncomes = getAllIncomes(userData).flat().filter(Boolean)
-      .map(e => ({ date: e.date ? e.date.slice(0, 10) : null, amount: e.amount, notes: e.notes }));
+      .map(e => ({ date: e.date ? e.date.slice(0, 10) : null, amount: e.amount, notes: e.notes, categoryIndex: e.categoryTag?.index ?? null, userCategoryId: e.userCategory?.id ?? null }));
 
     // Each flag carries not just the kind but, when available, the specific
     // matched/existing transaction it collided with — so the user can see
@@ -2085,6 +2100,26 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                             maxLength={64}
                             placeholder={t.addNote || '—'}
                           />
+                          {(() => {
+                            const history = (tx.isOutflow ? getAllOutflows(userData) : getAllIncomes(userData)).flat().filter(Boolean)
+                              .map((entry) => ({
+                                notes: entry.notes,
+                                amount: entry.amount,
+                                categoryIndex: entry.categoryTag?.index ?? null,
+                                userCategoryId: entry.userCategory?.id ?? null,
+                              }));
+                            const suggestion = suggestNoteFromHistory({
+                              notes: getEffectiveNote(tx),
+                              amount: tx.amount,
+                              categoryIndex: effectiveCat.index,
+                              userCategoryId: effectiveCat.userCategoryId,
+                            }, history);
+                            return suggestion ? (
+                              <NoteSuggestionButton type="button" theme={theme} onClick={() => handleRowNoteChange(tx.rowIndex, suggestion)}>
+                                {translations.insert.noteSuggestion.replace('{note}', suggestion)}
+                              </NoteSuggestionButton>
+                            ) : null;
+                          })()}
                           {tx.isOutflow ? (
                             <ImportOptionPanel theme={theme}>
                               <ImportOptionTitle theme={theme}>

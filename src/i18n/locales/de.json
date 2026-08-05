@@ -859,6 +859,7 @@
         }
     },
     "insert": {
+        "noteSuggestion": "Vorgeschlagene Notiz verwenden: {note}",
         "title": "Daten eingeben",
         "subtitle": "Verwalte dein Guthaben, Einnahmen und Ausgaben",
         "buttonBalance": "Guthaben aktualisieren",

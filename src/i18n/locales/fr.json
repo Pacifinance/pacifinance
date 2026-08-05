@@ -859,6 +859,7 @@
         }
     },
     "insert": {
+        "noteSuggestion": "Utiliser la note suggérée : {note}",
         "title": "Insérer des données",
         "subtitle": "Gère ton solde, tes revenus et tes sorties",
         "buttonBalance": "Mettre à jour le solde",

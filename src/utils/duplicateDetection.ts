@@ -15,6 +15,8 @@ export interface DuplicateCheckItem {
   date: string | null;
   amount: number;
   notes?: string | null;
+  categoryIndex?: number | null;
+  userCategoryId?: number | null;
 }
 
 export interface DuplicateMatch<T> {
@@ -48,11 +50,42 @@ function normalizeNote(note: string | null | undefined): string {
   return (note || '').trim().toLowerCase();
 }
 
+const NOTE_NOISE = new Set([
+  'com', 'www', 'it', 'eu', 'payment', 'pagamento', 'card', 'carta', 'pending',
+  'the', 'and', 'per', 'con', 'della', 'dello', 'di', 'a', 'da',
+]);
+
+function noteTokens(note: string | null | undefined): Set<string> {
+  return new Set(normalizeNote(note)
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .split(/\s+/)
+    .filter((token) => token.length >= 3 && !NOTE_NOISE.has(token) && !/^\d+$/.test(token)));
+}
+
+function notesLookRelated(a: DuplicateCheckItem, b: DuplicateCheckItem): boolean {
+  const aTokens = noteTokens(a.notes);
+  const bTokens = noteTokens(b.notes);
+  return [...aTokens].some((token) => bTokens.has(token));
+}
+
+function sameSpecificCategory(a: DuplicateCheckItem, b: DuplicateCheckItem): boolean {
+  if (a.userCategoryId != null || b.userCategoryId != null) {
+    return a.userCategoryId != null && a.userCategoryId === b.userCategoryId;
+  }
+  return a.categoryIndex != null && a.categoryIndex !== 9999 && a.categoryIndex === b.categoryIndex;
+}
+
 function isMatch(a: DuplicateCheckItem, b: DuplicateCheckItem, { maxDaysApart = 1, amountEpsilon = 0.01 }: MatchOptions): number | null {
   if (a.date == null || b.date == null) return null;
   if (Math.abs(a.amount - b.amount) > amountEpsilon) return null;
   const daysApart = daysBetween(a.date, b.date);
-  return daysApart <= maxDaysApart ? daysApart : null;
+  if (daysApart <= maxDaysApart) return daysApart;
+  // Card authorisation and settlement dates commonly differ by several days.
+  // A wider window is safe only with an additional signal: a shared merchant
+  // token, or the same non-generic category selected by the user.
+  if (daysApart <= 5 && (notesLookRelated(a, b) || sameSpecificCategory(a, b))) return daysApart;
+  return null;
 }
 
 /**

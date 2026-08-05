@@ -42,6 +42,24 @@ describe('findLikelyDuplicates', () => {
     const noNotes = findLikelyDuplicates([{ date: '2024-03-15', amount: 42 }], [{ date: '2024-03-15', amount: 42 }]);
     expect(noNotes[0].sameNote).toBe(false);
   });
+
+  it('recognizes a card settlement a few days later from merchant text', () => {
+    const candidate = { date: '2026-07-04', amount: 99, notes: 'APPLE.COM/IT' };
+    const existing = { date: '2026-07-01', amount: 99, notes: 'Apple developer program' };
+    expect(findLikelyDuplicates([candidate], [existing])).toHaveLength(1);
+  });
+
+  it('uses the same specific category as a fallback when manual and bank notes differ', () => {
+    const candidate = { date: '2026-07-12', amount: 5, notes: 'LABORATORIO DI FIORI', userCategoryId: 42 };
+    const existing = { date: '2026-07-10', amount: 5, notes: 'Rosa', userCategoryId: 42 };
+    expect(findLikelyDuplicates([candidate], [existing])).toHaveLength(1);
+  });
+
+  it('does not widen the date window for unrelated generic transactions', () => {
+    const candidate = { date: '2026-07-12', amount: 5, notes: 'Bar' };
+    const existing = { date: '2026-07-10', amount: 5, notes: 'Market' };
+    expect(findLikelyDuplicates([candidate], [existing])).toHaveLength(0);
+  });
 });
 
 describe('findDuplicatesWithinBatch', () => {

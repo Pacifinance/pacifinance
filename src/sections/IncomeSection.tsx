@@ -198,6 +198,18 @@ const NoteArea = styled.textarea`
   }
 `;
 
+const NoteSuggestionButton = styled.button`
+  margin-top: 0.4rem;
+  border: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(16,185,129,0.4)' : 'rgba(5,150,105,0.35)'};
+  border-radius: 8px;
+  padding: 0.4rem 0.6rem;
+  background: ${p => p.theme.mode === 'dark' ? 'rgba(16,185,129,0.12)' : 'rgba(5,150,105,0.08)'};
+  color: ${p => p.theme.textColor};
+  text-align: left;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+`;
+
 const FormFooter = styled.div`
   display: flex;
   justify-content: center;
@@ -306,6 +318,7 @@ export default function IncomeSection({
   setIncomeDate,
   noteIncomeAreaValue,
   setNoteIncomeAreaValue,
+  suggestedNote = null,
   incomesTags,
   customCategories = [],
   onCreateCategory,
@@ -1115,6 +1128,11 @@ export default function IncomeSection({
             placeholder={translations.insert.incomeSection.placeholderNote}
             rows={1}
           />
+          {suggestedNote && (
+            <NoteSuggestionButton type="button" theme={theme} onClick={() => setNoteIncomeAreaValue(suggestedNote)}>
+              {translations.insert.noteSuggestion.replace('{note}', suggestedNote)}
+            </NoteSuggestionButton>
+          )}
         </FormField>
       </FormCard>
 

@@ -927,6 +927,7 @@
         }
     },
     "insert": {
+        "noteSuggestion": "Usa la nota suggerita: {note}",
         "title": "Inserimento Dati",
         "subtitle": "Gestisci il tuo bilancio, le entrate e le uscite",
         "buttonBalance": "Aggiorna Bilancio",

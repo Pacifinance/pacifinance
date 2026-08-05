@@ -861,6 +861,7 @@
         }
     },
     "insert": {
+        "noteSuggestion": "Usar la nota sugerida: {note}",
         "title": "Insertar datos",
         "subtitle": "Gestiona tu balance, ingresos y gastos",
         "buttonBalance": "Actualizar balance",

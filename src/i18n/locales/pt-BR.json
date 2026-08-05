@@ -859,6 +859,7 @@
         }
     },
     "insert": {
+        "noteSuggestion": "Usar a nota sugerida: {note}",
         "title": "Inserir dados",
         "subtitle": "Gerencie seu saldo, receitas e saídas",
         "buttonBalance": "Atualizar saldo",

@@ -42,6 +42,7 @@ import { isPastMonthDate as isPastMonthDateUtil, getBalanceUserDateForMonth } fr
 import { usePastDateBalancePref, PAST_DATE_BALANCE_CHOICES } from '../hooks/usePastDateBalancePref';
 import { addCurrency, roundCurrency } from '../utils/money';
 import { findLikelyDuplicates } from '../utils/duplicateDetection';
+import { suggestNoteFromHistory } from '../utils/transactionNoteSuggestions';
 import { learnFromTransaction } from '../utils/categoryPatterns';
 const PastDateBalanceChoiceModal = lazy(() => import('./PastDateBalanceChoiceModal'));
 const EditTransactionModal = lazy(() => import('./EditTransactionModal'));
@@ -504,12 +505,18 @@ export default function InsertValue({
    * (see getAllOutflows/getAllIncomes), so a duplicate against something
    * entered further back would not be caught.
    */
-  const checkForDuplicateBeforeSubmit = (isOutflowCheck, date, amount, notes) => {
-    const candidate = { date, amount, notes };
+  const checkForDuplicateBeforeSubmit = (isOutflowCheck, date, amount, notes, categoryIndex, userCategoryId = null) => {
+    const candidate = { date, amount, notes, categoryIndex: Number(categoryIndex), userCategoryId };
     const history = (isOutflowCheck ? getAllOutflows(userData) : getAllIncomes(userData))
       .flat()
       .filter(Boolean)
-      .map((e) => ({ date: e.date ? String(e.date).slice(0, 10) : null, amount: e.amount, notes: e.notes }));
+      .map((e) => ({
+        date: e.date ? String(e.date).slice(0, 10) : null,
+        amount: e.amount,
+        notes: e.notes,
+        categoryIndex: e.categoryTag?.index ?? null,
+        userCategoryId: e.userCategory?.id ?? null,
+      }));
     const [match] = findLikelyDuplicates([candidate], history);
     if (!match) return Promise.resolve(true);
     return new Promise((resolve) => {
@@ -1378,7 +1385,7 @@ export default function InsertValue({
       return;
     }
     const eurAmount = toEUR(parseFormattedAmount(income));
-    const proceed = await checkForDuplicateBeforeSubmit(false, incomeDate, eurAmount, noteIncomeAreaValue);
+    const proceed = await checkForDuplicateBeforeSubmit(false, incomeDate, eurAmount, noteIncomeAreaValue, categoryIncome.key, categoryIncome.userCategoryId);
     if (!proceed) return;
     // Directly submit without further confirmation modal
     handleConfirmInEx(false);
@@ -1415,7 +1422,7 @@ export default function InsertValue({
     }
 
     const eurAmount = toEUR(categoryAmount ?? totalDisplay);
-    const proceed = await checkForDuplicateBeforeSubmit(true, capturedDate, eurAmount, capturedNote);
+    const proceed = await checkForDuplicateBeforeSubmit(true, capturedDate, eurAmount, capturedNote, categoryOutflow.key, categoryOutflow.userCategoryId);
     if (!proceed) return;
     // Directly submit without further confirmation modal
     const createdExpense = await handleConfirmInEx(true, categoryAmount);
@@ -2237,6 +2244,26 @@ export default function InsertValue({
     setShowConfirmationDeleteOutflow(false);
   };
 
+  const buildNoteSuggestion = (isOutflowSuggestion) => {
+    const selectedCategory = isOutflowSuggestion ? categoryOutflow : categoryIncome;
+    const typedAmount = parseFormattedAmount(isOutflowSuggestion ? outflow : income);
+    if (!typedAmount || selectedCategory.key === '') return null;
+    const history = (isOutflowSuggestion ? getAllOutflows(userData) : getAllIncomes(userData))
+      .flat().filter(Boolean)
+      .map((entry) => ({
+        notes: entry.notes,
+        amount: entry.amount,
+        categoryIndex: entry.categoryTag?.index ?? null,
+        userCategoryId: entry.userCategory?.id ?? null,
+      }));
+    return suggestNoteFromHistory({
+      notes: isOutflowSuggestion ? noteOutflowAreaValue : noteIncomeAreaValue,
+      amount: toEUR(typedAmount),
+      categoryIndex: Number(selectedCategory.key),
+      userCategoryId: selectedCategory.userCategoryId ?? null,
+    }, history);
+  };
+
   const renderPage = () => {
     if (activePage === "bilancio") {
       return (
@@ -2297,6 +2324,7 @@ export default function InsertValue({
             setIncomeDate={setIncomeDate}
             noteIncomeAreaValue={noteIncomeAreaValue}
             setNoteIncomeAreaValue={setNoteIncomeAreaValue}
+            suggestedNote={buildNoteSuggestion(false)}
             incomesTags={incomesTags}
             customCategories={getCustomCategories(userData)}
             onCreateCategory={(parentIndex, label) => addCustomCategory({ label, parent_index: parentIndex, is_expense: false })}
@@ -2346,6 +2374,7 @@ export default function InsertValue({
             setOutflowDate={setOutflowDate}
             noteOutflowAreaValue={noteOutflowAreaValue}
             setNoteOutflowAreaValue={setNoteOutflowAreaValue}
+            suggestedNote={buildNoteSuggestion(true)}
             OutflowsTags={OutflowsTags}
             paymentTags={paymentTags}
             customCategories={getCustomCategories(userData)}

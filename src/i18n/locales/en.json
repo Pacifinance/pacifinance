@@ -927,6 +927,7 @@
         }
     },
     "insert": {
+        "noteSuggestion": "Use suggested note: {note}",
         "title": "Insert Data",
         "subtitle": "Manage your balance, income and outflows",
         "buttonBalance": "Update Balance",

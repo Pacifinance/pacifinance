@@ -675,7 +675,7 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
     }));
     setExcludedOrphanKeys(new Set());
 
-    void resolveInstruments(initialRows);
+    void resolveInstruments(initialRows, importPlatform);
   };
 
   // Accepts one or several files at once (the file picker allows a multi-select,
@@ -793,7 +793,7 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
     return true;
   };
 
-  const resolveInstruments = async (toResolve: ImportRowState[]) => {
+  const resolveInstruments = async (toResolve: ImportRowState[], importPlatform: ImportPlatform) => {
     setRows((prev) => prev.map((r, idx) => (idx < toResolve.length ? { ...r, status: 'resolving' } : r)));
 
     // Resolve every ISIN in ONE batched request first — looking each position

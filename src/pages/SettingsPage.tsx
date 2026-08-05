@@ -68,6 +68,8 @@ import {
 import { openPrintableRecoveryCard, downloadRecoveryCardText } from "../utils/recoveryCard";
 import { usePastDateBalancePref, PAST_DATE_BALANCE_CHOICES } from "../hooks/usePastDateBalancePref";
 import { usePrivacyDefaultPref, PRIVACY_DEFAULT_CHOICES } from "../hooks/usePrivacyDefaultPref";
+import { useCryptoGroupingPref } from "../hooks/useCryptoGroupingPref";
+import CryptoGroupingToggle from "../components/CryptoGroupingToggle";
 
 const SettingsPage = () => {
     const { theme, toggleMode } = useContext(ThemeContext);
@@ -90,6 +92,7 @@ const SettingsPage = () => {
 
     // Privacy mode default at login (secure by default; opt-in to remember the last choice)
     const { pref: privacyDefaultPref, setPref: setPrivacyDefaultPref } = usePrivacyDefaultPref();
+    const { mode: cryptoGroupingMode, setMode: setCryptoGroupingMode } = useCryptoGroupingPref();
 
     // Shared account actions via DI hook
     const accountActions = useAccountActions({
@@ -551,6 +554,24 @@ const SettingsPage = () => {
                                     />
                                 </SettingsRow>
                             </div>
+
+                            <SettingsDivider theme={theme} />
+
+                            <SettingsSubHeading
+                                theme={theme}
+                                icon={faCoins}
+                                description={translations.cryptoGrouping.settingsDescription}
+                            >
+                                {translations.cryptoGrouping.settingsTitle}
+                            </SettingsSubHeading>
+                            <CryptoGroupingToggle
+                                theme={theme}
+                                mode={cryptoGroupingMode}
+                                onChange={setCryptoGroupingMode}
+                                separateLabel={translations.cryptoGrouping.separate}
+                                combinedLabel={translations.cryptoGrouping.combined}
+                                explanation={translations.cryptoGrouping.explanation}
+                            />
 
                             <SettingsDivider theme={theme} />
 

@@ -3042,6 +3042,9 @@
         "separate": "Bitcoin getrennt",
         "combined": "Krypto mit Bitcoin",
         "combinedCard": "Krypto (inklusive Bitcoin)",
-        "explanation": "Bitcoin wird standardmäßig von anderen Kryptowährungen getrennt, damit beide Engagements sichtbar bleiben. Fasse sie zusammen, um Performance und Zusammensetzung des gesamten Kryptomarkts schnell zu bewerten. Gespeicherte Daten bleiben unverändert."
+        "explanation": "Die Systemvorgabe hält Bitcoin von anderen Kryptowährungen getrennt, damit beide Engagements sichtbar bleiben. Diese Auswahl ändert nur die Darstellung, niemals gespeicherte Daten.",
+        "temporaryExplanation": "Temporärer Vergleich für diese Analyse: Die in den Einstellungen gespeicherte Standardansicht bleibt unverändert.",
+        "settingsTitle": "Standardansicht für Bitcoin und Krypto",
+        "settingsDescription": "Lege fest, wie Bitcoin im Dashboard gruppiert wird. Diagramme lassen sich vorübergehend umschalten, wenn du beide Kategorien besitzt."
     }
 }

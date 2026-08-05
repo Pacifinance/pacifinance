@@ -79,7 +79,6 @@ import { GiUmbrella } from 'react-icons/gi';
 import { isNewUser } from '../utils/userDataSelectors';
 import { addCurrency } from '../utils/money';
 import { useCryptoGroupingPref } from '../hooks/useCryptoGroupingPref';
-import CryptoGroupingToggle from '../components/CryptoGroupingToggle';
 
 const ResponsivePadding = styled.div`
   width: min(100%, 1440px);
@@ -110,7 +109,7 @@ const Dashboard = ({ theme, userData, isHidden }) => {
         sections, visibleSections, moveSection, toggleSection, resetLayout, viewMode, toggleViewMode,
         collapsedGroups, toggleGroupCollapsed
     } = useDashboardLayout();
-    const { mode: cryptoGroupingMode, setMode: setCryptoGroupingMode, isCombined: combineCrypto } = useCryptoGroupingPref();
+    const { isCombined: defaultCombineCrypto } = useCryptoGroupingPref();
     const { investmentService, liquidityAccountService } = useDemoServices();
     const [investmentHoldings, setInvestmentHoldings] = useState([]);
     const [liquidityAccounts, setLiquidityAccounts] = useState([]);
@@ -331,6 +330,8 @@ const Dashboard = ({ theme, userData, isHidden }) => {
         },
     ];
 
+    const hasBitcoinAndCrypto = liveAssetValue('bitcoin', bitcoinValue) > 0 && liveAssetValue('crypto', cryptoValue) > 0;
+    const combineCrypto = defaultCombineCrypto && hasBitcoinAndCrypto;
     const displayedInvestments = combineCrypto
         ? allInvestments
             .filter((investment) => investment.key !== 'bitcoin')
@@ -670,14 +671,6 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                                 expandLabel={translations.dashboard.expandSection}
                                 collapseLabel={translations.dashboard.collapseSection}
                             >
-                                <CryptoGroupingToggle
-                                    theme={theme}
-                                    mode={cryptoGroupingMode}
-                                    onChange={setCryptoGroupingMode}
-                                    separateLabel={translations.cryptoGrouping.separate}
-                                    combinedLabel={translations.cryptoGrouping.combined}
-                                    explanation={translations.cryptoGrouping.explanation}
-                                />
                                 <PortfolioGrid>
                                     <PortfolioAssetCard
                                         theme={theme}

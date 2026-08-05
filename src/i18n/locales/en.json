@@ -3138,6 +3138,9 @@
         "separate": "Bitcoin separate",
         "combined": "Crypto with Bitcoin",
         "combinedCard": "Crypto (including Bitcoin)",
-        "explanation": "Bitcoin is separate from other crypto by default so both exposures remain visible. Combine them to quickly assess the performance and composition of the whole crypto market. Saved data is not changed."
+        "explanation": "The system default keeps Bitcoin separate from other crypto so both exposures remain visible. This choice only changes presentation, never saved data.",
+        "temporaryExplanation": "Temporary comparison for this analysis: it does not change the default view saved in settings.",
+        "settingsTitle": "Default Bitcoin and crypto view",
+        "settingsDescription": "Choose how Bitcoin is grouped on the dashboard. Charts can be switched temporarily when you own both categories."
     }
 }

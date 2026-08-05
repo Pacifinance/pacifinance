@@ -3138,6 +3138,9 @@
         "separate": "Bitcoin separato",
         "combined": "Crypto con Bitcoin",
         "combinedCard": "Crypto (Bitcoin incluso)",
-        "explanation": "Per impostazione predefinita Bitcoin è separato dalle altre crypto per rendere visibili le due esposizioni. Puoi unirli per valutare rapidamente rendimento e composizione dell'intero mercato crypto. I dati salvati non cambiano."
+        "explanation": "L'impostazione di sistema mantiene Bitcoin separato dalle altre crypto per rendere visibili le due esposizioni. Questa scelta cambia solo la visualizzazione e non i dati salvati.",
+        "temporaryExplanation": "Confronto temporaneo per questa analisi: non modifica la visualizzazione predefinita salvata nelle impostazioni.",
+        "settingsTitle": "Visualizzazione predefinita Bitcoin e crypto",
+        "settingsDescription": "Scegli come raggruppare Bitcoin nella dashboard. Nei grafici potrai cambiare vista temporaneamente quando possiedi entrambe le categorie."
     }
 }

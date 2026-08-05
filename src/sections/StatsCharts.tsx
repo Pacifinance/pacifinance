@@ -531,7 +531,14 @@ export default function StatsCharts() {
     const [holdingsLoaded, setHoldingsLoaded] = useState(false);
     const [selectedHoldingAssetKey, setSelectedHoldingAssetKey] = useState(null);
     const [refreshingPrices, setRefreshingPrices] = useState(false);
-    const { mode: cryptoGroupingMode, setMode: setCryptoGroupingMode, isCombined: combineCrypto } = useCryptoGroupingPref();
+    const { mode: defaultCryptoGroupingMode } = useCryptoGroupingPref();
+    const [cryptoViewMode, setCryptoViewMode] = useState<CryptoGroupingMode>(defaultCryptoGroupingMode);
+    const hasBitcoinAndCrypto = useMemo(
+        () => investmentHoldings.some((holding) => holding.assetKey === 'bitcoin')
+            && investmentHoldings.some((holding) => holding.assetKey === 'crypto'),
+        [investmentHoldings],
+    );
+    const combineCrypto = hasBitcoinAndCrypto && cryptoViewMode === 'combined';
     const displayedHoldings = useMemo(
         () => groupBitcoinWithCrypto(investmentHoldings, combineCrypto),
         [investmentHoldings, combineCrypto],
@@ -542,7 +549,7 @@ export default function StatsCharts() {
     );
 
     const handleCryptoGroupingChange = (mode: CryptoGroupingMode) => {
-        setCryptoGroupingMode(mode);
+        setCryptoViewMode(mode);
         if (mode === 'combined' && selectedHoldingAssetKey === 'bitcoin') setSelectedHoldingAssetKey('crypto');
     };
 
@@ -828,14 +835,16 @@ export default function StatsCharts() {
                     )}
                     </PortfolioToolbar>
 
-                    <CryptoGroupingToggle
-                        theme={theme}
-                        mode={cryptoGroupingMode}
-                        onChange={handleCryptoGroupingChange}
-                        separateLabel={translations.cryptoGrouping.separate}
-                        combinedLabel={translations.cryptoGrouping.combined}
-                        explanation={translations.cryptoGrouping.explanation}
-                    />
+                    {hasBitcoinAndCrypto && (
+                        <CryptoGroupingToggle
+                            theme={theme}
+                            mode={cryptoViewMode}
+                            onChange={handleCryptoGroupingChange}
+                            separateLabel={translations.cryptoGrouping.separate}
+                            combinedLabel={translations.cryptoGrouping.combined}
+                            explanation={translations.cryptoGrouping.temporaryExplanation}
+                        />
+                    )}
 
                     <CommunitySpotlight theme={theme}>
                         <span className="icon"><Users size={21}/></span>

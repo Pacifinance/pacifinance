@@ -852,7 +852,12 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
           ? { ...r, instrument: match ?? null, status: match ? 'resolved' : 'not-found', selected: r.selected && Boolean(match) }
           : r)));
       } catch {
-        setRows((prev) => prev.map((r, idx) => (idx === i ? { ...r, status: 'error' } : r)));
+        // Provider lookup is best-effort. A timeout/rate limit must leave the
+        // row recoverable through the manual market search instead of blocking
+        // the whole import in an error-only state.
+        setRows((prev) => prev.map((r, idx) => (idx === i
+          ? { ...r, instrument: null, status: 'not-found', selected: false }
+          : r)));
       }
     }
   };

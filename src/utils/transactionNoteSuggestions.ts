@@ -8,7 +8,7 @@ export interface NoteSuggestionEntry {
   userCategoryId?: number | null;
 }
 
-const INSTALLMENT_WORDS = /\b(rata|rate|ratenzahlung|installment|instalment|mensualite|echeance|cuota|plazo|parcela|prestacao)\b/i;
+const INSTALLMENT_WORDS = /\b(rata|rate|raten|ratenzahlung|installments?|instalments?|mensualites?|echeances?|cuotas?|plazos?|parcelas?|prestacoes?)\b/i;
 const INSTALLMENT_SEQUENCE = /\b(\d{1,3})\s*(?:\/|di|of|von|sur|de)\s*(\d{1,3})\b/i;
 
 function sameCategory(a: NoteSuggestionEntry, b: NoteSuggestionEntry): boolean {
@@ -23,6 +23,12 @@ function advanceInstallment(note: string): string | null {
   const total = Number(match[2]);
   if (!Number.isFinite(current) || !Number.isFinite(total) || current >= total) return null;
   return note.replace(match[0], match[0].replace(match[1], String(current + 1)));
+}
+
+/** Recognizes installment wording in every language currently supported by the app. */
+export function isInstallmentNote(note: string | null | undefined): boolean {
+  const normalized = (note || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  return INSTALLMENT_WORDS.test(normalized);
 }
 
 /** Returns a historical note worth offering to the user; it never mutates the draft. */
@@ -43,9 +49,7 @@ export function suggestNoteFromHistory(
     let score = (amountMatches ? 3 : 0) + (categoryMatches ? 3 : 0) + Math.min(sharedTokens, 2) * 3;
 
     let suggestion = note;
-    const normalizedDraft = draftNote.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-    const normalizedHistory = note.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-    if (INSTALLMENT_WORDS.test(normalizedDraft) || INSTALLMENT_WORDS.test(normalizedHistory)) {
+    if (isInstallmentNote(draftNote) || isInstallmentNote(note)) {
       const advanced = advanceInstallment(note);
       if (advanced) {
         suggestion = advanced;

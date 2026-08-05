@@ -62,7 +62,7 @@ import ImportPlatformGuide from '../components/ImportPlatformGuide';
 import MonthTransactionsViewer from './MonthTransactionsViewer';
 import CategoryPicker from '../components/CategoryPicker';
 import { findLikelyDuplicates, findDuplicatesWithinBatch, findLikelyTransfers } from '../utils/duplicateDetection';
-import { suggestNoteFromHistory } from '../utils/transactionNoteSuggestions';
+import { isInstallmentNote, suggestNoteFromHistory } from '../utils/transactionNoteSuggestions';
 
 // ═══════════════════════════════════════════
 // Styled Components
@@ -1231,7 +1231,12 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
       try {
         const result = await financeService.addExpensesAndIncomesBatch({
           expenses: batch.map(tx => {
-            const expense = toAPIFormat({ ...tx, amount: toEUR(tx.amount) }, defaultPaymentType).expense;
+            const effectiveNote = getEffectiveNote(tx);
+            const installmentType = paymentTags.find((tag) => tag.label?.toLowerCase() === 'installment');
+            const paymentType = tx.isOutflow && isInstallmentNote(effectiveNote) && installmentType
+              ? installmentType.index
+              : defaultPaymentType;
+            const expense = toAPIFormat({ ...tx, notes: effectiveNote, amount: toEUR(tx.amount) }, paymentType).expense;
             const rowAccount = liquidityAccounts.find((item) => String(item.id) === String(rowAccountIds[tx.rowIndex])) || account;
             if (rowAccount) {
               expense.balance_source = {

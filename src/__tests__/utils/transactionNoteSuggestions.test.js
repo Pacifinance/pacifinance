@@ -1,5 +1,23 @@
 import { describe, expect, it } from 'vitest';
-import { suggestNoteFromHistory } from '../../utils/transactionNoteSuggestions';
+import { isInstallmentNote, suggestNoteFromHistory } from '../../utils/transactionNoteSuggestions';
+
+describe('isInstallmentNote', () => {
+  it.each([
+    'PAYPAL *PAGA IN 3 RATE',
+    'Rata computer 4/12',
+    'Installments laptop',
+    'Ratenzahlung',
+    'Mensualités téléphone',
+    'Pago en cuotas',
+    'Compra em parcelas',
+  ])('recognizes %s', (note) => {
+    expect(isInstallmentNote(note)).toBe(true);
+  });
+
+  it('does not classify an ordinary payment as an installment', () => {
+    expect(isInstallmentNote('APPLE.COM/IT')).toBe(false);
+  });
+});
 
 describe('suggestNoteFromHistory', () => {
   it('offers a useful historical note for the same amount and custom category', () => {

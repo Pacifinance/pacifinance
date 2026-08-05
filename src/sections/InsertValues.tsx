@@ -42,7 +42,7 @@ import { isPastMonthDate as isPastMonthDateUtil, getBalanceUserDateForMonth } fr
 import { usePastDateBalancePref, PAST_DATE_BALANCE_CHOICES } from '../hooks/usePastDateBalancePref';
 import { addCurrency, roundCurrency } from '../utils/money';
 import { findLikelyDuplicates } from '../utils/duplicateDetection';
-import { suggestNoteFromHistory } from '../utils/transactionNoteSuggestions';
+import { isInstallmentNote, suggestNoteFromHistory } from '../utils/transactionNoteSuggestions';
 import { learnFromTransaction } from '../utils/categoryPatterns';
 const PastDateBalanceChoiceModal = lazy(() => import('./PastDateBalanceChoiceModal'));
 const EditTransactionModal = lazy(() => import('./EditTransactionModal'));
@@ -581,6 +581,7 @@ export default function InsertValue({
   const [outflow, setOutflow] = useState("");
   const [noteIncomeAreaValue, setNoteIncomeAreaValue] = useState("");
   const [noteOutflowAreaValue, setNoteOutflowAreaValue] = useState("");
+
   const [allIncomesAdds, setAllIncomesAdds] = useState([]);
   const [allOutflowsAdds, setAllOutflowsAdds] = useState([]);
   const [incomeDate, setIncomeDate] = useState(getTodayLocalISO());
@@ -590,6 +591,18 @@ export default function InsertValue({
   const [OutflowsTags, setOutflowsTags] = useState([]);
   const [incomesTags, setIncomesTags] = useState([]);
   const [paymentTags, setPaymentTags] = useState([]);
+
+  // Notes coming from typing or a historical suggestion can reveal that the
+  // expense is an installment. Keep the inferred type editable, but make the
+  // form internally consistent instead of leaving it as a one-off payment.
+  useEffect(() => {
+    if (!isInstallmentNote(noteOutflowAreaValue)) return;
+    const installmentType = paymentTags.find((tag) => tag.label?.toLowerCase() === 'installment');
+    if (!installmentType) return;
+    setTypoOutflow((current) => current.key === installmentType.index
+      ? current
+      : { key: installmentType.index, value: installmentType.label });
+  }, [noteOutflowAreaValue, paymentTags]);
   const [selectedIncomesMonth, setSelectedIncomesMonth] = useState(0);
   const [selectedOutflowsMonth, setSelectedOutflowsMonth] = useState(0);
 

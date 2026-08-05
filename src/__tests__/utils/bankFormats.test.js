@@ -41,6 +41,28 @@ describe('detectBankFormat', () => {
     expect(detectBankFormat(['Data operazione', 'Tipo operazione', 'Isin'])).toBeNull(); // Directa (investment, different domain)
   });
 
+  describe('PayPal', () => {
+    const header = ['Data', 'Ora', 'Fuso orario', 'Descrizione', 'Valuta', 'Lordo ', 'Tariffa ', 'Netto', 'Saldo', 'Codice transazione', 'Indirizzo email mittente', 'Nome', 'Nome banca', 'Conto bancario', 'IVA'];
+
+    it('maps only transaction fields and leaves sensitive columns unmapped', () => {
+      const result = detectBankFormat(header);
+      expect(result.bank).toBe('paypal');
+      expect(result.mapping).toEqual({ dateCol: 0, amountCol: 7, notesCol: 11, categoryCol: 3, timeCol: 1 });
+      expect(Object.values(result.mapping)).not.toContain(9);
+      expect(Object.values(result.mapping)).not.toContain(10);
+      expect(Object.values(result.mapping)).not.toContain(13);
+    });
+
+    it('filters PayPal funding, conversion and authorization bookkeeping rows', () => {
+      const { filterRow } = detectBankFormat(header);
+      const row = (description) => header.map((_, index) => index === 3 ? description : '');
+      expect(filterRow(row('Pagamento Express Checkout'))).toBe(true);
+      expect(filterRow(row('Versamento generico con carta'))).toBe(false);
+      expect(filterRow(row('Conversione di valuta generica'))).toBe(false);
+      expect(filterRow(row('Blocco conto per autorizzazione aperta'))).toBe(false);
+    });
+  });
+
   it('is not thrown off by header case or surrounding whitespace', () => {
     const header = [' type ', 'product', 'started date', 'COMPLETED DATE', 'description', 'AMOUNT', 'fee', 'currency', 'state', 'balance'];
     expect(detectBankFormat(header)?.bank).toBe('revolut');

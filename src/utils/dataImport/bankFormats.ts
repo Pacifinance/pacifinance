@@ -13,7 +13,7 @@
  * import fine through the generic manual-mapping flow.
  */
 
-export type BankFormatId = 'revolut' | 'n26' | 'traderepublic';
+export type BankFormatId = 'revolut' | 'n26' | 'traderepublic' | 'paypal';
 
 export interface BankColumnMapping {
   dateCol: number;
@@ -66,6 +66,13 @@ export const BANK_COLUMN_ALIASES = {
   completedDate: ['Completed Date', 'Data di completamento', 'Abschlussdatum', 'Date de finalisation', 'Fecha de finalización', 'Data de conclusão'],
   description: ['Description', 'Descrizione', 'Beschreibung', 'Descripción', 'Descrição'],
   amount: ['Amount', 'Importo', 'Betrag', 'Montant', 'Importe', 'Valor'],
+  date: ['Date', 'Data', 'Datum', 'Fecha'],
+  time: ['Time', 'Ora', 'Uhrzeit', 'Heure', 'Hora'],
+  currency: ['Currency', 'Valuta', 'Währung', 'Devise', 'Divisa', 'Moeda'],
+  net: ['Net', 'Netto', 'Nettobetrag', 'Montant net', 'Neto', 'Líquido'],
+  name: ['Name', 'Nome', 'Name des Empfängers', 'Nom', 'Nombre'],
+  transactionId: ['Transaction ID', 'Codice transazione', 'Transaktionscode', 'Numéro de transaction', 'Código de transacción', 'Código da transação'],
+  senderEmail: ['From Email Address', 'Indirizzo email mittente', 'E-Mail-Adresse des Absenders', "Adresse email de l'expéditeur", 'Correo electrónico del remitente', 'E-mail do remetente'],
 } as const;
 
 type BankColumnConcept = keyof typeof BANK_COLUMN_ALIASES;
@@ -82,6 +89,37 @@ const hasConcepts = (header: string[], ...concepts: BankColumnConcept[]): boolea
  * generic autoDetectColumns heuristic).
  */
 export function detectBankFormat(header: string[]): DetectedBankFormat | null {
+  // PayPal activity report — verified against a real localized export. Email,
+  // transaction IDs, bank-account data and invoice references are deliberately
+  // not mapped, so they never enter the API payload.
+  if (hasConcepts(header, 'date', 'time', 'description', 'currency', 'net', 'name', 'transactionId', 'senderEmail')) {
+    const descriptionIdx = findConcept(header, 'description');
+    const technicalRows = [
+      /versamento generico con carta/i,
+      /generic card deposit/i,
+      /pagamento con credito acquirenti paypal/i,
+      /paypal buyer credit payment/i,
+      /conversione di valuta/i,
+      /currency conversion/i,
+      /blocco conto per autorizzazione/i,
+      /authorization hold/i,
+      /storno di blocco conto/i,
+      /reversal of.*hold/i,
+    ];
+    return {
+      bank: 'paypal',
+      mapping: {
+        dateCol: findConcept(header, 'date'),
+        amountCol: findConcept(header, 'net'),
+        notesCol: findConcept(header, 'name'),
+        categoryCol: descriptionIdx,
+        timeCol: findConcept(header, 'time'),
+      },
+      filterRow: (row) => !technicalRows.some((pattern) => pattern.test((row[descriptionIdx] || '').trim())),
+      filterReasonKey: 'paypalTechnicalRowsSkipped',
+    };
+  }
+
   // Revolut (current account) — verified header:
   // "Type,Product,Started Date,Completed Date,Description,Amount,Fee,Currency,State,Balance"
   if (hasConcepts(header, 'type', 'product', 'startedDate', 'completedDate', 'description', 'amount')) {

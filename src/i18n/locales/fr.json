@@ -4,7 +4,7 @@
         "platforms": {
             "genericBank": { "label": "Toute autre banque ou service", "steps": "Cherchez Transactions, Activité ou Relevés, puis choisissez Exporter. Préférez CSV ; Excel fonctionne aussi. Incluez au minimum la date, la description et le montant, choisissez la période et, si possible, uniquement les opérations terminées. À l’étape suivante, vous pourrez choisir manuellement l’en-tête et les colonnes." },
             "genericDigital": { "label": "Autres portefeuilles et services numériques", "steps": "Dans les paramètres ou l’historique, cherchez Activité, Transactions, Relevés, Rapports ou Exporter les données. Téléchargez un CSV ou Excel avec date, description et montant ; évitez les PDF et reçus individuels. Exportez séparément les différentes devises si possible." },
-            "paypal": { "label": "PayPal", "steps": "Sur le site : Activité → icône Télécharger → Personnalisé → créez un rapport d’activité → CSV. Choisissez la période et incluez au minimum Date, Nom, Statut, Devise et Net ; privilégiez les opérations terminées." },
+            "paypal": { "label": "PayPal", "steps": "Sur le site : Activité → icône Télécharger → Personnalisé → créez un rapport d’activité → CSV. Incluez au minimum Date, Heure, Description, Devise, Net et Nom. Vous pouvez supprimer les colonnes d’e-mail, de compte bancaire et d’identifiants ; sinon Pacifinance les ignore et ne les envoie pas au serveur." },
             "wise": { "label": "Wise", "steps": "Profil → Relevés et rapports → Relevés → Créer un relevé → choisissez soldes, période et CSV. Sinon sur le web : Transactions → Tout voir → Filtrer et télécharger → CSV. Wise limite chaque fichier à 365 jours." },
             "traderepublic": { "label": "Trade Republic", "steps": "Ouvrez Cash → Transactions et téléchargez l’export ou le relevé de la période voulue. Utilisez les mouvements Cash pour revenus et dépenses ; importez séparément les opérations sur titres depuis Investissements." },
             "fineco": { "label": "Fineco", "steps": "Site Fineco → Compte et cartes → Liste des opérations → choisissez période et filtres → exportez vers Excel. Excluez ici les opérations de trading, importables séparément comme investissements." },
@@ -2207,6 +2207,8 @@
         "undoSuccess": "✅ Annulation terminée — {count} transactions supprimées",
         "undoPartial": "⚠️ Annulation partielle — {success} supprimées, {failed} échouées",
         "bankDetected": "Détecté : {bank} — colonnes mappées automatiquement.",
+        "paypalPrivacyNotice": "Les colonnes PayPal contenant les e-mails, coordonnées bancaires, identifiants de transaction et références de facture sont ignorées et ne sont pas envoyées au serveur. Vous pouvez aussi les supprimer du CSV avant l’import.",
+        "paypalTechnicalRowsSkipped": "{count} lignes techniques PayPal (financement par carte, conversions ou blocages d’autorisation) ont été ignorées.",
         "paymentSourceTitle": "Source de paiement et solde du compte",
         "paymentAccount": "Compte de paiement",
         "accountType": "Type de compte",
@@ -2233,7 +2235,8 @@
         "bankNames": {
                 "revolut": "Revolut",
                 "n26": "N26",
-                "traderepublic": "Trade Republic"
+                "traderepublic": "Trade Republic",
+                "paypal": "PayPal"
         },
         "bankRowsSkipped": "{count} lignes étaient des opérations d'investissement et ont été ignorées — importez-les depuis « Importer des investissements ».",
         "retroHint": "{count} transactions passées avec une note similaire sont classées dans une catégorie différente.",

@@ -4,7 +4,7 @@
         "platforms": {
             "genericBank": { "label": "Cualquier otro banco o servicio", "steps": "Busca Transacciones, Movimientos o Extractos y selecciona Exportar. Es preferible CSV; Excel también funciona. Incluye al menos fecha, descripción e importe, elige el período y, si es posible, solo operaciones completadas. En el siguiente paso podrás seleccionar manualmente la cabecera y las columnas." },
             "genericDigital": { "label": "Otros monederos y servicios digitales", "steps": "Busca en ajustes o historial las opciones Actividad, Transacciones, Extractos, Informes o Exportar datos. Descarga CSV o Excel con fecha, descripción e importe; evita PDF y recibos individuales. Si hay varias divisas, expórtalas por separado cuando sea posible." },
-            "paypal": { "label": "PayPal", "steps": "En la web: Actividad → icono Descargar → Personalizado → crea el informe de actividad → CSV. Elige el período e incluye al menos Fecha, Nombre, Estado, Divisa y Neto; prefiere operaciones completadas." },
+            "paypal": { "label": "PayPal", "steps": "En la web: Actividad → icono Descargar → Personalizado → crea el informe de actividad → CSV. Incluye al menos Fecha, Hora, Descripción, Divisa, Neto y Nombre. Puedes borrar las columnas de correo, cuenta bancaria e identificadores; si las dejas, Pacifinance las ignora y no las envía al servidor." },
             "wise": { "label": "Wise", "steps": "Perfil → Extractos e informes → Extractos → Crear un extracto → elige saldos, período y CSV. Como alternativa en la web: Transacciones → Ver todo → Filtrar y descargar → CSV. Wise permite hasta 365 días por archivo." },
             "traderepublic": { "label": "Trade Republic", "steps": "Abre Cash → Transacciones y descarga la exportación o el extracto del período deseado. Usa los movimientos Cash para ingresos y gastos; importa las operaciones de instrumentos por separado desde Inversiones." },
             "fineco": { "label": "Fineco", "steps": "Web de Fineco → Cuenta y tarjetas → Lista de movimientos → elige período y filtros → exporta a Excel. Excluye aquí los movimientos de trading; pueden importarse por separado como inversiones." },
@@ -2209,6 +2209,8 @@
         "undoSuccess": "✅ Deshacer completado — {count} transacciones eliminadas",
         "undoPartial": "⚠️ Deshacer parcial — {success} eliminadas, {failed} fallidas",
         "bankDetected": "Detectado: {bank} — columnas mapeadas automáticamente.",
+        "paypalPrivacyNotice": "Las columnas de PayPal con correos, datos bancarios, códigos de transacción y referencias de factura se ignoran y no se envían al servidor. También puedes eliminarlas del CSV antes de importarlo.",
+        "paypalTechnicalRowsSkipped": "Se omitieron {count} filas técnicas de PayPal (financiación con tarjeta, conversiones o bloqueos de autorización).",
         "paymentSourceTitle": "Fuente de pago y saldo de la cuenta",
         "paymentAccount": "Cuenta de pago",
         "accountType": "Tipo de cuenta",
@@ -2235,7 +2237,8 @@
         "bankNames": {
                 "revolut": "Revolut",
                 "n26": "N26",
-                "traderepublic": "Trade Republic"
+                "traderepublic": "Trade Republic",
+                "paypal": "PayPal"
         },
         "bankRowsSkipped": "{count} filas eran operaciones de inversión y se omitieron — impórtalas desde \"Importar inversiones\".",
         "retroHint": "{count} transacciones pasadas con una nota similar están clasificadas en una categoría diferente.",

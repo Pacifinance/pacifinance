@@ -670,6 +670,10 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
   // Detected bank/institution export format (Revolut, N26 — see utils/dataImport/bankFormats.ts).
   // It is a payment source, never a transaction sub-category.
   const [detectedBank, setDetectedBank] = useState(null);
+  const [bankFilterReasonKey, setBankFilterReasonKey] = useState(null);
+  const bankFilterMessage = bankFilterReasonKey === 'paypalTechnicalRowsSkipped'
+    ? t.paypalTechnicalRowsSkipped
+    : t.bankRowsSkipped;
   const [liquidityAccounts, setLiquidityAccounts] = useState([]);
   const [receivables, setReceivables] = useState([]);
   const [selectedAccountId, setSelectedAccountId] = useState('');
@@ -840,6 +844,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
       // guessing (see utils/dataImport/bankFormats.ts) — skips manual mapping entirely.
       const bankFormat = detectBankFormat(h);
       setDetectedBank(bankFormat?.bank ?? null);
+      setBankFilterReasonKey(bankFormat?.filterReasonKey ?? null);
       setDualAmountMode(false);
       setMccCol(-1);
       setTimeCol(-1);
@@ -920,6 +925,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
     // Re-run detection: known bank format first, generic heuristic otherwise
     const bankFormat = detectBankFormat(h);
     setDetectedBank(bankFormat?.bank ?? null);
+    setBankFilterReasonKey(bankFormat?.filterReasonKey ?? null);
     setDualAmountMode(false);
     setMccCol(-1);
     setTimeCol(-1);
@@ -1479,10 +1485,16 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
               </BankDetectedBanner>
             )}
 
+            {detectedBank === 'paypal' && (
+              <InfoBanner theme={theme}>
+                <span>🔒 {t.paypalPrivacyNotice}</span>
+              </InfoBanner>
+            )}
+
             {bankFilteredCount > 0 && (
               <InfoBanner theme={theme}>
                 <span>
-                  ℹ️ {(t.bankRowsSkipped || '{count} rows were investment trades and were skipped — import those from Import Investments instead.')
+                  ℹ️ {bankFilterMessage
                     .replace('{count}', bankFilteredCount)}
                 </span>
               </InfoBanner>

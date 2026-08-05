@@ -17,6 +17,7 @@ import { MediaQueryContext } from '../contexts/MediaQueryContext';
 import { useAuth } from '../hooks/useAuth';
 import { useServices } from '../contexts/ServiceContext';
 import { translateTag } from '../data/tagTranslations';
+import { countBucket, trackAnalyticsEvent } from '../services/analyticsService';
 
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import MapIcon from '@mui/icons-material/AccountTree';
@@ -887,6 +888,10 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
         }
       }
       setRows(r);
+      trackAnalyticsEvent('transactions-import-file-parsed', {
+        detection: bankFormat ? 'known-format' : 'automatic',
+        rows: countBucket(r.length),
+      });
 
       // Auto-detect date format
       if (dateColForFormat !== null && dateColForFormat !== undefined) {
@@ -897,6 +902,10 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
 
       setStep(1);
     } catch (err) {
+      const reason = err?.message === 'FILE_TOO_SHORT'
+        ? 'too-short'
+        : err?.message === 'UNSUPPORTED_FORMAT' ? 'unsupported' : 'parse-error';
+      trackAnalyticsEvent('transactions-import-file-failed', { reason });
       if (err.message === 'FILE_TOO_SHORT') {
         setParseError(t.errorFileTooShort || 'File must have at least a header row and one data row');
       } else if (err.message === 'UNSUPPORTED_FORMAT') {
@@ -1197,6 +1206,10 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
   // ─── Step 3: Import ───
 
   const handleImport = async () => {
+    trackAnalyticsEvent('transactions-import-submitted', {
+      kind: transactionType,
+      rows: countBucket(importableTx.length),
+    });
     setStep(3);
     setImporting(true);
     setImportProgress(0);
@@ -1323,6 +1336,12 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
       is_expense: tx.isOutflow,
     }));
     setImportResult({ success, failed, linkFailures, total, _savedTx: savedTxForUndo });
+    trackAnalyticsEvent('transactions-import-completed', {
+      kind: transactionType,
+      outcome: failed === 0 ? 'success' : success === 0 ? 'failed' : 'partial',
+      rows: countBucket(total),
+      shared_links: linkFailures > 0,
+    });
 
     if (success > 0) {
       saveLastImport(savedTxForUndo);

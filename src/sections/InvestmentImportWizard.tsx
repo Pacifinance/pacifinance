@@ -10,7 +10,7 @@ import {
   Overlay, ModalContainer, ModalHeader, ModalTitle, CloseButton, ModalBody, ModalFooter,
 } from '../components/multiInsert/SharedStyles';
 import { ModernActionButton } from '../styles/MyStyled';
-import { parseInvestmentCsv, ImportedTransaction, ImportedDividend } from '../utils/investmentImport/parsers';
+import { parseInvestmentCsv, ImportedTransaction, ImportedDividend, ImportPlatform } from '../utils/investmentImport/parsers';
 import {
   buildMonthlyPositionTimeline, positionKeyFor, AggregatedPosition,
   dedupeDividends, groupDividendsByPositionKey, aggregateDividends, reconcileImportPositions,
@@ -18,15 +18,17 @@ import {
 import { toImportedTransaction, buildHistoryEntries, buildTransactionEntries, flushBatches } from '../utils/investmentImport/entryBuilders';
 import { loadInvestmentSnapshot } from '../utils/investmentImport/loadSnapshot';
 import { closeStaleHolding } from '../utils/investmentImport/closeStaleHolding';
+import { getImportInstrumentSearchPlan } from '../utils/investmentImport/searchPlan';
 import { ClosedSection, ClosedRow, OrphanSection, OrphanRow, CloseHoldingButton } from '../components/investmentImport/ReconciliationStyles';
 import { formatInstrumentDetails } from '../utils/instrumentDisplay';
-import { KIND_TO_ASSET_KEY } from '../constants/investmentSchema';
+import { getAssetKeyForInstrument, KIND_TO_ASSET_KEY } from '../constants/investmentSchema';
 import ImportPlatformGuide from '../components/ImportPlatformGuide';
 import InstrumentSearchAutocomplete from './InstrumentSearchAutocomplete';
 import type {
   InvestmentInstrumentDto, InvestmentKind, InvestmentHoldingDto, InvestmentTransactionSummaryDto,
   InvestmentHoldingHistorySaveRequest, InvestmentDividendSaveRequest, InvestmentTransactionSaveRequest,
 } from '../types/api';
+import { countBucket, trackAnalyticsEvent } from '../services/analyticsService';
 
 const INVESTMENT_IMPORT_PLATFORMS = ['trading212', 'degiro', 'directa', 'ledger', 'binance', 'cryptocom'];
 const CRYPTO_IMPORT_PLATFORMS = new Set(['ledger', 'binance', 'cryptocom']);
@@ -270,6 +272,17 @@ const ManualResolveBlock = styled.div`
   margin-top: 0.35rem;
 `;
 
+const ChangeInstrumentButton = styled.button`
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: ${(p) => p.theme.buttonBackgroundColor};
+  font: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+`;
+
 const ConflictPanel = styled.div`
   display: flex;
   flex-direction: column;
@@ -476,7 +489,7 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
    * drops) always gets reconciled as one complete history, not file-by-file. */
   const [allTransactions, setAllTransactions] = useState<ImportedTransaction[]>([]);
   const [allDividends, setAllDividends] = useState<ImportedDividend[]>([]);
-  const [platform, setPlatform] = useState<string | null>(null);
+  const [platform, setPlatform] = useState<ImportPlatform | null>(null);
   const [manualSource, setManualSource] = useState('');
   const effectiveImportSource = platform === 'generic'
     ? (manualSource.trim() || 'generic')
@@ -554,7 +567,7 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
    * each shown row's quantity/transactions/history come from the complete
    * merged set, so the numbers themselves are always the true total.
    */
-  const recomputeFromMerged = async (transactions: ImportedTransaction[], dividends: ImportedDividend[], importPlatform: string) => {
+  const recomputeFromMerged = async (transactions: ImportedTransaction[], dividends: ImportedDividend[], importPlatform: ImportPlatform) => {
     const dividendsByKey = groupDividendsByPositionKey(dedupeDividends(dividends));
 
     setLoadingSavedTransactions(true);
@@ -680,7 +693,7 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
     let newTransactions: ImportedTransaction[] = [];
     let newDividends: ImportedDividend[] = [];
     let newSkipped = 0;
-    let lastPlatform: string | null = null;
+    let lastPlatform: ImportPlatform | null = null;
 
     for (const file of Array.from(fileList)) {
       const text = await file.text();
@@ -693,9 +706,18 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
     }
 
     if (!lastPlatform) {
+      trackAnalyticsEvent('investments-import-file-failed', { reason: 'unrecognized-format' });
       if (allTransactions.length === 0) setParseError(true);
       return;
     }
+
+    trackAnalyticsEvent('investments-import-file-parsed', {
+      platform: INVESTMENT_IMPORT_PLATFORMS.includes(lastPlatform) ? lastPlatform : 'generic',
+      transactions: countBucket(newTransactions.length),
+      files: countBucket(fileList.length),
+      has_dividends: newDividends.length > 0,
+      has_skipped_rows: newSkipped > 0,
+    });
 
     const mergedTransactions = allTransactions.concat(newTransactions);
     const mergedDividends = allDividends.concat(newDividends);
@@ -820,11 +842,11 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
         const findMatch = (results: InvestmentInstrumentDto[]) =>
           results.find((instr) => instr.symbol?.toUpperCase() === position.ticker?.toUpperCase()) ?? results[0];
 
-        const figiResults = await investmentService.searchInstruments({ query, source: 'figi', limit: 5 });
-        let match = findMatch(figiResults);
-        if (!match) {
-          const coingeckoResults = await investmentService.searchInstruments({ query, source: 'coingecko', limit: 5 });
-          match = findMatch(coingeckoResults);
+        let match: InvestmentInstrumentDto | undefined;
+        for (const searchStep of getImportInstrumentSearchPlan(importPlatform)) {
+          const results = await investmentService.searchInstruments({ query, ...searchStep, limit: 5 });
+          match = findMatch(results);
+          if (match) break;
         }
         setRows((prev) => prev.map((r, idx) => (idx === i
           ? { ...r, instrument: match ?? null, status: match ? 'resolved' : 'not-found', selected: r.selected && Boolean(match) }
@@ -849,6 +871,12 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
     setRows((prev) => prev.map((r, idx) => (idx === index
       ? { ...r, instrument, status: 'resolved', selected: true }
       : r)));
+  };
+
+  const handleChangeInstrument = (index: number) => {
+    setRows((prev) => prev.map((row, idx) => (idx === index
+      ? { ...row, instrument: null, status: 'not-found', selected: false, mergeStrategy: null }
+      : row)));
   };
 
   // Backfills the monthly invested-amount history from the file's own
@@ -916,6 +944,12 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
     if (importing) return;
     setImporting(true);
     const total = rows.filter((r) => r.selected && isRowReady(r)).length;
+    trackAnalyticsEvent('investments-import-submitted', {
+      platform: platform && INVESTMENT_IMPORT_PLATFORMS.includes(platform) ? platform : 'generic',
+      positions: countBucket(total),
+    });
+    let savedCount = 0;
+    let failedCount = 0;
     setImportPhase('holdings');
     setImportProgress({ current: 0, total });
     try {
@@ -926,7 +960,7 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
       for (let i = 0; i < rows.length; i++) {
         const row = rows[i];
         if (!row.selected || !isRowReady(row) || !row.instrument) continue;
-        const assetKey = KIND_TO_ASSET_KEY[row.instrument.kind];
+        const assetKey = getAssetKeyForInstrument(row.instrument);
         if (!assetKey) continue;
         try {
           const saved = await investmentService.saveHolding({
@@ -949,9 +983,11 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
           dividendEntries.push(...buildDividendEntries(row, saved.id));
           transactionEntries.push(...buildTransactionEntries(row.transactions, row.instrument.id, saved.id, effectiveImportSource, convertAmountToEUR));
           setRows((prev) => prev.map((r, idx) => (idx === i ? { ...r, status: 'saved' } : r)));
+          savedCount += 1;
         } catch {
           // See the function-level comment above — this should be rare.
           setRows((prev) => prev.map((r, idx) => (idx === i ? { ...r, status: 'error' } : r)));
+          failedCount += 1;
         }
         setImportProgress((prev) => (prev ? { ...prev, current: prev.current + 1 } : prev));
       }
@@ -970,6 +1006,12 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
       await flushBatches(investmentService, historyEntries, dividendEntries, transactionEntries);
 
       setImportDone(true);
+      trackAnalyticsEvent('investments-import-completed', {
+        platform: platform && INVESTMENT_IMPORT_PLATFORMS.includes(platform) ? platform : 'generic',
+        outcome: failedCount === 0 ? 'success' : savedCount === 0 ? 'failed' : 'partial',
+        positions: countBucket(total),
+        has_dividends: dividendEntries.length > 0,
+      });
       await onImported();
     } finally {
       setImporting(false);
@@ -1246,6 +1288,20 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
                 </span>
                 {row.instrument && formatInstrumentDetails(row.instrument) !== '' && (
                   <span>{formatInstrumentDetails(row.instrument)}</span>
+                )}
+                {row.instrument && (
+                  <span>
+                    {t.matchMarket.replace(
+                      '{market}',
+                      row.instrument.provider === 'coingecko'
+                        ? t.cryptoMarket
+                        : (row.instrument.exchange || row.instrument.provider),
+                    )}
+                    {' · '}
+                    <ChangeInstrumentButton theme={theme} type="button" onClick={() => handleChangeInstrument(index)}>
+                      {t.changeInstrument}
+                    </ChangeInstrumentButton>
+                  </span>
                 )}
                 {row.instrument && row.status === 'resolved' && existingByInstrumentId.has(row.instrument.id) && (
                   <ImpactNote theme={theme}>{describeExistingImpact(row, existingByInstrumentId.get(row.instrument.id)!)}</ImpactNote>

@@ -11,7 +11,7 @@
  *
  * @module constants/investmentSchema
  */
-import type { InvestmentAssetKey, InvestmentKind, InvestmentSearchSource } from '../types/api';
+import type { InvestmentAssetKey, InvestmentInstrumentDto, InvestmentKind, InvestmentSearchSource } from '../types/api';
 
 /** Asset keys that can be linked to a provider-verified instrument. */
 export const VERIFIABLE_ASSET_KEYS: readonly InvestmentAssetKey[] = [
@@ -44,6 +44,14 @@ export const KIND_TO_ASSET_KEY: Readonly<Record<InvestmentKind, InvestmentAssetK
   commodity: 'commodities',
   other: null,
 };
+
+/** Bitcoin is a crypto instrument with a dedicated dashboard bucket. */
+export function getAssetKeyForInstrument(
+  instrument: Pick<InvestmentInstrumentDto, 'kind' | 'symbol'>,
+): InvestmentAssetKey | null {
+  if (instrument.kind === 'crypto' && instrument.symbol.trim().toUpperCase() === 'BTC') return 'bitcoin';
+  return KIND_TO_ASSET_KEY[instrument.kind];
+}
 
 export const KIND_TO_SEARCH_SOURCE: Readonly<Record<InvestmentKind, InvestmentSearchSource | null>> = {
   stock: 'figi',

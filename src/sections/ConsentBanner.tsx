@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { slideIn } from '../styles/MyStyled';
 
 import { LanguageContext } from '../contexts/LanguageContext';
+import { initializeAnalytics, trackAnalyticsEvent } from '../services/analyticsService';
 
 function ConsentBanner() {
   const [showBanner, setShowBanner] = useState(false);
@@ -58,10 +59,10 @@ function ConsentBanner() {
     localStorage.setItem('cookieConsent', JSON.stringify(consent));
     setShowBanner(false);
     
-    // Apply analytics based on preferences
     if (prefs.analytics) {
-      // Enable analytics (already loaded via Umami in index.html)
-      window.umami?.track('cookies_accepted_analytics');
+      void initializeAnalytics().then((ready) => {
+        if (ready) trackAnalyticsEvent('consent-analytics-enabled');
+      });
     }
   };
 

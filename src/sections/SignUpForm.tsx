@@ -10,6 +10,7 @@ import { UserContext } from "../contexts/UserContext";
 import RecoveryCodeDisplay from "../components/RecoveryCodeDisplay";
 import { normalizeTurnstileSiteKey } from "../utils/turnstileConfig";
 import { loadTurnstileApi } from "../utils/turnstileLoader";
+import { trackAnalyticsEvent } from "../services/analyticsService";
 
 //for the modal and styled components
 import {
@@ -227,9 +228,11 @@ export default function SignUpForm() {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
+        trackAnalyticsEvent("auth-sign-up-submitted", { method: "password" });
 
         // Check if Turnstile verification is complete
         if (!turnstileToken) {
+            trackAnalyticsEvent("auth-sign-up-blocked", { reason: "security-pending" });
             showError(
                 `
                 <div>
@@ -250,12 +253,14 @@ export default function SignUpForm() {
         try {
             const response = await userService.register(password, confirmPassword, turnstileToken);
             if (response.status === 200) {
+                trackAnalyticsEvent("auth-sign-up-succeeded", { method: "password" });
                 generated_user_id = response.data.user_id;
                 generated_recovery_base32 = response.data.recovery_code_base32 || "";
                 generated_recovery_words = response.data.recovery_code_words || "";
                 setShowSuccessModal(true);
                 //window.umami.trackEvent('SignUp');
             } else {
+                trackAnalyticsEvent("auth-sign-up-failed", { reason: "rejected" });
                 showError(
                     `
                 <div>
@@ -268,6 +273,7 @@ export default function SignUpForm() {
                 );
             }
         } catch (_error) {
+            trackAnalyticsEvent("auth-sign-up-failed", { reason: "request-error" });
             // console.error(error);
             setPassword("");
             setConfirmPassword("");

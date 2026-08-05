@@ -3,6 +3,9 @@ import { createRoot } from 'react-dom/client'
 import { BrowserRouter as Router } from 'react-router-dom'
 import './index.css'
 import AppRouter from './AppRouter';
+import { initializeAnalytics } from './services/analyticsService';
+
+void initializeAnalytics();
 
 // Registrazione Service Worker per performance mobile
 if ('serviceWorker' in navigator) {

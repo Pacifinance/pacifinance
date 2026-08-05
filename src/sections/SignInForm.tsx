@@ -6,6 +6,7 @@ import { useToast } from "../contexts/ToastContext";
 import { useServices } from "../contexts/ServiceContext";
 import { useLocalizedNavigate } from "../hooks/useLocalizedNavigate";
 import { parseRecoveryDeepLink } from "../utils/recoveryCard";
+import { trackAnalyticsEvent } from "../services/analyticsService";
 import RecoveryForm from "./RecoveryForm";
 import {
   MuiCustomDialog,
@@ -78,19 +79,23 @@ export default function SignInForm() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    trackAnalyticsEvent("auth-sign-in-submitted", { method: "password" });
     try {
       handleSetIsAuthenticated(false); //to be sure that the user will se his data
       //navigate('/dashboard'); //must be commented for production
       //username could be user_id o username
       const response = await userService.login(username, password);
       if (response.status === 200) {
+        trackAnalyticsEvent("auth-sign-in-succeeded", { method: "password" });
         handleSetIsAuthenticated(true); // Set the user's authentication to true
         navigate("/dashboard"); //direct redirect
         //window.umami.trackEvent('signIn', 'SignIn');
       } else {
+        trackAnalyticsEvent("auth-sign-in-failed", { reason: "rejected" });
         showError(translations.header.login.errorPopup.message, 4000);
       }
     } catch (error) {
+      trackAnalyticsEvent("auth-sign-in-failed", { reason: "request-error" });
       console.error("Login error:", error);
       showError(translations.header.login.errorPopup.message, 4000);
     }

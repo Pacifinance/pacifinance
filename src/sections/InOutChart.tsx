@@ -119,7 +119,7 @@ const Insight = styled.div<{$tone: 'positive' | 'negative' | 'neutral'}>`
   svg { width: 16px; flex: 0 0 auto; }
 `;
 const TooltipCard = styled.div`
-  min-width: 180px; border-radius: 10px; padding: .65rem; color: #172033; background: rgba(255,255,255,.97); box-shadow: 0 8px 28px rgba(0,0,0,.18);
+  min-width: 180px; border-radius: 10px; padding: .65rem; color: ${(p) => p.theme.textColor}; background: ${(p) => p.theme.mode === 'dark' ? 'rgba(24,30,38,.97)' : 'rgba(255,255,255,.97)'}; border: 1px solid ${(p) => p.theme.mode === 'dark' ? 'rgba(255,255,255,.12)' : 'rgba(15,23,42,.1)'}; box-shadow: 0 8px 28px rgba(0,0,0,.22);
   h4 { margin: 0 0 .4rem; }
   div { display: flex; justify-content: space-between; gap: 1rem; font-size: .74rem; margin-top: .25rem; }
 `;
@@ -256,13 +256,14 @@ function InOutChart({theme, userData, isHidden}: InOutChartProps) {
   const tooltip = ({active, payload}: {active?: boolean; payload?: Array<{payload: IncomeOutflowChartRow}>}) => {
     const row = payload?.[0]?.payload;
     if (!active || !row) return null;
-    return <TooltipCard><h4>{monthLabel(row.name)}</h4><div><span>{t.incomes}</span><strong>{money(row.incomes)}</strong></div><div><span>{t.outflows}</span><strong>{money(row.outflows)}</strong></div><div><span>{t.net}</span><strong>{money(row.net)}</strong></div><div><span>{t.savingsRate}</span><strong>{percent(row.savingsRate)}</strong></div></TooltipCard>;
+    return <TooltipCard theme={theme}><h4>{monthLabel(row.name)}</h4><div style={{color: assetColors.income}}><span>{t.incomes}</span><strong>{money(row.incomes)}</strong></div><div style={{color: assetColors.expense}}><span>{t.outflows}</span><strong>{money(row.outflows)}</strong></div><div style={{color: '#06b6d4'}}><span>{t.net}</span><strong>{money(row.net)}</strong></div><div style={{color: '#a78bfa'}}><span>{t.savingsRate}</span><strong>{percent(row.savingsRate)}</strong></div></TooltipCard>;
   };
 
   const commonChart = {
     margin: {top: 12, right: isMobile ? 2 : 18, left: isMobile ? -20 : 5, bottom: 12},
-    onClick: (state: {activePayload?: Array<{payload: IncomeOutflowChartRow}>}) => {
-      const row = state?.activePayload?.[0]?.payload;
+    onClick: (state: {activePayload?: Array<{payload: IncomeOutflowChartRow}>; activeLabel?: string}) => {
+      const sourceRows = compare && view === 'net' ? comparisonRows : rows;
+      const row = state?.activePayload?.[0]?.payload || sourceRows.find((item) => item.name === state?.activeLabel);
       if (row) setSelectedRow(row);
     },
   };
@@ -270,7 +271,7 @@ function InOutChart({theme, userData, isHidden}: InOutChartProps) {
     <CartesianGrid vertical={false} strokeDasharray="3 5" stroke={theme.mode === 'dark' ? 'rgba(255,255,255,.08)' : 'rgba(15,23,42,.08)'} />
     <XAxis dataKey="name" tickFormatter={monthLabel} minTickGap={26} tick={{fill: theme.textColor, fontSize: isMobile ? 9 : 11}} axisLine={false} tickLine={false} />
     <YAxis tickFormatter={axisMoney} width={isMobile ? 48 : 66} tick={{fill: theme.textColor, fontSize: isMobile ? 9 : 11}} axisLine={false} tickLine={false} />
-    {!isMobile && <Tooltip content={tooltip} cursor={{fill: theme.mode === 'dark' ? 'rgba(255,255,255,.04)' : 'rgba(15,23,42,.04)'}} />}
+    <Tooltip content={tooltip} trigger={isMobile ? 'click' : 'hover'} cursor={{fill: theme.mode === 'dark' ? 'rgba(255,255,255,.04)' : 'rgba(15,23,42,.04)'}} />
   </>;
 
   const renderChart = () => {
@@ -278,7 +279,7 @@ function InOutChart({theme, userData, isHidden}: InOutChartProps) {
       <CartesianGrid horizontal={false} strokeDasharray="3 5" stroke={theme.mode === 'dark' ? 'rgba(255,255,255,.08)' : 'rgba(15,23,42,.08)'} />
       <XAxis type="number" tickFormatter={(value) => categoryUnit === 'percent' ? `${Math.round(value)}%` : axisMoney(value)} tick={{fill: theme.textColor, fontSize: 10}} axisLine={false} tickLine={false} />
       <YAxis type="category" dataKey="name" width={isMobile ? 88 : 130} tick={{fill: theme.textColor, fontSize: isMobile ? 9 : 11}} axisLine={false} tickLine={false} />
-      <Tooltip formatter={(value: number) => categoryUnit === 'percent' ? `${value.toFixed(1)}%` : money(value)} contentStyle={{background: '#fff', color: '#172033', borderRadius: 8, fontSize: 12}} />
+      <Tooltip trigger={isMobile ? 'click' : 'hover'} formatter={(value: number) => categoryUnit === 'percent' ? `${value.toFixed(1)}%` : money(value)} contentStyle={{background: theme.mode === 'dark' ? '#181e26' : '#fff', color: theme.textColor, borderColor: theme.mode === 'dark' ? 'rgba(255,255,255,.12)' : 'rgba(15,23,42,.1)', borderRadius: 8, fontSize: 12}} />
       <Bar dataKey="chartValue" radius={[0, 5, 5, 0]}>{categoryRows.map((row) => <Cell key={row.key} fill={row.key === '__other__' ? theme.textColor : getCategoryColor(row.key, language)} />)}</Bar>
     </BarChart></ResponsiveContainer>;
     if (view === 'net') return <ResponsiveContainer width="100%" height="100%"><BarChart data={compare ? comparisonRows : rows} {...commonChart}>{axes}<ReferenceLine y={0} stroke={theme.textColor} strokeOpacity={.5}/>{compare && <Bar dataKey="comparisonNet" fill={theme.textColor} fillOpacity={.2} radius={[4,4,4,4]}/>}<Bar dataKey="net" radius={[4,4,4,4]}>{rows.map((row) => <Cell key={row.name} fill={row.net >= 0 ? assetColors.income : assetColors.expense}/>)}</Bar></BarChart></ResponsiveContainer>;
@@ -313,7 +314,7 @@ function InOutChart({theme, userData, isHidden}: InOutChartProps) {
       <Insight $tone={kpis.deficitMonths > 0 ? 'negative' : 'positive'}><WalletCards/><span>{t.deficitInsight.replace('{count}', String(kpis.deficitMonths)).replace('{total}', String(rows.length))}</span></Insight>
       <Insight $tone="neutral"><TrendingUp/><span>{t.rateInsight.replace('{value}', percent(kpis.savingsRate))}</span></Insight>
     </InsightGrid></div>
-    {isMobile && selectedRow && <MobileSheet theme={theme} role="dialog" aria-label={t.monthDetails}><header><strong>{monthLabel(selectedRow.name)}</strong><button type="button" onClick={() => setSelectedRow(null)} aria-label={t.closeDetails}><X/></button></header><div><span>{t.incomes}</span><strong>{money(selectedRow.incomes)}</strong></div><div><span>{t.outflows}</span><strong>{money(selectedRow.outflows)}</strong></div><div><span>{t.net}</span><strong>{money(selectedRow.net)}</strong></div><div><span>{t.savingsRate}</span><strong>{percent(selectedRow.savingsRate)}</strong></div></MobileSheet>}
+    {isMobile && selectedRow && <MobileSheet theme={theme} role="dialog" aria-label={t.monthDetails}><header><strong>{monthLabel(selectedRow.name)}</strong><button type="button" onClick={() => setSelectedRow(null)} aria-label={t.closeDetails}><X/></button></header><div style={{color: assetColors.income}}><span>{t.incomes}</span><strong>{money(selectedRow.incomes)}</strong></div><div style={{color: assetColors.expense}}><span>{t.outflows}</span><strong>{money(selectedRow.outflows)}</strong></div><div style={{color: '#06b6d4'}}><span>{t.net}</span><strong>{money(selectedRow.net)}</strong></div><div style={{color: '#a78bfa'}}><span>{t.savingsRate}</span><strong>{percent(selectedRow.savingsRate)}</strong></div></MobileSheet>}
     {showComparisonModal && <MonthComparisonModal theme={theme} userData={userData} isHidden={isHidden} initialFlow={flow} onClose={() => setShowComparisonModal(false)}/>}
   </Explorer>;
 }

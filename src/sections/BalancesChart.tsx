@@ -352,11 +352,12 @@ function BalancesChart({theme, userData, isHidden}: BalancesChartProps) {
     const row = payload[0].payload;
     return <TooltipCard theme={theme}>
       <h4>{monthLabel(String(label))}</h4>
-      <TooltipRow><span>{t.totalAssets}</span><strong>{displayMoney(Number(row.rawTotal ?? row.total ?? 0))}</strong></TooltipRow>
-      {view === 'changes' && <TooltipRow><span>{t.monthlyChange}</span><strong>{displayMoney(Number(row.total || 0))}</strong></TooltipRow>}
+      <TooltipRow><span style={{color: theme.buttonBackgroundColor}}>{t.totalAssets}</span><strong style={{color: theme.buttonBackgroundColor}}>{displayMoney(Number(row.rawTotal ?? row.total ?? 0))}</strong></TooltipRow>
+      {view === 'changes' && <TooltipRow><span style={{color: Number(row.total || 0) >= 0 ? '#10b981' : '#ef4444'}}>{t.monthlyChange}</span><strong style={{color: Number(row.total || 0) >= 0 ? '#10b981' : '#ef4444'}}>{displayMoney(Number(row.total || 0))}</strong></TooltipRow>}
       {view !== 'trend' && visibleAssets.map((key) => {
         const raw = Number(row[`raw_${key}`] ?? row[key] ?? 0);
-        return <TooltipRow key={key}><span style={{color: getAssetColor(key, theme.mode)}}>{translations.assets[key]}</span><strong>{unit === 'percent' && view === 'composition' ? `${Number(row[key] || 0).toFixed(1)}%` : displayMoney(raw)}</strong></TooltipRow>;
+        const assetColor = getAssetColor(key, theme.mode);
+        return <TooltipRow key={key}><span style={{color: assetColor}}>{translations.assets[key]}</span><strong style={{color: assetColor}}>{unit === 'percent' && view === 'composition' ? `${Number(row[key] || 0).toFixed(1)}%` : displayMoney(raw)}</strong></TooltipRow>;
       })}
     </TooltipCard>;
   };
@@ -364,8 +365,8 @@ function BalancesChart({theme, userData, isHidden}: BalancesChartProps) {
   const commonChart = {
     data: chartRows,
     margin: {top: 12, right: isMobile ? 4 : 18, bottom: isMobile ? 20 : 8, left: isMobile ? -18 : 4},
-    onClick: (state: {activePayload?: Array<{payload: BalanceChartRow}>}) => {
-      const row = state?.activePayload?.[0]?.payload;
+    onClick: (state: {activePayload?: Array<{payload: BalanceChartRow}>; activeLabel?: string}) => {
+      const row = state?.activePayload?.[0]?.payload || chartRows.find((item) => item.name === state?.activeLabel);
       if (row) setSelectedMonth(row);
     },
   };
@@ -373,7 +374,7 @@ function BalancesChart({theme, userData, isHidden}: BalancesChartProps) {
     <CartesianGrid vertical={false} strokeDasharray="3 5" stroke={theme.mode === 'dark' ? 'rgba(255,255,255,.08)' : 'rgba(15,23,42,.08)'} />
     <XAxis dataKey="name" tickFormatter={monthLabel} minTickGap={28} tick={{fill: theme.textColor, fontSize: isMobile ? 9 : 11}} axisLine={false} tickLine={false} />
     <YAxis tickFormatter={axisValue} tick={{fill: theme.textColor, fontSize: isMobile ? 9 : 11}} axisLine={false} tickLine={false} width={isMobile ? 48 : 64} domain={view === 'composition' && unit === 'percent' ? [0, 100] : ['auto', 'auto']} />
-    {!isMobile && <Tooltip content={tooltip} cursor={{stroke: theme.buttonBackgroundColor, strokeOpacity: 0.45}} />}
+    <Tooltip content={tooltip} trigger={isMobile ? 'click' : 'hover'} cursor={{stroke: theme.buttonBackgroundColor, strokeOpacity: 0.45}} />
   </>;
 
   const renderChart = () => {
@@ -458,7 +459,7 @@ function BalancesChart({theme, userData, isHidden}: BalancesChartProps) {
 
     {view === 'table' ? <DataTable theme={theme}><table><thead><tr><th>{translations.general.month}</th><th>{t.totalAssets}</th>{visibleAssets.map((key) => <th key={key}>{translations.assets[key]}</th>)}</tr></thead><tbody>{[...rows].reverse().map((row) => <tr key={row.name}><td>{monthLabel(row.name)}</td><td><strong>{displayMoney(row.total)}</strong></td>{visibleAssets.map((key) => <td key={key}>{displayMoney(Number(row[key] || 0))}</td>)}</tr>)}</tbody></table></DataTable> : <ChartStage><ResponsiveContainer width="100%" height="100%">{renderChart()}</ResponsiveContainer></ChartStage>}
 
-    {isMobile && selectedMonth && <MobileSheet theme={theme} role="dialog" aria-label={t.monthDetails}><SheetHeader theme={theme}><strong>{monthLabel(selectedMonth.name)}</strong><button type="button" onClick={() => setSelectedMonth(null)} aria-label={t.closeDetails}>×</button></SheetHeader><TooltipRow><span>{t.totalAssets}</span><strong>{displayMoney(Number(selectedMonth.rawTotal ?? selectedMonth.total))}</strong></TooltipRow>{visibleAssets.map((key) => <TooltipRow key={key}><span>{translations.assets[key]}</span><strong>{displayMoney(Number(selectedMonth[`raw_${key}`] ?? selectedMonth[key] ?? 0))}</strong></TooltipRow>)}</MobileSheet>}
+    {isMobile && selectedMonth && <MobileSheet theme={theme} role="dialog" aria-label={t.monthDetails}><SheetHeader theme={theme}><strong>{monthLabel(selectedMonth.name)}</strong><button type="button" onClick={() => setSelectedMonth(null)} aria-label={t.closeDetails}>×</button></SheetHeader><TooltipRow><span style={{color: theme.buttonBackgroundColor}}>{t.totalAssets}</span><strong style={{color: theme.buttonBackgroundColor}}>{displayMoney(Number(selectedMonth.rawTotal ?? selectedMonth.total))}</strong></TooltipRow>{visibleAssets.map((key) => { const assetColor = getAssetColor(key, theme.mode); return <TooltipRow key={key}><span style={{color: assetColor}}>{translations.assets[key]}</span><strong style={{color: assetColor}}>{displayMoney(Number(selectedMonth[`raw_${key}`] ?? selectedMonth[key] ?? 0))}</strong></TooltipRow>; })}</MobileSheet>}
 
     <div><strong style={{display: 'block', fontSize: '0.78rem', marginBottom: '0.5rem'}}>{t.insightsTitle}</strong><InsightGrid>{insights.map((insight, index) => <Insight key={`${insight.key}-${index}`} $kind={insight.kind}>{insight.kind === 'positive' ? <TrendingUp/> : insight.kind === 'negative' ? <TrendingDown/> : <WalletCards/>}<span>{insightText(insight)}</span></Insight>)}</InsightGrid></div>
   </Explorer>;

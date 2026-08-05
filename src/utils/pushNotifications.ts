@@ -1,5 +1,7 @@
 import type {BrowserPushSubscription} from '../services/notificationService';
 
+const PUSH_PUBLIC_KEY_STORAGE = 'pacifinance_push_public_key';
+
 const decodeVapidKey = (value: string): Uint8Array => {
   const padding = '='.repeat((4 - value.length % 4) % 4);
   const decoded = atob((value + padding).replace(/-/g, '+').replace(/_/g, '/'));
@@ -22,14 +24,27 @@ export async function enableWebPush(publicKey: string): Promise<PushSubscription
   const permission = await Notification.requestPermission();
   if (permission !== 'granted') throw new Error('Notification permission denied');
   const registration = await navigator.serviceWorker.ready;
-  // Always start from a clean slate: reusing an existing subscription blindly is wrong
-  // whenever it was created with a different VAPID key (key rotated, or a leftover
-  // subscription from testing before VAPID_PUBLIC_KEY was configured) — the browser
-  // rejects subscribe() with a generic error in that case, which is hard to tell apart
-  // from a real failure downstream.
   const existing = await registration.pushManager.getSubscription();
-  if (existing) await existing.unsubscribe();
-  return registration.pushManager.subscribe({userVisibleOnly: true, applicationServerKey: decodeVapidKey(publicKey)});
+  let previousPublicKey: string | null = null;
+  try { previousPublicKey = localStorage.getItem(PUSH_PUBLIC_KEY_STORAGE); } catch { /* storage can be disabled */ }
+
+  // A valid browser subscription is reusable and must be sent to the API again:
+  // deleting it on every click can leave permission granted but no subscription
+  // when subscribe() subsequently fails. Only replace it when we know the VAPID
+  // key changed; older installations have no stored key, so preserving their
+  // working subscription is the safe migration path.
+  if (existing && (!previousPublicKey || previousPublicKey === publicKey)) return existing;
+  if (existing) {
+    const removed = await existing.unsubscribe();
+    if (!removed) throw new Error('Existing push subscription could not be replaced');
+  }
+
+  const subscription = await registration.pushManager.subscribe({
+    userVisibleOnly: true,
+    applicationServerKey: decodeVapidKey(publicKey.trim()),
+  });
+  try { localStorage.setItem(PUSH_PUBLIC_KEY_STORAGE, publicKey); } catch { /* storage can be disabled */ }
+  return subscription;
 }
 
 export async function disableWebPush(): Promise<string | null> {
@@ -39,5 +54,6 @@ export async function disableWebPush(): Promise<string | null> {
   if (!subscription) return null;
   const endpoint = subscription.endpoint;
   await subscription.unsubscribe();
+  try { localStorage.removeItem(PUSH_PUBLIC_KEY_STORAGE); } catch { /* storage can be disabled */ }
   return endpoint;
 }

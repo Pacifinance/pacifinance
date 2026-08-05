@@ -139,7 +139,7 @@ export { DATE_FORMATS };
  * @returns {string}
  */
 const stripTimeComponent = (s) => {
-  const isoMatch = s.match(/^(\d{4}-\d{1,2}-\d{1,2})T/);
+  const isoMatch = s.match(/^(\d{4}-\d{1,2}-\d{1,2})(?:T|\s+\d{1,2}:\d{2})/);
   return isoMatch ? isoMatch[1] : s;
 };
 
@@ -154,7 +154,10 @@ const stripTimeComponent = (s) => {
  * @returns {string|null} "HH:MM" in local time, or null
  */
 const extractLocalTime = (raw) => {
-  if (!raw || !/T\d{2}:\d{2}/.test(raw)) return null;
+  if (!raw) return null;
+  const localTimestamp = String(raw).match(/^\d{4}-\d{1,2}-\d{1,2}\s+(\d{1,2}):(\d{2})/);
+  if (localTimestamp) return `${localTimestamp[1].padStart(2, '0')}:${localTimestamp[2]}`;
+  if (!/T\d{2}:\d{2}/.test(raw)) return null;
   const d = new Date(raw);
   if (isNaN(d.getTime())) return null;
   return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;

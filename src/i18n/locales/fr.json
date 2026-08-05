@@ -2,6 +2,12 @@
     "importGuide": {
         "toggleLabel": "Où trouver ce fichier ?",
         "platforms": {
+            "genericBank": { "label": "Toute autre banque ou service", "steps": "Cherchez Transactions, Activité ou Relevés, puis choisissez Exporter. Préférez CSV ; Excel fonctionne aussi. Incluez au minimum la date, la description et le montant, choisissez la période et, si possible, uniquement les opérations terminées. À l’étape suivante, vous pourrez choisir manuellement l’en-tête et les colonnes." },
+            "genericDigital": { "label": "Autres portefeuilles et services numériques", "steps": "Dans les paramètres ou l’historique, cherchez Activité, Transactions, Relevés, Rapports ou Exporter les données. Téléchargez un CSV ou Excel avec date, description et montant ; évitez les PDF et reçus individuels. Exportez séparément les différentes devises si possible." },
+            "paypal": { "label": "PayPal", "steps": "Sur le site : Activité → icône Télécharger → Personnalisé → créez un rapport d’activité → CSV. Choisissez la période et incluez au minimum Date, Nom, Statut, Devise et Net ; privilégiez les opérations terminées." },
+            "wise": { "label": "Wise", "steps": "Profil → Relevés et rapports → Relevés → Créer un relevé → choisissez soldes, période et CSV. Sinon sur le web : Transactions → Tout voir → Filtrer et télécharger → CSV. Wise limite chaque fichier à 365 jours." },
+            "traderepublic": { "label": "Trade Republic", "steps": "Ouvrez Cash → Transactions et téléchargez l’export ou le relevé de la période voulue. Utilisez les mouvements Cash pour revenus et dépenses ; importez séparément les opérations sur titres depuis Investissements." },
+            "fineco": { "label": "Fineco", "steps": "Site Fineco → Compte et cartes → Liste des opérations → choisissez période et filtres → exportez vers Excel. Excluez ici les opérations de trading, importables séparément comme investissements." },
             "trading212": {
                 "label": "Trading 212",
                 "steps": "Historique → icône d'exportation (en haut à droite) → choisissez la période → CSV."

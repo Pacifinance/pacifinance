@@ -7,7 +7,23 @@ describe('detectBankFormat', () => {
     const result = detectBankFormat(header);
     expect(result).toEqual({
       bank: 'revolut',
-      mapping: { dateCol: 3, amountCol: 5, notesCol: 4, categoryCol: 0 },
+      mapping: { dateCol: 3, amountCol: 5, notesCol: 4, categoryCol: 0, timeCol: 3 },
+    });
+  });
+
+  it('detects the localized Italian Revolut transaction export', () => {
+    const header = ['Tipo', 'Prodotto', 'Data di inizio', 'Data di completamento', 'Descrizione', 'Importo', 'Costo', 'Valuta', 'State', 'Saldo'];
+    expect(detectBankFormat(header)).toEqual({
+      bank: 'revolut',
+      mapping: { dateCol: 3, amountCol: 5, notesCol: 4, categoryCol: 0, timeCol: 3 },
+    });
+  });
+
+  it('recognizes Revolut columns by shared semantic aliases rather than a language branch', () => {
+    const germanHeader = ['Typ', 'Produkt', 'Startdatum', 'Abschlussdatum', 'Beschreibung', 'Betrag', 'Gebühr', 'Währung', 'Status', 'Saldo'];
+    expect(detectBankFormat(germanHeader)).toMatchObject({
+      bank: 'revolut',
+      mapping: {dateCol: 3, amountCol: 5, notesCol: 4, categoryCol: 0},
     });
   });
 

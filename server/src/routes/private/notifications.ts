@@ -6,10 +6,12 @@ const router = express.Router()
 const isBoolean = (value: unknown): value is boolean => typeof value === "boolean"
 
 router.get("/public-key", (_req, res) => {
+    res.set("Cache-Control", "no-store")
     res.status(200).json({publicKey: process.env.VAPID_PUBLIC_KEY || null})
 })
 
 router.get("/preferences", async (req, res) => {
+    res.set("Cache-Control", "no-store")
     const preferences = await db.notifications.getPreferences(req.userId as string)
     if (!preferences) return res.status(500).send()
     res.status(200).json(preferences)

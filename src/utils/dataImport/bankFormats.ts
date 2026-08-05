@@ -55,6 +55,28 @@ const hasAll = (header: string[], ...names: string[]): boolean =>
   names.every((name) => findColumn(header, name) !== -1);
 
 /**
+ * Shared vocabulary for semantically equivalent export columns. Detectors use
+ * these concepts instead of branching on a bank export's UI language. Adding
+ * a newly observed translation therefore extends every compatible detector.
+ */
+export const BANK_COLUMN_ALIASES = {
+  type: ['Type', 'Tipo', 'Typ', 'Art'],
+  product: ['Product', 'Prodotto', 'Produkt', 'Produit', 'Producto', 'Produto'],
+  startedDate: ['Started Date', 'Data di inizio', 'Startdatum', 'Date de début', 'Fecha de inicio', 'Data de início'],
+  completedDate: ['Completed Date', 'Data di completamento', 'Abschlussdatum', 'Date de finalisation', 'Fecha de finalización', 'Data de conclusão'],
+  description: ['Description', 'Descrizione', 'Beschreibung', 'Descripción', 'Descrição'],
+  amount: ['Amount', 'Importo', 'Betrag', 'Montant', 'Importe', 'Valor'],
+} as const;
+
+type BankColumnConcept = keyof typeof BANK_COLUMN_ALIASES;
+
+const findConcept = (header: string[], concept: BankColumnConcept): number =>
+  findColumn(header, ...BANK_COLUMN_ALIASES[concept]);
+
+const hasConcepts = (header: string[], ...concepts: BankColumnConcept[]): boolean =>
+  concepts.every((concept) => findConcept(header, concept) !== -1);
+
+/**
  * Detects a known bank export from its header row and returns a ready-to-use
  * column mapping. Returns null when unrecognized (caller falls back to the
  * generic autoDetectColumns heuristic).
@@ -62,14 +84,16 @@ const hasAll = (header: string[], ...names: string[]): boolean =>
 export function detectBankFormat(header: string[]): DetectedBankFormat | null {
   // Revolut (current account) — verified header:
   // "Type,Product,Started Date,Completed Date,Description,Amount,Fee,Currency,State,Balance"
-  if (hasAll(header, 'Type', 'Started Date', 'Completed Date', 'Description', 'Amount')) {
+  if (hasConcepts(header, 'type', 'product', 'startedDate', 'completedDate', 'description', 'amount')) {
+    const completedDateCol = findConcept(header, 'completedDate');
     return {
       bank: 'revolut',
       mapping: {
-        dateCol: findColumn(header, 'Completed Date', 'Started Date'),
-        amountCol: findColumn(header, 'Amount'),
-        notesCol: findColumn(header, 'Description'),
-        categoryCol: findColumn(header, 'Type'),
+        dateCol: completedDateCol,
+        amountCol: findConcept(header, 'amount'),
+        notesCol: findConcept(header, 'description'),
+        categoryCol: findConcept(header, 'type'),
+        timeCol: completedDateCol,
       },
     };
   }

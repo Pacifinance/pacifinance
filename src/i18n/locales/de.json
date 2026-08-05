@@ -2,6 +2,12 @@
     "importGuide": {
         "toggleLabel": "Wo finde ich diese Datei?",
         "platforms": {
+            "genericBank": { "label": "Jede andere Bank oder jeder andere Dienst", "steps": "Suche nach Transaktionen, Umsätzen oder Kontoauszügen und wähle Exportieren. CSV ist vorzuziehen; Excel funktioniert ebenfalls. Füge mindestens Datum, Beschreibung und Betrag ein, wähle den Zeitraum und möglichst nur abgeschlossene Umsätze. Im nächsten Schritt kannst du Kopfzeile und Spalten manuell festlegen." },
+            "genericDigital": { "label": "Andere Wallets und digitale Dienste", "steps": "Suche in Einstellungen oder Verlauf nach Aktivität, Transaktionen, Kontoauszügen, Berichten oder Datenexport. Lade CSV oder Excel mit Datum, Beschreibung und Betrag herunter; vermeide PDF und Einzelbelege. Exportiere mehrere Währungen möglichst getrennt." },
+            "paypal": { "label": "PayPal", "steps": "Auf der Website: Aktivitäten → Download-Symbol → Benutzerdefiniert → Aktivitätsbericht erstellen → CSV. Wähle Zeitraum und mindestens Datum, Name, Status, Währung und Netto; bevorzuge abgeschlossene Transaktionen." },
+            "wise": { "label": "Wise", "steps": "Profil → Kontoauszüge und Berichte → Kontoauszüge → Kontoauszug erstellen → Salden, Zeitraum und CSV wählen. Alternativ im Web: Transaktionen → Alle anzeigen → Filtern und herunterladen → CSV. Wise erlaubt höchstens 365 Tage pro Datei." },
+            "traderepublic": { "label": "Trade Republic", "steps": "Öffne Cash → Transaktionen und lade den Export oder Kontoauszug für den gewünschten Zeitraum herunter. Nutze Cash-Bewegungen für Einnahmen und Ausgaben; Wertpapiergeschäfte werden separat unter Investments importiert." },
+            "fineco": { "label": "Fineco", "steps": "Fineco-Website → Konto und Karten → Umsatzliste → Zeitraum und Filter wählen → nach Excel exportieren. Schließe Trading-Bewegungen hier aus; sie können separat als Investments importiert werden." },
             "trading212": {
                 "label": "Trading 212",
                 "steps": "Verlauf → Export-Symbol (oben rechts) → Zeitraum wählen → CSV."

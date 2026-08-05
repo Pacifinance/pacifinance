@@ -1271,7 +1271,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
               {t.uploadDescription || 'Upload a CSV or Excel file with your financial data. We support any format — you\'ll map the columns in the next step.'}
             </p>
 
-            <ImportPlatformGuide theme={theme} platformIds={['revolut', 'n26']} />
+            <ImportPlatformGuide theme={theme} platformIds={['genericBank', 'genericDigital', 'paypal', 'wise', 'revolut', 'n26', 'traderepublic', 'fineco']} />
 
             <DropZone
               theme={theme}

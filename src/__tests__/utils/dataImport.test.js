@@ -196,6 +196,11 @@ describe('Date Parsing', () => {
       expect(detectDateFormat(samples)).toBe('YYYY-MM-DD');
     });
 
+    it('should detect YYYY-MM-DD from Revolut timestamps separated by a space', () => {
+      const samples = ['2026-07-01 10:21:15', '2026-07-17 11:38:58', '2026-07-20 05:56:49'];
+      expect(detectDateFormat(samples)).toBe('YYYY-MM-DD');
+    });
+
     it('should detect DD.MM.YYYY from dotted dates', () => {
       const samples = ['15.03.2024', '01.12.2023', '28.02.2024', '05.06.2024'];
       expect(detectDateFormat(samples)).toBe('DD.MM.YYYY');
@@ -745,6 +750,10 @@ describe('isTransferType', () => {
 });
 
 describe('extractLocalTime', () => {
+  it('preserves the local time from a Revolut space-separated timestamp', () => {
+    expect(extractLocalTime('2026-07-20 05:56:49')).toBe('05:56');
+  });
+
   const expectedLocal = (iso) => {
     const d = new Date(iso);
     return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;

@@ -2,6 +2,12 @@
     "importGuide": {
         "toggleLabel": "Where do I find this file?",
         "platforms": {
+            "genericBank": { "label": "Any other bank or service", "steps": "Look for Transactions, Activity or Statements, then choose Export. Prefer CSV; Excel also works. Include at least date, description and amount, select the required period and, where possible, completed transactions only. On the next screen you can manually choose the header row and columns." },
+            "genericDigital": { "label": "Other wallets and digital services", "steps": "Look in settings or history for Activity, Transactions, Statements, Reports or Export data. Download CSV or Excel containing date, description and amount; avoid PDFs and individual receipts. If several currencies are present, export them separately where possible." },
+            "paypal": { "label": "PayPal", "steps": "On the website: Activity → Download icon → Custom → create an activity report → CSV. Choose the period and include at least Date, Name, Status, Currency and Net; prefer completed transactions." },
+            "wise": { "label": "Wise", "steps": "Profile → Statements and reports → Statements → Create a statement → choose balances, period and CSV. Alternatively on web: Transactions → See all → Filter and download → CSV. Wise allows up to 365 days per file." },
+            "traderepublic": { "label": "Trade Republic", "steps": "Open Cash → Transactions and download the export or statement for the required period. Use Cash movements for income and outflows; import instrument trades separately from Investments." },
+            "fineco": { "label": "Fineco", "steps": "Fineco website → Account and Cards → Transaction list → choose period and filters → export to Excel. Exclude Trading movements here; they can be imported separately as investments." },
             "trading212": {
                 "label": "Trading 212",
                 "steps": "History → export icon (top right) → pick a date range → CSV."

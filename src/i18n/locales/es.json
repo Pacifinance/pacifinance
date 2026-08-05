@@ -2,6 +2,12 @@
     "importGuide": {
         "toggleLabel": "¿Dónde encuentro este archivo?",
         "platforms": {
+            "genericBank": { "label": "Cualquier otro banco o servicio", "steps": "Busca Transacciones, Movimientos o Extractos y selecciona Exportar. Es preferible CSV; Excel también funciona. Incluye al menos fecha, descripción e importe, elige el período y, si es posible, solo operaciones completadas. En el siguiente paso podrás seleccionar manualmente la cabecera y las columnas." },
+            "genericDigital": { "label": "Otros monederos y servicios digitales", "steps": "Busca en ajustes o historial las opciones Actividad, Transacciones, Extractos, Informes o Exportar datos. Descarga CSV o Excel con fecha, descripción e importe; evita PDF y recibos individuales. Si hay varias divisas, expórtalas por separado cuando sea posible." },
+            "paypal": { "label": "PayPal", "steps": "En la web: Actividad → icono Descargar → Personalizado → crea el informe de actividad → CSV. Elige el período e incluye al menos Fecha, Nombre, Estado, Divisa y Neto; prefiere operaciones completadas." },
+            "wise": { "label": "Wise", "steps": "Perfil → Extractos e informes → Extractos → Crear un extracto → elige saldos, período y CSV. Como alternativa en la web: Transacciones → Ver todo → Filtrar y descargar → CSV. Wise permite hasta 365 días por archivo." },
+            "traderepublic": { "label": "Trade Republic", "steps": "Abre Cash → Transacciones y descarga la exportación o el extracto del período deseado. Usa los movimientos Cash para ingresos y gastos; importa las operaciones de instrumentos por separado desde Inversiones." },
+            "fineco": { "label": "Fineco", "steps": "Web de Fineco → Cuenta y tarjetas → Lista de movimientos → elige período y filtros → exporta a Excel. Excluye aquí los movimientos de trading; pueden importarse por separado como inversiones." },
             "trading212": {
                 "label": "Trading 212",
                 "steps": "Historial → icono de exportar (arriba a la derecha) → elige el rango de fechas → CSV."

@@ -311,7 +311,9 @@
                 "turnstileRequired": "Warten Sie, bis die Sicherheitsprüfung abgeschlossen ist."
             },
             "successPopup": {
-                "message": "Passwort erfolgreich zurückgesetzt!"
+                "message": "Passwort erfolgreich zurückgesetzt!",
+                "newCodeIntro": "Dein alter Wiederherstellungscode wurde gerade verwendet und ist nicht mehr gültig. Hier ist dein neuer:",
+                "continueButton": "Weiter zum Dashboard"
             }
         },
         "logout": "Abmelden",
@@ -2240,8 +2242,8 @@
         }
     },
     "onboarding": {
-        "welcomeTitle": "Willkommen bei Pacifinance!",
-        "welcomeSubtitle": "Schließe diese 4 Schritte ab, um dein vollständiges Finanz-Dashboard mit Diagrammen, Vergleichen und Einblicken freizuschalten.",
+        "welcomeTitle": "Deine gesamten Finanzen an einem Ort",
+        "welcomeSubtitle": "Die meisten Menschen verfolgen ihr Geld über fünf verschiedene Apps und kennen trotzdem ihr tatsächliches Vermögen nicht. Schließe die Schritte unten ab, und Pacifinance hält es ab sofort automatisch aktuell.",
         "stepsCompleted": "abgeschlossen",
         "step1Title": "Profil vervollständigen",
         "step1Desc": "Lege Nationalität, Beruf und Alter für personalisierte anonyme Vergleiche fest.",
@@ -2257,7 +2259,15 @@
         "step4Action": "Einnahmen hinzufügen",
         "done": "✓ Erledigt",
         "quickTip": "Tipp: Beginne mit deinem Guthaben — sobald du mindestens einen Monat an Daten hinzugefügt hast, erwacht dein Dashboard mit Diagrammen und Analysen zum Leben!",
-        "dismiss": "Anleitung schließen"
+        "dismiss": "Anleitung schließen",
+        "step5Title": "Erinnerungen aktivieren",
+        "step5Desc": "Erhalte eine sanfte Erinnerung, wenn es Zeit für ein Update ist, damit deine Daten aktuell bleiben, ohne dass du daran denken musst.",
+        "step5Action": "Erinnerungen aktivieren",
+        "bonusLabel": "Bonus",
+        "benchmarkTitle": "Vergleiche dich mit ähnlichen Nutzern",
+        "benchmarkDesc": "Aktiviere die Einwilligung, um anonyme Vergleichswerte zu Vermögen, Einnahmen und Ausgaben zu erhalten. Wir teilen ausschließlich aggregierte Daten, niemals Transaktionen oder Notizen.",
+        "benchmarkButton": "Community-Vergleich aktivieren",
+        "benchmarkButtonLoading": "Wird aktiviert..."
     },
     "tags": {
         "expense": {
@@ -2977,5 +2987,30 @@
         "warningTitle": "Wichtig",
         "warningBody": "Bewahren Sie dieses Dokument sicher auf. Wer es zusammen mit Ihrer ID besitzt, kann Ihr Passwort zurücksetzen. Ohne dieses Dokument und Ihr ursprüngliches Passwort ist eine Kontowiederherstellung nicht möglich.",
         "generatedOnLabel": "Erstellt am"
+    },
+    "notifications": {
+        "title": "Erinnerungen",
+        "description": "Erhalte eine Erinnerung, wenn es Zeit für ein Update ist oder etwas deine Aufmerksamkeit braucht. Vollständig optional – du entscheidest, was du erhalten möchtest.",
+        "loading": "Wird geladen...",
+        "enable": "Erinnerungen aktivieren",
+        "disable": "Erinnerungen deaktivieren",
+        "unsupported": "Push-Benachrichtigungen werden von diesem Browser nicht unterstützt.",
+        "permissionError": "Benachrichtigungen konnten nicht aktiviert werden. Überprüfe die Benachrichtigungsberechtigung deines Browsers für diese Seite.",
+        "disableError": "Benachrichtigungen konnten nicht deaktiviert werden. Bitte versuche es erneut.",
+        "loadError": "Deine Benachrichtigungseinstellungen konnten nicht geladen werden.",
+        "saved": "Einstellungen gespeichert.",
+        "saveError": "Deine Einstellungen konnten nicht gespeichert werden. Bitte versuche es erneut.",
+        "monthlySummary": "Monatliche Zusammenfassung",
+        "monthlySummaryDescription": "Ein Überblick über Einnahmen, Ausgaben und Kontostandänderung zu Monatsbeginn.",
+        "dataUpdate": "Daten-Erinnerungen",
+        "dataUpdateDescription": "Eine Erinnerung, wenn du länger keine Daten erfasst hast.",
+        "recurring": "Wiederkehrende Buchungen",
+        "recurringDescription": "Ein Hinweis, wenn eine wiederkehrende Ausgabe oder Einnahme bevorsteht.",
+        "sharedExpenses": "Geteilte Ausgaben",
+        "sharedExpensesDescription": "Wenn ein ausstehender Betrag, den dir jemand schuldet, seit einer Weile nicht beglichen wurde.",
+        "communityPrices": "Community-Preise",
+        "communityPricesDescription": "Wenn ein von der Community eingereichter Preis für ein von dir gehaltenes Instrument bestätigt wird.",
+        "day": "Tag",
+        "hour": "Uhrzeit"
     }
 }

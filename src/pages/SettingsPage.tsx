@@ -1253,7 +1253,7 @@ const SettingsPage = () => {
                                         style={{
                                             marginTop: "1rem",
                                             padding: "1rem",
-                                            backgroundColor: "white",
+                                            backgroundColor: theme.mode === "dark" ? "rgba(255,255,255,0.05)" : "rgba(255,255,255,0.9)",
                                             borderRadius: "8px",
                                         }}
                                     >
@@ -1350,7 +1350,7 @@ const SettingsPage = () => {
                                         style={{
                                             marginTop: "1rem",
                                             padding: "1rem",
-                                            backgroundColor: "white",
+                                            backgroundColor: theme.mode === "dark" ? "rgba(255,255,255,0.05)" : "rgba(255,255,255,0.9)",
                                             borderRadius: "8px",
                                         }}
                                     >
@@ -1524,7 +1524,7 @@ const SettingsPage = () => {
                                     </Tooltip>
 
                                 {showGenerateRecoveryCode && (
-                                    <div style={{ marginTop: "1rem", padding: "1rem", backgroundColor: "white", borderRadius: "8px" }}>
+                                    <div style={{ marginTop: "1rem", padding: "1rem", backgroundColor: theme.mode === "dark" ? "rgba(255,255,255,0.05)" : "rgba(255,255,255,0.9)", borderRadius: "8px" }}>
                                         <p style={{ fontSize: "0.85rem", marginBottom: "0.8rem", color: "#333" }}>
                                             {recoveryStatus?.configured
                                                 ? translations.sidebar.recoveryCode.statusConfigured.replace(
@@ -1708,7 +1708,7 @@ const SettingsPage = () => {
                                     style={{
                                         marginTop: "1rem",
                                         padding: "1rem",
-                                        backgroundColor: "white",
+                                        backgroundColor: theme.mode === "dark" ? "rgba(255,255,255,0.05)" : "rgba(255,255,255,0.9)",
                                         borderRadius: "8px",
                                     }}
                                 >

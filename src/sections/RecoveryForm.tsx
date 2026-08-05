@@ -5,6 +5,7 @@ import { ThemeContext } from "../contexts/ThemeContext";
 import { LanguageContext } from "../contexts/LanguageContext";
 import { useToast } from "../contexts/ToastContext";
 import { UserContext } from "../contexts/UserContext";
+import RecoveryCodeDisplay from "../components/RecoveryCodeDisplay";
 import { normalizeTurnstileSiteKey } from "../utils/turnstileConfig";
 import { loadTurnstileApi } from "../utils/turnstileLoader";
 import {
@@ -46,6 +47,7 @@ export default function RecoveryForm({ initialUserId = "", initialCode = "", onB
     const [turnstileToken, setTurnstileToken] = useState("");
     const [isTurnstileLoaded, setIsTurnstileLoaded] = useState(false);
     const [submitting, setSubmitting] = useState(false);
+    const [newRecoveryCode, setNewRecoveryCode] = useState<{ base32: string; words: string } | null>(null);
     const turnstileRef = useRef<any>(null);
     const turnstileWidgetIdRef = useRef<any>(null);
 
@@ -133,6 +135,22 @@ export default function RecoveryForm({ initialUserId = "", initialCode = "", onB
         };
     }, [theme.mode]);
 
+    // After a successful reset, auto-login with the new password (same pattern
+    // SignUpForm uses after registration) and move on to the dashboard.
+    const proceedToDashboard = async () => {
+        try {
+            const loginResponse = await userService.login(userId.trim(), newPassword);
+            if (loginResponse.status === 200) {
+                handleSetIsAuthenticated(true);
+                navigate('/dashboard');
+                return;
+            }
+        } catch {
+            // fall through to onBackToSignIn below
+        }
+        onBackToSignIn();
+    };
+
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
         if (newPassword !== confirmPassword) {
@@ -151,18 +169,15 @@ export default function RecoveryForm({ initialUserId = "", initialCode = "", onB
             );
             if (response.status === 200) {
                 showSuccess(t.successPopup.message, 3000);
-                // Auto-login with the new password, same pattern SignUpForm uses after registration.
-                try {
-                    const loginResponse = await userService.login(userId.trim(), newPassword);
-                    if (loginResponse.status === 200) {
-                        handleSetIsAuthenticated(true);
-                        navigate('/dashboard');
-                        return;
-                    }
-                } catch {
-                    // fall through to onBackToSignIn below
+                const nextBase32 = response.data?.recovery_code_base32;
+                const nextWords = response.data?.recovery_code_words;
+                if (nextBase32 && nextWords) {
+                    // Show the freshly-issued recovery code before moving on — the one
+                    // just used is now invalid, so this is the user's only chance to save it.
+                    setNewRecoveryCode({ base32: nextBase32, words: nextWords });
+                    return;
                 }
-                onBackToSignIn();
+                await proceedToDashboard();
             } else {
                 showError(t.errorPopup.message, 4000);
                 if (window.turnstile && turnstileWidgetIdRef.current) window.turnstile.reset(turnstileWidgetIdRef.current);
@@ -179,6 +194,41 @@ export default function RecoveryForm({ initialUserId = "", initialCode = "", onB
             setSubmitting(false);
         }
     };
+
+    if (newRecoveryCode) {
+        const recoveryCardLabels = {
+            documentTitle: translations.recoveryCard.documentTitle,
+            userIdLabel: translations.recoveryCard.userIdLabel,
+            blockCodeLabel: translations.recoveryCard.blockCodeLabel,
+            wordPhraseLabel: translations.recoveryCard.wordPhraseLabel,
+            qrHint: translations.recoveryCard.qrHint,
+            warningTitle: translations.recoveryCard.warningTitle,
+            warningBody: translations.recoveryCard.warningBody,
+            generatedOnLabel: translations.recoveryCard.generatedOnLabel,
+        };
+        return (
+            <div className="space-y-4">
+                <h2 className="text-xl font-bold mb-2 text-center">{t.title}</h2>
+                <RecoveryCodeDisplay
+                    theme={theme}
+                    userId={userId.trim()}
+                    base32={newRecoveryCode.base32}
+                    words={newRecoveryCode.words}
+                    introText={t.successPopup.newCodeIntro}
+                    blockLabel={translations.header.register.successPopup.recoveryBlockLabel}
+                    wordsLabel={translations.header.register.successPopup.recoveryWordsLabel}
+                    copyLabel={translations.header.register.successPopup.copyCode}
+                    copiedLabel={translations.header.register.successPopup.copiedCode}
+                    downloadCardLabel={translations.header.register.successPopup.downloadCardButton}
+                    downloadTextLabel={translations.header.register.successPopup.downloadTextButton}
+                    cardLabels={recoveryCardLabels}
+                />
+                <SignInButton theme={theme} type="button" $fullWidth onClick={proceedToDashboard}>
+                    {t.successPopup.continueButton}
+                </SignInButton>
+            </div>
+        );
+    }
 
     return (
         <div>

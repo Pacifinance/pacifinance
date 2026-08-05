@@ -18,7 +18,7 @@ vi.mock('@mui/icons-material', () => ({
   Person: (props) => <span data-testid="icon-profile" {...props} />,
   CheckCircle: (props) => <span data-testid="icon-check" {...props} />,
   ArrowForward: (props) => <span data-testid="icon-arrow" {...props} />,
-  Rocket: (props) => <span data-testid="icon-rocket" {...props} />,
+  NotificationsActiveOutlined: (props) => <span data-testid="icon-reminder" {...props} />,
 }));
 
 // Mock useLocalizedNavigate
@@ -288,6 +288,13 @@ describe('OnboardingWelcome', () => {
       if (stepCard) fireEvent.click(stepCard);
       expect(mockNavigate).not.toHaveBeenCalledWith('/profile');
     });
+
+    it('should render the bonus reminders step and navigate to /settings when clicked', () => {
+      renderOnboarding();
+      expect(screen.getByText('Turn on reminders')).toBeInTheDocument();
+      fireEvent.click(screen.getByText('Turn on reminders'));
+      expect(mockNavigate).toHaveBeenCalledWith('/settings');
+    });
   });
 
   describe('Dismiss Behavior', () => {
@@ -346,7 +353,7 @@ describe('OnboardingWelcome', () => {
         </MemoryRouter>
       );
       // Fallback texts should be rendered
-      expect(screen.getByText('Welcome to Pacifinance!')).toBeInTheDocument();
+      expect(screen.getByText('See all your money in one place')).toBeInTheDocument();
       expect(screen.getByText('Complete Profile')).toBeInTheDocument();
       expect(screen.getByText('Add Your Balance')).toBeInTheDocument();
     });

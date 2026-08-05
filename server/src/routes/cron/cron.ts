@@ -3,6 +3,8 @@ import express from "express"
 import db from "../../db/db"
 import cache from "../../cache/cache"
 import users from "../../db/models/users"
+import webPush from "../../libs/webPush"
+import { evaluateUser } from "../../libs/reminderScheduling"
 
 /**
  * Cron endpoints, meant to be invoked by Vercel Cron (see vercel.json) instead
@@ -103,6 +105,65 @@ cronRouter.get("/refresh-user-averages", async (req, res) => {
     await Promise.all(jobs)
 
     res.status(200).send()
+})
+
+/**
+ * Sends due reminder push notifications. Unlike the other endpoints on this
+ * router, this one isn't in vercel.json's crons (Vercel Hobby caps at 2 jobs
+ * and doesn't allow more-than-daily schedules, which can't honor a per-hour
+ * reminderHour preference) — it's instead called hourly by a Supabase pg_cron
+ * + pg_net job against the same CRON_SECRET Bearer auth already enforced by
+ * the middleware above (see supabase/migrations/schedule-send-reminders.sql).
+ */
+cronRouter.post("/send-reminders", async (req, res) => {
+    const now = new Date()
+    const preferences = await db.notifications.getEnabledPreferences()
+    if (preferences.length === 0) {
+        res.status(200).json({evaluated: 0, sent: 0})
+        return
+    }
+
+    // Computed once for the whole run, not per user (see investments.getRecentlyVerifiedCommunityPrices).
+    const lookbackHours = Number(req.query.lookbackHours) || 25
+    const recentlyVerifiedInstrumentIds = await db.investments.getRecentlyVerifiedCommunityPrices(
+        new Date(now.getTime() - lookbackHours * 60 * 60 * 1000),
+    )
+
+    let sent = 0
+    const dueUserIds: string[] = []
+    const messagesByUser = new Map<string, {type: string; title: string; body: string; url: string}[]>()
+
+    for (const pref of preferences) {
+        const {messages, lastSent} = await evaluateUser(pref, now, recentlyVerifiedInstrumentIds)
+        // Persist the watermark whenever this hour actually evaluated the user
+        // (lastSent differs from what was read), even if nothing was worth sending.
+        if (JSON.stringify(lastSent) !== JSON.stringify(pref.lastSent)) {
+            await db.notifications.updateLastSent(pref.userId, lastSent)
+        }
+        if (messages.length > 0) {
+            dueUserIds.push(pref.userId)
+            messagesByUser.set(pref.userId, messages)
+        }
+    }
+
+    if (dueUserIds.length > 0) {
+        const subscriptionsByUser = await db.notifications.getSubscriptionsForUsers(dueUserIds)
+        for (const userId of dueUserIds) {
+            const subscriptions = subscriptionsByUser.get(userId) || []
+            const messages = messagesByUser.get(userId) || []
+            for (const subscription of subscriptions) {
+                for (const message of messages) {
+                    const delivered = await webPush.sendPush(
+                        {userId, endpoint: subscription.endpoint, p256dh: subscription.p256dh, auth: subscription.auth},
+                        {title: message.title, body: message.body, url: message.url, tag: message.type},
+                    )
+                    if (delivered) sent++
+                }
+            }
+        }
+    }
+
+    res.status(200).json({evaluated: preferences.length, due: dueUserIds.length, sent})
 })
 
 export default cronRouter

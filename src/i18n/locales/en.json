@@ -311,7 +311,9 @@
                 "turnstileRequired": "Wait for the security check to complete."
             },
             "successPopup": {
-                "message": "Password reset successfully!"
+                "message": "Password reset successfully!",
+                "newCodeIntro": "Your old recovery code was just used and is no longer valid. Here is your new one:",
+                "continueButton": "Continue to dashboard"
             }
         },
         "logout": "Logout",
@@ -2327,8 +2329,8 @@
         }
     },
     "onboarding": {
-        "welcomeTitle": "Welcome to Pacifinance!",
-        "welcomeSubtitle": "Complete these 4 steps to unlock your full financial dashboard with charts, comparisons, and insights.",
+        "welcomeTitle": "See all your money in one place",
+        "welcomeSubtitle": "Most people track their money across five different apps and still don't know their real net worth. Finish the steps below and Pacifinance keeps it updated automatically from here on.",
         "stepsCompleted": "completed",
         "step1Title": "Complete Profile",
         "step1Desc": "Set nationality, job, and age for personalized anonymous comparisons.",
@@ -2344,7 +2346,15 @@
         "step4Action": "Add Income",
         "done": "✓ Done",
         "quickTip": "Tip: Start with your balance — once you add at least one month of data, your dashboard will come alive with charts and analytics!",
-        "dismiss": "Dismiss guide"
+        "dismiss": "Dismiss guide",
+        "step5Title": "Turn on reminders",
+        "step5Desc": "Get a gentle nudge when it's time to check in, so your data stays current without you having to remember.",
+        "step5Action": "Enable reminders",
+        "bonusLabel": "Bonus",
+        "benchmarkTitle": "Compare with similar users",
+        "benchmarkDesc": "Opt in to receive anonymous benchmarks for net worth, income and outflows. We share aggregated data only, never transactions or notes.",
+        "benchmarkButton": "Enable community comparison",
+        "benchmarkButtonLoading": "Activating..."
     },
     "tags": {
         "expense": {
@@ -3064,5 +3074,30 @@
         "warningTitle": "Important",
         "warningBody": "Keep this document somewhere safe. Anyone who has it together with your ID can reset your password. Without it, and without your original password, account recovery isn't possible.",
         "generatedOnLabel": "Generated on"
+    },
+    "notifications": {
+        "title": "Reminders",
+        "description": "Get a nudge when it's time to check in or when something needs your attention. Fully optional — choose exactly what you want to hear about.",
+        "loading": "Loading...",
+        "enable": "Enable reminders",
+        "disable": "Disable reminders",
+        "unsupported": "Push notifications aren't supported in this browser.",
+        "permissionError": "Couldn't enable notifications. Check your browser's notification permission for this site.",
+        "disableError": "Couldn't disable notifications. Please try again.",
+        "loadError": "Couldn't load your notification preferences.",
+        "saved": "Preferences saved.",
+        "saveError": "Couldn't save your preferences. Please try again.",
+        "monthlySummary": "Monthly summary",
+        "monthlySummaryDescription": "A recap of your income, outflows and balance change at the start of each month.",
+        "dataUpdate": "Data reminders",
+        "dataUpdateDescription": "A nudge if you haven't logged any data in a while.",
+        "recurring": "Recurring transactions",
+        "recurringDescription": "A heads-up when a recurring expense or income is coming up.",
+        "sharedExpenses": "Shared expenses",
+        "sharedExpensesDescription": "When a pending amount someone owes you has gone unsettled for a while.",
+        "communityPrices": "Community prices",
+        "communityPricesDescription": "When a community-submitted price is verified for an instrument you hold.",
+        "day": "Day",
+        "hour": "Hour"
     }
 }

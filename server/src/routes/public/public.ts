@@ -336,10 +336,18 @@ publicRouter.post("/recovery/reset-password", async (req, res) => {
             return
         }
         // Single-use: invalidate immediately so a code exposed during
-        // recovery (e.g. a shared/public computer) doesn't stay valid.
-        await db.users.setRecoveryCodeHash(record.id, null)
+        // recovery (e.g. a shared/public computer) doesn't stay valid. A
+        // fresh one is generated right away (same as at registration) so the
+        // user isn't left without a recovery path after using this one.
+        const nextRecoveryCode = generateRecoveryCode()
+        const nextRecoverySaved = await db.users.setRecoveryCodeHash(record.id, hashRecoveryCode(nextRecoveryCode.bytes))
+        if (nextRecoverySaved === null)
+            console.error(`recovery/reset-password: failed to store the new recovery code hash for user ${user_id} (password reset still succeeded)`)
 
-        res.status(200).send()
+        res.status(200).json({
+            recovery_code_base32: nextRecoverySaved ? nextRecoveryCode.base32 : null,
+            recovery_code_words: nextRecoverySaved ? nextRecoveryCode.words : null,
+        })
     } catch (error) {
         if (error instanceof TimeoutError || (error instanceof Error && error.name === "AbortError")) {
             console.error("recovery/reset-password: external dependency timed out", error)

@@ -311,7 +311,9 @@
                 "turnstileRequired": "Aguarde a conclusão da verificação de segurança."
             },
             "successPopup": {
-                "message": "Senha redefinida com sucesso!"
+                "message": "Senha redefinida com sucesso!",
+                "newCodeIntro": "Seu antigo código de recuperação acabou de ser usado e não é mais válido. Aqui está o novo:",
+                "continueButton": "Ir para o painel"
             }
         },
         "logout": "Sair",
@@ -2240,8 +2242,8 @@
         }
     },
     "onboarding": {
-        "welcomeTitle": "Bem-vindo ao Pacifinance!",
-        "welcomeSubtitle": "Complete estas 4 etapas para desbloquear seu painel financeiro completo com gráficos, comparações e insights.",
+        "welcomeTitle": "Todo o seu dinheiro em um só lugar",
+        "welcomeSubtitle": "A maioria das pessoas acompanha o dinheiro em cinco apps diferentes e mesmo assim não conhece o próprio patrimônio real. Conclua as etapas abaixo e, a partir daí, o Pacifinance manterá tudo atualizado automaticamente.",
         "stepsCompleted": "concluídas",
         "step1Title": "Completar perfil",
         "step1Desc": "Defina nacionalidade, profissão e idade para comparações anônimas personalizadas.",
@@ -2257,7 +2259,15 @@
         "step4Action": "Adicionar receitas",
         "done": "✓ Concluído",
         "quickTip": "Dica: comece pelo seu saldo — assim que você adicionar pelo menos um mês de dados, seu painel ganhará vida com gráficos e análises!",
-        "dismiss": "Dispensar guia"
+        "dismiss": "Dispensar guia",
+        "step5Title": "Ative os lembretes",
+        "step5Desc": "Receba um lembrete gentil na hora de atualizar seus dados, para que continuem em dia sem que você precise se lembrar.",
+        "step5Action": "Ativar lembretes",
+        "bonusLabel": "Bônus",
+        "benchmarkTitle": "Compare-se com usuários semelhantes",
+        "benchmarkDesc": "Ative o consentimento para receber comparativos anônimos de patrimônio, receitas e despesas. Compartilhamos apenas dados agregados, nunca transações ou notas.",
+        "benchmarkButton": "Ativar comparação com a comunidade",
+        "benchmarkButtonLoading": "Ativando..."
     },
     "tags": {
         "expense": {
@@ -2977,5 +2987,30 @@
         "warningTitle": "Importante",
         "warningBody": "Guarde este documento em um lugar seguro. Quem o possuir junto com seu ID pode redefinir sua senha. Sem ele, e sem sua senha original, a recuperação da conta não é possível.",
         "generatedOnLabel": "Gerado em"
+    },
+    "notifications": {
+        "title": "Lembretes",
+        "description": "Receba um lembrete quando for hora de atualizar seus dados ou quando algo precisar da sua atenção. Totalmente opcional: você escolhe exatamente o que quer receber.",
+        "loading": "Carregando...",
+        "enable": "Ativar lembretes",
+        "disable": "Desativar lembretes",
+        "unsupported": "Notificações push não são suportadas neste navegador.",
+        "permissionError": "Não foi possível ativar as notificações. Verifique a permissão de notificações do navegador para este site.",
+        "disableError": "Não foi possível desativar as notificações. Tente novamente.",
+        "loadError": "Não foi possível carregar suas preferências de notificação.",
+        "saved": "Preferências salvas.",
+        "saveError": "Não foi possível salvar suas preferências. Tente novamente.",
+        "monthlySummary": "Resumo mensal",
+        "monthlySummaryDescription": "Um resumo das suas receitas, despesas e variação de saldo no início de cada mês.",
+        "dataUpdate": "Lembretes de dados",
+        "dataUpdateDescription": "Um lembrete caso você não registre dados há um tempo.",
+        "recurring": "Transações recorrentes",
+        "recurringDescription": "Um aviso quando uma despesa ou receita recorrente estiver próxima.",
+        "sharedExpenses": "Despesas compartilhadas",
+        "sharedExpensesDescription": "Quando um valor pendente que alguém te deve fica sem ser quitado há um tempo.",
+        "communityPrices": "Preços da comunidade",
+        "communityPricesDescription": "Quando um preço enviado pela comunidade é verificado para um instrumento que você possui.",
+        "day": "Dia",
+        "hour": "Hora"
     }
 }

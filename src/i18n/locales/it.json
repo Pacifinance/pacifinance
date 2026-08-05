@@ -311,7 +311,9 @@
                 "turnstileRequired": "Attendi il completamento della verifica di sicurezza."
             },
             "successPopup": {
-                "message": "Password reimpostata con successo!"
+                "message": "Password reimpostata con successo!",
+                "newCodeIntro": "Il tuo vecchio recovery code è stato appena usato e non è più valido. Ecco il tuo nuovo codice:",
+                "continueButton": "Vai alla dashboard"
             }
         },
         "logout": "Esci",
@@ -2327,8 +2329,8 @@
         }
     },
     "onboarding": {
-        "welcomeTitle": "Benvenuto su Pacifinance!",
-        "welcomeSubtitle": "Completa questi 4 passaggi per sbloccare la tua dashboard finanziaria completa con grafici, confronti e analisi.",
+        "welcomeTitle": "Tutte le tue finanze in un unico posto",
+        "welcomeSubtitle": "La maggior parte delle persone tiene traccia dei propri soldi tra cinque app diverse e ancora non conosce il proprio patrimonio reale. Completa i passaggi qui sotto e da qui in poi Pacifinance lo terrà aggiornato automaticamente.",
         "stepsCompleted": "completati",
         "step1Title": "Completa il Profilo",
         "step1Desc": "Imposta nazionalità, lavoro ed età per confronti anonimi personalizzati.",
@@ -2344,7 +2346,15 @@
         "step4Action": "Aggiungi Entrate",
         "done": "✓ Fatto",
         "quickTip": "Consiglio: inizia con il patrimonio — appena aggiungi almeno un mese di dati, la dashboard prenderà vita con grafici e analisi!",
-        "dismiss": "Nascondi guida"
+        "dismiss": "Nascondi guida",
+        "step5Title": "Attiva i promemoria",
+        "step5Desc": "Ricevi un promemoria gentile quando è il momento di aggiornare i dati, così restano sempre attuali senza doverci pensare.",
+        "step5Action": "Attiva promemoria",
+        "bonusLabel": "Bonus",
+        "benchmarkTitle": "Confrontati con utenti simili",
+        "benchmarkDesc": "Attiva il consenso per ricevere benchmark anonimi su patrimonio, entrate e uscite. Condividiamo solo dati aggregati, mai transazioni o note.",
+        "benchmarkButton": "Attiva confronto community",
+        "benchmarkButtonLoading": "Attivazione..."
     },
     "tags": {
         "expense": {
@@ -3064,5 +3074,30 @@
         "warningTitle": "Importante",
         "warningBody": "Conserva questo documento in un posto sicuro. Chiunque lo possieda insieme all'ID può reimpostare la tua password. Senza di esso, e senza la password originale, il recupero dell'account non è possibile.",
         "generatedOnLabel": "Generato il"
+    },
+    "notifications": {
+        "title": "Promemoria",
+        "description": "Ricevi un promemoria quando è il momento di aggiornare i dati o quando c'è qualcosa che richiede attenzione. Completamente facoltativo: scegli tu cosa ricevere.",
+        "loading": "Caricamento...",
+        "enable": "Attiva promemoria",
+        "disable": "Disattiva promemoria",
+        "unsupported": "Le notifiche push non sono supportate su questo browser.",
+        "permissionError": "Impossibile attivare le notifiche. Controlla il permesso per le notifiche del browser per questo sito.",
+        "disableError": "Impossibile disattivare le notifiche. Riprova.",
+        "loadError": "Impossibile caricare le preferenze di notifica.",
+        "saved": "Preferenze salvate.",
+        "saveError": "Impossibile salvare le preferenze. Riprova.",
+        "monthlySummary": "Riepilogo mensile",
+        "monthlySummaryDescription": "Un riepilogo di entrate, uscite e variazione del bilancio a inizio mese.",
+        "dataUpdate": "Promemoria dati",
+        "dataUpdateDescription": "Un promemoria se non inserisci dati da un po'.",
+        "recurring": "Transazioni ricorrenti",
+        "recurringDescription": "Un avviso quando sta per arrivare una spesa o entrata ricorrente.",
+        "sharedExpenses": "Spese condivise",
+        "sharedExpensesDescription": "Quando un importo che qualcuno ti deve resta da saldare da un po'.",
+        "communityPrices": "Prezzi community",
+        "communityPricesDescription": "Quando un prezzo inviato dalla community viene verificato per uno strumento che possiedi.",
+        "day": "Giorno",
+        "hour": "Ora"
     }
 }

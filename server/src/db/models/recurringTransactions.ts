@@ -264,6 +264,24 @@ async function runDueTemplate(row: DueRow, runDate: Date) {
 }
 
 /**
+ * Read-only count of a single user's active templates due within `withinDays`
+ * of `now` (today included) — for the recurringDue reminder, which only needs
+ * to know "is anything coming up" without running or advancing anything (that
+ * still happens once a day via runAllDue above).
+ */
+async function getUpcomingCountForUser(user_id: string, now: Date, withinDays: number): Promise<number> {
+    const horizon = new ExtDate(now)
+    horizon.moveByDays(withinDays)
+    const {count, error} = await supabase.from("recurring_transactions")
+        .select("id", {count: "exact", head: true})
+        .eq("user_id", user_id)
+        .eq("active", true)
+        .lte("next_run_date", toDateOnly(horizon))
+    if (error) console.error("recurringTransactions.getUpcomingCountForUser: failed to read upcoming templates", error)
+    return error || !count ? 0 : count
+}
+
+/**
  * Runs every due template as of `now`. Returns how many ran successfully.
  */
 async function runAllDue(now: Date) {
@@ -282,4 +300,5 @@ export default {
     setActive,
     deleteRecurring,
     runAllDue,
+    getUpcomingCountForUser,
 }

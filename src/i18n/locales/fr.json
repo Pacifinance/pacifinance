@@ -311,7 +311,9 @@
                 "turnstileRequired": "Attends la fin de la vérification de sécurité."
             },
             "successPopup": {
-                "message": "Mot de passe réinitialisé avec succès !"
+                "message": "Mot de passe réinitialisé avec succès !",
+                "newCodeIntro": "Votre ancien code de récupération vient d’être utilisé et n’est plus valide. Voici votre nouveau code :",
+                "continueButton": "Aller au tableau de bord"
             }
         },
         "logout": "Déconnexion",
@@ -2240,8 +2242,8 @@
         }
     },
     "onboarding": {
-        "welcomeTitle": "Bienvenue sur Pacifinance !",
-        "welcomeSubtitle": "Complète ces 4 étapes pour débloquer ton tableau de bord financier complet avec graphiques, comparaisons et analyses.",
+        "welcomeTitle": "Toutes vos finances au même endroit",
+        "welcomeSubtitle": "La plupart des gens suivent leur argent sur cinq applications différentes et ne connaissent toujours pas leur patrimoine réel. Terminez les étapes ci-dessous et Pacifinance le maintiendra à jour automatiquement à partir de maintenant.",
         "stepsCompleted": "terminées",
         "step1Title": "Compléter le profil",
         "step1Desc": "Indique ta nationalité, ton métier et ton âge pour des comparaisons anonymes personnalisées.",
@@ -2257,7 +2259,15 @@
         "step4Action": "Ajouter des revenus",
         "done": "✓ Fait",
         "quickTip": "Astuce : commence par ton solde — dès que tu auras ajouté au moins un mois de données, ton tableau de bord s'animera avec des graphiques et des analyses !",
-        "dismiss": "Fermer le guide"
+        "dismiss": "Fermer le guide",
+        "step5Title": "Activez les rappels",
+        "step5Desc": "Recevez un petit rappel quand il est temps de faire un point, pour que vos données restent à jour sans avoir à y penser.",
+        "step5Action": "Activer les rappels",
+        "bonusLabel": "Bonus",
+        "benchmarkTitle": "Comparez-vous à des utilisateurs similaires",
+        "benchmarkDesc": "Activez le consentement pour recevoir des repères anonymes sur le patrimoine, les revenus et les dépenses. Nous ne partageons que des données agrégées, jamais de transactions ni de notes.",
+        "benchmarkButton": "Activer la comparaison communautaire",
+        "benchmarkButtonLoading": "Activation..."
     },
     "tags": {
         "expense": {
@@ -2977,5 +2987,30 @@
         "warningTitle": "Important",
         "warningBody": "Conserve ce document en lieu sûr. Quiconque le possède avec ton ID peut réinitialiser ton mot de passe. Sans lui, et sans ton mot de passe d'origine, la récupération du compte n'est pas possible.",
         "generatedOnLabel": "Généré le"
+    },
+    "notifications": {
+        "title": "Rappels",
+        "description": "Recevez un rappel quand il est temps de faire un point ou qu'un élément nécessite votre attention. Entièrement facultatif : vous choisissez exactement ce que vous recevez.",
+        "loading": "Chargement...",
+        "enable": "Activer les rappels",
+        "disable": "Désactiver les rappels",
+        "unsupported": "Les notifications push ne sont pas prises en charge par ce navigateur.",
+        "permissionError": "Impossible d'activer les notifications. Vérifiez l'autorisation de notification de votre navigateur pour ce site.",
+        "disableError": "Impossible de désactiver les notifications. Veuillez réessayer.",
+        "loadError": "Impossible de charger vos préférences de notification.",
+        "saved": "Préférences enregistrées.",
+        "saveError": "Impossible d'enregistrer vos préférences. Veuillez réessayer.",
+        "monthlySummary": "Résumé mensuel",
+        "monthlySummaryDescription": "Un récapitulatif de vos revenus, dépenses et variation de solde en début de mois.",
+        "dataUpdate": "Rappels de saisie",
+        "dataUpdateDescription": "Un rappel si vous n'avez saisi aucune donnée depuis un moment.",
+        "recurring": "Transactions récurrentes",
+        "recurringDescription": "Un signal quand une dépense ou un revenu récurrent approche.",
+        "sharedExpenses": "Dépenses partagées",
+        "sharedExpensesDescription": "Quand un montant que quelqu'un vous doit reste impayé depuis un moment.",
+        "communityPrices": "Prix communautaires",
+        "communityPricesDescription": "Quand un prix soumis par la communauté est vérifié pour un instrument que vous détenez.",
+        "day": "Jour",
+        "hour": "Heure"
     }
 }

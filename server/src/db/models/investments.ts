@@ -1770,6 +1770,22 @@ async function getVerifiedCommunityPricesForInstrument(instrument_id: number): P
     return new Map((data as unknown as {month_key: string; price_eur: number}[]).map((row) => [row.month_key, row.price_eur]))
 }
 
+/**
+ * Cross-user query (cron only, service-role client) of every instrument with a
+ * community price verified since `since` — used by send-reminders to figure out
+ * which holders should hear about it, via getOwnedInstrumentIds per candidate,
+ * without a per-user round trip through this table.
+ */
+async function getRecentlyVerifiedCommunityPrices(since: Date): Promise<number[]> {
+    const {data, error} = await supabase.from("instrument_historical_prices")
+        .select("instrument_id")
+        .eq("status", "verified")
+        .gte("verified_at", since.toISOString())
+    if (error) console.error("investments.getRecentlyVerifiedCommunityPrices: failed to read recent verifications", error)
+    if (error || !data) return []
+    return Array.from(new Set((data as unknown as {instrument_id: number}[]).map((row) => row.instrument_id)))
+}
+
 export default {
     INVESTMENT_KINDS,
     INVESTMENT_ASSET_KEYS,
@@ -1781,6 +1797,7 @@ export default {
     createManualInstrument,
     getInstrumentById,
     getHoldingsByUserId,
+    getOwnedInstrumentIds,
     refreshHoldingPrices,
     backfillHistoricalPrices,
     insertHolding,
@@ -1803,4 +1820,5 @@ export default {
     getMyCommunityPriceSubmissions,
     verifyCommunityPrice,
     getVerifiedCommunityPricesForInstrument,
+    getRecentlyVerifiedCommunityPrices,
 }

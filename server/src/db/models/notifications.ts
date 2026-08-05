@@ -86,4 +86,67 @@ async function deleteSubscription(userId: string, endpoint: string) {
     return error ? null : {deleted: true}
 }
 
-export default {getPreferences, savePreferences, saveSubscription, deleteSubscription}
+export interface EnabledPreferencesRow extends NotificationPreferencesInput {
+    userId: string
+    lastSent: Record<string, string>
+}
+
+export interface PushSubscriptionRow {
+    id: number
+    endpoint: string
+    p256dh: string
+    auth: string
+    userAgent: string | null
+}
+
+/**
+ * Cross-user query (cron only, service-role client — see
+ * server/src/routes/cron/cron.ts for the shared-secret auth gate) of every
+ * user with reminders turned on. send-reminders then narrows this down to
+ * whoever is actually due right now (day/hour/timezone) and has something to say.
+ */
+async function getEnabledPreferences(): Promise<EnabledPreferencesRow[]> {
+    const {data, error} = await supabase.from("notification_preferences").select("*").eq("enabled", true)
+    if (error) console.error("notifications.getEnabledPreferences: failed", error)
+    if (error || !data) return []
+    return (data as Record<string, unknown>[]).map((row) => ({
+        ...mapPreferences(row),
+        userId: row.user_id as string,
+        lastSent: (row.last_sent as Record<string, string>) || {},
+    }))
+}
+
+/** Every push subscription (possibly several, one per device/browser) for the given users. */
+async function getSubscriptionsForUsers(userIds: string[]): Promise<Map<string, PushSubscriptionRow[]>> {
+    const map = new Map<string, PushSubscriptionRow[]>()
+    if (userIds.length === 0) return map
+    const {data, error} = await supabase.from("push_subscriptions").select("*").in("user_id", userIds)
+    if (error) console.error("notifications.getSubscriptionsForUsers: failed", error)
+    if (error || !data) return map
+    for (const row of data as Record<string, unknown>[]) {
+        const userId = row.user_id as string
+        const list = map.get(userId) || []
+        list.push({id: row.id as number, endpoint: row.endpoint as string, p256dh: row.p256dh as string, auth: row.auth as string, userAgent: (row.user_agent as string) || null})
+        map.set(userId, list)
+    }
+    return map
+}
+
+/** Persists the idempotency watermark after a send-reminders pass for one user. */
+async function updateLastSent(userId: string, lastSent: Record<string, string>) {
+    const {error} = await supabase.from("notification_preferences")
+        .update({last_sent: lastSent, updated_at: new Date().toISOString()})
+        .eq("user_id", userId)
+    if (error) console.error("notifications.updateLastSent: failed", error)
+    return !error
+}
+
+export default {
+    getPreferences,
+    savePreferences,
+    saveSubscription,
+    deleteSubscription,
+    getEnabledPreferences,
+    getSubscriptionsForUsers,
+    updateLastSent,
+}

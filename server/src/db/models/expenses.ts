@@ -214,6 +214,23 @@ async function getAllByUserId(user_id: string) {
 }
 
 /**
+ * Timestamp of the user's most recent expense/income row, or null if they've
+ * never logged one — used by the dataUpdateReminder to detect "hasn't touched
+ * the app in a while" without pulling their whole history.
+ */
+async function getLastActivityDateByUserId(user_id: string): Promise<string | null> {
+    const {data, error} = await supabase.from("expenses")
+        .select("occurred_at")
+        .eq("user_id", user_id)
+        .order("occurred_at", {ascending: false})
+        .limit(1)
+        .maybeSingle()
+    if (error) console.error("expenses.getLastActivityDateByUserId: failed to read latest activity", error)
+    if (error || !data) return null
+    return (data as {occurred_at: string}).occurred_at
+}
+
+/**
  * Gets the expenses of a user for the month
  * @param user_id uuid of the user
  * @param reference_date Date object containing the year and month to look for
@@ -405,6 +422,7 @@ export default {
     insertNew,
     insertBatch,
     getAllByUserId,
+    getLastActivityDateByUserId,
     getMonthlyExpensesByUserId,
     getRecentMonthlyExpensesByUserId,
     getTotalMonthlyExpensesByUserId,

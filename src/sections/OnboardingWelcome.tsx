@@ -12,7 +12,7 @@ import {
   Person as ProfileIcon,
   CheckCircle as CheckIcon,
   ArrowForward as ArrowIcon,
-  Rocket as RocketIcon,
+  NotificationsActiveOutlined as ReminderIcon,
 } from '@mui/icons-material';
 
 const fadeIn = keyframes`
@@ -33,22 +33,31 @@ const pulse = keyframes`
 const Container = styled.div`
   animation: ${fadeIn} 0.6s ease-out;
   padding: 1rem;
-  
+
+  @media (max-width: 400px) {
+    padding: 0.75rem;
+  }
+
   @media (min-width: 769px) {
     padding: 2rem;
   }
 `;
 
 const WelcomeCard = styled.div`
-  background: ${props => props.$isDark 
-    ? 'linear-gradient(135deg, rgba(7, 145, 100, 0.15) 0%, rgba(7, 145, 100, 0.05) 100%)' 
+  background: ${props => props.$isDark
+    ? 'linear-gradient(135deg, rgba(7, 145, 100, 0.15) 0%, rgba(7, 145, 100, 0.05) 100%)'
     : 'linear-gradient(135deg, rgba(7, 145, 100, 0.08) 0%, rgba(7, 145, 100, 0.02) 100%)'};
   border: 1px solid ${props => props.$isDark ? 'rgba(7, 145, 100, 0.3)' : 'rgba(7, 145, 100, 0.2)'};
   border-radius: 20px;
   padding: 2rem;
   margin-bottom: 1.5rem;
   text-align: center;
-  
+
+  @media (max-width: 400px) {
+    padding: 1.25rem 1rem;
+    border-radius: 16px;
+  }
+
   @media (min-width: 769px) {
     padding: 2.5rem 3rem;
     margin-bottom: 2rem;
@@ -121,6 +130,14 @@ const StepCard = styled.div`
   ${props => props.$isActive && !props.$isComplete && css`
     animation: ${pulse} 2s ease-in-out infinite;
   `}
+
+  /* The bonus (reminders) card spans the full row instead of leaving an
+     orphaned half-empty row after the 4 numbered steps. */
+  ${props => props.$bonus && css`
+    @media (min-width: 769px) {
+      grid-column: 1 / -1;
+    }
+  `}
 `;
 
 const StepNumber = styled.div`
@@ -133,11 +150,27 @@ const StepNumber = styled.div`
   font-weight: 700;
   font-size: 0.9rem;
   margin-bottom: 0.75rem;
-  background: ${props => props.$isComplete 
-    ? '#079164' 
+  background: ${props => props.$isComplete
+    ? '#079164'
     : props.$isDark ? 'rgba(7, 145, 100, 0.2)' : 'rgba(7, 145, 100, 0.1)'};
   color: ${props => props.$isComplete ? 'white' : '#079164'};
   transition: all 0.3s ease;
+`;
+
+const BonusTag = styled.div`
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 0.7rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+  background: ${props => props.$isComplete
+    ? '#079164'
+    : props.$isDark ? 'rgba(7, 145, 100, 0.2)' : 'rgba(7, 145, 100, 0.1)'};
+  color: ${props => props.$isComplete ? 'white' : '#079164'};
 `;
 
 const StepTitle = styled.h3`
@@ -218,7 +251,7 @@ const DismissButton = styled.button`
 `;
 
 const OnboardingWelcome = ({ userData, theme }) => {
-  const { translations, language } = useContext(LanguageContext);
+  const { translations } = useContext(LanguageContext);
   const { currencySymbol } = useContext(CurrencyContext);
   const services = useContext(ServiceContext);
   const userService = services?.userService;
@@ -226,16 +259,23 @@ const OnboardingWelcome = ({ userData, theme }) => {
   const [dismissed, setDismissed] = useState(false);
   const [benchmarkConsent, setBenchmarkConsent] = useState(userData?.benchmarkConsent === true);
   const [isSavingBenchmarkConsent, setIsSavingBenchmarkConsent] = useState(false);
-  
+  const [remindersEnabled, setRemindersEnabled] = useState(false);
+
   const t = translations?.onboarding || {};
   const isDark = theme?.mode === 'dark';
   const textColor = theme?.textColor || (isDark ? '#e0e0e0' : '#333');
   const subtextColor = isDark ? 'rgba(255,255,255,0.55)' : 'rgba(0,0,0,0.5)';
-  
+
   // Check dismissed state from localStorage
   useEffect(() => {
     const isDismissed = localStorage.getItem('onboarding_dismissed');
     if (isDismissed === 'true') setDismissed(true);
+  }, []);
+
+  // Cheap client-side signal for the "turn on reminders" bonus step — a real
+  // preferences check would need an extra API round-trip just for this card.
+  useEffect(() => {
+    setRemindersEnabled(typeof Notification !== 'undefined' && Notification.permission === 'granted');
   }, []);
   
   if (dismissed) return null;
@@ -313,6 +353,15 @@ const OnboardingWelcome = ({ userData, theme }) => {
       complete: hasIncomes,
       onClick: () => navigate('/insert-values?section=income'),
     },
+    {
+      icon: <ReminderIcon style={{ fontSize: 20 }} />,
+      title: t.step5Title || 'Turn on reminders',
+      description: t.step5Desc || "Get a gentle nudge when it's time to check in, so your data stays current without you having to remember.",
+      action: t.step5Action || 'Enable reminders',
+      complete: remindersEnabled,
+      bonus: true,
+      onClick: () => navigate('/settings'),
+    },
   ];
 
   return (
@@ -320,10 +369,10 @@ const OnboardingWelcome = ({ userData, theme }) => {
       <WelcomeCard $isDark={isDark}>
         <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>🚀</div>
         <WelcomeTitle $textColor={textColor}>
-          {t.welcomeTitle || 'Welcome to Pacifinance!'}
+          {t.welcomeTitle || 'See all your money in one place'}
         </WelcomeTitle>
         <WelcomeSubtitle $subtextColor={subtextColor}>
-          {t.welcomeSubtitle || 'Complete these 4 steps to unlock your full financial dashboard with charts, comparisons, and insights.'}
+          {t.welcomeSubtitle || "Most people track their money across five different apps and still don't know their real net worth. Finish the steps below and Pacifinance keeps it updated automatically from here on."}
         </WelcomeSubtitle>
         
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', marginTop: '0.5rem' }}>
@@ -343,13 +392,20 @@ const OnboardingWelcome = ({ userData, theme }) => {
             $isDark={isDark}
             $isComplete={step.complete}
             $isActive={index === firstIncompleteStep}
+            $bonus={step.bonus}
             $delay={`${index * 0.1}s`}
             onClick={step.complete ? undefined : step.onClick}
             data-umami-event={`onboarding-step-${index + 1}`}
           >
-            <StepNumber $isDark={isDark} $isComplete={step.complete}>
-              {step.complete ? <CheckIcon style={{ fontSize: 18 }} /> : index + 1}
-            </StepNumber>
+            {step.bonus ? (
+              <BonusTag $isDark={isDark} $isComplete={step.complete}>
+                {step.complete ? <CheckIcon style={{ fontSize: 14 }} /> : (t.bonusLabel || 'Bonus')}
+              </BonusTag>
+            ) : (
+              <StepNumber $isDark={isDark} $isComplete={step.complete}>
+                {step.complete ? <CheckIcon style={{ fontSize: 18 }} /> : index + 1}
+              </StepNumber>
+            )}
             <StepTitle $textColor={textColor}>
               {step.icon}
               {step.title}
@@ -379,11 +435,9 @@ const OnboardingWelcome = ({ userData, theme }) => {
           <span style={{ fontSize: '1.1rem', flexShrink: 0 }}>📊</span>
           <span style={{ flex: 1 }}>
             <strong style={{ color: textColor, display: 'block', marginBottom: '0.25rem' }}>
-              {language === 'it' ? 'Confrontati con utenti simili' : 'Compare with similar users'}
+              {t.benchmarkTitle || 'Compare with similar users'}
             </strong>
-            {language === 'it'
-              ? 'Attiva il consenso per ricevere benchmark anonimi su patrimonio, entrate e uscite. Condividiamo solo dati aggregati, mai transazioni o note.'
-              : 'Opt in to receive anonymous benchmarks for net worth, income and outflows. We share aggregated data only, never transactions or notes.'}
+            {t.benchmarkDesc || 'Opt in to receive anonymous benchmarks for net worth, income and outflows. We share aggregated data only, never transactions or notes.'}
             <button
               type="button"
               onClick={handleBenchmarkConsent}
@@ -391,8 +445,8 @@ const OnboardingWelcome = ({ userData, theme }) => {
               style={{ background: theme.secondaryColor, border: 0, borderRadius: 6, color: '#fff', cursor: 'pointer', display: 'block', fontWeight: 700, marginTop: '0.65rem', padding: '0.5rem 0.75rem' }}
             >
               {isSavingBenchmarkConsent
-                ? (language === 'it' ? 'Attivazione...' : 'Activating...')
-                : (language === 'it' ? 'Attiva confronto community' : 'Enable community comparison')}
+                ? (t.benchmarkButtonLoading || 'Activating...')
+                : (t.benchmarkButton || 'Enable community comparison')}
             </button>
           </span>
         </QuickTip>

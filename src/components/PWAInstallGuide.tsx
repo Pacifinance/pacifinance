@@ -1,3 +1,6 @@
+// Belongs in components/ despite reading LanguageContext/ThemeContext: it's a generic
+// app-install guide, not tied to one business domain (see CONTRIBUTING.md's
+// components/ vs sections/ rule).
 import React, { useState, useMemo, useContext } from 'react';
 import styled from 'styled-components';
 import { LanguageContext } from '../contexts/LanguageContext';
@@ -25,13 +28,13 @@ const PlatformTab = styled.button`
     padding: 0.4rem 0.75rem;
     border-radius: 8px;
     border: 1.5px solid ${p => p.$active
-        ? p.theme.buttonBackgroundColor || '#079164'
+        ? p.theme.buttonBackgroundColor || p.theme.secondaryColor
         : p.theme.mode === 'dark' ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)'};
     background: ${p => p.$active
         ? (p.theme.mode === 'dark' ? 'rgba(7,145,100,0.2)' : 'rgba(7,145,100,0.08)')
         : 'transparent'};
     color: ${p => p.$active
-        ? (p.theme.buttonBackgroundColor || '#079164')
+        ? (p.theme.buttonBackgroundColor || p.theme.secondaryColor)
         : p.theme.textColor};
     font-size: 0.8rem;
     font-weight: ${p => p.$active ? '600' : '500'};
@@ -39,7 +42,7 @@ const PlatformTab = styled.button`
     transition: all 0.2s ease;
 
     &:hover {
-        border-color: ${p => p.theme.buttonBackgroundColor || '#079164'};
+        border-color: ${p => p.theme.buttonBackgroundColor || p.theme.secondaryColor};
         background: ${p => p.theme.mode === 'dark' ? 'rgba(7,145,100,0.12)' : 'rgba(7,145,100,0.05)'};
     }
 `;
@@ -48,7 +51,7 @@ const DetectedBadge = styled.span`
     font-size: 0.6rem;
     padding: 0.1rem 0.35rem;
     border-radius: 4px;
-    background: ${p => p.theme.buttonBackgroundColor || '#079164'};
+    background: ${p => p.theme.buttonBackgroundColor || p.theme.secondaryColor};
     color: white;
     font-weight: 700;
     text-transform: uppercase;
@@ -81,7 +84,7 @@ const StepNumber = styled.span`
     width: 1.6rem;
     height: 1.6rem;
     border-radius: 50%;
-    background: ${p => p.theme.buttonBackgroundColor || '#079164'};
+    background: ${p => p.theme.buttonBackgroundColor || p.theme.secondaryColor};
     color: white;
     display: flex;
     align-items: center;

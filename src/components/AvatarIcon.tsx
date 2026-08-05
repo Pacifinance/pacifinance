@@ -1,3 +1,6 @@
+// Belongs in components/ despite reading LanguageContext/ToastContext: it's a generic,
+// cross-feature primitive, not tied to a business domain (see CONTRIBUTING.md's
+// components/ vs sections/ rule).
 import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { getAvatar, regenerateAvatar, canRegenerateAvatar } from '../utils/avatarGenerator';
 import { LanguageContext } from '../contexts/LanguageContext';

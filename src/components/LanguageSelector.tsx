@@ -1,3 +1,6 @@
+// Belongs in components/ despite reading LanguageContext: it's a generic language
+// switcher, not tied to one business domain (see CONTRIBUTING.md's
+// components/ vs sections/ rule).
 import React, { useState, useContext, useRef, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { LanguageContext } from '../contexts/LanguageContext';

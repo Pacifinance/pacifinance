@@ -6,10 +6,10 @@ import { LanguageContext } from "../contexts/LanguageContext";
 import { CurrencyContext } from "../contexts/CurrencyContext";
 import { UserContext } from "../contexts/UserContext";
 import { useToast } from "../contexts/ToastContext";
-import BalanceSection from "../components/BalanceSection";
-import IncomeSection from "../components/IncomeSection";
-import OutflowSection from "../components/OutflowSection";
-import InsertModals from "../components/InsertModals";
+import BalanceSection from "./BalanceSection";
+import IncomeSection from "./IncomeSection";
+import OutflowSection from "./OutflowSection";
+import InsertModals from "./InsertModals";
 import styled, { css, keyframes } from 'styled-components';
 import {
   UploadFile as UploadFileIcon,
@@ -21,14 +21,14 @@ import {
 } from "@mui/icons-material";
 
 const DataImportWizard = lazy(() => import("./DataImportWizard"));
-const MultiOutflowInsert = lazy(() => import("../components/MultiOutflowInsert"));
-const MultiIncomeInsert = lazy(() => import("../components/MultiIncomeInsert"));
-const MultiBalanceInsert = lazy(() => import("../components/MultiBalanceInsert"));
-const RecurringTransactionsPanel = lazy(() => import("../components/RecurringTransactionsPanel"));
-const SharedExpensesPanel = lazy(() => import("../components/SharedExpensesPanel"));
+const MultiOutflowInsert = lazy(() => import("./MultiOutflowInsert"));
+const MultiIncomeInsert = lazy(() => import("./MultiIncomeInsert"));
+const MultiBalanceInsert = lazy(() => import("./MultiBalanceInsert"));
+const RecurringTransactionsPanel = lazy(() => import("./RecurringTransactionsPanel"));
+const SharedExpensesPanel = lazy(() => import("./SharedExpensesPanel"));
 import { groupAmountsByBalanceSource, parseFormattedAmount } from "../components/multiInsert/helpers";
 const groupIncomeAmountsBySource = groupAmountsByBalanceSource;
-import { ASSET_KEYS } from "../components/MultiBalanceInsert";
+import { ASSET_KEYS } from "./MultiBalanceInsert";
 import { buildAddBalancePayload, buildSnapshotWithDeltas, ASSET_TO_DB_KEY } from "../constants/balanceSchema";
 import {
     getCashValue, getBankValue, getDigitalServicesValue, getEmergencyFund,
@@ -42,9 +42,9 @@ import { usePastDateBalancePref, PAST_DATE_BALANCE_CHOICES } from '../hooks/useP
 import { addCurrency, roundCurrency } from '../utils/money';
 import { findLikelyDuplicates } from '../utils/duplicateDetection';
 import { learnFromTransaction } from '../utils/categoryPatterns';
-const PastDateBalanceChoiceModal = lazy(() => import('../components/PastDateBalanceChoiceModal'));
-const EditTransactionModal = lazy(() => import('../components/EditTransactionModal'));
-const DuplicateWarningModal = lazy(() => import('../components/DuplicateWarningModal'));
+const PastDateBalanceChoiceModal = lazy(() => import('./PastDateBalanceChoiceModal'));
+const EditTransactionModal = lazy(() => import('./EditTransactionModal'));
+const DuplicateWarningModal = lazy(() => import('./DuplicateWarningModal'));
 
 // Local date, NOT toISOString().split (UTC-midnight bug, see CLAUDE.md) — must
 // also be recomputed on each call, not memoized at module scope, so a
@@ -687,7 +687,7 @@ export default function InsertValue({
   }, []);
 
   // Backfilled per-month holdings/accounts history for whichever month is
-  // currently being viewed in "aggiorna bilancio" — empty for the current
+  // currently being viewed in "update balance" — empty for the current
   // month (nothing to backfill there, the live portfolio already drives it).
   const refreshInvestmentHoldingHistory = async () => {
     const now = new Date();
@@ -1188,15 +1188,15 @@ export default function InsertValue({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [balanceDate.month, balanceDate.year, userData]);
 
-    // Imposta la sezione iniziale basata sul parametro URL - solo al primo caricamento
+    // Set the initial section from the URL param - only on first load
   useEffect(() => {
-    if (initialSectionApplied.current) return; // Evita di eseguire più volte
-    
+    if (initialSectionApplied.current) return; // Avoid running more than once
+
     const urlParams = new URLSearchParams(location.search);
     const sectionParam = urlParams.get('section');
-    
+
     if (sectionParam) {
-      // Piccolo delay per assicurarsi che il componente sia montato
+      // Small delay to ensure the component is mounted
       setTimeout(() => {
         switch (sectionParam) {
           case 'balance':
@@ -1214,19 +1214,19 @@ export default function InsertValue({
           default:
             setActivePage('outflows');
         }
-        initialSectionApplied.current = true; // Marca come applicato
+        initialSectionApplied.current = true; // Mark as applied
       }, 100);
     } else {
-      // Se non c'è parametro URL, imposta default e marca come applicato
+      // If there's no URL param, set the default and mark as applied
       initialSectionApplied.current = true;
     }
-  }, [location.search]); // Rimosso activePage dalle dipendenze per evitare loop
+  }, [location.search]); // Removed activePage from deps to avoid a loop
 
   // Auto-hide success notifications with toast
   useEffect(() => {
     if (updateBalanceSuccess) {
       showSuccess(translations.insert.balanceSection.successUpdate);
-      // Reset immediatamente per evitare loop
+      // Reset immediately to avoid a loop
       setUpdateBalanceSuccess(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1235,7 +1235,7 @@ export default function InsertValue({
   useEffect(() => {
     if (updateInExBalanceSuccess) {
       showSuccess(translations.insert.balanceSection.successFullUpdate);
-      // Reset immediatamente per evitare loop
+      // Reset immediately to avoid a loop
       setUpdateInExBalanceSuccess(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1302,7 +1302,7 @@ export default function InsertValue({
       year: d.getFullYear(),
     });
   }
-  // Non serve più reverse() - così il mese corrente sarà all'indice 0
+  // No need for reverse() anymore - the current month will be at index 0
 
   // Build monthOptions
   const monthOptions = monthsArray.map((obj, idx) => ({
@@ -1994,9 +1994,9 @@ export default function InsertValue({
           setMakeOutflowRecurring(false);
         }
 
-        // Controllo limite di spesa mensile DOPO l'inserimento riuscito (solo per le spese)
+        // Check the monthly spending limit AFTER a successful insert (outflows only)
         if (isOutflow && userData?.limits?.notificationsEnabled && userData?.limits?.monthlySpendingLimit) {
-          // L'indice 0 corrisponde al mese corrente nell'array outflowsArray.
+          // Index 0 corresponds to the current month in the outflowsArray.
           // In shared-expense mode, only the own-share (categoryAmountOverride)
           // counts toward the limit — the rest was never really "spent".
           const currentOutflowsThisMonth = getOutflowsArray(userData)?.[0] || 0;
@@ -2011,10 +2011,10 @@ export default function InsertValue({
               ? `⚠️ Limite mensile superato! Hai raggiunto ${currencySymbol}${newTotal.toFixed(2)}, superando il tuo limite di ${currencySymbol}${userData.limits.monthlySpendingLimit} di ${currencySymbol}${exceeding.toFixed(2)}.`
               : `⚠️ Monthly limit exceeded! You've reached ${currencySymbol}${newTotal.toFixed(2)}, exceeding your limit of ${currencySymbol}${userData.limits.monthlySpendingLimit} by ${currencySymbol}${exceeding.toFixed(2)}.`;
             
-            // Delay per far scomparire prima la notifica di successo
+            // Delay so the success notification disappears first
             setTimeout(() => {
-              showError(warningMessage, 7000); // Durata più lunga per avviso importante
-            }, 2500); // Delay di 2.5 secondi per evitare sovrapposizione
+              showError(warningMessage, 7000); // Longer duration for an important warning
+            }, 2500); // 2.5s delay to avoid overlapping with the success toast
           }
         }
         

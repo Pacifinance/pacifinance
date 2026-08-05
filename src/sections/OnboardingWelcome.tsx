@@ -327,7 +327,7 @@ const OnboardingWelcome = ({ userData, theme }) => {
         </WelcomeSubtitle>
         
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', marginTop: '0.5rem' }}>
-          <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#079164' }}>
+          <span style={{ fontSize: '0.85rem', fontWeight: 600, color: theme.secondaryColor }}>
             {completedSteps}/4 {t.stepsCompleted || 'completed'}
           </span>
         </div>
@@ -375,7 +375,7 @@ const OnboardingWelcome = ({ userData, theme }) => {
       </QuickTip>
 
       {!benchmarkConsent && (
-        <QuickTip $isDark={isDark} $subtextColor={subtextColor} style={{ borderColor: '#079164', marginTop: '0.75rem' }}>
+        <QuickTip $isDark={isDark} $subtextColor={subtextColor} style={{ borderColor: theme.secondaryColor, marginTop: '0.75rem' }}>
           <span style={{ fontSize: '1.1rem', flexShrink: 0 }}>📊</span>
           <span style={{ flex: 1 }}>
             <strong style={{ color: textColor, display: 'block', marginBottom: '0.25rem' }}>
@@ -388,7 +388,7 @@ const OnboardingWelcome = ({ userData, theme }) => {
               type="button"
               onClick={handleBenchmarkConsent}
               disabled={isSavingBenchmarkConsent}
-              style={{ background: '#079164', border: 0, borderRadius: 6, color: '#fff', cursor: 'pointer', display: 'block', fontWeight: 700, marginTop: '0.65rem', padding: '0.5rem 0.75rem' }}
+              style={{ background: theme.secondaryColor, border: 0, borderRadius: 6, color: '#fff', cursor: 'pointer', display: 'block', fontWeight: 700, marginTop: '0.65rem', padding: '0.5rem 0.75rem' }}
             >
               {isSavingBenchmarkConsent
                 ? (language === 'it' ? 'Attivazione...' : 'Activating...')

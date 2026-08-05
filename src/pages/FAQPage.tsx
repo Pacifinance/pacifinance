@@ -40,7 +40,7 @@ export default function FAQPage() {
             <h1 
               className="text-5xl font-bold mb-12 text-center"
               style={{ 
-                color: '#079164',
+                color: theme.secondaryColor,
                 textShadow: theme.mode === 'dark' 
                   ? '0 2px 4px rgba(0, 0, 0, 0.3)'
                   : '0 2px 4px rgba(0, 0, 0, 0.1)'
@@ -75,7 +75,7 @@ export default function FAQPage() {
                       className="text-3xl font-bold transition-transform duration-300"
                       style={{ 
                         transform: openQuestion === index ? 'rotate(45deg)' : 'rotate(0deg)',
-                        color: '#079164'
+                        color: theme.secondaryColor
                       }}
                     >
                       {openQuestion === index ? '×' : '+'}
@@ -109,7 +109,7 @@ export default function FAQPage() {
                 border: `2px solid ${theme.mode === 'dark' ? 'rgba(7, 145, 100, 0.3)' : 'rgba(7, 145, 100, 0.2)'}`
               }}
             >
-              <h3 className="text-2xl font-bold mb-4" style={{ color: '#079164' }}>
+              <h3 className="text-2xl font-bold mb-4" style={{ color: theme.secondaryColor }}>
                 {translations.faq.stillHaveQuestions}
               </h3>
               <p className="text-lg" style={{ opacity: 0.8 }}>

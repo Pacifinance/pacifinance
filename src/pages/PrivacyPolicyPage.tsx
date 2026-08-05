@@ -42,7 +42,7 @@ export default function PrivacyPolicyPage() {
 
         <div className="space-y-6">
             <section>
-              <h2 className="text-2xl font-semibold mb-4" style={{ color: '#079164' }}>
+              <h2 className="text-2xl font-semibold mb-4" style={{ color: theme.secondaryColor }}>
                 {translations.legal.privacy.introduction.title}
               </h2>
               <p className="mb-4 leading-relaxed">
@@ -51,7 +51,7 @@ export default function PrivacyPolicyPage() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4" style={{ color: '#079164' }}>
+              <h2 className="text-2xl font-semibold mb-4" style={{ color: theme.secondaryColor }}>
                 {translations.legal.privacy.dataCollection.title}
               </h2>
               <p className="mb-4 leading-relaxed">
@@ -65,7 +65,7 @@ export default function PrivacyPolicyPage() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4" style={{ color: '#079164' }}>
+              <h2 className="text-2xl font-semibold mb-4" style={{ color: theme.secondaryColor }}>
                 {translations.legal.privacy.dataUsage.title}
               </h2>
               <p className="mb-4 leading-relaxed">
@@ -74,7 +74,7 @@ export default function PrivacyPolicyPage() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4" style={{ color: '#079164' }}>
+              <h2 className="text-2xl font-semibold mb-4" style={{ color: theme.secondaryColor }}>
                 {translations.legal.privacy.benchmarkParticipation?.title || 'Community benchmarks'}
               </h2>
               <p className="mb-4 leading-relaxed">
@@ -83,7 +83,7 @@ export default function PrivacyPolicyPage() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4" style={{ color: '#079164' }}>
+              <h2 className="text-2xl font-semibold mb-4" style={{ color: theme.secondaryColor }}>
                 {translations.legal.privacy.anonymity.title}
               </h2>
               <p className="mb-4 leading-relaxed">
@@ -92,7 +92,7 @@ export default function PrivacyPolicyPage() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4" style={{ color: '#079164' }}>
+              <h2 className="text-2xl font-semibold mb-4" style={{ color: theme.secondaryColor }}>
                 {translations.legal.privacy.contact.title}
               </h2>
               <p className="leading-relaxed">

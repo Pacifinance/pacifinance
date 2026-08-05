@@ -15,15 +15,31 @@ After every change: `npm run lint && npm test && npm run build`
 ## Architecture
 ```
 src/
-  components/   # Presentational — NO context imports nei riusabili
+  components/   # Generic UI, reusable across unrelated features
   pages/        # Routes — assembla contexts + sections
-  sections/     # Feature blocks — può usare contexts
+  sections/     # Feature blocks tied to one domain/page
   contexts/     # Global state
   utils/        # Pure functions (selectors, routing, math)
   data/         # Static config (colors, icons, currencies)
   i18n/         # locales/it.json + locales/en.json
   __tests__/    # Mirrors src/
 ```
+
+**components/ vs sections/ — il test non è "usa un context?", è "a quale dominio appartiene?"**
+Un componente può stare in `components/` pur leggendo un context, purché quel context sia
+trasversale/UI (`LanguageContext`, `ThemeContext`, `ToastContext`) e non dati di business
+(`UserContext`, dati di uno specifico dominio come investimenti/transazioni). Il vero criterio:
+- **`components/`** — generico, riusabile in feature diverse e non correlate tra loro (es.
+  `LocalizedLink`, `ThemedSelect`, `AvatarIcon`, `CategoryPicker`, `LanguageSelector`,
+  `ScrollNavigationIndicator`, `PWAInstallGuide`, `ImportPlatformGuide`). Se legge un context,
+  deve essere solo per un bisogno trasversale (lingua/tema/toast), mai per recuperare dati di
+  dominio (es. `useDemoServices`, chiamate a `services/*`).
+- **`sections/`** — legato a un dominio/feature specifico (transazioni, investimenti, goal),
+  anche se riusato in 2+ punti dentro allo stesso dominio (es. `InvestmentHoldingsPanel` è
+  riusato ma resta investment-specific → resta in `sections/`).
+
+Quando aggiungi un file nuovo o sposti un file esistente, applica questo test invece di
+guardare solo se importa un context.
 
 **Context hierarchy (ordine fisso):**
 ```

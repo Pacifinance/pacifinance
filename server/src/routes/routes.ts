@@ -17,6 +17,7 @@ import goalsRouter from "./private/goals"
 import benchmarksRouter from "./private/benchmarks"
 import exchangeRatesRouter from "./private/exchangeRates"
 import sharedExpensesRouter from "./private/sharedExpenses"
+import notificationsRouter from "./private/notifications"
 
 import supabase from "../db/supabase"
 import authCookies from "./authCookies"
@@ -88,5 +89,6 @@ rootRouter.use("/goals", goalsRouter)
 rootRouter.use("/benchmarks", benchmarksRouter)
 rootRouter.use("/exchange-rates", exchangeRatesRouter)
 rootRouter.use("/shared-expenses", sharedExpensesRouter)
+rootRouter.use("/notifications", notificationsRouter)
 
 export default rootRouter

@@ -31,17 +31,17 @@ const SimpleLoader = () => (
   </div>
 );
 
-// Importazioni dirette per pagine critiche (sempre disponibili)
+// Direct imports for critical pages (always available)
 import Dashboard from "./pages/DashboardPage";
 import LandingPage from "./pages/LandingPage";
 import AuthPage from "./pages/AuthPage";
 
-// Lazy loading per pagine principali dell'app (caricate quando necessarie)
+// Lazy loading for the app's main pages (loaded when needed)
 const StatsCharts = React.lazy(() => import("./pages/StatsChartsPage"));
 const InsertValues = React.lazy(() => import("./pages/InsertPage"));
 const ComparisonPage = React.lazy(() => import("./pages/ComparisonPage"));
 
-// Lazy loading per pagine utility (raramente usate)
+// Lazy loading for utility pages (rarely used)
 const MarketPricesPage = React.lazy(() => import("./pages/MarketPricesPage"));
 const Knowledge = React.lazy(() => import("./pages/KnowledgePage"));
 const Info = React.lazy(() => import("./pages/InfoPage"));
@@ -50,7 +50,7 @@ const SettingsPage = React.lazy(() => import("./pages/SettingsPage"));
 const GoalsSettingsPage = React.lazy(() => import("./pages/GoalsAndLimitsPage"));
 const AdminPriceReviewPage = React.lazy(() => import("./pages/AdminPriceReviewPage"));
 
-// Lazy loading per pagine legali/info (raramente visitate)
+// Lazy loading for legal/info pages (rarely visited)
 const FAQPage = React.lazy(() => import("./pages/FAQPage"));
 const PricingPage = React.lazy(() => import("./pages/PricingPage"));
 const PrivacyPolicyPage = React.lazy(() => import("./pages/PrivacyPolicyPage"));
@@ -127,10 +127,10 @@ const LanguageRedirect = () => {
 function AppRouter() {
   const auth = useAuth();
   
-  // Estrai le proprietà dal nostro hook unificato
+  // Extract the properties from our unified hook
   const { isAuthenticated, handleSetIsUpdated } = auth;
-  
-  // Attiva preloading semplice e sicuro
+
+  // Enable simple, safe preloading
   useAuthenticatedPreloading(isAuthenticated);
   usePublicPreloading();
 

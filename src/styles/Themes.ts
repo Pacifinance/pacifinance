@@ -12,6 +12,9 @@ export const themes = {
     buttonBackgroundColor: '#079164',
     iconBackgroundColor: '#079164',
     rankingInfoBackgroundColor: '#ececec',
+    dangerColor: '#ef4444',
+    successColor: '#10b981',
+    warningColor: '#f59e0b',
   },
   dark: {
     mode: 'dark',
@@ -24,6 +27,9 @@ export const themes = {
     buttonBackgroundColor: '#079164',   // #FF8000 arancione o #59A52C verde o #6fca3a verde chiaro o #079164 (verde smeraldo)
     iconBackgroundColor: '#079164',
     rankingInfoBackgroundColor: '#263244',
+    dangerColor: '#ef4444',
+    successColor: '#10b981',
+    warningColor: '#f59e0b',
   },
 };
 

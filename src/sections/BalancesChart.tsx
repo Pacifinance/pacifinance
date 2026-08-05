@@ -353,7 +353,7 @@ function BalancesChart({theme, userData, isHidden}: BalancesChartProps) {
     return <TooltipCard theme={theme}>
       <h4>{monthLabel(String(label))}</h4>
       <TooltipRow><span style={{color: theme.buttonBackgroundColor}}>{t.totalAssets}</span><strong style={{color: theme.buttonBackgroundColor}}>{displayMoney(Number(row.rawTotal ?? row.total ?? 0))}</strong></TooltipRow>
-      {view === 'changes' && <TooltipRow><span style={{color: Number(row.total || 0) >= 0 ? '#10b981' : '#ef4444'}}>{t.monthlyChange}</span><strong style={{color: Number(row.total || 0) >= 0 ? '#10b981' : '#ef4444'}}>{displayMoney(Number(row.total || 0))}</strong></TooltipRow>}
+      {view === 'changes' && <TooltipRow><span style={{color: Number(row.total || 0) >= 0 ? theme.successColor : theme.dangerColor}}>{t.monthlyChange}</span><strong style={{color: Number(row.total || 0) >= 0 ? theme.successColor : theme.dangerColor}}>{displayMoney(Number(row.total || 0))}</strong></TooltipRow>}
       {view !== 'trend' && visibleAssets.map((key) => {
         const raw = Number(row[`raw_${key}`] ?? row[key] ?? 0);
         const assetColor = getAssetColor(key, theme.mode);
@@ -424,7 +424,7 @@ function BalancesChart({theme, userData, isHidden}: BalancesChartProps) {
 
     <KpiGrid>
       <Kpi theme={theme}><span>{t.currentAssets}</span><strong>{displayMoney(kpis.currentTotal)}</strong><small>{currentRow ? monthLabel(currentRow.name) : t.notAvailable}</small></Kpi>
-      <Kpi theme={theme}><span>{t.periodChange}</span><strong style={{color: kpis.absoluteChange >= 0 ? '#079164' : '#dc3545'}}>{displayMoney(kpis.absoluteChange)}</strong><small>{displayPercent(kpis.percentChange)}</small></Kpi>
+      <Kpi theme={theme}><span>{t.periodChange}</span><strong style={{color: kpis.absoluteChange >= 0 ? theme.secondaryColor : '#dc3545'}}>{displayMoney(kpis.absoluteChange)}</strong><small>{displayPercent(kpis.percentChange)}</small></Kpi>
       <Kpi theme={theme}><span>{t.availableLiquidity}</span><strong>{displayMoney(kpis.liquidityValue)}</strong><small>{kpis.liquidityPercent.toFixed(1)}%</small></Kpi>
       <Kpi theme={theme}><span>{t.investedAssets}</span><strong>{displayMoney(kpis.investedValue)}</strong><small>{kpis.investedPercent.toFixed(1)}%</small></Kpi>
     </KpiGrid>

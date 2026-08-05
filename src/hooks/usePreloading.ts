@@ -1,23 +1,23 @@
-// Strategia di preloading per componenti critici
-// Precarica i componenti più utilizzati dopo il caricamento iniziale
+// Preloading strategy for critical components
+// Preloads the most used components after the initial load
 
 import { useEffect } from 'react';
 
-// Preloading functions per i componenti più critici
+// Preloading functions for the most critical components
 const preloadDashboard = () => import('../pages/DashboardPage');
 const preloadCharts = () => import('../pages/StatsChartsPage');
 const preloadInsert = () => import('../pages/InsertPage');
 
-// Hook per il preloading intelligente
+// Hook for intelligent preloading
 export const usePreloadCriticalComponents = (isAuthenticated) => {
   useEffect(() => {
     if (isAuthenticated) {
-      // Precarica i componenti principali dell'app dopo l'autenticazione
+      // Preload the app's main components after authentication
       const preloadTimer = setTimeout(() => {
-        // Dashboard è sempre il primo caricato dopo login
+        // Dashboard is always loaded first after login
         preloadDashboard();
-        
-        // Precarica gli altri componenti con delay per non bloccare
+
+        // Preload the other components with a delay so nothing blocks
         setTimeout(() => preloadInsert(), 1000);
         setTimeout(() => preloadCharts(), 2000);
       }, 500);
@@ -27,10 +27,10 @@ export const usePreloadCriticalComponents = (isAuthenticated) => {
   }, [isAuthenticated]);
 };
 
-// Preloading condizionale basato su user behavior
+// Conditional preloading based on user behavior
 export const useIntelligentPreloading = () => {
   useEffect(() => {
-    // Precarica componenti pubblici comuni
+    // Preload common public components
     const timer = setTimeout(() => {
       import('../pages/AuthPage');
     }, 2000);
@@ -38,7 +38,7 @@ export const useIntelligentPreloading = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Precarica al hover sui link (user intent)
+  // Preload on link hover (user intent)
   const handleLinkHover = (componentName) => {
     switch (componentName) {
       case 'dashboard':

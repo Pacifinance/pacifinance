@@ -17,7 +17,7 @@ import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 export const PageWrapper = styled.div`
   position: relative;
   width: 100vw;
-  height: 100vh; // Imposta l'altezza della pagina al 100% della viewport
+  height: 100vh;
   display: flex;
 
   @media (max-width: 768px) {
@@ -39,7 +39,7 @@ export const Section = styled.section `
   /* For screens with a maximum width of 768px (e.g. mobile devices) */
   @media (max-width: 768px) {
     margin-left: 0;
-    padding-top: 4rem; /* Aumentato per compensare l'header mobile fisso */
+    padding-top: 4rem; /* Increased to compensate for the fixed mobile header */
   }
 `;
 
@@ -492,13 +492,13 @@ export const SignUp = styled.div`
       .icon-with-text {
           display: flex;
           color: ${(props) => (props.theme.buttonBackgroundColor)};
-          align-items: center; /* Allinea verticalmente gli elementi */
+          align-items: center;
           margin-bottom: 2.5em;
         }
 
       .icon-with-text h4 {
           color: ${(props) => (props.theme.buttonBackgroundColor)};
-          margin-left: 0.5em; /* Aggiungi uno spazio tra l'icona e il testo */
+          margin-left: 0.5em;
       }
 
       .input-wrapper {
@@ -642,7 +642,7 @@ export const ModernActionButton = styled.button`
     }
   }
   
-  /* Effetto shine per dare un tocco premium */
+  /* Shine effect for a premium touch */
   &:before {
     content: '';
     position: absolute;
@@ -670,7 +670,7 @@ export const ModernActionButton = styled.button`
     border-radius: 14px;
     
     &:hover {
-      /* Su mobile riduciamo gli effetti hover per performance */
+      /* Reduce hover effects on mobile for performance */
       transform: translateY(-1px) scale(1.01);
     }
   }
@@ -763,7 +763,7 @@ export const StyledSection = styled.div`
 
   @media (max-width: 768px) {
     margin-top: 0em;
-    padding-top: 4rem; /* Aggiunto padding-top per mobile */
+    padding-top: 4rem; /* Added padding-top for mobile */
   }
 `;
 
@@ -806,9 +806,9 @@ export const Column = styled.div`
     margin-left: 0.5em;
 
     input {
-      width: 10em; // Modifica la larghezza degli input per la visualizzazione mobile
-      height: 3em; // Modifica l'altezza degli input per la visualizzazione mobile
-      fontSize: 10px; // Modifica la dimensione del testo per la visualizzazione mobile
+      width: 10em;
+      height: 3em;
+      fontSize: 10px;
     }
   }
 `;
@@ -824,7 +824,7 @@ export const StyledInputs = styled.div`
   color: ${(props) => props.theme.textColor};
 
   @media (max-width: 768px) {
-    width: 40%; // Larghezza ridotta per adattarsi ai dispositivi mobili
+    width: 40%;
     margin-top: 0.5em;
     margin-left: 0;
   }
@@ -1220,7 +1220,7 @@ export const Container = styled.div`
 
 export const SectionADashboard = styled.section`
     font-family: Roboto, sans-serif;
-    // display: flex; // questo risolve il problema del bianco ma bisogna incolonnare bene i contenuti
+    // display: flex; // this fixes the white background issue but the content needs to be stacked properly
     background-color: ${(props) => (props.theme.backgroundColor)};
     width: 100%;
 `;
@@ -1261,7 +1261,7 @@ export const FeatureText = styled.div`
 `;
 
 export const Icon = styled.div`
-  /* Aggiungi qui l'icona desiderata */
+  /* Add the desired icon here */
   color: ${(props) => (props.theme.jollyColor)};
   text-color: ${(props) => (props.theme.jollyColor)};
 `;
@@ -1520,7 +1520,7 @@ export const Links = styled.div`
   }
 
   @media (max-width: 768px) {
-    /* Modifica la disposizione dei link nel menu superiore */
+    /* Adjust the top menu links layout */
     display: flex;
     margin-left: 4em;
     gap: 1rem;
@@ -1537,7 +1537,7 @@ export const Links = styled.div`
         li{
             margin: 0;
             a {
-              font-size: 1.5rem; /* Riduci la dimensione del testo */
+              font-size: 1.5rem;
             }         
         }
 
@@ -1700,7 +1700,7 @@ export const SidebarSection = styled.section`
       .analytic {
           display: flex;
           position: relative;
-          flex-direction: column; /* Imposta la direzione dei figli come colonna */
+          flex-direction: column;
           align-items: center;
           justify-content: space-evenly;
           padding: 1rem 2rem 1rem 2rem;
@@ -1759,7 +1759,7 @@ export const SidebarSection = styled.section`
         align-items: center;
         flex-wrap: wrap;
         .analytic {
-          width: 40%; /* Imposta la larghezza in percentuale per mostrare 2 elementi per riga */
+          width: 40%; /* Percentage width to show 2 items per row */
           height: 7.2em;
           margin: 0.5em;
           margin-left: 1.3em;
@@ -2157,12 +2157,12 @@ export const SectionAMonth = styled.section`
       .react-calendar__tile {
         flex: 1;
         padding: 0.25rem;
-        height: 1rem; /* Modifica l'altezza delle celle qui */
-        width: 1rem; /* Modifica la larghezza delle celle qui */
+        height: 1rem; /* Adjust the cell height here */
+        width: 1rem; /* Adjust the cell width here */
         display: flex;
         justify-content: center;
         align-items: center;
-        font-size: 0.6rem; /* Modifica la dimensione del testo dei numeri dei giorni */
+        font-size: 0.6rem; /* Adjust the day-number text size here */
       }
 
       .react-calendar__tile--active {
@@ -2361,8 +2361,8 @@ export const StyledLabel = styled.h1`
 `;
 
 export const StyledMonth = styled.span`
-  font-size: 1.2em; /* Imposta la dimensione del mese come desideri */
-  color: /* Inserisci il colore desiderato */;
+  font-size: 1.2em; /* Set the month size as you like */
+  color: /* Insert the desired color */;
 `;
 
 export const StyledSelect = styled.select`
@@ -2374,8 +2374,8 @@ export const StyledSelect = styled.select`
   margin-right: 0.5em;
 
   option {
-    background-color: ${themes.dark.backgroundColor}; /* Cambia lo sfondo dell'opzione */
-    color: ${themes.dark.textColor}; /* Cambia il colore del testo dell'opzione */
+    background-color: ${themes.dark.backgroundColor}; /* Change the option's background */
+    color: ${themes.dark.textColor}; /* Change the option's text color */
   }
 
   option:hover {
@@ -2398,7 +2398,7 @@ export const StyledComingSoon = styled.div`
   position: relative;
   overflow: hidden;
   
-  /* Effetto decorativo di sfondo */
+  /* Decorative background effect */
   &::before {
     content: '';
     position: absolute;
@@ -2456,7 +2456,7 @@ export const StyledComingSoon = styled.div`
   }
 `;
 
-// StyledLabel moderno e con bordo evidenziato SOLO per ranking
+// Modern StyledLabel with a highlighted border, used ONLY for ranking
 export const ModernStyledLabel = styled.label`
   display: flex;
   align-items: center;

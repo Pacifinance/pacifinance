@@ -1,5 +1,5 @@
 import React, {useState, useContext, useEffect} from 'react';
-import BalancesStats from '../components/BalancesStats';
+import BalancesStats from './BalancesStats';
 import BalancesChart from './BalancesChart';
 import InOutCharts from './InOutChart';
 import { useAuth } from '../hooks/useAuth';
@@ -11,11 +11,11 @@ import InOutStats from './InOutStats';
 import { PrivacyContext } from '../contexts/PrivacyContext';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { TrendingUp, BarChart3, PieChart, LineChart, DollarSign, TrendingDown, Brain, RefreshCw, ShieldCheck, Users } from 'lucide-react';
-import AdvancedInsightsSection from '../components/AdvancedInsightsSection';
+import AdvancedInsightsSection from './AdvancedInsightsSection';
 import DetailedExpenseAnalysis from './DetailedOutflowsAnalysis';
-import HoldingsBreakdownChart from '../components/HoldingsBreakdownChart';
-import HoldingsHistoryChart from '../components/HoldingsHistoryChart';
-import PortfolioInsights from '../components/PortfolioInsights';
+import HoldingsBreakdownChart from './HoldingsBreakdownChart';
+import HoldingsHistoryChart from './HoldingsHistoryChart';
+import PortfolioInsights from './PortfolioInsights';
 import { getIncomesArray, getOutflowsArray, getBalanceChartData, getTotalIncomesCurrentMonth } from '../utils/userDataSelectors';
 import { useLocalizedNavigate } from '../hooks/useLocalizedNavigate';
 import type { InvestmentDividendSummaryDto } from '../types/api';
@@ -56,7 +56,7 @@ const StatsContainer = styled.div`
   }
   
   @media (max-width: 768px) {
-    padding-top: 4rem; /* Aggiunto padding-top per mobile */
+    padding-top: 4rem;
   }
   
   @media (min-width: 768px) {
@@ -453,7 +453,7 @@ const EmptyStateContainer = styled.div`
   }
 `;
 
-// Aggiungiamo le keyframes per le animazioni
+// Add the keyframes for the animations
 const GlobalAnimations = styled.div`
   @keyframes spin {
     0% { transform: rotate(0deg); }
@@ -579,7 +579,7 @@ export default function StatsCharts() {
         }
     };
 
-    // Simula il caricamento dei dati
+    // Simulate data loading
     useEffect(() => {
         if (userData) {
             const timer = setTimeout(() => {

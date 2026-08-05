@@ -46,6 +46,7 @@ import { createRecurringTransactionService } from '../services/recurringTransact
 import { createGoalService } from '../services/goalService';
 import { createCommunityBenchmarkService } from '../services/communityBenchmarkService';
 import { createSharedExpenseService } from '../services/sharedExpenseService';
+import { createNotificationService } from '../services/notificationService';
 
 const ServiceContext = createContext(null);
 
@@ -86,6 +87,7 @@ export const createServices = (client) => {
     goalService: createGoalService(apiClient),
     communityBenchmarkService: createCommunityBenchmarkService(apiClient),
     sharedExpenseService: createSharedExpenseService(apiClient),
+    notificationService: createNotificationService(apiClient),
   };
 };
 

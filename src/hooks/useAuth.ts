@@ -5,7 +5,7 @@ import MockAuthContext from '../contexts/MockAuthContext';
 /** Check if demo session is active via sessionStorage */
 const isDemoSession = () => sessionStorage.getItem('pacifinance-demo') === 'true';
 
-// Hook unificato che usa automaticamente il provider giusto
+// Unified hook that automatically uses the right provider
 export const useAuth = () => {
     const isDevelopmentMode = useMemo(() => {
         return import.meta.env.DEV && 
@@ -13,8 +13,8 @@ export const useAuth = () => {
                 window.location.search.includes('dev=true'));
     }, []);
 
-    // Accedi direttamente ai context senza try/catch
-    // useContext ritorna undefined/null quando il Provider non è nell'albero
+    // Access the contexts directly without try/catch
+    // useContext returns undefined/null when the Provider isn't in the tree
     const mockAuth = useContext(MockAuthContext);
     const userContext = useContext(UserContext);
 
@@ -60,7 +60,7 @@ export const useAuth = () => {
                 isDemoMode: userContext.isDemoMode || false,
             };
         } else {
-            // Fallback completo
+            // Full fallback
             return {
                 isAuthenticated: false,
                 userData: null,

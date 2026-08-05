@@ -40,7 +40,7 @@ const shimmer = keyframes`
 `;
 
 
-// Layout principale per la dashboard
+// Main layout for the dashboard
 export const MainDashboardLayout = styled.div`
   min-height: 100vh;
   background:
@@ -50,7 +50,7 @@ export const MainDashboardLayout = styled.div`
   position: relative;
   overflow-x: hidden;
   
-  /* Gestione sidebar desktop */
+  /* Desktop sidebar handling */
   @media (min-width: 769px) {
     margin-left: 5.5rem;
     width: calc(100% - 5.5rem);
@@ -59,12 +59,12 @@ export const MainDashboardLayout = styled.div`
 
 export const DashboardContent = styled.div`
   padding: 2rem 0;
-  max-width: none; /* Rimuoviamo max-width per utilizzare tutto lo spazio */
+  max-width: none; /* Remove max-width to use all the available space */
   margin: 0;
   animation: ${fadeInUp} 0.8s ease-out;
-  /* useScrollNavigation richiede solo documentHeight > windowHeight + 100px per
-     attivare lo scroll-to-next-page: questi valori sono un margine di sicurezza,
-     non il meccanismo principale (il contenuto reale ormai supera già un viewport). */
+  /* useScrollNavigation only needs documentHeight > windowHeight + 100px to
+     trigger scroll-to-next-page: these values are a safety margin,
+     not the main mechanism (real content already exceeds a viewport by now). */
   min-height: 100vh;
   padding-bottom: 7rem;
 
@@ -74,7 +74,7 @@ export const DashboardContent = styled.div`
   }
 `;
 
-// Header della dashboard
+// Dashboard header
 export const ModernDashboardHeader = styled.header`
   margin-bottom: 1.5rem;
   animation: ${fadeInUp} 0.8s ease-out;
@@ -107,7 +107,7 @@ export const ModernDashboardTitle = styled.h1`
   }
 `;
 
-// Overview del bilancio
+// Balance overview
 export const ModernBalanceOverview = styled.div`
   display: grid;
   grid-template-columns: minmax(260px, 0.8fr) minmax(420px, 1.5fr);

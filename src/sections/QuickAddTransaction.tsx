@@ -43,7 +43,7 @@ import {
 } from '../components/multiInsert/SharedStyles';
 
 const DataImportWizard = lazy(() => import('./DataImportWizard'));
-const InvestmentImportWizard = lazy(() => import('../components/InvestmentImportWizard'));
+const InvestmentImportWizard = lazy(() => import('./InvestmentImportWizard'));
 
 /* Bottom-right, above the mobile BottomNavBar (66-74px tall, see index.css). */
 const Fab = styled.button`
@@ -207,7 +207,7 @@ const TypeButton = styled.button`
   font-weight: 600;
   cursor: pointer;
   background: ${p => p.$active ? (p.$income ? 'rgba(34,197,94,0.18)' : 'rgba(239,68,68,0.18)') : 'transparent'};
-  color: ${p => p.$active ? (p.$income ? '#22c55e' : '#ef4444') : p.theme.textColor};
+  color: ${p => p.$active ? (p.$income ? '#22c55e' : p.theme.dangerColor) : p.theme.textColor};
   opacity: ${p => p.$active ? 1 : 0.6};
 `;
 

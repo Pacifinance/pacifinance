@@ -39,7 +39,7 @@ export const LanguageProvider = ({ children }) => {
         return detectBrowserLanguage();
     });
 
-    // Carica le traduzioni per la lingua corrente
+    // Load the translations for the current language
     const translations = getTranslations(language);
 
     useEffect(() => {

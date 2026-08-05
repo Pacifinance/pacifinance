@@ -60,18 +60,18 @@ import {
     PortfolioExtraInfo
 } from '../styles/ModernDashboardStyled';
 import { useDemoServices } from '../hooks/useDemoServices';
-import InvestmentHoldingsPanel from '../components/InvestmentHoldingsPanel';
-import LiquidityAccountsPanel from '../components/LiquidityAccountsPanel';
+import InvestmentHoldingsPanel from './InvestmentHoldingsPanel';
+import LiquidityAccountsPanel from './LiquidityAccountsPanel';
 import PortfolioSection from '../components/PortfolioSection';
 import PortfolioAssetCard from '../components/PortfolioAssetCard';
 import { isVerifiableAssetKey } from '../constants/investmentSchema';
 import { LIQUIDITY_KEYS } from '../constants/balanceSchema';
-const FinancialInsights = lazy(() => import('../components/FinancialInsights'));
-const GoalTracker = lazy(() => import('../components/GoalTracker'));
+const FinancialInsights = lazy(() => import('./FinancialInsights'));
+const GoalTracker = lazy(() => import('./GoalTracker'));
 const OnboardingWelcome = lazy(() => import('./OnboardingWelcome'));
 import DashboardSkeleton from '../components/DashboardSkeleton';
-import DashboardToolbar from '../components/DashboardToolbar';
-import DashboardCompactView from '../components/DashboardCompactView';
+import DashboardToolbar from './DashboardToolbar';
+import DashboardCompactView from './DashboardCompactView';
 import QuickAddTransaction from './QuickAddTransaction';
 import { useDashboardLayout } from '../hooks/useDashboardLayout';
 import { FaExclamationTriangle, FaBullseye } from 'react-icons/fa';
@@ -169,7 +169,7 @@ const Dashboard = ({ theme, userData, isHidden }) => {
 
 
     
-    // Stati per i bilanci
+    // Balance states
     const [stocksValue, setStocksValue] = useState(0);
     const [etfValue, setETFValue] = useState(0);
     const [bankValue, setBankValue] = useState(0);
@@ -221,7 +221,7 @@ const Dashboard = ({ theme, userData, isHidden }) => {
         fetchData();
     }, [userData]);
 
-    // Dati per i bilanci tradizionali (Banca, Contanti, Servizi Digitali)
+    // Data for traditional balances (Bank, Cash, Digital Services)
     const traditionalAssets = useMemo(() => [
         {
             key: 'bank',
@@ -250,7 +250,7 @@ const Dashboard = ({ theme, userData, isHidden }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- liveAssetValue only reads liquidityAccountsByAssetKey, already listed
     ], [translations, bankValue, cashValue, digitalServicesValue, liquidityAccountsByAssetKey]);
 
-    // Fondo di Emergenza - Sezione separata
+    // Emergency Fund - separate section
     const emergencyFundAsset = useMemo(() => ({
         key: 'emergencyFund',
         name: translations.assets.emergencyFund,
@@ -261,7 +261,7 @@ const Dashboard = ({ theme, userData, isHidden }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- liveAssetValue only reads liquidityAccountsByAssetKey, already listed
     }), [translations, emergencyFund, liquidityAccountsByAssetKey]);
 
-    // Dati per gli investimenti (Azioni, ETF, Bitcoin, Crypto, Bonds, Funds, Materie prime)
+    // Data for investments (Stocks, ETF, Bitcoin, Crypto, Bonds, Funds, Commodities)
     const allInvestments = [
         {
             key: 'stocks',
@@ -328,7 +328,7 @@ const Dashboard = ({ theme, userData, isHidden }) => {
         },
     ];
 
-    // Filtra gli investimenti per mostrare solo quelli con valore > 0
+    // Filter investments to show only those with a value > 0
     const investments = allInvestments.filter(investment => investment.value > 0);
 
     const totalTraditional = addCurrency(...traditionalAssets.map(asset => asset.value));
@@ -355,12 +355,12 @@ const Dashboard = ({ theme, userData, isHidden }) => {
         ),
     } : null), [userData]);
 
-    // Calcola percentuale obiettivo emergency fund
+    // Calculate emergency fund goal percentage
     const emergencyFundGoal = userData?.goals?.find(goal => goal.type === 'emergencyFund');
     const emergencyFundTarget = emergencyFundGoal?.target || userData?.limits?.emergencyFundTarget;
     const emergencyFundProgress = emergencyFundTarget ? Math.min((emergencyFundAsset.value / emergencyFundTarget) * 100, 100) : null;
 
-    // Dati per i grafici patrimoniali (memoizzati per evitare ricalcoli)
+    // Data for the net-worth charts (memoized to avoid recalculations)
     const pieData = useMemo(() => [
         { name: translations.dashboard.liquidity, value: totalTraditional, color: assetColors.totalLiquidity },
         ...(totalEmergencySecurity > 0 ? [{ name: translations.dashboard.emergencySecurity, value: totalEmergencySecurity, color: emergencyFundAsset.color }] : []),
@@ -385,7 +385,7 @@ const Dashboard = ({ theme, userData, isHidden }) => {
         }))
     ], [traditionalAssets, emergencyFundAsset, investments]);
 
-    // Dati per il grafico entrate/uscite (memoizzati)
+    // Data for the income/outflow chart (memoized)
     const incExpData = useMemo(() => [
         { 
             name: translations.general.incomes, 
@@ -404,7 +404,7 @@ const Dashboard = ({ theme, userData, isHidden }) => {
         },
     ], [incomesMonth, expensesMonth, savedMonth, translations]);
 
-    // Dati shuffled per la privacy (come nel Dashboard originale)
+    // Shuffled data for privacy (as in the original Dashboard)
     const pieDataShuffle = [...pieData].sort(() => Math.random() - 0.5);
     const detailedPieDataShuffle = [...detailedPieData].sort(() => Math.random() - 0.5);
     const investmentsShuffle = [...investments].sort(() => Math.random() - 0.5);

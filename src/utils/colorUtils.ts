@@ -10,18 +10,18 @@
 export const getLighterSolidColor = (rgbaColor) => {
   if (!rgbaColor || typeof rgbaColor !== 'string') return '#8884d8';
   
-  // Estrae i valori RGB da una stringa rgba e li rende più chiari
+  // Extract the RGB values from an rgba string and lighten them
   const match = rgbaColor.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
   if (match) {
     const [, r, g, b] = match.map(Number);
-    // Rende i colori più chiari mescolandoli con il bianco (aumenta luminosità)
+    // Lighten the colors by blending them with white (increases brightness)
     const lighterR = Math.min(255, Math.round(r + (255 - r) * 0.4));
     const lighterG = Math.min(255, Math.round(g + (255 - g) * 0.4));
     const lighterB = Math.min(255, Math.round(b + (255 - b) * 0.4));
     return `rgb(${lighterR}, ${lighterG}, ${lighterB})`;
   }
   
-  // Se è già un colore hex o rgb, restituiscilo così com'è
+  // If it's already a hex or rgb color, return it as-is
   return rgbaColor;
 };
 
@@ -33,7 +33,7 @@ export const getLighterSolidColor = (rgbaColor) => {
  */
 export const getGrayscaleColor = (rgbaColor, index = 0) => {
   if (!rgbaColor || typeof rgbaColor !== 'string') {
-    // Genera grigi diversi basati sull'indice
+    // Generate different grays based on the index
     const grayValue = 120 + (index * 25) % 100;
     return `rgb(${grayValue}, ${grayValue}, ${grayValue})`;
   }
@@ -41,9 +41,9 @@ export const getGrayscaleColor = (rgbaColor, index = 0) => {
   const match = rgbaColor.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
   if (match) {
     const [, r, g, b] = match.map(Number);
-    // Converti in scala di grigi usando la formula di luminanza
+    // Convert to grayscale using the luminance formula
     const gray = Math.round(0.299 * r + 0.587 * g + 0.114 * b);
-    // Aggiungi variazione basata sull'indice per distinguere le sezioni
+    // Add variation based on the index to distinguish sections
     const adjustedGray = Math.min(255, Math.max(50, gray + (index * 30) % 80));
     return `rgb(${adjustedGray}, ${adjustedGray}, ${adjustedGray})`;
   }
@@ -58,7 +58,7 @@ export const getGrayscaleColor = (rgbaColor, index = 0) => {
  */
 export const getRandomGrayscaleColor = (index = 0) => {
   const baseGray = Math.floor(Math.random() * 256);
-  // Aggiungi una leggera variazione basata sull'indice se fornito
+  // Add a slight variation based on the index, if provided
   const adjustedGray = Math.min(255, Math.max(0, baseGray + (index * 10) % 50));
   return `rgb(${adjustedGray}, ${adjustedGray}, ${adjustedGray})`;
 };

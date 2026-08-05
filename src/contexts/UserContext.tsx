@@ -97,7 +97,7 @@ export const UserProvider = ({ children }) => {
     return () => apiClient.interceptors.response.eject(interceptor);
   }, [apiClient]);
 
-  // All'avvio, verifica se la sessione è valida tramite cookie HTTP-only
+  // On startup, check whether the session is valid via the HTTP-only cookie
   // In demo mode, skip API session check entirely
   useEffect(() => {
     const checkSession = async () => {
@@ -139,7 +139,7 @@ export const UserProvider = ({ children }) => {
     // Check both state and sessionStorage as safety net against race conditions
     if (isDemoMode || isDemoSession()) return;
 
-    // Quando cambia autenticazione o update, carica i dati utente se autenticato
+    // When authentication or an update changes, load the user data if authenticated
     const fetchUserData = async () => {
       if (!isAuthenticated) {
         setUserData(null);
@@ -282,7 +282,7 @@ export const UserProvider = ({ children }) => {
             });
         }
       } catch (error) {
-        console.error('Errore durante le richieste API:', error);
+        console.error('Error during API requests:', error);
         setError(error);
       }
     };
@@ -349,7 +349,7 @@ export const UserProvider = ({ children }) => {
         last12MonthsData: buildChartData(balancesData, currentDate),
       } : prev);
     } catch (error) {
-      console.error('Errore durante il caricamento dello storico completo dei saldi:', error);
+      console.error('Error loading the full balance history:', error);
     }
   };
 
@@ -361,7 +361,7 @@ export const UserProvider = ({ children }) => {
       const monthlyTotalsAllTime = await financeService.getMonthlyTotals('all');
       setUserData(prev => prev ? { ...prev, monthlyTotalsAllTime } : prev);
     } catch (error) {
-      console.error('Errore durante il caricamento dei totali mensili storici:', error);
+      console.error('Error loading the historical monthly totals:', error);
     }
   };
 
@@ -380,7 +380,7 @@ export const UserProvider = ({ children }) => {
         extraMonths: { ...(prev.extraMonths || {}), [monthKey]: transactions },
       } : prev);
     } catch (error) {
-      console.error('Errore durante il caricamento del mese richiesto:', error);
+      console.error('Error loading the requested month:', error);
     }
   };
 

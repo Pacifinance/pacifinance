@@ -7,7 +7,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
-// Mock dei contexts
+// Mock the contexts
 vi.mock('../../contexts/LanguageContext', () => ({
   LanguageContext: {
     Provider: ({ children, value: _value }) => <div data-testid="language-provider">{children}</div>,
@@ -34,7 +34,7 @@ vi.mock('../../hooks/useAuth', () => ({
   useAuth: () => ({ isAuthenticated: false, isLoading: false })
 }));
 
-// Mock delle pagine
+// Mock the pages
 vi.mock('../../pages/LandingPage', () => ({
   default: () => <div data-testid="landing-page">Landing Page</div>
 }));

@@ -26,7 +26,7 @@ export default function CookiePolicyPage() {
         <PolicyContainer theme={theme}>
           <div className="max-w-4xl mx-auto">
             <PolicyHeader theme={theme}>
-              <h1 style={{ color: '#079164' }}>
+              <h1 style={{ color: theme.secondaryColor }}>
                 {language === 'it' ? 'Politica sui Cookie' : 'Cookie Policy'}
               </h1>
               <div className="last-updated">Last updated: {new Date().toLocaleDateString(language === 'it' ? 'it-IT' : 'en-US')}</div>
@@ -34,7 +34,7 @@ export default function CookiePolicyPage() {
 
             <div className="space-y-6">
               <section>
-                <h2 className="text-2xl font-semibold mb-4" style={{ color: '#079164' }}>
+                <h2 className="text-2xl font-semibold mb-4" style={{ color: theme.secondaryColor }}>
                   {language === 'it' ? 'Cosa sono i Cookie' : 'What are Cookies'}
                 </h2>
                 <p className="mb-4 leading-relaxed">
@@ -46,7 +46,7 @@ export default function CookiePolicyPage() {
               </section>
 
               <section>
-                <h2 className="text-2xl font-semibold mb-4" style={{ color: '#079164' }}>
+                <h2 className="text-2xl font-semibold mb-4" style={{ color: theme.secondaryColor }}>
                   {language === 'it' ? 'Come Utilizziamo i Cookie' : 'How We Use Cookies'}
                 </h2>
                 <p className="mb-4 leading-relaxed">
@@ -62,7 +62,7 @@ export default function CookiePolicyPage() {
               </section>
 
               <section>
-                <h2 className="text-2xl font-semibold mb-4" style={{ color: '#079164' }}>
+                <h2 className="text-2xl font-semibold mb-4" style={{ color: theme.secondaryColor }}>
                   {language === 'it' ? 'Gestione dei Cookie' : 'Cookie Management'}
                 </h2>
                 <p className="leading-relaxed">

@@ -351,7 +351,7 @@ const ActionButton = styled.button`
   border: 1px solid ${props => props.variant === 'danger' 
     ? 'rgba(239, 68, 68, 0.3)' 
     : `${props.theme.secondaryColor}30`};
-  color: ${props => props.variant === 'danger' ? '#ef4444' : props.theme.secondaryColor};
+  color: ${props => props.variant === 'danger' ? props.theme.dangerColor : props.theme.secondaryColor};
   padding: 0.5rem 1rem;
   border-radius: 8px;
   font-size: 0.8rem;
@@ -494,7 +494,7 @@ const ProfileSettings = ({ theme }) => {
   const { showSuccess, showError } = useToast();
   const { userService, goalService, investmentService, recurringTransactionService } = useDemoServices();
   
-  // Stati per i limiti e controlli
+  // States for limits and controls
   const [settings, setSettings] = useState({
     monthlySpendingLimit: 2000,
     monthlySpendingLimitEnabled: true,
@@ -517,7 +517,7 @@ const ProfileSettings = ({ theme }) => {
     notificationsEnabled: true
   });
 
-  // Stati per gli obiettivi
+  // States for goals
   const [goals, setGoals] = useState([]);
   const [monthlyTargetInput, setMonthlyTargetInput] = useState('');
   const [monthlyTargetPercentInput, setMonthlyTargetPercentInput] = useState('');
@@ -525,7 +525,7 @@ const ProfileSettings = ({ theme }) => {
   const [newCategoryLimit, setNewCategoryLimit] = useState({ name: '', value: '' });
   const [monthlyFixedExpenses, setMonthlyFixedExpenses] = useState(0);
   
-  // Stati per il modal di modifica
+  // States for the edit modal
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingGoal, setEditingGoal] = useState(null);
   const [modalGoalData, setModalGoalData] = useState({
@@ -553,10 +553,10 @@ const ProfileSettings = ({ theme }) => {
     });
   };
 
-  // Carica i dati dal UserContext al montaggio del componente
+  // Load data from UserContext when the component mounts
   useEffect(() => {
     if (userData) {
-      // Carica i settings dall'UserContext usando i selector
+      // Load settings from UserContext using the selectors
       setSettings({
         monthlySpendingLimit: fromEUR(getMonthlySpendingLimit(userData)),
         monthlySpendingLimitEnabled: userData?.limits?.monthlySpendingLimitEnabled ?? true,
@@ -576,13 +576,13 @@ const ProfileSettings = ({ theme }) => {
         positionConcentrationLimit: userData?.limits?.positionConcentrationLimit ?? '',
         assetCategoryConcentrationLimit: userData?.limits?.assetCategoryConcentrationLimit ?? '',
         annualPassiveIncomeGoal: userData?.limits?.annualPassiveIncomeGoal == null ? '' : fromEUR(userData.limits.annualPassiveIncomeGoal),
-        notificationsEnabled: true // Questo potrebbe venire dal backend in futuro
+        notificationsEnabled: true // This could come from the backend in the future
       });
     }
   }, [userData, fromEUR]);
 
-  // Carica i goal reali dal backend (indipendente da userData, stesso pattern
-  // già usato per holding/conti dettagliati).
+  // Load the real goals from the backend (independent of userData, same pattern
+  // already used for detailed holdings/accounts).
   useEffect(() => {
     refreshGoals();
     recurringTransactionService.getRecurring()
@@ -616,8 +616,8 @@ const ProfileSettings = ({ theme }) => {
   };
 
 
-  // Aggiorna i "limits" (expenses_limit/savings_percent/emergency_fund_goal) nel
-  // UserContext locale dopo il salvataggio — invariato, non riguarda i goals.
+  // Update the "limits" (expenses_limit/savings_percent/emergency_fund_goal) in the
+  // local UserContext after saving — unchanged, not related to the goals.
   const updateUserContextData = (newData) => {
     setUserData(prev => ({
       ...prev,
@@ -632,12 +632,12 @@ const ProfileSettings = ({ theme }) => {
 
   const handleSaveSettings = async () => {
     try {
-      // Prepara i dati per il backend con validazione
+      // Prepare the data for the backend with validation
       const expensesLimit = settings.monthlySpendingLimitEnabled && settings.monthlySpendingLimit >= 0 ? toEUR(settings.monthlySpendingLimit) : -1;
       const savingsPercent = settings.savingsGoalPercentageEnabled && settings.savingsGoalPercentage >= 0 && settings.savingsGoalPercentage <= 100 ? settings.savingsGoalPercentage : -1;
       const emergencyFundGoal = settings.emergencyFundTargetEnabled && settings.emergencyFundTarget >= 0 ? toEUR(settings.emergencyFundTarget) : -1;
 
-      // Invia i dati al backend
+      // Send the data to the backend
       await userService.saveGoals({
         expenses_limit: expensesLimit,
         savings_percent: savingsPercent,
@@ -656,7 +656,7 @@ const ProfileSettings = ({ theme }) => {
         annual_passive_income_goal: settings.annualPassiveIncomeGoal === '' ? null : toEUR(Number(settings.annualPassiveIncomeGoal)),
       });
 
-      // Aggiorna il UserContext locale
+      // Update the local UserContext
       updateUserContextData({
         limits: {
           ...userData.limits,
@@ -682,10 +682,10 @@ const ProfileSettings = ({ theme }) => {
         }
       });
 
-      // Mostra messaggio di successo
+      // Show a success message
       showSuccess(language === 'it' ? 'Impostazioni salvate con successo!' : 'Settings saved successfully!');
     } catch (error) {
-      console.error('Errore nel salvataggio delle impostazioni:', error);
+      console.error('Error saving settings:', error);
       showError(language === 'it' ? 'Errore nel salvataggio delle impostazioni' : 'Error saving settings');
     }
   };
@@ -711,7 +711,7 @@ const ProfileSettings = ({ theme }) => {
       await goalService.deleteGoal({ id: goalId });
       refreshGoals();
     } catch (error) {
-      console.error('Errore eliminazione obiettivo:', error);
+      console.error('Error deleting goal:', error);
       showError(language === 'it' ? 'Errore nell\'eliminazione dell\'obiettivo' : 'Error deleting goal');
     }
   };
@@ -737,7 +737,7 @@ const ProfileSettings = ({ theme }) => {
       refreshGoals();
       closeModal();
     } catch (error) {
-      console.error('Errore salvataggio obiettivo:', error);
+      console.error('Error saving goal:', error);
       showError(language === 'it' ? 'Errore nel salvataggio dell\'obiettivo' : 'Error saving goal');
     }
   };
@@ -961,7 +961,7 @@ const ProfileSettings = ({ theme }) => {
         </Section>
       </SectionsGrid>
 
-      {/* Modal per modifica obiettivo */}
+      {/* Goal edit modal */}
       {isModalOpen && (
         <Modal onClick={closeModal}>
           <ModalContent theme={theme} onClick={(e) => e.stopPropagation()}>

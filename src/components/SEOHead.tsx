@@ -13,13 +13,13 @@ const SEOHead = ({
   ogUrl,
   twitterCard = "summary_large_image",
   noindex = false,
-  language = 'en', // Lingua corrente della pagina
-  alternateLanguages = [] // Array di {lang, url} per hreflang
+  language = 'en', // Current page language
+  alternateLanguages = [] // Array of {lang, url} for hreflang
 }) => {
   const siteUrl = "https://pacifinance.com";
   const defaultImage = `${siteUrl}/PacifinanceLogoPNG3NoBg.webp`;
-  
-  // Genera automaticamente hreflang se non fornito
+
+  // Automatically generate hreflang if not provided
   const hreflangLinks = alternateLanguages.length > 0 
     ? alternateLanguages
     : [

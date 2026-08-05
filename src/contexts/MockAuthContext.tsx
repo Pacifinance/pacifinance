@@ -15,8 +15,8 @@ export const useMockAuth = () => {
 };
 
 // ── Helper: build a tag object from i18n keys ──
-// Genera { index, label, type? } come l'API reale: i tag non portano più il
-// campo translations, il display passa da translateTag/i18n tramite la label.
+// Generates { index, label, type? } like the real API: tags no longer carry a
+// translations field, display now goes through translateTag/i18n via the label.
 const buildTag = (label, type, index) => ({
     index,
     label,
@@ -55,9 +55,9 @@ const buildProfileTags = (section) =>
 const getOutflowTag = (label) => outflowsTags.find(t => t.label === label) || outflowsTags[0];
 const getPaymentTag = (label) => paymentTags.find(t => t.label === label) || paymentTags[0];
 
-// Mock data compatibili con UserContext structure
+// Mock data compatible with the UserContext structure
 export const mockUserData = {
-    // Core user info (come UserContext)
+    // Core user info (same as UserContext)
     userId: 'dev-user-123',
     userType: 'premium',
     username: 'Developer User',
@@ -76,7 +76,7 @@ export const mockUserData = {
         communityPriceSubmissions: [],
     },
 
-    // User profile data (come UserContext) — values from i18n
+    // User profile data (same as UserContext) — values from i18n
     profile: {
         nationality: { key: 107, value: it.tags.country?.['italy'] || 'Italia' },
         whereWorks: { key: 107, value: it.tags.country?.['italy'] || 'Italia' },
@@ -92,9 +92,9 @@ export const mockUserData = {
         preferredCurrency: { key: 0, value: 'EUR' }
     },
     
-    // Balance data strutturata come UserContext
+    // Balance data structured like UserContext
     balances: [
-        // Mese corrente [0]
+        // Current month [0]
         {
             date: new Date().toISOString(),
             balance: {
@@ -130,7 +130,7 @@ export const mockUserData = {
                 totalValue: 88250
             }
         },
-        // Altri mesi fino a [12] per anno precedente
+        // Remaining months up to [12] for the previous year
         ...Array.from({ length: 11 }, (_, i) => {
             const date = new Date();
             date.setMonth(date.getMonth() - (i + 2));
@@ -154,7 +154,7 @@ export const mockUserData = {
         })
     ],
     
-    // Expense and income data (come UserContext)
+    // Expense and income data (same as UserContext)
     expenses: {
         allOutflows: (() => {
             // Generate 12 months of outflow transactions with recurring patterns
@@ -279,14 +279,14 @@ export const mockUserData = {
     preYearSameMonthDate: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
     preMonthDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
     
-    // Date helper (aggiunto per compatibilità)
+    // Date helper (added for compatibility)
     currentDate: new Date().toISOString().split('T')[0],
-    
-    // Arrays legacy per compatibilità diretta con userData
+
+    // Legacy arrays for direct compatibility with userData
     outflowsArray: [2100, 1950, 2200, 1800, 2300, 1750, 2150, 1900, 2050, 1850, 2250, 1700, 2000],
     incomesArray: [2800, 2750, 2900, 2650, 2850, 2700, 2800, 2750, 2900, 2650, 2850, 2700, 2600],
-    
-    // Tags per categorie (come UserContext) — derived from i18n files
+
+    // Tags for categories (same as UserContext) — derived from i18n files
     tags: {
         outflowsTags,
         incomesTags,
@@ -310,11 +310,11 @@ export const mockUserData = {
         ]
     },
     
-    // Dati per grafici ultimi 12 mesi
+    // Data for the last-12-months charts
     last12MonthsData: Array.from({ length: 12 }, (_, i) => {
         const baseDate = new Date();
         baseDate.setMonth(baseDate.getMonth() - (11 - i));
-        const isCurrentMonth = i === 11; // Ultimo elemento = mese corrente
+        const isCurrentMonth = i === 11; // Last element = current month
         
         return {
             month: baseDate.toISOString().split('T')[0].slice(0, 7),
@@ -333,7 +333,7 @@ export const mockUserData = {
         };
     }),
     
-    // Ranking data per la pagina comparison
+    // Ranking data for the comparison page
     rankings: {
         balance: Math.floor(Math.random() * 40) + 60, // 60-100%
         incomes: Math.floor(Math.random() * 35) + 55, // 55-90%
@@ -343,7 +343,7 @@ export const mockUserData = {
         outflowsSimilar: Math.floor(Math.random() * 40) + 30 // 30-70%
     },
     
-    // Goals and limits per Financial Insights
+    // Goals and limits for Financial Insights
     goals: [
         { 
             id: 1, 
@@ -393,7 +393,7 @@ export const mockUserData = {
         notificationsEnabled: true
     },
     
-    // Assets per Financial Insights
+    // Assets for Financial Insights
     assets: [
         { typology: 'cash', value: 500, date: new Date().toISOString().split('T')[0] },
         { typology: 'bank', value: 20000, date: new Date().toISOString().split('T')[0] },
@@ -432,7 +432,7 @@ export const mockUserData = {
         }
     },
     
-    // Date references strutturate come UserContext
+    // Date references structured like UserContext
     dates: {
         current: new Date().toISOString(),
         preMonth: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
@@ -468,7 +468,7 @@ export const MockAuthProvider = ({ children }) => {
         setIsUpdated(value);
     };
 
-    // Mock functions per compatibilità con AppRouter
+    // Mock functions for compatibility with AppRouter
     const loadUserData = () => {
         handleSetIsUpdated(false);
     };
@@ -482,7 +482,7 @@ export const MockAuthProvider = ({ children }) => {
         handleSetIsUpdated,
         isLoading,
         loadUserData,
-        isDevelopment: true // Flag per distinguere mock da produzione
+        isDevelopment: true // Flag to distinguish mock from production
     };
 
     return (

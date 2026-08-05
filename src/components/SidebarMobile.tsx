@@ -20,12 +20,12 @@ const SidebarMobile = ({
     const navigate = useLocalizedNavigate();
     const location = useLocation();
     
-    // Guardia per verificare che theme e translations siano disponibili
+    // Guard to check that theme and translations are available
     if (!theme || !translations) {
         return null;
     }
 
-    // Funzione per verificare se una pagina è attiva
+    // Function to check if a page is active
     const isActivePage = (path) => {
         return location.pathname === path;
     };
@@ -52,7 +52,7 @@ const SidebarMobile = ({
                 }}
                 onClick={(e) => {
                     e.stopPropagation();
-                    // Chiudi l'account dropdown se aperto
+                    // Close the account dropdown if open
                     if (showDropdown) {
                         setShowDropdown(false);
                     }
@@ -276,7 +276,7 @@ const SidebarMobile = ({
                         theme={theme}
                         title={translations.sidebar.account.title}
                         onClick={() => {
-                            // Chiudi l'hamburger menu se aperto
+                            // Close the hamburger menu if open
                             if (isSideBarMenuOpen) {
                                 setIsSideBarMenuOpen(false);
                             }

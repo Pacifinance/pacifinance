@@ -1,6 +1,6 @@
 import React, { useContext, lazy, Suspense } from "react";
 import { useLocalizedNavigate } from "../hooks/useLocalizedNavigate";
-// Lazy import delle icone MUI per performance
+// Lazy import of MUI icons for performance
 import { 
   Lock as LockIcon,
   CheckCircle as CheckCircleIcon, 
@@ -15,8 +15,8 @@ import {
   CurrencyExchange as CurrencyExchangeIcon,
   ShowChart as ShowChartIcon
 } from "@mui/icons-material";
-// Lazy loading dei componenti non critici per il First Contentful Paint
-const ConsentBanner = lazy(() => import("../components/ConsentBanner"));
+// Lazy loading of non-critical components for the First Contentful Paint
+const ConsentBanner = lazy(() => import("./ConsentBanner"));
 const BuyMeACoffeeWidget = lazy(() => import("../components/BuyMeACoffeeWidget"));
 import { LanguageContext } from "../contexts/LanguageContext";
 

@@ -1,3 +1,5 @@
+// Belongs in components/ despite reading ThemeContext: it's a generic, cross-feature
+// primitive, not tied to a business domain (see CONTRIBUTING.md's components/ vs sections/ rule).
 import React, { useContext } from 'react';
 import styled from 'styled-components';
 import { ThemeContext } from '../contexts/ThemeContext';

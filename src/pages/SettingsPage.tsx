@@ -20,6 +20,7 @@ import Sidebar from "../sections/Sidebar";
 import ToggleModeButton from "../components/ToggleModeButton";
 import PrivacyToggleModeButton from "../components/PrivacyToggleModeButton";
 import PWAInstallGuide from "../components/PWAInstallGuide";
+import NotificationPreferences from "../sections/NotificationPreferences";
 import LanguageSelector from "../components/LanguageSelector";
 import SettingsGroup, { SettingsSubHeading, SettingsDivider } from "../components/SettingsGroup";
 import SettingsRow from "../components/SettingsRow";
@@ -63,6 +64,7 @@ import {
     faPen,
     faCheck,
     faLifeRing
+    ,faBell
 } from "@fortawesome/free-solid-svg-icons";
 import { openPrintableRecoveryCard, downloadRecoveryCardText } from "../utils/recoveryCard";
 import { usePastDateBalancePref, PAST_DATE_BALANCE_CHOICES } from "../hooks/usePastDateBalancePref";
@@ -155,7 +157,7 @@ const SettingsPage = () => {
     const [newCategoryLabel, setNewCategoryLabel] = useState("");
     const [isCreatingCategory, setIsCreatingCategory] = useState(false);
 
-    // Stati per il filtro dati export
+    // State for the export data filter
     const [exportFilter, setExportFilter] = useState("all");
     const [selectedMonth, setSelectedMonth] = useState("");
     const [selectedYear, setSelectedYear] = useState("");
@@ -176,12 +178,12 @@ const SettingsPage = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isDemo]);
 
-    // Guardia per verificare che theme e translations siano disponibili
+    // Guard to make sure theme and translations are available
     if (!theme || !translations || !translations.sidebar?.settings) {
         return null;
     }
 
-    // Genera opzioni per mesi e anni
+    // Generate month and year options
     const months = [
         { value: 1, label: language === 'it' ? 'Gennaio' : 'January' },
         { value: 2, label: language === 'it' ? 'Febbraio' : 'February' },
@@ -339,23 +341,23 @@ const SettingsPage = () => {
         );
     };
 
-    // Funzioni per l'export dei dati
+    // Data export functions
     const handleExportData = async (format) => {
         setExportLoading(true);
 
         try {
             if (!userData || typeof userData !== 'object') {
-                throw new Error('Dati utente non disponibili per l\'export');
+                throw new Error('User data not available for export');
             }
 
             let completeUserData = userData;
 
-            // Se l'utente è reale (non mock), fai una richiesta API per ottenere tutti i dati
+            // If the user is real (not mock), fetch all data from the API
             if (userData.userType !== 'mock') {
                 try {
                     completeUserData = await userService.getAllData();
                 } catch {
-                    // Se l'API fallisce, usa i dati già disponibili nel context
+                    // If the API call fails, fall back to the data already in context
                     completeUserData = userData;
                 }
             }
@@ -380,7 +382,7 @@ const SettingsPage = () => {
                     await exportToPDF(completeUserData, language, filterOptions, formatAmount, currencySymbol);
                     break;
                 default:
-                    throw new Error('Formato non supportato');
+                    throw new Error('Unsupported format');
             }
             showSuccess(
                 language === 'it'
@@ -396,7 +398,7 @@ const SettingsPage = () => {
                 errorMsg = language === 'it'
                     ? 'Errore di connessione al server'
                     : 'Server connection error';
-            } else if (error.message?.includes('Dati utente non disponibili')) {
+            } else if (error.message?.includes('User data not available')) {
                 errorMsg = language === 'it'
                     ? 'Dati utente non disponibili'
                     : 'User data not available';
@@ -440,7 +442,7 @@ const SettingsPage = () => {
                             textAlign: "center",
                             fontSize: isMobileScreen ? "1.4rem" : "1.7rem",
                             marginBottom: "1.25rem",
-                            background: "linear-gradient(135deg, #079164 0%, #0a9c73 100%)",
+                            background: `linear-gradient(135deg, ${theme.secondaryColor} 0%, #0a9c73 100%)`,
                             WebkitBackgroundClip: "text",
                             WebkitTextFillColor: "transparent",
                             backgroundClip: "text",
@@ -596,7 +598,7 @@ const SettingsPage = () => {
                             </select>
                         </SettingsGroup>
 
-                        {/* ═══ 2. Privacy — nascondi importi ora + default all'accesso ═══ */}
+                        {/* ═══ 2. Privacy — hide amounts now + default at login ═══ */}
                         <SettingsGroup
                             theme={theme}
                             icon={faEyeSlash}
@@ -885,7 +887,7 @@ const SettingsPage = () => {
                                                             borderRadius: "8px",
                                                             padding: "0.45rem 0.6rem",
                                                             background: theme.mode === 'dark' ? 'rgba(239,68,68,0.18)' : 'rgba(239,68,68,0.1)',
-                                                            color: "#ef4444",
+                                                            color: theme.dangerColor,
                                                             cursor: busy ? "default" : "pointer"
                                                         }}
                                                     >
@@ -901,7 +903,7 @@ const SettingsPage = () => {
                             )}
                         </SettingsGroup>
 
-                        {/* ═══ 4. Gestione Dati — esporta / importa ═══ */}
+                        {/* ═══ 4. Data Management — export / import ═══ */}
                         <SettingsGroup
                             theme={theme}
                             icon={faDownload}
@@ -1163,7 +1165,7 @@ const SettingsPage = () => {
                                     theme={theme}
                                     onClick={() => setShowImportWizard(true)}
                                     style={{
-                                        backgroundColor: "#079164",
+                                        backgroundColor: theme.secondaryColor,
                                         color: "white",
                                         border: "none",
                                         padding: "0.8rem 1.5rem",
@@ -1604,6 +1606,14 @@ const SettingsPage = () => {
                             </div>
                         </SettingsGroup>
 
+                        <SettingsGroup
+                            theme={theme}
+                            icon={faBell}
+                            title={translations.notifications.title}
+                        >
+                            <NotificationPreferences theme={theme} />
+                        </SettingsGroup>
+
                         {/* ═══ 6. App e Assistenza — PWA install + bug report ═══ */}
                         <SettingsGroup
                             theme={theme}
@@ -1743,30 +1753,6 @@ const SettingsPage = () => {
                                 </div>
                             )}
                         </SettingsGroup>
-
-                        <div style={{
-                            textAlign: "center",
-                            marginTop: "1.5rem",
-                            padding: "1rem",
-                            backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)',
-                            borderRadius: "12px",
-                            border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'}`,
-                        }}>
-                            <MyButton
-                                theme={theme}
-                                onClick={() => navigate("/dashboard")}
-                                style={{
-                                    padding: "0.7rem 1.5rem",
-                                    borderRadius: "10px",
-                                    fontSize: "0.9rem",
-                                    fontWeight: "600",
-                                    boxShadow: "0 3px 10px rgba(7, 145, 100, 0.25)",
-                                    transition: "all 0.3s ease"
-                                }}
-                            >
-                                {translations.sidebar.settings.backToDashboard || "Torna alla Dashboard"}
-                            </MyButton>
-                        </div>
                     </div>
                 </StyledSection>
             </Section>

@@ -1,6 +1,9 @@
 /**
  * Localized Link Component
  * Wrapper around react-router-dom Link that automatically adds language prefix
+ *
+ * Belongs in components/ despite reading LanguageContext: it's a generic, cross-feature
+ * primitive, not tied to a business domain (see CONTRIBUTING.md's components/ vs sections/ rule).
  */
 
 import React, { useContext } from 'react';

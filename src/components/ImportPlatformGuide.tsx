@@ -1,3 +1,7 @@
+// Belongs in components/ despite reading LanguageContext: it's a generic, fully
+// prop-driven guide reused across two unrelated import flows (investments and
+// expenses/incomes), not tied to one business domain (see CONTRIBUTING.md's
+// components/ vs sections/ rule).
 import React, { useContext, useState } from 'react';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';

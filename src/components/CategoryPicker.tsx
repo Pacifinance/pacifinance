@@ -1,3 +1,6 @@
+// Belongs in components/ despite reading LanguageContext: it's a generic picker reused
+// across income/outflow/recurring sections, not tied to one business domain (see
+// CONTRIBUTING.md's components/ vs sections/ rule).
 import React, { useContext, useState, useEffect } from 'react';
 import { Select, MenuItem } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';

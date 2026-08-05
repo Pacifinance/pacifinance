@@ -19,8 +19,8 @@ const TagType = {
 
 /**
  * Maps a "tags" row to the public Tag shape used by the frontend.
- * Le traduzioni non vivono più a DB: il frontend le risolve dai locale i18n
- * tramite la label (src/data/tagTranslations.ts).
+ * Translations no longer live in the DB: the frontend resolves them from the
+ * i18n locales via the label (src/data/tagTranslations.ts).
  */
 function toTag(row: {label: string, client_index: number, type: number}) {
     return {label: row.label, index: row.client_index, type: row.type}

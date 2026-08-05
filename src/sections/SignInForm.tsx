@@ -84,7 +84,7 @@ export default function SignInForm() {
       //username could be user_id o username
       const response = await userService.login(username, password);
       if (response.status === 200) {
-        handleSetIsAuthenticated(true); // Imposta l'autenticazione dell'utente su true
+        handleSetIsAuthenticated(true); // Set the user's authentication to true
         navigate("/dashboard"); //direct redirect
         //window.umami.trackEvent('signIn', 'SignIn');
       } else {

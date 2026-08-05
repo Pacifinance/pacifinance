@@ -149,7 +149,7 @@ const CellValue = styled.div`
 
 const CellTrend = styled.span`
   font-size: 0.68rem; font-weight: 600;
-  color: ${p => p.$positive ? '#10b981' : p.$neutral ? (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.35)') : '#ef4444'};
+  color: ${p => p.$positive ? p.theme.successColor : p.$neutral ? (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.35)') : p.theme.dangerColor};
   display: flex; align-items: center; justify-content: center; gap: 0.1rem; margin-top: 0.1rem;
   svg { width: 10px; height: 10px; }
 `;
@@ -281,8 +281,8 @@ const TrendBadge = styled.span`
   font-size: 0.73rem; font-weight: 600; padding: 0.1rem 0.3rem; border-radius: 4px;
   text-align: right; justify-content: flex-end;
   ${p => {
-    if (p.$trend === 'down') return `color: #10b981; background: #10b98115;`;
-    if (p.$trend === 'up') return `color: #ef4444; background: #ef444415;`;
+    if (p.$trend === 'down') return `color: ${p.theme.successColor}; background: #10b98115;`;
+    if (p.$trend === 'up') return `color: ${p.theme.dangerColor}; background: #ef444415;`;
     return `color: ${p.theme.mode === 'dark' ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.35)'}; background: transparent;`;
   }}
   svg { width: 10px; height: 10px; }
@@ -560,7 +560,7 @@ export default function DetailedOutflowAnalysis({ theme, userData, isHidden = fa
   // here - a small fixed palette for the handful of known payment types instead.
   const getPaymentColor = (key) => ({
     subscription: '#6c5ce7',
-    'single payment': '#079164',
+    'single payment': theme.secondaryColor,
     cash: '#f39c12',
     installment: '#3498db',
     'periodic payment': '#e74c3c',

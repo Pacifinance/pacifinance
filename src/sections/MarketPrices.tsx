@@ -443,7 +443,7 @@ const PriceChange = styled.div`
   justify-content: flex-end;
   gap: 0.15rem;
   margin-top: 0.15rem;
-  color: ${p => p.$positive ? '#10b981' : p.$neutral ? (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.35)') : '#ef4444'};
+  color: ${p => p.$positive ? p.theme.successColor : p.$neutral ? (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.35)') : p.theme.dangerColor};
 
   svg { width: 12px; height: 12px; }
 `;
@@ -675,7 +675,7 @@ const DetailChange = styled.div`
   justify-content: flex-end;
   gap: 0.25rem;
   margin-top: 0.25rem;
-  color: ${p => p.$positive ? '#10b981' : p.$neutral ? (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.35)') : '#ef4444'};
+  color: ${p => p.$positive ? p.theme.successColor : p.$neutral ? (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.35)') : p.theme.dangerColor};
 
   svg { width: 16px; height: 16px; }
 
@@ -2009,18 +2009,18 @@ export default function MarketPrices() {
               <SummaryLabel theme={theme}>{t.summary?.avgChange7d || 'Avg 7D'}</SummaryLabel>
               <SummaryValue
                 theme={theme}
-                $color={cryptoSummary.avgChange >= 0 ? '#10b981' : '#ef4444'}
+                $color={cryptoSummary.avgChange >= 0 ? theme.successColor : theme.dangerColor}
               >
                 {fmtPct(cryptoSummary.avgChange)}
               </SummaryValue>
             </SummaryCard>
             <SummaryCard theme={theme}>
               <SummaryLabel theme={theme}>{t.summary?.gainers || 'Gainers'}</SummaryLabel>
-              <SummaryValue theme={theme} $color="#10b981">{cryptoSummary.gainers}</SummaryValue>
+              <SummaryValue theme={theme} $color={theme.successColor}>{cryptoSummary.gainers}</SummaryValue>
             </SummaryCard>
             <SummaryCard theme={theme}>
               <SummaryLabel theme={theme}>{t.summary?.losers || 'Losers'}</SummaryLabel>
-              <SummaryValue theme={theme} $color="#ef4444">{cryptoSummary.losers}</SummaryValue>
+              <SummaryValue theme={theme} $color={theme.dangerColor}>{cryptoSummary.losers}</SummaryValue>
             </SummaryCard>
           </SummaryRow>
         )}
@@ -2055,7 +2055,7 @@ export default function MarketPrices() {
             // Prefer change24h for color/display; fall back to change7d
             const displayChange = coin.change24h != null ? coin.change24h : coin.change7d;
             const isPositive = displayChange >= 0;
-            const sparkColor = coin.change7d >= 0 ? '#10b981' : '#ef4444';
+            const sparkColor = coin.change7d >= 0 ? theme.successColor : theme.dangerColor;
 
             return (
               <AssetCard key={coin.id} theme={theme} onClick={() => setSelectedAsset(coin)}>
@@ -2119,7 +2119,7 @@ export default function MarketPrices() {
   const renderDetailView = (asset) => {
     const displayChange = asset.change24h != null ? asset.change24h : asset.change7d;
     const isPositive = displayChange >= 0;
-    const sparkColor = asset.change7d >= 0 ? '#10b981' : '#ef4444';
+    const sparkColor = asset.change7d >= 0 ? theme.successColor : theme.dangerColor;
     const sparkline = asset.sparkline || [];
     const td = t?.detail || {};
 
@@ -2288,13 +2288,13 @@ export default function MarketPrices() {
               {asset.high24h != null && (
                 <StatItem theme={theme}>
                   <StatLabel theme={theme}>{td.high24h || '24H High'}</StatLabel>
-                  <StatValue theme={theme} $color="#10b981">{fmtPrice(asset.high24h)}</StatValue>
+                  <StatValue theme={theme} $color={theme.successColor}>{fmtPrice(asset.high24h)}</StatValue>
                 </StatItem>
               )}
               {asset.low24h != null && (
                 <StatItem theme={theme}>
                   <StatLabel theme={theme}>{td.low24h || '24H Low'}</StatLabel>
-                  <StatValue theme={theme} $color="#ef4444">{fmtPrice(asset.low24h)}</StatValue>
+                  <StatValue theme={theme} $color={theme.dangerColor}>{fmtPrice(asset.low24h)}</StatValue>
                 </StatItem>
               )}
               {asset.circulatingSupply != null && (
@@ -2331,7 +2331,7 @@ export default function MarketPrices() {
             </StatItem>
             <StatItem theme={theme}>
               <StatLabel theme={theme}>{td.change || 'Change'}</StatLabel>
-              <StatValue theme={theme} $color={pctChange >= 0 ? '#10b981' : '#ef4444'}>
+              <StatValue theme={theme} $color={pctChange >= 0 ? theme.successColor : theme.dangerColor}>
                 {fmtPct(pctChange)}
               </StatValue>
             </StatItem>
@@ -2343,11 +2343,11 @@ export default function MarketPrices() {
                 </StatItem>
                 <StatItem theme={theme}>
                   <StatLabel theme={theme}>{td.high || 'High'}</StatLabel>
-                  <StatValue theme={theme} $color="#10b981">{fmtPrice(high)}</StatValue>
+                  <StatValue theme={theme} $color={theme.successColor}>{fmtPrice(high)}</StatValue>
                 </StatItem>
                 <StatItem theme={theme}>
                   <StatLabel theme={theme}>{td.low || 'Low'}</StatLabel>
-                  <StatValue theme={theme} $color="#ef4444">{fmtPrice(low)}</StatValue>
+                  <StatValue theme={theme} $color={theme.dangerColor}>{fmtPrice(low)}</StatValue>
                 </StatItem>
                 <StatItem theme={theme}>
                   <StatLabel theme={theme}>{td.range || 'Range'}</StatLabel>
@@ -2366,7 +2366,7 @@ export default function MarketPrices() {
             {asset.priceChange24h != null && (
               <StatItem theme={theme}>
                 <StatLabel theme={theme}>{td.priceChange24h || '24H Δ Price'}</StatLabel>
-                <StatValue theme={theme} $color={asset.priceChange24h >= 0 ? '#10b981' : '#ef4444'}>
+                <StatValue theme={theme} $color={asset.priceChange24h >= 0 ? theme.successColor : theme.dangerColor}>
                   {asset.priceChange24h >= 0 ? '+' : ''}{fmtPrice(asset.priceChange24h)}
                 </StatValue>
               </StatItem>
@@ -2396,7 +2396,7 @@ export default function MarketPrices() {
               {asset.ath != null && (
                 <StatItem theme={theme}>
                   <StatLabel theme={theme}>{td.ath || 'All-Time High'}</StatLabel>
-                  <StatValue theme={theme} $color="#10b981">
+                  <StatValue theme={theme} $color={theme.successColor}>
                     {fmtPrice(asset.ath)}
                     {asset.athChangePercentage != null && (
                       <span style={{ fontSize: '0.75rem', opacity: 0.7, marginLeft: '0.35rem' }}>
@@ -2415,7 +2415,7 @@ export default function MarketPrices() {
               {asset.atl != null && (
                 <StatItem theme={theme}>
                   <StatLabel theme={theme}>{td.atl || 'All-Time Low'}</StatLabel>
-                  <StatValue theme={theme} $color="#ef4444">
+                  <StatValue theme={theme} $color={theme.dangerColor}>
                     {fmtPrice(asset.atl)}
                     {asset.atlChangePercentage != null && (
                       <span style={{ fontSize: '0.75rem', opacity: 0.7, marginLeft: '0.35rem' }}>

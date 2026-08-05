@@ -14,10 +14,10 @@ export default function NewLandingPage() {
   const { isMobileScreen } = useContext(MediaQueryContext);
   const { mode } = theme;
 
-  // Aggiorna dinamicamente l'attributo lang dell'HTML
+  // Dynamically update the HTML lang attribute
   useHTMLLang(language);
 
-  // Metadata dinamici per ogni lingua
+  // Dynamic metadata for each language
   const getMetadata = () => {
     if (language === 'it') {
       return {
@@ -47,7 +47,7 @@ export default function NewLandingPage() {
         {/* Canonical URL */}
         <link rel="canonical" href="https://pacifinance.com/" />
         
-        {/* SEO Meta Tags - Dinamici per Lingua Attuale */}
+        {/* SEO Meta Tags - Dynamic for Current Language */}
         <title>{metadata.title}</title>
         <meta name="description" content={`${metadata.description} ${language === 'it' ? 'Dashboard finanziario gratuito multi-piattaforma.' : 'Free multi-platform financial dashboard.'}`} />
         <meta name="keywords" content={metadata.keywords} />
@@ -77,7 +77,7 @@ export default function NewLandingPage() {
         <meta name="twitter:image" content="https://pacifinance.com/PacifinanceLogoPNG3NoBg.webp" />
         <meta name="twitter:image:alt" content="Pacifinance - Unified Financial Dashboard" />
         
-        {/* Schema.org Structured Data - Supporto Multilingua */}
+        {/* Schema.org Structured Data - Multilingual Support */}
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
@@ -134,7 +134,7 @@ export default function NewLandingPage() {
         </script>
       </Helmet>
       
-      {/* Critical CSS per Above-the-fold */}
+      {/* Critical CSS for Above-the-fold */}
       <style dangerouslySetInnerHTML={{
         __html: `
           .hero-section { min-height: 100vh; display: flex; align-items: center; }

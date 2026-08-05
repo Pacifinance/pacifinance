@@ -52,7 +52,6 @@
         "note": "Notiz",
         "noData": "Keine Daten",
         "date": "Datum",
-        "selectedDate": "Ausgewähltes Datum",
         "confirm": "Bestätigen",
         "cancel": "Abbrechen",
         "other": "Andere",
@@ -60,12 +59,8 @@
         "typology": "Typologie",
         "invested": "Investiert",
         "investments": "Investitionen",
-        "deposited": "Eingezahlt",
         "comingSoon": "Bald verfügbar",
         "weAreWorking": "Wir arbeiten an dieser Funktion",
-        "inDevelopment": "In Entwicklung",
-        "featureComingSoon": "Diese Funktion befindet sich in der Entwicklung und wird bald verfügbar sein!",
-        "goalsComingSoonDashboard": "Ziele & Limits bald verfügbar",
         "selectAnOption": "Keine (optional)",
         "objective": "Ziel",
         "clearFilter": "Löschen",
@@ -84,9 +79,7 @@
     "cookie": {
         "title": "Wir verwenden Cookies",
         "description": "Wir verwenden Cookies, um Ihre Erfahrung zu verbessern, den Website-Verkehr zu analysieren und für Marketingzwecke. Sie können wählen, welche Cookies Sie akzeptieren möchten.",
-        "catchyPhrase": "Akzeptieren Sie unsere Cookies und genießen Sie eine bessere Erfahrung! 🍪",
         "acceptButton": "Alle akzeptieren",
-        "acceptNecessary": "Nur notwendige akzeptieren",
         "customize": "Anpassen",
         "savePreferences": "Einstellungen speichern",
         "hideDetails": "Details ausblenden",
@@ -290,7 +283,6 @@
                 "title": "🎉 Konto erfolgreich erstellt!",
                 "message": "Hier sind Ihre Anmeldedaten:",
                 "securityMessage": "<strong>💾 Speichern Sie diese Anmeldedaten jetzt!</strong><br/>Verwenden Sie einen Passwort-Manager wie Bitwarden, 1Password oder LastPass, um sowohl Ihre ID als auch Ihr Passwort sicher zu speichern.",
-                "copied": "In die Zwischenablage kopiert!",
                 "toCopy": "Ihre ID kopieren",
                 "okButton": "ok verstanden",
                 "recoveryIntro": "Ihr Recovery-Code (benötigt, falls Sie Ihr Passwort vergessen):",
@@ -366,18 +358,11 @@
     "roadmap": {
         "title": "Roadmap",
         "subtitle": "Entdecke worauf wir hinarbeiten",
-        "completed": "Abgeschlossen",
-        "inProgress": "In Arbeit",
-        "planned": "Geplant",
         "all": "Alle",
         "features": "Funktionen",
-        "experience": "Erfahrung",
         "community": "Community",
         "security": "Sicherheit",
-        "noItems": "Noch keine Roadmap-Einträge.",
-        "feedbackTitle": "Haben Sie eine Idee oder einen Bug gefunden?",
-        "feedbackDescription": "Pacifinance ist ein community-zentriertes Projekt. Ihr Feedback ist unverzichtbar!",
-        "feedbackButton": "Feedback senden"
+        "noItems": "Noch keine Roadmap-Einträge."
     },
     "sidebar": {
         "dashboard": "Dashboard",
@@ -419,21 +404,12 @@
             "selectAge": "Wählen Sie Ihr Alter",
             "livingStatus": "Wohnsituation",
             "selectLivingStatus": "Wählen Sie Ihre Wohnsituation",
-            "livingAlone": "Allein lebend",
-            "livingWithOthers": "Mit anderen lebend",
-            "livingWithPartner": "Mit Partner lebend",
-            "livingWithFamily": "Mit Familie lebend",
             "housingType": "Wohnungstyp",
             "selectHousingType": "Wählen Sie den Wohnungstyp",
-            "rent": "Miete",
-            "mortgage": "Hypothek",
-            "owned": "Eigentum",
-            "familyHome": "Familienhaus",
             "hasChildren": "Haben Sie Kinder?",
             "selectHasChildren": "Wählen Sie, ob Sie Kinder haben",
             "preferredCurrency": "Bevorzugte Währung",
             "selectPreferredCurrency": "Wählen Sie Ihre Währung",
-            "yes": "Ja",
             "no": "Nein",
             "saveButton": "Profil speichern",
             "errorPopup": {
@@ -448,22 +424,16 @@
                 "okButton": "ok verstanden"
             },
             "profileCompletion": {
-                "title": "Profilvollständigkeit:",
-                "completedFields": "Felder ausgefüllt",
-                "of": "von"
+                "title": "Profilvollständigkeit:"
             },
             "benefits": {
                 "title": "Warum Ihr Profil vervollständigen?",
                 "subtitle": "Die Eingabe Ihrer persönlichen Daten ermöglicht es der Plattform, Ihnen viel genauere Analysen und Vergleiche zu bieten:",
                 "personalizedComparisons": "Ihre Daten ermöglichen es uns, Ihre Finanzen mit Nutzern zu vergleichen, die ähnliche Profile wie Sie haben (gleicher Job, Alter, Wohnsituation usw.).",
                 "personalizedComparisonsLabel": "Personalisierte Vergleiche:",
-                "anonymousNote": "Alle Vergleiche sind vollständig anonym und Ihre persönlichen Daten bleiben immer privat und sicher.",
-                "clickToHide": "Klicken zum Ausblenden",
-                "clickToLearnMore": "Klicken für mehr Informationen"
+                "anonymousNote": "Alle Vergleiche sind vollständig anonym und Ihre persönlichen Daten bleiben immer privat und sicher."
             },
             "sections": {
-                "basicInfo": "Grundlegende Informationen",
-                "profileDetails": "Profildetails",
                 "editMode": "Bearbeitungsmodus aktiv",
                 "profileProfessional": "Berufliches Profil",
                 "personalSituation": "Persönliche Situation",
@@ -474,7 +444,6 @@
                 "editProfile": "Profil bearbeiten",
                 "cancelEdit": "Bearbeitung abbrechen",
                 "cancel": "Abbrechen",
-                "save": "Änderungen speichern",
                 "saveChanges": "Änderungen speichern"
             }
         },
@@ -512,7 +481,6 @@
                 "message": "Ihr Benutzername ist: ",
                 "securityMessage": "Wir empfehlen Ihnen, ihn an einem sicheren Ort für zukünftigen Zugang zu speichern.",
                 "redirectMessage": "Sie werden zur Anmeldeseite weitergeleitet.",
-                "copied": "In die Zwischenablage kopiert!",
                 "toCopy": "Benutzername kopieren",
                 "okButton": "ok verstanden"
             }
@@ -532,7 +500,6 @@
                 "title": "Generierung erfolgreich",
                 "message": "Ihre neue ID ist: ",
                 "securityMessage": "Speichern Sie sie an einem sicheren Ort für Ihre nächsten Zugriffe. <br></br> Durch Klicken auf 'ID kopieren' werden Sie zur Anmeldeseite weitergeleitet <br></br> und die ID wird in Ihrer Zwischenablage gespeichert. <br></br> Um sie auf der Anmeldeseite einfügen zu können. <br></br>",
-                "copied": "In die Zwischenablage kopiert!",
                 "toCopy": "Ihre ID kopieren",
                 "okButton": "ok verstanden"
             },
@@ -583,11 +550,8 @@
             "currencySubtitle": "Anzeigewährung wählen",
             "deleteAccount": "Konto löschen (!)",
             "saveSettings": "Einstellungen speichern",
-            "themeSection": "Design und Erscheinung",
             "securitySection": "Sicherheit",
-            "preferencesSection": "Kontoeinstellungen",
             "dangerZone": "Gefahrenzone",
-            "backToDashboard": "Zurück zum Dashboard",
             "bugReport": "Fehler melden",
             "bugReportSubtitle": "Einen Bericht auf GitHub öffnen",
             "installApp": "Als App installieren",
@@ -609,7 +573,13 @@
     },
     "whatsNew": {
         "title": "Was gibt's Neues",
-        "viewRoadmap": "Vollständige Roadmap ansehen →", "showMore": "Weitere Updates", "details": "Details", "collapse": "Einklappen", "categories": { "feature": "Funktion", "ux": "Erlebnis", "security": "Sicherheit", "performance": "Leistung", "bugfix": "Korrektur" }
+        "viewRoadmap": "Vollständige Roadmap ansehen →",
+        "showMore": "Weitere Updates",
+        "details": "Details",
+        "collapse": "Einklappen",
+        "categories": {
+            "security": "Sicherheit"
+        }
     },
     "dashboard": {
         "quickAdd": {
@@ -646,7 +616,6 @@
         "titleGraph3": "Einnahmen | Ausgaben",
         "updateValue": "Wert aktualisieren",
         "noData": "Keine Daten:",
-        "noData2": "Werte eingeben <br></br> hier klicken: ",
         "liquidity": "Liquidität",
         "liquidityAvailability": "Liquidität & Verfügbarkeit",
         "emergencySecurity": "Notfall & Sicherheit",
@@ -672,8 +641,6 @@
         "hideDetails": "Details ausblenden",
         "collapseSection": "Abschnitt einklappen",
         "expandSection": "Abschnitt ausklappen",
-        "manage": "Verwalten",
-        "update": "Aktualisieren",
         "addBalance": "Wert hinzufügen"
     },
     "graphs": {
@@ -682,12 +649,6 @@
         "loading": {
             "balance": "Saldo-Diagramme werden geladen...",
             "incomeOutflow": "Einnahmen- und Ausgaben-Diagramme werden geladen..."
-        },
-        "comparison": {
-            "vsLastMonth": "vs. Vormonat",
-            "vsLastYear": "vs. Vorjahr",
-            "monthlyComparison": "Monatsvergleich",
-            "yearlyComparison": "Jahresvergleich"
         },
         "emptyState": {
             "title": "Keine Daten verfügbar",
@@ -712,10 +673,7 @@
             "titleGraph": "Trend Ihres Saldos in den letzten 12 Monaten",
             "titleGraph2": "Verteilung Ihres Saldos in den letzten 12 Monaten",
             "detailedVision": "Saldo-Statistiken",
-            "asset": "Vermögenswert",
-            "titleDetailsMonth": "Ihr Saldo hat sich im Vergleich zum letzten Monat geändert um: ",
-            "variation": "Veränderung ",
-            "titleDetailsYear": "Ihr Saldo hat sich im Vergleich zum Vorjahr geändert um: "
+            "asset": "Vermögenswert"
         },
         "financialOverview": {
             "title": "Finanzübersicht",
@@ -727,9 +685,6 @@
             "titleGraph": "Trend Ihrer Einnahmen und Ausgaben",
             "titleGraph2": "Verteilung Ihrer Ausgaben nach Kategorie",
             "detailedVision": "Finanzübersicht",
-            "titleDetailsMonth": "Ihre Einnahmen, Ausgaben und Ersparnisse im Vergleich zum letzten Monat ",
-            "variation": "Veränderung ",
-            "titleDetailsYear": "Ihre Einnahmen, Ausgaben und Ersparnisse im Vergleich zum Vorjahr ",
             "compareMonths": "Monate vergleichen",
             "explorer": {
                 "title": "Einnahmen- und Ausgabenanalyse", "subtitle": "Analysiere Trends, Netto-Cashflow und Kategorien im gewählten Zeitraum",
@@ -759,38 +714,24 @@
                 "title": "Detaillierte Ausgabenanalyse",
                 "subtitle": "Eingehende Analyse Ihrer Ausgaben nach Kategorie, Zahlungsmethoden und wiederkehrenden Mustern",
                 "currentMonthTotal": "Monatliche Gesamtausgaben",
-                "currentMonthOutflows": "Ausgaben des aktuellen Monats",
-                "currentMonthExpenses": "Kosten des aktuellen Monats",
                 "totalTransactions": "Gesamttransaktionen",
                 "monthlyAverage12M": "12M Monatsdurchschnitt",
-                "recurringOutflows": "Wiederkehrende Ausgaben",
-                "recurringExpenses": "Wiederkehrende Zahlungen",
                 "recurringThisMonth": "Wiederkehrend diesen Monat",
                 "vsPrevMonth": "vs. Vormonat",
                 "vs12MAvg": "vs. 12M Durchschnitt",
                 "transactions": "Transaktionen",
-                "avgAmount": "Durchschnittsbetrag",
                 "paymentMethodsTitle": "Analyse der Zahlungsmethoden",
-                "paymentMethodsSubtitle": "Ausgabenverteilung nach Zahlungsmethode und Abo-Identifizierung",
                 "total": "Gesamt",
                 "ofTotal": "vom Gesamt",
                 "topCategories": "Top-Kategorien:",
-                "recurringIdentified": "Identifizierte wiederkehrende Ausgaben",
                 "recurringIdentifiedThisMonth": "Wiederkehrende Zahlungen diesen Monat erkannt",
                 "recurringIdentifiedLast12M": "Alle wiederkehrenden Zahlungen (letzte 12 Monate)",
-                "totalMonthlyRecurring": "Monatlich wiederkehrend gesamt:",
-                "times": "mal",
                 "activeSubscriptions": "Aktive Abonnements",
                 "monthlyRecurringSpending": "Monatlich wiederkehrende Ausgaben",
                 "budgetImpact": "Budget-Auswirkung",
-                "paymentTypologiesTitle": "Analyse der Zahlungstypologien",
-                "paymentTypologiesSubtitle": "Kaufkategorisierung nach Typologie",
                 "notSpecified": "Nicht angegeben",
                 "subscription": "Abonnement",
-                "selectMonth": "Monat auswählen",
-                "currentMonth": "Aktueller Monat",
-                "previousMonth": "Vorheriger Monat",
-                "showRecurringFor": "Wiederkehrende anzeigen für:"
+                "currentMonth": "Aktueller Monat"
             }
         },
         "statsHoldings": {
@@ -820,9 +761,6 @@
             "refreshPrices": "Preise aktualisieren",
             "refreshingPrices": "Wird aktualisiert…",
             "backfillHistoricalPrices": "Historische Preise abrufen",
-            "backfillingHistoricalPrices": "Historische Preise werden abgerufen…",
-            "backfillResultFilled": "{months} Monate für {holdings} Positionen ergänzt.",
-            "backfillResultEmpty": "Für deine Positionen sind derzeit keine historischen Preise verfügbar.",
             "insights": {
                 "title": "Portfolio-Einblicke",
                 "totalInvested": "Investiert insgesamt",
@@ -842,7 +780,6 @@
                 "saveButton": "Speichern",
                 "monthlyTargetHint": "Lege fest, wie viel du jeden Monat investieren möchtest, um automatisch Monat für Monat zu verfolgen, ob du dieses Ziel erreichst.",
                 "monthlyTargetNeedsHistory": "Zeichne weiterhin Monate mit Verlauf auf, um zu sehen, ob du dieses Ziel im Laufe der Zeit erreichst.",
-                "monthlyTargetMovedHint": "Verwalte dieses Ziel zusammen mit deinen anderen Finanzzielen.",
                 "monthlyTargetManageLink": "Monatliches Ziel verwalten →",
                 "monthlyTargetSavedLabel": "Gespeichertes Monatsziel",
                 "monthlyTargetSuccessRate": "In {success} der letzten {total} Monate erreicht",
@@ -857,16 +794,6 @@
                 "monthsCount": "{count} Monate",
                 "yearsCount": "{count} Jahre"
             }
-        },
-        "dashboard": {
-            "vsLastMonth": "vs. Vormonat",
-            "vsLastYear": "vs. Vorjahr",
-            "monthlyComparison": "Monatsvergleich",
-            "yearlyComparison": "Jahresvergleich",
-            "loadingStats": "Statistiken werden geladen...",
-            "loadingCharts": "Diagramme werden geladen...",
-            "noDataAvailable": "Keine Daten verfügbar",
-            "addDataFirst": "Fügen Sie Ihre Daten hinzu, um Statistiken anzuzeigen"
         },
         "insights": {
             "title": "Finanzielle Einblicke",
@@ -908,23 +835,14 @@
         "goals": {
             "title": "Finanzielle Ziele",
             "subtitle": "Verfolgen Sie Ihren Fortschritt zu Zielen",
-            "addGoal": "Ziel hinzufügen",
             "progress": "Fortschritt",
-            "completed": "Abgeschlossen",
-            "targetAmount": "Zielbetrag",
-            "currentAmount": "Aktueller Betrag",
-            "timeline": "Frist",
             "types": {
                 "savings": "Sparen",
-                "investment": "Investition",
-                "debt": "Schuldenabbau"
+                "investment": "Investition"
             },
             "examples": {
                 "emergency": "Notfallfonds",
-                "vacation": "Urlaub",
-                "house": "Haus",
-                "retirement": "Rente",
-                "debt_payoff": "Schuldenabbau"
+                "house": "Haus"
             }
         }
     },
@@ -934,8 +852,6 @@
         "buttonBalance": "Guthaben aktualisieren",
         "buttonIncome": "Einnahme hinzufügen",
         "buttonOutflow": "Ausgabe hinzufügen",
-        "buttonInvestment": "Investition hinzufügen",
-        "importFromFile": "Aus CSV / Excel importieren",
         "toolsLabel": "Weitere Werkzeuge",
         "importToolLabel": "CSV / Excel",
         "balanceSection": {
@@ -962,7 +878,6 @@
                 "successAll": "Alle Guthaben erfolgreich aktualisiert!",
                 "partialSuccess": "{success} von {total} Guthaben aktualisiert. {failed} fehlgeschlagen.",
                 "allFailed": "Guthaben konnten nicht aktualisiert werden. Bitte erneut versuchen.",
-                "emptyBatch": "Füge mindestens ein Guthaben mit gültigen Daten hinzu",
                 "duplicateMonthWarning": "Zwei oder mehr Guthaben haben denselben Monat. Jeder Monat kann nur einmal vorkommen, da der vorherige Wert sonst überschrieben würde. Entferne die Duplikate, um fortzufahren."
             }
         },
@@ -989,9 +904,7 @@
             },
             "confirmUpdate": "Einnahme bestätigen",
             "successUpdate": "Einnahme erfolgreich eingefügt",
-            "confirmDelete": "Möchtest du diese Einnahme wirklich löschen?",
             "successDelete": "Einnahme erfolgreich gelöscht",
-            "deleteBalanceRestore": "Du kannst eines der Guthaben wiederherstellen oder den Eintrag einfach löschen, ohne die Guthaben zu ändern.",
             "increaseWhichBalance": "Hinzufügen zu",
             "multiInsert": {
                 "toggle": "Mehrfacheingabe",
@@ -1006,10 +919,7 @@
                 "successAll": "Alle Einnahmen erfolgreich eingefügt!",
                 "partialSuccess": "{success} von {total} Einnahmen eingefügt. {failed} fehlgeschlagen.",
                 "allFailed": "Einnahmen konnten nicht eingefügt werden. Bitte erneut versuchen.",
-                "emptyBatch": "Füge mindestens eine Einnahme mit gültigen Daten hinzu",
-                "confirmSubmit": "{count} Einnahmen absenden?",
-                "defaultAddTo": "Standard: hinzufügen zu",
-                "pastMonthNoBalance": "Einträge mit vergangenem Datum aktualisieren nicht den aktuellen Saldo"
+                "defaultAddTo": "Standard: hinzufügen zu"
             }
         },
         "outflowSection": {
@@ -1033,9 +943,7 @@
             },
             "confirmUpdate": "Ausgabe bestätigen",
             "successUpdate": "Ausgabe erfolgreich eingefügt",
-            "confirmDelete": "Möchtest du diese Ausgabe wirklich löschen?",
             "successDelete": "Ausgabe erfolgreich gelöscht",
-            "deleteBalanceRestore": "Du kannst eines der Guthaben wiederherstellen oder den Eintrag einfach löschen, ohne die Guthaben zu ändern.",
             "decreaseWhichBalance": "Abziehen von",
             "makeRecurring": "Jeden Monat wiederholen",
             "sharedExpense": {
@@ -1074,10 +982,7 @@
                 "successAll": "Alle Ausgaben erfolgreich eingefügt!",
                 "partialSuccess": "{success} von {total} Ausgaben eingefügt. {failed} fehlgeschlagen.",
                 "allFailed": "Ausgaben konnten nicht eingefügt werden. Bitte erneut versuchen.",
-                "emptyBatch": "Füge mindestens eine Ausgabe mit gültigen Daten hinzu",
-                "confirmSubmit": "{count} Ausgaben absenden?",
-                "defaultSubtractFrom": "Standard: abziehen von",
-                "pastMonthNoBalance": "Einträge mit vergangenem Datum aktualisieren nicht den aktuellen Saldo"
+                "defaultSubtractFrom": "Standard: abziehen von"
             }
         },
         "investmentSection": {
@@ -1095,7 +1000,6 @@
             },
             "confirmUpdate": "Investition bestätigen",
             "successUpdate": "Investition erfolgreich eingefügt",
-            "confirmDelete": "Möchtest du diese Investition wirklich löschen?",
             "successDelete": "Investition erfolgreich gelöscht",
             "decreaseWhichBalance": "Abziehen von",
             "increaseWhichBalance": "Hinzufügen zu"
@@ -1107,7 +1011,6 @@
             "incomeDeleteFailed": "Fehler beim Löschen der Einnahme. Bitte versuche es später erneut.",
             "outflowDeleteFailed": "Fehler beim Löschen der Ausgabe. Bitte versuche es später erneut.",
             "serverConnectionFailed": "Serververbindungsfehler. Überprüfe deine Verbindung und versuche es erneut.",
-            "requestFailed": "Anfrage fehlgeschlagen. Überprüfe die eingegebenen Daten und versuche es erneut.",
             "selectCategory": "Kategorie auswählen",
             "selectPaymentType": "Zahlungsart auswählen",
             "insertValidValue": "Gib einen gültigen Wert größer als 0 ein"
@@ -1126,15 +1029,7 @@
             "remember": "Remember my choice (editable in Settings)",
             "confirm": "Confirm",
             "cancel": "Cancel",
-            "globalDefaultLabel": "Balance impact (past dates)",
-            "globalDefaultNone": "No impact",
-            "globalDefaultPastMonth": "Subtract from that month's balance",
-            "globalDefaultPastMonthIncome": "Add to that month's balance",
-            "globalDefaultRemembered": "Use my saved preference",
-            "perRowOverride": "Choice for this row",
-            "perRowOverrideDefault": "Use default",
-            "missingSnapshotWarning": "No balance found for {month}/{year}. Balance update skipped.",
-            "summaryBalancesUpdated": "{count} historical balances updated"
+            "missingSnapshotWarning": "No balance found for {month}/{year}. Balance update skipped."
         },
         "duplicateWarning": {
             "titleOutflow": "Possible duplicate outflow",
@@ -1195,7 +1090,6 @@
         },
         "categoryPicker": {
             "createNew": "Create new category",
-            "customBadge": "Custom",
             "dialogTitle": "New custom category",
             "dialogSubtitle": "Stays linked to an official category, so stats and rankings remain correct.",
             "parentLabel": "Official category",
@@ -1293,7 +1187,6 @@
             "assetAllocation": {
                 "title": "Vermögensaufteilung",
                 "description": "Wie du dein Vermögen verteilst",
-                "currentDistribution": "Aktuelle Verteilung",
                 "liquid": "Liquide Mittel",
                 "investments": "Investitionen",
                 "crypto": "Krypto",
@@ -1315,11 +1208,7 @@
             "showLess": "Weniger anzeigen"
         },
         "insights": {
-            "betterThan": "Du schneidest besser ab als",
-            "worseThan": "Es gibt Verbesserungspotenzial im Vergleich zu",
-            "average": "Du liegst ungefähr im Durchschnitt",
-            "ofUsers": "der Nutzer",
-            "inCategory": "in deiner Kategorie"
+            "average": "Du liegst ungefähr im Durchschnitt"
         },
         "actionableInsights": {
             "percentileTitle": "Vermögen: Top {rank}% unter ähnlichen Profilen",
@@ -1337,17 +1226,12 @@
             "action": "Profil vervollständigen"
         },
         "tips": {
-            "title": "Personalisierte Tipps",
-            "highOutflows": "Überprüfe deine Ausgaben – sie liegen über dem Durchschnitt für dein Einkommensniveau",
-            "lowSavings": "Versuche, deine Sparquote für eine bessere finanzielle Gesundheit zu erhöhen",
-            "goodBalance": "Großartig! Dein finanzielles Guthaben liegt über dem Durchschnitt",
-            "diversify": "Erwäge, deine Vermögenswerte für ein besseres Risikomanagement zu diversifizieren"
+            "title": "Personalisierte Tipps"
         }
     },
     "leaderboard": {
         "title": "Rangliste im Zeitverlauf",
         "monthRanking": "Rangliste für den Monat: ",
-        "yearRanking": "Rangliste für das Jahr: ",
         "generalRanking": "Allgemeine Ranglisten: ",
         "similarRanking": "Ranglisten ähnlicher Nutzer: ",
         "balanceRanking": "Guthaben-Rangliste ",
@@ -1971,7 +1855,6 @@
         "all": "Alle",
         "unlocked": "Freigeschaltet",
         "locked": "Gesperrt",
-        "allCategories": "Alle",
         "allBadgesUnlocked": "Herzlichen Glückwunsch! Du hast alle Abzeichen freigeschaltet!",
         "badgeUnlocked": "Erfolg freigeschaltet!",
         "achievementsSummary": "Erfolge bereits freigeschaltet!",
@@ -2199,23 +2082,6 @@
         "vsPrevMonth": "ggü. Vormonat",
         "ofIncomes": "% Einnahmen"
     },
-    "categories": {
-        "Casa": "Wohnen",
-        "Alimentari": "Lebensmittel",
-        "Trasporti": "Transport",
-        "Intrattenimento": "Unterhaltung",
-        "Salute": "Gesundheit",
-        "Abbigliamento": "Kleidung",
-        "Altri": "Sonstiges",
-        "Viaggi": "Reisen",
-        "Digital": "Digitaler Dienst",
-        "Auto": "Fahrzeug",
-        "Stipendio": "Gehalt",
-        "Freelance": "Freelance",
-        "Entrate extra": "Zusatzeinkommen",
-        "Regalo": "Geschenk",
-        "Pensione": "Rente"
-    },
     "profile": {
         "detailsTab": "Kontodetails",
         "achievementsTab": "Erfolge",
@@ -2262,11 +2128,9 @@
         "dualAmountToggle": "Meine Datei hat separate Spalten für Einnahmen und Ausgaben",
         "outflowColumn": "Ausgabenspalte",
         "incomeColumn": "Einnahmenspalte",
-        "categoryColumn": "Kategorie",
         "categoryColumnFile": "Kategoriespalte in deiner Datei",
         "notesColumn": "Notizen",
         "transactionType": "Transaktionstyp",
-        "defaultCategory": "Standardkategorie",
         "defaultOutflowCategory": "Standard-Ausgabenkategorie",
         "defaultIncomeCategory": "Standard-Einnahmenkategorie",
         "defaultCategoryInfo": "Diese Kategorie wird allen importierten Ausgaben zugewiesen. Du kannst jede einzeln im nächsten Schritt ändern.",
@@ -2355,13 +2219,6 @@
                 "traderepublic": "Trade Republic"
         },
         "bankRowsSkipped": "{count} Zeilen waren Investmentgeschäfte und wurden übersprungen — importiere sie stattdessen über „Investitionen importieren“.",
-        "tagWithBankCategory": "Benutzerdefinierte \"{bank}\"-Unterkategorien erstellen (nur mit deiner Bestätigung)",
-        "bankCategoryReviewTitle": "Anbieter-Unterkategorien (optional)",
-        "bankCategoryReviewEnabled": "Du hast zugestimmt: Die aufgeführten Unterkategorien werden beim Import wiederverwendet oder erstellt.",
-        "bankCategoryReviewDisabled": "Es wird keine Anbieter-Unterkategorie erstellt. Die Transaktionskategorien bleiben wie unten angezeigt.",
-        "bankCategoryExplicitConsent": "Ja, {count} Anbieter-Unterkategorien erstellen oder wiederverwenden",
-        "bankCategoryExisting": "bereits vorhanden",
-        "bankCategoryNew": "wird erstellt",
         "retroHint": "{count} vergangene Transaktionen mit ähnlicher Notiz sind einer anderen Kategorie zugeordnet.",
         "retroHintSuggestion": "Sie können diese manuell im Verlauf aktualisieren.",
         "dismiss": "Schließen",
@@ -2807,7 +2664,6 @@
             "range": "Spanne",
             "avg": "Durchschnitt",
             "volatility": "Volatilität",
-            "performance": "Leistung",
             "priceStats": "Preisstatistiken",
             "identifier": "Kennung",
             "period24h": "24H",
@@ -2889,10 +2745,8 @@
             "addManual": "\"{query}\" als nicht verifiziert hinzufügen",
             "addManualHint": "Wird nicht verifiziert und zählt nicht bei Vergleichen mit anderen Nutzern.",
             "provider": {
-                "openfigi": "Verifiziert mit OpenFIGI",
                 "coingecko": "Verifiziert mit CoinGecko",
-                "finnhub": "Verifiziert mit Finnhub",
-                "manual": "Manuell eingegeben"
+                "finnhub": "Verifiziert mit Finnhub"
             }
         },
         "holdings": {
@@ -2967,7 +2821,6 @@
             "rejectionNotePlaceholder": "Ablehnungsgrund (erforderlich)",
             "submittedOn": "Eingereicht am",
             "rawPriceLabel": "Angegebener Preis",
-            "monthLabel": "Monat",
             "referenceDateLabel": "Zu prüfendes Datum"
         },
         "attribution": {
@@ -3080,8 +2933,7 @@
         "nextRun": "Nächste",
         "paused": "Pausiert",
         "pause": "Pausieren",
-        "resume": "Fortsetzen",
-        "autoInsertNote": "Wird jeden Monat automatisch erfasst, ohne deine Bilanzen zu ändern — du kannst sie beim Bearbeiten jederzeit mit einer Quelle verknüpfen."
+        "resume": "Fortsetzen"
     },
     "goals": {
         "sourceLabel": "Wertquelle",
@@ -3090,9 +2942,29 @@
         "linkedHint": "Verknüpftes Ziel: der Wert aktualisiert sich automatisch",
     "financialControls": {
       "inChecks": "Einbeziehen",
-            "spendingGroup": "Monatliche Ausgaben", "savingsGroup": "Monatliches Sparen", "emergencyGroup": "Notgroschen", "fixedAmount": "Betrag", "savingsPercent": "Prozent des Einkommens", "useFixedAmount": "Betrag in Prüfungen einbeziehen", "usePercentage": "Prozentsatz in Prüfungen einbeziehen", "toggleExplanation": "Deaktivierte Schwellen bleiben gespeichert, werden aber nicht geprüft oder analysiert.", "selectCategory": "Kategorie auswählen", "notifications": "Limit-Benachrichtigungen", "enabled": "Aktiv", "disabled": "Deaktiviert", "spendingPercent": "Spending limit as income (%)", "savingsAmount": "Minimum monthly savings", "emergencyMonths": "Minimum coverage (months of spending)",
+            "spendingGroup": "Monatliche Ausgaben",
+            "savingsGroup": "Monatliches Sparen",
+            "emergencyGroup": "Notgroschen",
+            "fixedAmount": "Betrag",
+            "savingsPercent": "Prozent des Einkommens",
+            "toggleExplanation": "Deaktivierte Schwellen bleiben gespeichert, werden aber nicht geprüft oder analysiert.",
+            "selectCategory": "Kategorie auswählen",
+            "notifications": "Limit-Benachrichtigungen",
+            "enabled": "Aktiv",
+            "disabled": "Deaktiviert",
+            "spendingPercent": "Spending limit as income (%)",
+            "savingsAmount": "Minimum monthly savings",
+            "emergencyMonths": "Minimum coverage (months of spending)",
             "currentSpending": "This month: {amount}, {percent} of income", "currentSavings": "Monthly savings: {amount}, {percent} of income", "currentEmergency": "Current fund: {amount}, {months} months covered", "currentFixedExpenses": "Recurring fixed expenses: {percent} of income",
-            "advancedTitle": "Advanced controls", "advancedHint": "Leave a control empty to disable it.", "fixedExpensesPercent": "Maximum fixed expenses as income (%)", "debtReduction": "Monthly debt reduction", "positionConcentration": "Maximum position concentration (%)", "categoryConcentration": "Maximum asset-category concentration (%)", "passiveIncome": "Annual passive-income goal", "categorySpending": "Monthly category limits", "categoryName": "Category", "categoryAmount": "Limit",
+            "advancedTitle": "Advanced controls",
+            "advancedHint": "Leave a control empty to disable it.",
+            "fixedExpensesPercent": "Maximum fixed expenses as income (%)",
+            "debtReduction": "Monthly debt reduction",
+            "positionConcentration": "Maximum position concentration (%)",
+            "categoryConcentration": "Maximum asset-category concentration (%)",
+            "passiveIncome": "Annual passive-income goal",
+            "categorySpending": "Monthly category limits",
+            "categoryAmount": "Limit",
             "investmentPercent": "Minimum investment as income (%)", "bothRequired": "When both thresholds are set, both must be met.", "customNetWorthPercent": "Net-worth target (%)", "netWorthRequirement": "Net-worth threshold: {percent}% = {amount}"
         }
     },

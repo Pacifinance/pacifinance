@@ -58,7 +58,7 @@ const EmptyState = styled.div`
   padding: 2rem;
   color: ${(p) => p.theme.textColor};
 
-  svg { width: 2rem; height: 2rem; color: #10b981; margin-bottom: 1rem; }
+  svg { width: 2rem; height: 2rem; color: ${(p) => p.theme.successColor}; margin-bottom: 1rem; }
   strong { font-size: 1.05rem; }
   p { max-width: 30rem; margin: 0.5rem 0 0; opacity: 0.62; font-size: 0.88rem; }
 `;

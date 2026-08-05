@@ -27,7 +27,7 @@ export default function ContactPage() {
         <PolicyContainer theme={theme}>
           <div className="max-w-4xl mx-auto">
             <PolicyHeader theme={theme}>
-              <h1 style={{ color: '#079164' }}>
+              <h1 style={{ color: theme.secondaryColor }}>
                 {language === 'it' ? 'Contatti' : 'Contact'}
               </h1>
               <div className="last-updated">
@@ -37,7 +37,7 @@ export default function ContactPage() {
 
             <div className="space-y-6">
               <section>
-                <h2 className="text-2xl font-semibold mb-4" style={{ color: '#079164' }}>
+                <h2 className="text-2xl font-semibold mb-4" style={{ color: theme.secondaryColor }}>
                   {language === 'it' ? 'Supporto Tecnico' : 'Technical Support'}
                 </h2>
                 <p className="mb-4 leading-relaxed">
@@ -47,7 +47,7 @@ export default function ContactPage() {
                   }
                 </p>
                 <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
-                  <p className="font-semibold text-lg" style={{ color: '#079164' }}>
+                  <p className="font-semibold text-lg" style={{ color: theme.secondaryColor }}>
                     📧 support@pacifinance.com
                   </p>
                   <p className="text-sm mt-2 opacity-70">
@@ -60,7 +60,7 @@ export default function ContactPage() {
               </section>
 
               <section>
-                <h2 className="text-2xl font-semibold mb-4" style={{ color: '#079164' }}>
+                <h2 className="text-2xl font-semibold mb-4" style={{ color: theme.secondaryColor }}>
                   {language === 'it' ? 'Domande Frequenti' : 'Frequently Asked Questions'}
                 </h2>
                 <p className="mb-4 leading-relaxed">
@@ -72,14 +72,14 @@ export default function ContactPage() {
                 <LocalizedLink 
                   to="/faq" 
                   className="inline-block px-4 py-2 rounded-lg font-semibold transition-all duration-300 hover:scale-105 hover:shadow-lg"
-                  style={{ backgroundColor: '#079164', color: 'white' }}
+                  style={{ backgroundColor: theme.secondaryColor, color: 'white' }}
                 >
                   {language === 'it' ? 'Visita le FAQ' : 'Visit FAQ'}
                 </LocalizedLink>
               </section>
 
               <section>
-                <h2 className="text-2xl font-semibold mb-4" style={{ color: '#079164' }}>
+                <h2 className="text-2xl font-semibold mb-4" style={{ color: theme.secondaryColor }}>
                   {language === 'it' ? 'Feedback e Suggerimenti' : 'Feedback and Suggestions'}
                 </h2>
                 <p className="mb-4 leading-relaxed">
@@ -89,19 +89,19 @@ export default function ContactPage() {
                   }
                 </p>
                 <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
-                  <p className="font-semibold text-lg" style={{ color: '#079164' }}>
+                  <p className="font-semibold text-lg" style={{ color: theme.secondaryColor }}>
                     💡 feedback@pacifinance.com
                   </p>
                 </div>
               </section>
 
               <section>
-                <h2 className="text-2xl font-semibold mb-4" style={{ color: '#079164' }}>
+                <h2 className="text-2xl font-semibold mb-4" style={{ color: theme.secondaryColor }}>
                   {language === 'it' ? 'Informazioni Generali' : 'General Information'}
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <h3 className="font-semibold mb-2" style={{ color: '#079164' }}>
+                    <h3 className="font-semibold mb-2" style={{ color: theme.secondaryColor }}>
                       {language === 'it' ? 'Orari di Supporto' : 'Support Hours'}
                     </h3>
                     <p className="text-sm">
@@ -112,7 +112,7 @@ export default function ContactPage() {
                     </p>
                   </div>
                   <div>
-                    <h3 className="font-semibold mb-2" style={{ color: '#079164' }}>
+                    <h3 className="font-semibold mb-2" style={{ color: theme.secondaryColor }}>
                       {language === 'it' ? 'Tempo di Risposta' : 'Response Time'}
                     </h3>
                     <p className="text-sm">
@@ -126,7 +126,7 @@ export default function ContactPage() {
               </section>
 
               <section>
-                <h2 className="text-2xl font-semibold mb-4" style={{ color: '#079164' }}>
+                <h2 className="text-2xl font-semibold mb-4" style={{ color: theme.secondaryColor }}>
                   {language === 'it' ? 'Prima di Contattarci' : 'Before Contacting Us'}
                 </h2>
                 <ul className="list-disc list-inside space-y-2 ml-4">

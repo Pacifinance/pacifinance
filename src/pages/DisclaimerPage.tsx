@@ -26,7 +26,7 @@ export default function DisclaimerPage() {
         <PolicyContainer theme={theme}>
           <div className="max-w-4xl mx-auto">
             <PolicyHeader theme={theme}>
-              <h1 style={{ color: '#079164' }}>
+              <h1 style={{ color: theme.secondaryColor }}>
                 {language === 'it' ? 'Disclaimer' : 'Disclaimer'}
               </h1>
               <div className="last-updated">Last updated: {new Date().toLocaleDateString(language === 'it' ? 'it-IT' : 'en-US')}</div>
@@ -42,7 +42,7 @@ export default function DisclaimerPage() {
                   border: `2px solid ${theme.mode === 'dark' ? 'rgba(7, 145, 100, 0.2)' : 'rgba(7, 145, 100, 0.15)'}`
                 }}
               >
-                <h2 className="text-3xl font-bold mb-6" style={{ color: '#079164' }}>
+                <h2 className="text-3xl font-bold mb-6" style={{ color: theme.secondaryColor }}>
                   {language === 'it' ? 'Informazioni Generali' : 'General Information'}
                 </h2>
                 <p className="mb-4 leading-relaxed text-lg">
@@ -62,7 +62,7 @@ export default function DisclaimerPage() {
                   border: `2px solid ${theme.mode === 'dark' ? 'rgba(7, 145, 100, 0.2)' : 'rgba(7, 145, 100, 0.15)'}`
                 }}
               >
-                <h2 className="text-3xl font-bold mb-6" style={{ color: '#079164' }}>
+                <h2 className="text-3xl font-bold mb-6" style={{ color: theme.secondaryColor }}>
                   {language === 'it' ? 'Limitazioni di Responsabilità' : 'Limitations of Liability'}
                 </h2>
                 <p className="mb-4 leading-relaxed text-lg">
@@ -82,7 +82,7 @@ export default function DisclaimerPage() {
                   border: `2px solid ${theme.mode === 'dark' ? 'rgba(7, 145, 100, 0.2)' : 'rgba(7, 145, 100, 0.15)'}`
                 }}
               >
-                <h2 className="text-3xl font-bold mb-6" style={{ color: '#079164' }}>
+                <h2 className="text-3xl font-bold mb-6" style={{ color: theme.secondaryColor }}>
                   {language === 'it' ? 'Accuratezza dei Dati' : 'Data Accuracy'}
                 </h2>
                 <p className="mb-4 leading-relaxed text-lg">
@@ -102,7 +102,7 @@ export default function DisclaimerPage() {
                   border: `2px solid ${theme.mode === 'dark' ? 'rgba(7, 145, 100, 0.2)' : 'rgba(7, 145, 100, 0.15)'}`
                 }}
               >
-                <h2 className="text-3xl font-bold mb-6" style={{ color: '#079164' }}>
+                <h2 className="text-3xl font-bold mb-6" style={{ color: theme.secondaryColor }}>
                   {language === 'it' ? 'Consulenza Professionale' : 'Professional Advice'}
                 </h2>
                 <p className="leading-relaxed text-lg">

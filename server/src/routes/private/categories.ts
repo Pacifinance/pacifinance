@@ -4,9 +4,9 @@ import db from "../../db/db"
 import common from "../common"
 
 /* === /categories/* === */
-// Categorie personalizzate: etichette utente agganciate a una categoria
-// ufficiale (tags di tipo expense/income), usate solo per la visualizzazione
-// personale — le statistiche restano sempre raggruppate sulla categoria ufficiale.
+// Custom categories: user labels attached to an official category
+// (expense/income tags), used only for personal display — stats always
+// stay grouped by the official category.
 
 const categoriesRouter = express.Router()
 

@@ -52,7 +52,6 @@
         "note": "Note",
         "noData": "No data",
         "date": "Date",
-        "selectedDate": "Selected date",
         "confirm": "Confirm",
         "cancel": "Cancel",
         "other": "Other",
@@ -60,12 +59,8 @@
         "typology": "Typology",
         "invested": "Invested",
         "investments": "Investments",
-        "deposited": "Deposited",
         "comingSoon": "Coming soon",
         "weAreWorking": "We are working on this feature",
-        "inDevelopment": "In development",
-        "featureComingSoon": "This feature is under development and will be available soon!",
-        "goalsComingSoonDashboard": "Goals & Limits coming soon",
         "selectAnOption": "None (optional)",
         "objective": "Objective",
         "clearFilter": "Clear",
@@ -84,9 +79,7 @@
     "cookie": {
         "title": "We use cookies",
         "description": "We use cookies to enhance your experience, analyze site traffic, and for marketing purposes. You can choose which cookies to accept.",
-        "catchyPhrase": "Accept our cookies and enjoy a better experience! 🍪",
         "acceptButton": "Accept All",
-        "acceptNecessary": "Accept Necessary Only",
         "customize": "Customize",
         "savePreferences": "Save Preferences",
         "hideDetails": "Hide Details",
@@ -290,7 +283,6 @@
                 "title": "🎉 Account created successfully!",
                 "message": "Here are your login credentials:",
                 "securityMessage": "<strong>💾 Save these credentials now!</strong><br/>Use a password manager like Bitwarden, 1Password, or LastPass to securely store both your ID and password.",
-                "copied": "Copied to clipboard!",
                 "toCopy": "Copy your ID",
                 "okButton": "ok fine",
                 "recoveryIntro": "Your recovery code (you'll need it if you forget your password):",
@@ -366,18 +358,11 @@
     "roadmap": {
         "title": "Roadmap",
         "subtitle": "Discover where Pacifinance is heading. Every feature is designed with the community in mind, also thanks to user feedback.",
-        "completed": "Completed",
-        "inProgress": "In Progress",
-        "planned": "Planned",
         "all": "All",
         "features": "Features",
-        "experience": "Experience",
         "community": "Community",
         "security": "Security",
-        "noItems": "No items",
-        "feedbackTitle": "Have an idea or found a bug?",
-        "feedbackDescription": "Pacifinance is a community-centric project. Your feedback is essential!",
-        "feedbackButton": "Send Feedback"
+        "noItems": "No items"
     },
     "sidebar": {
         "dashboard": "Dashboard",
@@ -419,21 +404,12 @@
             "selectAge": "Select your age",
             "livingStatus": "Living situation",
             "selectLivingStatus": "Select your living situation",
-            "livingAlone": "Living alone",
-            "livingWithOthers": "Living with others",
-            "livingWithPartner": "Living with partner",
-            "livingWithFamily": "Living with family",
             "housingType": "Housing type",
             "selectHousingType": "Select housing type",
-            "rent": "Rent",
-            "mortgage": "Mortgage",
-            "owned": "Owned",
-            "familyHome": "Family home",
             "hasChildren": "Do you have children?",
             "selectHasChildren": "Select if you have children",
             "preferredCurrency": "Preferred Currency",
             "selectPreferredCurrency": "Select your currency",
-            "yes": "Yes",
             "no": "No",
             "saveButton": "Save profile",
             "errorPopup": {
@@ -448,22 +424,16 @@
                 "okButton": "ok fine"
             },
             "profileCompletion": {
-                "title": "Profile Completion:",
-                "completedFields": "fields completed",
-                "of": "of"
+                "title": "Profile Completion:"
             },
             "benefits": {
                 "title": "Why complete your profile?",
                 "subtitle": "Entering your personal data will allow the platform to provide you with much more accurate analysis and comparisons:",
                 "personalizedComparisons": "Your data allows us to compare your finances with users who have similar profiles to yours (same job, age, housing situation, etc.).",
                 "personalizedComparisonsLabel": "Personalized comparisons:",
-                "anonymousNote": "All comparisons are completely anonymous and your personal data always remains private and secure.",
-                "clickToHide": "Click to hide",
-                "clickToLearnMore": "Click to learn more"
+                "anonymousNote": "All comparisons are completely anonymous and your personal data always remains private and secure."
             },
             "sections": {
-                "basicInfo": "Basic Information",
-                "profileDetails": "Profile Details",
                 "editMode": "Edit Mode Active",
                 "profileProfessional": "Professional Profile",
                 "personalSituation": "Personal Situation",
@@ -474,7 +444,6 @@
                 "editProfile": "Edit Profile",
                 "cancelEdit": "Cancel Edit",
                 "cancel": "Cancel",
-                "save": "Save Changes",
                 "saveChanges": "Save Changes"
             }
         },
@@ -512,7 +481,6 @@
                 "message": "Your username is: ",
                 "securityMessage": "We recommend that you save it in a safe place for future access.",
                 "redirectMessage": "You will be redirected to the login page.",
-                "copied": "Copied to clipboard!",
                 "toCopy": "Copy your username",
                 "okButton": "ok fine"
             }
@@ -532,7 +500,6 @@
                 "title": "Generation successful",
                 "message": "Your new ID is: ",
                 "securityMessage": "Save it, in a safe place, for your next accesses. <br></br> By clicking on the 'Copy your id' button, you will be redirected <br></br> to the login page and the id will be saved in your clipboard. <br></br> To be able to paste it into the login page. <br></br>",
-                "copied": "Copied to clipboard!",
                 "toCopy": "Copy your ID",
                 "okButton": "ok fine"
             },
@@ -583,11 +550,8 @@
             "currencySubtitle": "Select display currency",
             "deleteAccount": "Delete account (!)",
             "saveSettings": "Save settings",
-            "themeSection": "Theme and Appearance",
             "securitySection": "Security",
-            "preferencesSection": "Account Preferences",
             "dangerZone": "Danger Zone",
-            "backToDashboard": "Back to Dashboard",
             "bugReport": "Report a bug",
             "bugReportSubtitle": "Open a report on GitHub",
             "installApp": "Install as App",
@@ -612,7 +576,9 @@
         "title": "What's New",
         "viewRoadmap": "View full roadmap →",
         "showMore": "Show more updates", "details": "Details", "collapse": "Collapse",
-        "categories": { "feature": "Feature", "ux": "Experience", "security": "Security", "performance": "Performance", "bugfix": "Fix" }
+        "categories": {
+            "security": "Security"
+        }
     },
 
     "dashboard": {
@@ -650,7 +616,6 @@
         "titleGraph3": "Income | Outflows",
         "updateValue": "Update value",
         "noData": "No data:",
-        "noData2": "Enter the values <br></br> clicking here: ",
         "liquidity": "Liquidity",
         "liquidityAvailability": "Liquidity & Availability",
         "emergencySecurity": "Emergency & Security",
@@ -672,8 +637,6 @@
         "hideDetails": "Hide details",
         "collapseSection": "Collapse section",
         "expandSection": "Expand section",
-        "manage": "Manage",
-        "update": "Update",
         "addBalance": "Add value",
         "loading": "Loading dashboard data...",
         "loadingError": "Error loading data. Please try again.",
@@ -686,12 +649,6 @@
         "loading": {
             "balance": "Loading balance charts...",
             "incomeOutflow": "Loading income and outflow charts..."
-        },
-        "comparison": {
-            "vsLastMonth": "vs previous month",
-            "vsLastYear": "vs previous year",
-            "monthlyComparison": "Monthly comparison", 
-            "yearlyComparison": "Yearly comparison"
         },
         "emptyState": {
             "title": "No data available",
@@ -745,10 +702,7 @@
             "titleGraph": "Trend of your balance in the last 12 months",
             "titleGraph2": "Distribution of your balance in the last 12 months",
             "detailedVision": "Balance Statistics",
-            "asset": "Asset",
-            "titleDetailsMonth": "Your balance compared to last month has changed by: ",
-            "variation": "Variation ",
-            "titleDetailsYear": "Your balance compared to a year ago has changed by: "
+            "asset": "Asset"
         },
         "financialOverview": {
             "title": "Financial Overview",
@@ -760,9 +714,6 @@
             "titleGraph": "Trend of your incomes and outflows",
             "titleGraph2": "Distribution of your outflows by category",
             "detailedVision": "Financial Overview",
-            "titleDetailsMonth": "Your income, outflows and savings compared to last month ",
-            "variation": "Variation ",
-            "titleDetailsYear": "Your income, outflows and savings compared to last year ",
             "compareMonths": "Compare months",
             "explorer": {
                 "title": "Income and outflow explorer",
@@ -820,38 +771,24 @@
                 "title": "Detailed Outflow Analysis",
                 "subtitle": "In-depth analysis of your outflows by category, payment methods and recurring patterns",
                 "currentMonthTotal": "Total Monthly Expenses",
-                "currentMonthOutflows": "Current Month Outflows",
-                "currentMonthExpenses": "Current Month Expenses",
                 "totalTransactions": "Total Transactions", 
                 "monthlyAverage12M": "12M Monthly Average",
-                "recurringOutflows": "Recurring Outflows",
-                "recurringExpenses": "Recurring Payments",
                 "recurringThisMonth": "Recurring This Month",
                 "vsPrevMonth": "vs Prev Month",
                 "vs12MAvg": "vs 12M Avg",
                 "transactions": "Transactions",
-                "avgAmount": "Avg Amount",
                 "paymentMethodsTitle": "Payment Methods Analysis",
-                "paymentMethodsSubtitle": "Outflow distribution by payment method and subscription identification",
                 "total": "Total",
                 "ofTotal": "of Total",
                 "topCategories": "Top Categories:",
-                "recurringIdentified": "Identified Recurring Outflows",
                 "recurringIdentifiedThisMonth": "Recurring Payments Detected This Month",
                 "recurringIdentifiedLast12M": "All Recurring Payments (Last 12 Months)",
-                "totalMonthlyRecurring": "Total monthly recurring:",
-                "times": "times",
                 "activeSubscriptions": "Active Subscriptions",
                 "monthlyRecurringSpending": "Monthly Recurring Spending",
                 "budgetImpact": "Budget Impact",
-                "paymentTypologiesTitle": "Payment Typologies Analysis",
-                "paymentTypologiesSubtitle": "Purchase categorization by typology",
                 "notSpecified": "Not Specified",
                 "subscription": "Subscription",
-                "selectMonth": "Select Month",
-                "currentMonth": "Current Month",
-                "previousMonth": "Previous Month",
-                "showRecurringFor": "Show recurring for:"
+                "currentMonth": "Current Month"
             }
         },
         "statsHoldings": {
@@ -883,9 +820,6 @@
             "refreshPrices": "Refresh prices",
             "refreshingPrices": "Refreshing…",
             "backfillHistoricalPrices": "Fetch historical prices",
-            "backfillingHistoricalPrices": "Fetching historical prices…",
-            "backfillResultFilled": "{months} months filled in across {holdings} positions.",
-            "backfillResultEmpty": "No historical prices were available for your positions right now.",
             "insights": {
                 "title": "Portfolio insights",
                 "totalInvested": "Total invested",
@@ -905,7 +839,6 @@
                 "saveButton": "Save",
                 "monthlyTargetHint": "Set how much you'd like to invest each month to automatically track whether you're hitting it, month by month.",
                 "monthlyTargetNeedsHistory": "Keep recording months of history to see whether you're hitting this target over time.",
-                "monthlyTargetMovedHint": "Manage this target together with your other financial goals.",
                 "monthlyTargetManageLink": "Manage monthly target →",
                 "monthlyTargetSavedLabel": "Saved monthly target",
                 "monthlyTargetSuccessRate": "Reached in {success} of the last {total} months",
@@ -920,16 +853,6 @@
                 "monthsCount": "{count} months",
                 "yearsCount": "{count} years"
             }
-        },
-        "dashboard": {
-            "vsLastMonth": "vs previous month",
-            "vsLastYear": "vs previous year", 
-            "monthlyComparison": "Monthly comparison",
-            "yearlyComparison": "Yearly comparison",
-            "loadingStats": "Loading statistics...",
-            "loadingCharts": "Loading charts...",
-            "noDataAvailable": "No data available",
-            "addDataFirst": "Add your data to view statistics"
         },
         "insights": {
             "title": "Financial Insights",
@@ -971,23 +894,14 @@
         "goals": {
             "title": "Financial Goals",
             "subtitle": "Track your progress towards goals",
-            "addGoal": "Add Goal",
             "progress": "Progress",
-            "completed": "Completed",
-            "targetAmount": "Target amount",
-            "currentAmount": "Current amount",
-            "timeline": "Deadline",
             "types": {
                 "savings": "Savings",
-                "investment": "Investment",
-                "debt": "Debt Reduction"
+                "investment": "Investment"
             },
             "examples": {
                 "emergency": "Emergency Fund",
-                "vacation": "Vacation",
-                "house": "House",
-                "retirement": "Retirement",
-                "debt_payoff": "Debt Payoff"
+                "house": "House"
             }
         }
     },
@@ -997,8 +911,6 @@
         "buttonBalance": "Update Balance",
         "buttonIncome": "Add Income",
         "buttonOutflow": "Add Outflow",
-        "buttonInvestment": "Add Investment",
-        "importFromFile": "Import from CSV / Excel",
         "toolsLabel": "More tools",
         "importToolLabel": "CSV / Excel",
         "balanceSection": {
@@ -1025,7 +937,6 @@
                 "successAll": "All balances updated successfully!",
                 "partialSuccess": "{success} of {total} balances updated. {failed} failed.",
                 "allFailed": "Failed to update balances. Please try again.",
-                "emptyBatch": "Add at least one balance with valid data",
                 "duplicateMonthWarning": "Two or more balances have the same month. Each month can only appear once, otherwise the previous value would be overwritten. Remove duplicates to continue."
             }
         },
@@ -1052,9 +963,7 @@
             },
             "confirmUpdate": "Confirm income insertion",
             "successUpdate": "Income inserted successfully",
-            "confirmDelete": "Are you sure you want to delete this income?",
             "successDelete": "Income deleted successfully",
-            "deleteBalanceRestore": "You can choose to restore one of the balances, or just delete the entry without modifying the balances.",
             "increaseWhichBalance": "Add to",
             "multiInsert": {
                 "toggle": "Multi-insert",
@@ -1069,10 +978,7 @@
                 "successAll": "All incomes inserted successfully!",
                 "partialSuccess": "{success} of {total} incomes inserted. {failed} failed.",
                 "allFailed": "Failed to insert incomes. Please try again.",
-                "emptyBatch": "Add at least one income with valid data",
-                "confirmSubmit": "Submit {count} incomes?",
-                "defaultAddTo": "Default: add to",
-                "pastMonthNoBalance": "Past-dated entries do not update the current balance"
+                "defaultAddTo": "Default: add to"
             }
         },
         "outflowSection": {
@@ -1096,9 +1002,7 @@
             },
             "confirmUpdate": "Confirm outflow insertion",
             "successUpdate": "Outflow inserted successfully",
-            "confirmDelete": "Are you sure you want to delete this outflow?",
             "successDelete": "Outflow deleted successfully",
-            "deleteBalanceRestore": "You can choose to restore one of the balances, or just delete the entry without modifying the balances.",
             "decreaseWhichBalance": "Subtract from",
             "makeRecurring": "Make it recurring every month",
             "sharedExpense": {
@@ -1137,10 +1041,7 @@
                 "successAll": "All outflows inserted successfully!",
                 "partialSuccess": "{success} of {total} outflows inserted. {failed} failed.",
                 "allFailed": "Failed to insert outflows. Please try again.",
-                "emptyBatch": "Add at least one outflow with valid data",
-                "confirmSubmit": "Submit {count} outflows?",
-                "defaultSubtractFrom": "Default: subtract from",
-                "pastMonthNoBalance": "Past-dated entries do not update the current balance"
+                "defaultSubtractFrom": "Default: subtract from"
             }
         },
         "investmentSection": {
@@ -1158,7 +1059,6 @@
             },
             "confirmUpdate": "Confirm investment insertion",
             "successUpdate": "Investment inserted successfully",
-            "confirmDelete": "Are you sure you want to delete this investment?",
             "successDelete": "Investment deleted successfully",
             "decreaseWhichBalance": "Subtract from",
             "increaseWhichBalance": "Add to"
@@ -1170,7 +1070,6 @@
             "incomeDeleteFailed": "Error deleting income. Please try again later.",
             "outflowDeleteFailed": "Error deleting outflow. Please try again later.",
             "serverConnectionFailed": "Server connection error. Check your connection and try again.",
-            "requestFailed": "Request failed. Check the entered data and try again.",
             "selectCategory": "Select a category",
             "selectPaymentType": "Select a payment type",
             "insertValidValue": "Insert a valid value greater than 0"
@@ -1189,15 +1088,7 @@
             "remember": "Remember my choice (editable in Settings)",
             "confirm": "Confirm",
             "cancel": "Cancel",
-            "globalDefaultLabel": "Balance impact (past dates)",
-            "globalDefaultNone": "No impact",
-            "globalDefaultPastMonth": "Subtract from that month's balance",
-            "globalDefaultPastMonthIncome": "Add to that month's balance",
-            "globalDefaultRemembered": "Use my saved preference",
-            "perRowOverride": "Choice for this row",
-            "perRowOverrideDefault": "Use default",
-            "missingSnapshotWarning": "No balance found for {month}/{year}. Balance update skipped.",
-            "summaryBalancesUpdated": "{count} historical balances updated"
+            "missingSnapshotWarning": "No balance found for {month}/{year}. Balance update skipped."
         },
         "duplicateWarning": {
             "titleOutflow": "Possible duplicate outflow",
@@ -1258,7 +1149,6 @@
         },
         "categoryPicker": {
             "createNew": "Create new category",
-            "customBadge": "Custom",
             "dialogTitle": "New custom category",
             "dialogSubtitle": "Stays linked to an official category, so stats and rankings remain correct.",
             "parentLabel": "Official category",
@@ -1369,7 +1259,6 @@
             "assetAllocation": {
                 "title": "Asset Allocation",
                 "description": "How you distribute your wealth",
-                "currentDistribution": "Current distribution",
                 "liquid": "Liquid",
                 "investments": "Investments",
                 "crypto": "Crypto",
@@ -1391,11 +1280,7 @@
             "showLess": "Show less"
         },
         "insights": {
-            "betterThan": "You're doing better than",
-            "worseThan": "There's room for improvement compared to",
-            "average": "You're performing around average",
-            "ofUsers": "of users",
-            "inCategory": "in your category"
+            "average": "You're performing around average"
         },
         "actionableInsights": {
             "percentileTitle": "Net worth: top {rank}% among similar profiles",
@@ -1413,17 +1298,12 @@
             "action": "Complete profile"
         },
         "tips": {
-            "title": "Personalized Tips",
-            "highOutflows": "Consider reviewing your outflows - they're above average for your income level",
-            "lowSavings": "Try to increase your savings rate for better financial health",
-            "goodBalance": "Great job! Your financial balance is above average",
-            "diversify": "Consider diversifying your assets for better risk management"
+            "title": "Personalized Tips"
         }
     },
     "leaderboard": {
         "title": "Leaderboard over time",
         "monthRanking": "Ranking related to the month: ",
-        "yearRanking": "Ranking related to the year: ",
         "generalRanking": "General rankings: ",
         "similarRanking": "Similar users rankings: ",
         "balanceRanking": "Balance Ranking ",
@@ -2050,7 +1930,6 @@
         "all": "All",
         "unlocked": "Unlocked",
         "locked": "Locked",
-        "allCategories": "All",
         "allBadgesUnlocked": "Congratulations! You've unlocked all badges!",
         "badgeUnlocked": "Achievement unlocked!",
         "achievementsSummary": "achievements already unlocked!",
@@ -2278,23 +2157,6 @@
         "vsPrevMonth": "vs prev. month",
         "ofIncomes": "% of Income"
     },
-    "categories": {
-        "Casa": "Home",
-        "Alimentari": "Food", 
-        "Trasporti": "Transport",
-        "Intrattenimento": "Entertainment",
-        "Salute": "Health",
-        "Abbigliamento": "Clothing",
-        "Altri": "Other",
-        "Viaggi": "Travelling",
-        "Digital": "Digital service",
-        "Auto": "Vehicle",
-        "Stipendio": "Salary",
-        "Freelance": "Freelance",
-        "Entrate extra": "Extra income",
-        "Regalo": "Gift",
-        "Pensione": "Retirement"
-    },
     "profile": {
         "detailsTab": "Account Details",
         "achievementsTab": "Achievements",
@@ -2353,11 +2215,9 @@
         "dualAmountToggle": "My file has separate columns for incomes and outflows",
         "outflowColumn": "Outflow column",
         "incomeColumn": "Income column",
-        "categoryColumn": "Category",
         "categoryColumnFile": "Category column in your file",
         "notesColumn": "Notes",
         "transactionType": "Transaction type",
-        "defaultCategory": "Default category",
         "defaultOutflowCategory": "Default outflow category",
         "defaultIncomeCategory": "Default income category",
         "defaultCategoryInfo": "This category will be assigned to all imported outflows. You can change each one individually in the next step.",
@@ -2446,13 +2306,6 @@
                 "traderepublic": "Trade Republic"
         },
         "bankRowsSkipped": "{count} rows were investment trades and were skipped — import those from \"Import Investments\" instead.",
-        "tagWithBankCategory": "Create custom \"{bank}\" sub-categories (only with your confirmation)",
-        "bankCategoryReviewTitle": "Provider sub-categories (optional)",
-        "bankCategoryReviewEnabled": "You approved this choice: the listed sub-categories will be reused or created during import.",
-        "bankCategoryReviewDisabled": "No provider sub-category will be created. Transaction categories remain exactly as shown below.",
-        "bankCategoryExplicitConsent": "Yes, create or reuse {count} provider sub-categories",
-        "bankCategoryExisting": "already exists",
-        "bankCategoryNew": "will be created",
         "retroHint": "{count} past transactions with a similar note are filed under a different category.",
         "retroHintSuggestion": "You can update them manually from the transaction history.",
         "dismiss": "Dismiss",
@@ -2898,7 +2751,6 @@
             "range": "Range",
             "avg": "Average",
             "volatility": "Volatility",
-            "performance": "Performance",
             "priceStats": "Price Stats",
             "identifier": "Identifier",
             "period24h": "24H",
@@ -2980,10 +2832,8 @@
             "addManual": "Add \"{query}\" as unverified",
             "addManualHint": "Won't be verified, and won't count toward comparisons with other users.",
             "provider": {
-                "openfigi": "Verified with OpenFIGI",
                 "coingecko": "Verified with CoinGecko",
-                "finnhub": "Verified with Finnhub",
-                "manual": "Manually entered"
+                "finnhub": "Verified with Finnhub"
             }
         },
         "holdings": {
@@ -3058,7 +2908,6 @@
             "rejectionNotePlaceholder": "Rejection reason (required)",
             "submittedOn": "Submitted on",
             "rawPriceLabel": "Submitted price",
-            "monthLabel": "Month",
             "referenceDateLabel": "Date to verify"
         },
         "attribution": {
@@ -3171,8 +3020,7 @@
         "nextRun": "Next",
         "paused": "Paused",
         "pause": "Pause",
-        "resume": "Resume",
-        "autoInsertNote": "It will be inserted automatically every month without touching your balances — you can always link it to a source when you edit it."
+        "resume": "Resume"
     },
     "goals": {
         "sourceLabel": "Value source",
@@ -3181,9 +3029,29 @@
        "linkedHint": "Linked goal: the value updates automatically",
     "financialControls": {
       "inChecks": "Include",
-            "spendingGroup": "Monthly spending", "savingsGroup": "Monthly savings", "emergencyGroup": "Emergency fund", "fixedAmount": "Amount", "savingsPercent": "Percentage of income", "useFixedAmount": "Include amount in checks", "usePercentage": "Include percentage in checks", "toggleExplanation": "When a threshold is disabled, its value stays saved but is not checked or included in analyses.", "selectCategory": "Select a category", "notifications": "Limit notifications", "enabled": "Enabled", "disabled": "Disabled", "spendingPercent": "Spending limit as income (%)", "savingsAmount": "Minimum monthly savings", "emergencyMonths": "Minimum coverage (months of spending)",
+            "spendingGroup": "Monthly spending",
+            "savingsGroup": "Monthly savings",
+            "emergencyGroup": "Emergency fund",
+            "fixedAmount": "Amount",
+            "savingsPercent": "Percentage of income",
+            "toggleExplanation": "When a threshold is disabled, its value stays saved but is not checked or included in analyses.",
+            "selectCategory": "Select a category",
+            "notifications": "Limit notifications",
+            "enabled": "Enabled",
+            "disabled": "Disabled",
+            "spendingPercent": "Spending limit as income (%)",
+            "savingsAmount": "Minimum monthly savings",
+            "emergencyMonths": "Minimum coverage (months of spending)",
             "currentSpending": "This month: {amount}, {percent} of income", "currentSavings": "Monthly savings: {amount}, {percent} of income", "currentEmergency": "Current fund: {amount}, {months} months covered", "currentFixedExpenses": "Recurring fixed expenses: {percent} of income",
-            "advancedTitle": "Advanced controls", "advancedHint": "Leave a control empty to disable it.", "fixedExpensesPercent": "Maximum fixed expenses as income (%)", "debtReduction": "Monthly debt reduction", "positionConcentration": "Maximum position concentration (%)", "categoryConcentration": "Maximum asset-category concentration (%)", "passiveIncome": "Annual passive-income goal", "categorySpending": "Monthly category limits", "categoryName": "Category", "categoryAmount": "Limit",
+            "advancedTitle": "Advanced controls",
+            "advancedHint": "Leave a control empty to disable it.",
+            "fixedExpensesPercent": "Maximum fixed expenses as income (%)",
+            "debtReduction": "Monthly debt reduction",
+            "positionConcentration": "Maximum position concentration (%)",
+            "categoryConcentration": "Maximum asset-category concentration (%)",
+            "passiveIncome": "Annual passive-income goal",
+            "categorySpending": "Monthly category limits",
+            "categoryAmount": "Limit",
             "investmentPercent": "Minimum investment as income (%)", "bothRequired": "When both thresholds are set, both must be met.", "customNetWorthPercent": "Net-worth target (%)", "netWorthRequirement": "Net-worth threshold: {percent}% = {amount}"
         }
     },

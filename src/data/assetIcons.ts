@@ -1,5 +1,5 @@
-// Icone centralizzate per tutti gli asset del portafoglio
-// Utilizzate in dashboard, grafici e statistiche per consistenza visiva
+// Centralized icons for all portfolio assets
+// Used across the dashboard, charts, and stats for visual consistency
 
 import { 
   BsBank, 
@@ -28,17 +28,17 @@ import {
 } from "react-icons/ri";
 
 /**
- * Mappa centralizzata delle icone per tutti gli asset
- * Utilizzare sempre queste icone per garantire consistenza in tutta l'app
+ * Centralized map of icons for all assets
+ * Always use these icons to keep consistency throughout the app
  */
 export const assetIcons = {
-  // Asset tradizionali/Liquidità
+  // Traditional assets/Liquidity
   bank: BsBank,
   cash: BsCashCoin,
   digitalServices: SiMoneygram,
   emergencyFund: GiUmbrella,
-  
-  // Investimenti
+
+  // Investments
   stocks: MdOutlineAutoGraph,
   etf: AiOutlineStock,
   bitcoin: FaBitcoin,
@@ -49,16 +49,16 @@ export const assetIcons = {
 };
 
 /**
- * Hook per ottenere l'icona di un asset
- * @param {string} assetType - Tipo di asset (bank, cash, stocks, etc.)
- * @returns {React.Component} Componente icona React
+ * Hook to get the icon for an asset
+ * @param {string} assetType - Asset type (bank, cash, stocks, etc.)
+ * @returns {React.Component} React icon component
  */
 export const getAssetIcon = (assetType) => {
-  return assetIcons[assetType] || BsCoin; // Fallback a icona generica
+  return assetIcons[assetType] || BsCoin; // Fallback to a generic icon
 };
 
 /**
- * Lista ordinata degli asset per iterazione
+ * Ordered list of assets for iteration
  */
 export const assetOrder = [
   'cash',
@@ -72,10 +72,10 @@ export const assetOrder = [
 ];
 
 /**
- * Mappatura asset per compatibilità con nomi alternativi
+ * Asset mapping for compatibility with alternative names
  */
 export const assetMapping = {
-  // Nomi alternativi
+  // Alternative names
   'bankReal': 'bank',
   'cashReal': 'cash',
   'digitalServicesReal': 'digitalServices',
@@ -85,7 +85,7 @@ export const assetMapping = {
   'bitcoinReal': 'bitcoin',
   'cryptoReal': 'crypto',
   
-  // Nomi standard
+  // Standard names
   bank: 'bank',
   cash: 'cash',
   digitalServices: 'digitalServices',

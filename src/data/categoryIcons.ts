@@ -21,7 +21,7 @@ import {
   Smartphone
 } from 'lucide-react';
 
-// Mappa delle icone per le categorie esistenti in categoryColors.js
+// Map of icons for the categories that exist in categoryColors.js
 export const categoryIcons = {
   // Income Categories
   'Salary': Briefcase,
@@ -50,17 +50,17 @@ export const categoryIcons = {
   'Other': Settings
 };
 
-// Funzione per ottenere l'icona di una categoria
+// Function to get the icon for a category
 export const getCategoryIcon = (category) => {
-  // Normalizza il nome della categoria (rimuove spazi e converte in lowercase per il matching)
+  // Normalize the category name (trims whitespace for matching)
   const normalizedCategory = category.replace(/\s+/g, ' ').trim();
-  
-  // Cerca prima una corrispondenza esatta
+
+  // Try an exact match first
   if (categoryIcons[normalizedCategory]) {
     return categoryIcons[normalizedCategory];
   }
-  
-  // Cerca una corrispondenza parziale (case-insensitive)
+
+  // Try a partial match (case-insensitive)
   const categoryKey = Object.keys(categoryIcons).find(key => 
     key.toLowerCase().includes(normalizedCategory.toLowerCase()) ||
     normalizedCategory.toLowerCase().includes(key.toLowerCase())
@@ -69,18 +69,18 @@ export const getCategoryIcon = (category) => {
   return categoryKey ? categoryIcons[categoryKey] : categoryIcons['Other'];
 };
 
-// Importiamo i colori direttamente dal file categoryColors
+// Import the colors directly from the categoryColors file
 import { outflowCategoryColors, incomeCategoryColors } from './categoryColors';
 
-// Funzione per convertire colore rgba in colore esadecimale solido
+// Function to convert an rgba color to a solid hex color
 const rgbaToHex = (rgbaString) => {
-  // Estrae i valori RGB dal formato rgba
+  // Extract the RGB values from the rgba format
   const match = rgbaString.match(/rgba?\(([^)]+)\)/);
   if (!match) return '#079164';
-  
+
   const [r, g, b] = match[1].split(',').map(num => parseInt(num.trim()));
-  
-  // Converte RGB in esadecimale
+
+  // Convert RGB to hex
   const toHex = (n) => {
     const hex = n.toString(16);
     return hex.length === 1 ? '0' + hex : hex;
@@ -89,19 +89,19 @@ const rgbaToHex = (rgbaString) => {
   return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
 };
 
-// Funzione per ottenere il colore di una categoria (usa direttamente i colori da categoryColors.js)
+// Function to get the color for a category (uses the colors from categoryColors.js directly)
 export const getCategoryColor = (category) => {
   if (!category) return '#079164';
-  
-  // Cerca prima in outflowCategoryColors
+
+  // Try outflowCategoryColors first
   let color = outflowCategoryColors[category];
-  
-  // Se non trovato, cerca in incomeCategoryColors  
+
+  // If not found, try incomeCategoryColors
   if (!color) {
     color = incomeCategoryColors[category];
   }
-  
-  // Se non trovato, prova con i mapping alternativi
+
+  // If still not found, try the alternative mappings
   if (!color) {
     const keyMappings = {
       'food': 'Food',
@@ -132,12 +132,12 @@ export const getCategoryColor = (category) => {
     }
   }
   
-  // Converte rgba in esadecimale se necessario
+  // Convert rgba to hex if needed
   if (color && color.startsWith('rgba')) {
     return rgbaToHex(color);
   }
-  
-  // Fallback al colore di default
+
+  // Fall back to the default color
   return color || '#079164';
 };
 

@@ -9,7 +9,7 @@ import { render, screen, act, waitFor } from '@testing-library/react';
 import { ToastProvider, useToast } from '../../contexts/ToastContext';
 
 // Mock ToastNotification component to avoid complex testing of the actual component
-vi.mock('../../components/ToastNotification', () => ({
+vi.mock('../../sections/ToastNotification', () => ({
   default: ({ message, type, show, onClose }) => (
     show ? (
       <div data-testid={`toast-${type}`} data-message={message}>

@@ -1,8 +1,11 @@
+// Belongs in components/ despite reading LanguageContext: it's generic page-to-page
+// navigation chrome, not tied to one business domain (see CONTRIBUTING.md's
+// components/ vs sections/ rule).
 import React, { useContext } from 'react';
 import styled, { keyframes, css } from 'styled-components';
 import { LanguageContext } from '../contexts/LanguageContext';
 
-// Animazioni
+// Animations
 const slideIn = keyframes`
   from {
     transform: translateY(100%);
@@ -39,7 +42,7 @@ const spinner = keyframes`
   100% { transform: rotate(360deg); }
 `;
 
-// Componente principale per gli indicatori di navigazione (pallini)
+// Main component for the navigation indicators (dots)
 const NavigationIndicator = styled.div`
   position: fixed;
   top: 50%;
@@ -83,7 +86,7 @@ const PageDot = styled.div`
   }
 `;
 
-// Nuovo componente per il caricamento in fondo alla pagina
+// New component for the loading indicator at the bottom of the page
 const BottomLoadingIndicator = styled.div`
   position: fixed;
   bottom: 0;
@@ -197,7 +200,7 @@ const SubText = styled.div`
   }
 `;
 
-// Overlay per la navigazione (solo durante il cambio pagina effettivo)
+// Overlay for navigation (only during an actual page change)
 const NavigationOverlay = styled.div`
   position: fixed;
   top: 0;
@@ -295,7 +298,7 @@ const ScrollNavigationIndicator = ({
 }) => {
   const { language } = useContext(LanguageContext);
   
-  // Guardia per verificare che il theme sia disponibile
+  // Guard to check that the theme is available
   if (!theme) {
     return null;
   }
@@ -312,7 +315,7 @@ const ScrollNavigationIndicator = ({
     'Confronto'
   ];
 
-  // Mostra overlay di loading solo durante il caricamento effettivo della pagina
+  // Show the loading overlay only during an actual page load
   if (isNavigating) {
     return (
       <NavigationOverlay theme={theme}>
@@ -326,9 +329,9 @@ const ScrollNavigationIndicator = ({
     );
   }
 
-    // Mostra pulsante quando l'utente è nella zona appropriata
+    // Show the button when the user is in the appropriate zone
   if (showTriggerZone && triggerDirection && pageHasScrollableContent) {
-    // Traduzioni per i testi
+    // Translations for the text
     const translations = {
       it: {
         goToNext: 'Vai alla prossima pagina',
@@ -352,7 +355,7 @@ const ScrollNavigationIndicator = ({
     
     return (
       <>
-        {/* Mantieni i pallini di navigazione sempre visibili */}
+        {/* Keep the navigation dots always visible */}
         {currentPageIndex !== -1 && (
           <NavigationIndicator>
             {Array.from({ length: totalPages }, (_, index) => (
@@ -367,7 +370,7 @@ const ScrollNavigationIndicator = ({
           </NavigationIndicator>
         )}
         
-        {/* Pulsante per navigare */}
+        {/* Button to navigate */}
         <BottomLoadingIndicator theme={theme}>
           <LoadingContent>
             <DirectionIcon theme={theme}>
@@ -437,7 +440,7 @@ const ScrollNavigationIndicator = ({
     );
   }
 
-  // Mostra solo i pallini di navigazione se la pagina è nel ciclo
+  // Only show the navigation dots if the page is part of the cycle
   if (currentPageIndex === -1) return null;
 
   return (
@@ -454,7 +457,7 @@ const ScrollNavigationIndicator = ({
         ))}
       </NavigationIndicator>
       
-      {/* Rimosso l'hint di navigazione fastidioso */}
+      {/* Removed the annoying navigation hint */}
     </>
   );
 };

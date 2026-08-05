@@ -7,29 +7,29 @@ export function calculatePercentageChange(currentValue, previousValue, type = 'd
       return ' (N.A.%)';
     }
 
-    // Per i risparmi (saved), gestiamo la logica diversamente
+    // For savings (saved), handle the logic differently
     if (type === 'saved') {
         const difference = currentValue - previousValue;
-        
-        // Se entrambi hanno lo stesso segno, usiamo la formula standard
+
+        // If both have the same sign, use the standard formula
         if ((currentValue >= 0 && previousValue >= 0) || (currentValue < 0 && previousValue < 0)) {
             const percentage = ((difference / Math.abs(previousValue)) * 100).toFixed(2);
             return `( ${percentage} % )`;
         }
-        
-        // Se hanno segni diversi, calcoliamo basandoci sul miglioramento/peggioramento
+
+        // If they have different signs, base the calculation on improvement/worsening
         if (difference > 0) {
-            // Miglioramento: da perdita a guadagno, o aumento del guadagno
+            // Improvement: from loss to gain, or an increase in gain
             const percentage = ((Math.abs(difference) / Math.abs(previousValue)) * 100).toFixed(2);
             return `( +${percentage} % )`;
         } else {
-            // Peggioramento: da guadagno a perdita, o aumento della perdita
+            // Worsening: from gain to loss, or an increase in loss
             const percentage = ((Math.abs(difference) / Math.abs(previousValue)) * 100).toFixed(2);
             return `( -${percentage} % )`;
         }
     }
-  
-    // Logica standard per income e outflow
+
+    // Standard logic for income and outflow
     const percentage = (((currentValue - previousValue) / previousValue) * 100).toFixed(2);
     return `( ${percentage} % )`;
 }

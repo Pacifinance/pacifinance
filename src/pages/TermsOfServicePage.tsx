@@ -26,7 +26,7 @@ export default function TermsOfServicePage() {
         <PolicyContainer theme={theme}>
           <div className="max-w-4xl mx-auto">
             <PolicyHeader theme={theme}>
-              <h1 style={{ color: '#079164' }}>
+              <h1 style={{ color: theme.secondaryColor }}>
                 {language === 'it' ? 'Termini di Servizio' : 'Terms of Service'}
               </h1>
               <div className="last-updated">Last updated: {new Date().toLocaleDateString(language === 'it' ? 'it-IT' : 'en-US')}</div>
@@ -42,7 +42,7 @@ export default function TermsOfServicePage() {
                   border: `2px solid ${theme.mode === 'dark' ? 'rgba(7, 145, 100, 0.2)' : 'rgba(7, 145, 100, 0.15)'}`
                 }}
               >
-                <h2 className="text-3xl font-bold mb-6" style={{ color: '#079164' }}>
+                <h2 className="text-3xl font-bold mb-6" style={{ color: theme.secondaryColor }}>
                   {language === 'it' ? '1. Accettazione dei Termini' : '1. Acceptance of Terms'}
                 </h2>
                 <p className="mb-4 leading-relaxed text-lg">
@@ -54,7 +54,7 @@ export default function TermsOfServicePage() {
               </section>
 
               <section>
-                <h2 className="text-2xl font-semibold mb-4" style={{ color: '#079164' }}>
+                <h2 className="text-2xl font-semibold mb-4" style={{ color: theme.secondaryColor }}>
                   {language === 'it' ? '2. Uso del Servizio' : '2. Use of Service'}
                 </h2>
                 <p className="mb-4 leading-relaxed">
@@ -66,7 +66,7 @@ export default function TermsOfServicePage() {
               </section>
 
               <section>
-                <h2 className="text-2xl font-semibold mb-4" style={{ color: '#079164' }}>
+                <h2 className="text-2xl font-semibold mb-4" style={{ color: theme.secondaryColor }}>
                   {language === 'it' ? '3. Privacy e Dati' : '3. Privacy and Data'}
                 </h2>
                 <p className="mb-4 leading-relaxed">
@@ -78,7 +78,7 @@ export default function TermsOfServicePage() {
               </section>
 
               <section>
-                <h2 className="text-2xl font-semibold mb-4" style={{ color: '#079164' }}>
+                <h2 className="text-2xl font-semibold mb-4" style={{ color: theme.secondaryColor }}>
                   {language === 'it' ? '4. Limitazione di Responsabilità' : '4. Limitation of Liability'}
                 </h2>
                 <p className="leading-relaxed">

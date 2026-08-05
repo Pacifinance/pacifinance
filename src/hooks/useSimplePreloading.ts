@@ -1,7 +1,7 @@
-// Hook di preloading semplice e sicuro
+// Simple, safe preloading hook
 import { useEffect } from 'react';
 
-// Preloading functions sicure con gestione errori
+// Safe preloading functions with error handling
 const safePreload = (importFn) => {
   try {
     return importFn().catch(err => {
@@ -14,16 +14,16 @@ const safePreload = (importFn) => {
   }
 };
 
-// Hook per preloading graduale dopo l'autenticazione
+// Hook for gradual preloading after authentication
 export const useAuthenticatedPreloading = (isAuthenticated) => {
   useEffect(() => {
     if (isAuthenticated) {
-      // Preload delle pagine principali dell'app dopo 2 secondi dall'autenticazione
+      // Preload the app's main pages 2 seconds after authentication
       const timer = setTimeout(() => {
-        // Preload delle pagine più utilizzate
+        // Preload the most used pages
         safePreload(() => import('../pages/StatsChartsPage'));
-        
-        // Preload con delay maggiore per le pagine meno critiche
+
+        // Preload less critical pages with a longer delay
         setTimeout(() => {
           safePreload(() => import('../pages/InsertPage'));
         }, 1000);
@@ -38,14 +38,14 @@ export const useAuthenticatedPreloading = (isAuthenticated) => {
   }, [isAuthenticated]);
 };
 
-// Hook per preloading delle pagine pubbliche
+// Hook for preloading public pages
 export const usePublicPreloading = () => {
   useEffect(() => {
-    // Preload di pagine che potrebbero essere visitate
+    // Preload pages that might be visited
     const timer = setTimeout(() => {
       safePreload(() => import('../pages/FAQPage'));
       safePreload(() => import('../pages/PricingPage'));
-    }, 5000); // Aspetta 5 secondi per non interferire con il caricamento iniziale
+    }, 5000); // Wait 5 seconds so it doesn't interfere with the initial load
     
     return () => clearTimeout(timer);
   }, []);

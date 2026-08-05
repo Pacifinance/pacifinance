@@ -1,8 +1,8 @@
-// Colori centralizzati per tutti gli asset del portafoglio
-// Utilizzati in dashboard, grafici e statistiche per consistenza visiva
+// Centralized colors for all portfolio assets
+// Used across the dashboard, charts, and stats for visual consistency
 
 export const assetColors = {
-  // Asset tradizionali/Liquidità
+  // Traditional assets/Liquidity
   bank: {
     primary: '#0D579B',
     gradient: 'linear-gradient(135deg, #0D579B 0%, #2980b9 100%)',
@@ -28,7 +28,7 @@ export const assetColors = {
     dark: '#8e44ad'
   },
   
-  // Investimenti
+  // Investments
   stocks: {
     primary: '#FF6600',
     gradient: 'linear-gradient(135deg, #FF6600 0%, #ff7675 100%)',
@@ -72,22 +72,22 @@ export const assetColors = {
     dark: '#fdcb6e'
   },
   
-  // Colori speciali per gruppi
+  // Special colors for groups
   totalLiquidity: '#079164',
   totalInvestments: '#FF6600',
   totalBalance: '#000000',
-  
-  // Colori per entrate, uscite e dashboard
+
+  // Colors for income, outflows, and the dashboard
   income: '#27ae60',
-  expense: '#e74c3c', 
+  expense: '#e74c3c',
   savings: '#079164',
-  
-  // Colori per testi e UI
+
+  // Colors for text and UI
   textPrimary: '#333',
   textSecondary: '#666'
 };
 
-// Funzione per ottenere il colore basato sul tema
+// Function to get a color based on the theme
 export const getAssetColor = (assetType, theme = 'light', variant = 'primary') => {
   const asset = assetColors[assetType];
   if (!asset) return assetColors.totalBalance;
@@ -96,14 +96,14 @@ export const getAssetColor = (assetType, theme = 'light', variant = 'primary') =
   if (variant === 'light') return asset.light;
   if (variant === 'dark') return asset.dark;
   
-  // Per temi dark/light mode
+  // For dark/light theme modes
   if (theme === 'dark') {
     return asset.light;
   }
   return asset.dark;
 };
 
-// Array ordinato per i grafici (stesso ordine della dashboard)
+// Ordered array for charts (same order as the dashboard)
 export const assetOrder = [
   'cash',
   'digitalServices', 
@@ -118,7 +118,7 @@ export const assetOrder = [
   'commodities'
 ];
 
-// Mappa per tradurre le keys nei nomi visualizzati
+// Map to translate keys into displayed names
 export const assetNameMap = {
   cash: 'cash',
   digitalServices: 'digitalServices',

@@ -7,7 +7,7 @@ const DevModeProvider = ({ children }) => {
     const [isDevelopmentMode, setIsDevelopmentMode] = useState(false);
 
     useEffect(() => {
-        // Controlla se siamo in development mode
+        // Check if we're in development mode
         const urlParams = new URLSearchParams(window.location.search);
         const hasDevParam = urlParams.get('dev') === 'true';
         const hasLocalStorageFlag = localStorage.getItem('pacifinance-dev-mode') === 'true';
@@ -22,19 +22,19 @@ const DevModeProvider = ({ children }) => {
         
         setIsDevelopmentMode(devMode);
         
-        // Se è presente il parametro URL, salvalo nel localStorage
+        // If the URL parameter is present, save it to localStorage
         if (hasDevParam) {
             localStorage.setItem('pacifinance-dev-mode', 'true');
         }
     }, []);
 
-    // Toggle per development mode (solo in dev environment)
+    // Toggle for development mode (dev environment only)
     const toggleDevMode = () => {
         if (import.meta.env.DEV) {
             const newMode = !isDevelopmentMode;
             setIsDevelopmentMode(newMode);
             localStorage.setItem('pacifinance-dev-mode', newMode.toString());
-            window.location.reload(); // Ricarica per applicare il nuovo provider
+            window.location.reload(); // Reload to apply the new provider
         }
     };
 

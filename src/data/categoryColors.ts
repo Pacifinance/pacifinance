@@ -3,49 +3,49 @@
 import { resolveTagKeyFromLocalized } from './tagTranslations';
 
 export const incomeCategoryColors = {
-  // Necessari/positivi
-  'Salary': 'rgba(39, 174, 96, 0.35)', // verde: sicurezza, stabilità
-  'Freelance income': 'rgba(52, 152, 219, 0.32)', // blu: fiducia, professionalità
-  'Extra income': 'rgba(241, 196, 15, 0.32)', // giallo: energia, positività
-  'Gift': 'rgba(155, 89, 182, 0.28)', // viola: sorpresa, regalo
-  'Retirement': 'rgba(127, 140, 141, 0.28)', // grigio: neutralità
-  'Other': 'rgba(230, 126, 34, 0.32)', // arancione: creatività
+  // Necessary/positive
+  'Salary': 'rgba(39, 174, 96, 0.35)', // green: security, stability
+  'Freelance income': 'rgba(52, 152, 219, 0.32)', // blue: trust, professionalism
+  'Extra income': 'rgba(241, 196, 15, 0.32)', // yellow: energy, positivity
+  'Gift': 'rgba(155, 89, 182, 0.28)', // purple: surprise, gift
+  'Retirement': 'rgba(127, 140, 141, 0.28)', // gray: neutrality
+  'Other': 'rgba(230, 126, 34, 0.32)', // orange: creativity
 };
 
 export const outflowCategoryColors = {
-  // Necessari/positivi
-  'Food': 'rgba(39, 174, 96, 0.32)', // verde: salute, necessità
-  'House': 'rgba(46, 196, 182, 0.32)', // turchese: sicurezza, casa
-  'Health': 'rgba(231, 76, 60, 0.28)', // rosso: attenzione, salute
-  'Education': 'rgba(52, 152, 219, 0.32)', // blu: crescita
-  'Tax': 'rgba(52, 73, 94, 0.28)', // grigio scuro: obbligo
-  // Meno necessari/voluttuari
-  'Shopping': 'rgba(241, 196, 15, 0.32)', // giallo: piacere
-  'Free time': 'rgba(155, 89, 182, 0.28)', // viola: svago
-  'Travelling': 'rgba(46, 204, 113, 0.32)', // verde chiaro: libertà
-  'Vehicle': 'rgba(230, 126, 34, 0.32)', // arancione: movimento
-  'Digital service': 'rgba(203, 243, 240, 0.32)', // azzurro chiaro: tecnologia
-  'Gift': 'rgba(255, 99, 132, 0.28)', // rosa/rosso: dono
-  'Pets': 'rgba(255, 206, 86, 0.28)', // giallo chiaro: affetto
-  'Personal project': 'rgba(255, 115, 0, 0.38)', // arancione acceso: creatività, motivazione, risalto
-  'Investment': 'rgba(106, 90, 205, 0.32)', // viola bluastro: crescita finanziaria
-  'Transports': 'rgba(139, 69, 19, 0.32)', // marrone: mezzi di trasporto
-  'Other': 'rgba(127, 140, 141, 0.22)', // grigio: altro
+  // Necessary/positive
+  'Food': 'rgba(39, 174, 96, 0.32)', // green: health, necessity
+  'House': 'rgba(46, 196, 182, 0.32)', // teal: security, home
+  'Health': 'rgba(231, 76, 60, 0.28)', // red: attention, health
+  'Education': 'rgba(52, 152, 219, 0.32)', // blue: growth
+  'Tax': 'rgba(52, 73, 94, 0.28)', // dark gray: obligation
+  // Less necessary/discretionary
+  'Shopping': 'rgba(241, 196, 15, 0.32)', // yellow: pleasure
+  'Free time': 'rgba(155, 89, 182, 0.28)', // purple: leisure
+  'Travelling': 'rgba(46, 204, 113, 0.32)', // light green: freedom
+  'Vehicle': 'rgba(230, 126, 34, 0.32)', // orange: movement
+  'Digital service': 'rgba(203, 243, 240, 0.32)', // light blue: technology
+  'Gift': 'rgba(255, 99, 132, 0.28)', // pink/red: gift
+  'Pets': 'rgba(255, 206, 86, 0.28)', // light yellow: affection
+  'Personal project': 'rgba(255, 115, 0, 0.38)', // bright orange: creativity, motivation, emphasis
+  'Investment': 'rgba(106, 90, 205, 0.32)', // blue-purple: financial growth
+  'Transports': 'rgba(139, 69, 19, 0.32)', // brown: transportation
+  'Other': 'rgba(127, 140, 141, 0.22)', // gray: other
 };
 
-// Funzione helper per ottenere il colore dalla chiave di categoria
+// Helper function to get the color from a category key
 export const getCategoryColor = (categoryKey, language) => {
   if (!categoryKey) return '#8884d8';
 
   const normalizedInput = String(categoryKey).trim();
   const resolvedLanguage = typeof language === 'string' ? language : undefined;
   
-  // Prova prima con outflowCategoryColors
+  // Try outflowCategoryColors first
   if (outflowCategoryColors[normalizedInput]) {
     return outflowCategoryColors[normalizedInput];
   }
-  
-  // Prova con incomeCategoryColors
+
+  // Try incomeCategoryColors
   if (incomeCategoryColors[normalizedInput]) {
     return incomeCategoryColors[normalizedInput];
   }
@@ -54,7 +54,7 @@ export const getCategoryColor = (categoryKey, language) => {
   const canonicalIncomeKey = resolveTagKeyFromLocalized(normalizedInput, resolvedLanguage, 'income');
   const canonicalKey = canonicalOutflowKey || canonicalIncomeKey;
   
-  // Fallback con altri possibili mapping
+  // Fallback with other possible mappings
   const keyMappings = {
     'food': 'Food',
     'house': 'House',

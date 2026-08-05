@@ -83,7 +83,7 @@ const SectionHeader = styled.div`
   margin-bottom: 1.25rem;
   
   h1 {
-    background: linear-gradient(135deg, white 0%, white 70%, #079164 100%);
+    background: ${props => `linear-gradient(135deg, white 0%, white 70%, ${props.theme.secondaryColor} 100%)`};
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -1238,22 +1238,22 @@ function Comparison({ theme, userData, isHidden}) {
     const profileFactorGroups = [
         {
             id: 'career',
-            label: translations.comparison.benchmarkOverview?.factors?.career || 'Lavoro e carriera',
+            label: translations.comparison.benchmarkOverview?.factors?.career || 'Work and career',
             fields: ['job', 'jobType', 'workTime', 'yearsOfExperience']
         },
         {
             id: 'location',
-            label: translations.comparison.benchmarkOverview?.factors?.location || 'Area geografica',
+            label: translations.comparison.benchmarkOverview?.factors?.location || 'Geographic area',
             fields: ['jobCountry', 'country', 'remoteType']
         },
         {
             id: 'lifeStage',
-            label: translations.comparison.benchmarkOverview?.factors?.lifeStage || 'Fase di vita',
+            label: translations.comparison.benchmarkOverview?.factors?.lifeStage || 'Life stage',
             fields: ['age']
         },
         {
             id: 'household',
-            label: translations.comparison.benchmarkOverview?.factors?.household || 'Casa e famiglia',
+            label: translations.comparison.benchmarkOverview?.factors?.household || 'Home and family',
             fields: ['livingSituation', 'housingType', 'children']
         }
     ].map(group => ({ ...group, available: group.fields.some(field => hasProfileValue(userData?.profile?.[field])) }));
@@ -1331,8 +1331,8 @@ function Comparison({ theme, userData, isHidden}) {
             : userAverages.similar?.assetAllocation;
         const allAllocation = userAverages.all?.assetAllocation;
         const allocations = [
-            { key: 'liquid', name: translations.comparison.cards.assetAllocation.liquid || 'Liquidità', value: liquid, percentage: (liquid / totalValue) * 100, color: '#3498db' },
-            { key: 'investments', name: translations.comparison.cards.assetAllocation.investments || 'Investimenti', value: investments, percentage: (investments / totalValue) * 100, color: '#27ae60' },
+            { key: 'liquid', name: translations.comparison.cards.assetAllocation.liquid || 'Liquidity', value: liquid, percentage: (liquid / totalValue) * 100, color: '#3498db' },
+            { key: 'investments', name: translations.comparison.cards.assetAllocation.investments || 'Investments', value: investments, percentage: (investments / totalValue) * 100, color: '#27ae60' },
             { key: 'crypto', name: translations.comparison.cards.assetAllocation.crypto || 'Crypto', value: crypto, percentage: (crypto / totalValue) * 100, color: '#f39c12' }
         ].map(asset => ({
             ...asset,
@@ -1419,9 +1419,9 @@ function Comparison({ theme, userData, isHidden}) {
         if (similarRanks.balance > 0) {
             insights.push({
                 type: 'positive',
-                title: (translations.comparison.actionableInsights?.percentileTitle || 'Patrimonio: top {rank}% tra profili simili')
+                title: (translations.comparison.actionableInsights?.percentileTitle || 'Net worth: top {rank}% among similar profiles')
                     .replace('{rank}', Math.min(similarRanks.balance, 100)),
-                description: translations.comparison.actionableInsights?.percentileDescription || 'Il percentile usa la coorte specifica per il patrimonio, non la media indistinta di tutti gli utenti.'
+                description: translations.comparison.actionableInsights?.percentileDescription || 'The percentile uses the specific cohort for net worth, not the undifferentiated average of all users.'
             });
         }
 
@@ -1442,9 +1442,9 @@ function Comparison({ theme, userData, isHidden}) {
             const contribution = totalGap > 0 ? Math.round((opportunity.difference / totalGap) * 100) : 0;
             insights.push({
                 type: 'warning',
-                title: (translations.comparison.actionableInsights?.categoryTitle || 'Approfondisci: {category}')
+                title: (translations.comparison.actionableInsights?.categoryTitle || 'Dig deeper: {category}')
                     .replace('{category}', opportunity.displayName),
-                description: (translations.comparison.actionableInsights?.categoryDescription || 'Negli ultimi 12 mesi hai speso {difference} in più della media della tua coorte in questa categoria madre: rappresenta il {contribution}% degli scostamenti rilevati.')
+                description: (translations.comparison.actionableInsights?.categoryDescription || 'Over the last 12 months you spent {difference} more than your cohort average in this parent category: it accounts for {contribution}% of the detected deviations.')
                     .replace('{difference}', formatCurrency(opportunity.difference))
                     .replace('{contribution}', contribution)
             });
@@ -1454,15 +1454,15 @@ function Comparison({ theme, userData, isHidden}) {
             const gap = similarUsersSavingsRate - userSavingsRate;
             insights.push({
                 type: 'warning',
-                title: translations.comparison.actionableInsights?.savingsTitle || 'Margine sul tasso di risparmio',
-                description: (translations.comparison.actionableInsights?.savingsDescription || 'La coorte risparmia in media {gap} punti percentuali in più. Le categorie sopra media possono indicare da dove iniziare.')
+                title: translations.comparison.actionableInsights?.savingsTitle || 'Room on your savings rate',
+                description: (translations.comparison.actionableInsights?.savingsDescription || 'Your cohort saves on average {gap} percentage points more. Above-average categories can suggest where to start.')
                     .replace('{gap}', gap.toFixed(1))
             });
         } else if (insights.length === 0 && avgOutflows.similarUsers !== null) {
             insights.push({
                 type: 'positive',
-                title: translations.comparison.actionableInsights?.balancedTitle || 'Profilo in equilibrio con la coorte',
-                description: translations.comparison.actionableInsights?.balancedDescription || 'Non emergono scostamenti rilevanti. Continua a monitorare il trend, che è più utile del singolo mese.'
+                title: translations.comparison.actionableInsights?.balancedTitle || 'Profile in balance with your cohort',
+                description: translations.comparison.actionableInsights?.balancedDescription || 'No significant deviations found. Keep monitoring the trend, which is more useful than any single month.'
             });
         }
         
@@ -1476,7 +1476,7 @@ function Comparison({ theme, userData, isHidden}) {
         const minCohortSize = cohortSizes.length > 0 ? Math.min(...cohortSizes) : null;
         const maxCohortSize = cohortSizes.length > 0 ? Math.max(...cohortSizes) : null;
         const cohortLabel = minCohortSize === null
-            ? (translations.comparison.benchmarkOverview?.waiting || 'Coorte in preparazione')
+            ? (translations.comparison.benchmarkOverview?.waiting || 'Cohort being prepared')
             : minCohortSize === maxCohortSize
                 ? `${minCohortSize}`
                 : `${minCohortSize}-${maxCohortSize}`;
@@ -1503,21 +1503,21 @@ function Comparison({ theme, userData, isHidden}) {
             <BenchmarkOverview theme={theme}>
                 <div className="overview-heading">
                     <div>
-                        <h2>{translations.comparison.benchmarkOverview?.title || 'Il tuo confronto personale'}</h2>
-                        <p>{translations.comparison.benchmarkOverview?.description || 'Confronta patrimonio, entrate e uscite con un gruppo di utenti dal profilo simile.'}</p>
+                        <h2>{translations.comparison.benchmarkOverview?.title || 'Your personal comparison'}</h2>
+                        <p>{translations.comparison.benchmarkOverview?.description || 'Compare net worth, income and outflows with a group of users with a similar profile.'}</p>
                     </div>
                     <div className="overview-actions">
-                        <Tooltip title={translations.comparison.benchmarkOverview?.groupHelp || 'Il gruppo di confronto riunisce utenti con caratteristiche di profilo simili. Mostriamo solo risultati aggregati e quando la numerosità è sufficiente.'}>
+                        <Tooltip title={translations.comparison.benchmarkOverview?.groupHelp || 'The comparison group brings together users with similar profile characteristics. We only show aggregated results, and only when the sample size is sufficient.'}>
                             <InfoTrigger theme={theme} role="img" aria-label={translations.comparison.benchmarkOverview.groupHelp}><InfoIcon /></InfoTrigger>
                         </Tooltip>
                         <button className="benchmark-toggle" type="button" onClick={() => setIsBenchmarkExpanded((open) => !open)} aria-expanded={isBenchmarkExpanded}>
                             {isBenchmarkExpanded
-                                ? (translations.comparison.benchmarkOverview?.hide || 'Riduci')
-                                : (translations.comparison.benchmarkOverview?.show || 'Vedi confronto')}
+                                ? (translations.comparison.benchmarkOverview?.hide || 'Hide')
+                                : (translations.comparison.benchmarkOverview?.show || 'View comparison')}
                         </button>
                         <button className="profile-action" onClick={() => navigate('/profile')}>
                             <TuneIcon fontSize="small" />
-                            {translations.comparison.benchmarkOverview?.editProfile || 'Profilo'}
+                            {translations.comparison.benchmarkOverview?.editProfile || 'Profile'}
                         </button>
                     </div>
                 </div>
@@ -1525,13 +1525,13 @@ function Comparison({ theme, userData, isHidden}) {
                 {!hasBenchmarkConsent && (
                     <BenchmarkOptInCard theme={theme}>
                         <div>
-                            <strong>{translations.comparison.benchmarkOverview?.optInTitle || 'Sblocca il confronto con utenti simili'}</strong>
-                            <p>{translations.comparison.benchmarkOverview?.optInDescription || 'Attiva il consenso per ricevere benchmark aggregati. Non condividiamo transazioni, note o identità.'}</p>
+                            <strong>{translations.comparison.benchmarkOverview?.optInTitle || 'Unlock comparison with similar users'}</strong>
+                            <p>{translations.comparison.benchmarkOverview?.optInDescription || 'Enable consent to receive aggregated benchmarks. We never share transactions, notes, or identity.'}</p>
                         </div>
                         <button type="button" onClick={enableCommunityComparison} disabled={isSavingBenchmarkConsent}>
                             {isSavingBenchmarkConsent
-                                ? (translations.comparison.benchmarkOverview?.optInSaving || 'Attivazione...')
-                                : (translations.comparison.benchmarkOverview?.optInAction || 'Attiva confronto')}
+                                ? (translations.comparison.benchmarkOverview?.optInSaving || 'Activating...')
+                                : (translations.comparison.benchmarkOverview?.optInAction || 'Enable comparison')}
                         </button>
                     </BenchmarkOptInCard>
                 )}
@@ -1551,8 +1551,8 @@ function Comparison({ theme, userData, isHidden}) {
                         {distributionCards.map(({key, label, summary}) => (
                             <div className="distribution-card" key={key}>
                                 <span>{label}</span>
-                                <strong>{(translations.comparison.benchmarkOverview?.median || 'Mediana')}: {formatCurrency(summary.median)}</strong>
-                                <small>{(translations.comparison.benchmarkOverview?.interquartileRange || 'Intervallo centrale')}: {formatCurrency(summary.firstQuartile)} - {formatCurrency(summary.thirdQuartile)} · n={summary.count}</small>
+                                <strong>{(translations.comparison.benchmarkOverview?.median || 'Median')}: {formatCurrency(summary.median)}</strong>
+                                <small>{(translations.comparison.benchmarkOverview?.interquartileRange || 'Interquartile range')}: {formatCurrency(summary.firstQuartile)} - {formatCurrency(summary.thirdQuartile)} · n={summary.count}</small>
                             </div>
                         ))}
                     </DistributionGrid>
@@ -1562,8 +1562,8 @@ function Comparison({ theme, userData, isHidden}) {
                     <LongitudinalGrid theme={theme}>
                         {longitudinal.map((point) => (
                             <div className="trend-card" key={point.monthsAgo}>
-                                <span>{(translations.comparison.benchmarkOverview?.monthsAgo || '{months} mesi fa').replace('{months}', point.monthsAgo)}</span>
-                                <strong>{(translations.comparison.benchmarkOverview?.median || 'Mediana')}: {formatCurrency(point.balances)}</strong>
+                                <span>{(translations.comparison.benchmarkOverview?.monthsAgo || '{months} months ago').replace('{months}', point.monthsAgo)}</span>
+                                <strong>{(translations.comparison.benchmarkOverview?.median || 'Median')}: {formatCurrency(point.balances)}</strong>
                                 <small>{(translations.comparison.benchmarkOverview?.reliability?.[point.reliability] || 'Affidabilità in aggiornamento')} · n={point.contributorCount}</small>
                             </div>
                         ))}
@@ -1573,12 +1573,12 @@ function Comparison({ theme, userData, isHidden}) {
                 <CohortDetails theme={theme}>
                     <div className="cohort-line">
                         <QueryStatsIcon />
-                        <span className="cohort-label">{translations.comparison.benchmarkOverview?.basedOn || 'Confronto basato su'}</span>
+                        <span className="cohort-label">{translations.comparison.benchmarkOverview?.basedOn || 'Comparison based on'}</span>
                         {displayedFactorGroups.map(group => <span className="factor-chip" key={group.id}>{group.label}</span>)}
                     </div>
                     <div className="privacy-note">
                         <ShieldOutlinedIcon />
-                        <p>{(translations.comparison.benchmarkOverview?.privacy || 'Solo dati aggregati. Coorti: {count} utenti; soglia privacy minima: {minimum}. Aggiornato: {updated}.')
+                        <p>{(translations.comparison.benchmarkOverview?.privacy || 'Aggregated data only. Cohorts: {count} users; minimum privacy threshold: {minimum}. Updated: {updated}.')
                             .replace('{count}', cohortLabel)
                             .replace('{minimum}', benchmarkMetadata?.minimumCohortSize || 20)
                             .replace('{updated}', updatedAt)}</p>
@@ -1588,8 +1588,8 @@ function Comparison({ theme, userData, isHidden}) {
                 <CohortCustomizer theme={theme}>
                     <div className="customizer-header">
                         <div>
-                            <h3>{translations.comparison.benchmarkOverview?.customizeTitle || 'Personalizza utenti simili'}</h3>
-                            <p>{translations.comparison.benchmarkOverview?.customizeDescription || 'Scegli quali parti del profilo contano nel tuo confronto. I dati restano aggregati e anonimi.'}</p>
+                            <h3>{translations.comparison.benchmarkOverview?.customizeTitle || 'Customize similar users'}</h3>
+                            <p>{translations.comparison.benchmarkOverview?.customizeDescription || 'Choose which parts of your profile matter for your comparison. Data stays aggregated and anonymous.'}</p>
                         </div>
                         <TuneIcon fontSize="small" color="action" />
                     </div>
@@ -1627,7 +1627,7 @@ function Comparison({ theme, userData, isHidden}) {
                         {customBenchmarkError && <span className="customizer-error">{customBenchmarkError}</span>}
                         {cohortPreview && (
                             <span className={`cohort-preview ${cohortPreview.available ? 'ready' : ''}`}>
-                                {(translations.comparison.benchmarkOverview?.preview || 'Anteprima: {count} profili comparabili (minimo {minimum}).')
+                                {(translations.comparison.benchmarkOverview?.preview || 'Preview: {count} comparable profiles (minimum {minimum}).')
                                     .replace('{count}', cohortPreview.cohort.size)
                                     .replace('{minimum}', cohortPreview.cohort.minimumSize)}
                             </span>
@@ -1649,13 +1649,13 @@ function Comparison({ theme, userData, isHidden}) {
                 <PersonIcon style={{ fontSize: '2rem', color: 'white' }} />
             </BannerIcon>
             <BannerContent theme={theme}>
-                <h3>{translations.comparison.profileBanner?.title || '🚀 Sblocca confronti personalizzati!'}</h3>
+                <h3>{translations.comparison.profileBanner?.title || '🚀 Unlock personalized comparisons!'}</h3>
                 <p>
-                    {translations.comparison.profileBanner?.description || 'Completa il tuo profilo nella pagina Account per ottenere confronti anonimi e automatizzati con utenti simili a te. Scopri come ti posizioni rispetto ad altri professionisti!'}
+                    {translations.comparison.profileBanner?.description || 'Complete your profile on the Account page to get anonymous, automated comparisons with users similar to you. Find out how you rank against other professionals!'}
                 </p>
             </BannerContent>
             <BannerAction theme={theme}>
-                {translations.comparison.profileBanner?.action || 'Completa profilo'}
+                {translations.comparison.profileBanner?.action || 'Complete profile'}
                 <ArrowForwardIcon />
             </BannerAction>
         </ProfileBanner>
@@ -1867,11 +1867,11 @@ function Comparison({ theme, userData, isHidden}) {
                                             </ProgressBarRow>
                                             <AllocationBenchmarks theme={theme}>
                                                 <div className="benchmark-row">
-                                                    <span>{translations.comparison.cards.assetAllocation.avgSimilar || 'Media Utenti Simili'}</span>
+                                                    <span>{translations.comparison.cards.assetAllocation.avgSimilar || 'Similar Users Average'}</span>
                                                     <span className="benchmark-value">{asset.similarPercentage === null ? (translations.general.comingSoon || '—') : (isHidden ? '**%' : `${asset.similarPercentage.toFixed(0)}%`)}</span>
                                                 </div>
                                                 <div className="benchmark-row">
-                                                    <span>{translations.comparison.cards.assetAllocation.avgAll || 'Media Tutti gli Utenti'}</span>
+                                                    <span>{translations.comparison.cards.assetAllocation.avgAll || 'All Users Average'}</span>
                                                     <span className="benchmark-value">{asset.allPercentage === null ? (translations.general.comingSoon || '—') : (isHidden ? '**%' : `${asset.allPercentage.toFixed(0)}%`)}</span>
                                                 </div>
                                             </AllocationBenchmarks>
@@ -1893,9 +1893,9 @@ function Comparison({ theme, userData, isHidden}) {
                             {assetAllocation.length > 3 && (
                                 <ExpandToggle theme={theme} onClick={() => toggleCardExpand('assets')}>
                                     {expandedCards['assets'] ? (
-                                        <><KeyboardArrowUpIcon sx={{ fontSize: 16 }} /> {translations.comparison.cards.showLess || 'Riduci'}</>
+                                        <><KeyboardArrowUpIcon sx={{ fontSize: 16 }} /> {translations.comparison.cards.showLess || 'Show less'}</>
                                     ) : (
-                                        <><KeyboardArrowDownIcon sx={{ fontSize: 16 }} /> {translations.comparison.cards.showMore || 'Mostra tutto'}</>
+                                        <><KeyboardArrowDownIcon sx={{ fontSize: 16 }} /> {translations.comparison.cards.showMore || 'Show more'}</>
                                     )}
                                 </ExpandToggle>
                             )}
@@ -2003,9 +2003,9 @@ function Comparison({ theme, userData, isHidden}) {
                             </ExpandableCardContent>
                             <ExpandToggle theme={theme} onClick={() => toggleCardExpand('spending')}>
                                 {expandedCards['spending'] ? (
-                                    <><KeyboardArrowUpIcon sx={{ fontSize: 16 }} /> {translations.comparison.cards.showLess || 'Riduci'}</>
+                                    <><KeyboardArrowUpIcon sx={{ fontSize: 16 }} /> {translations.comparison.cards.showLess || 'Show less'}</>
                                 ) : (
-                                    <><KeyboardArrowDownIcon sx={{ fontSize: 16 }} /> {translations.comparison.cards.showMore || 'Mostra tutto'}</>
+                                    <><KeyboardArrowDownIcon sx={{ fontSize: 16 }} /> {translations.comparison.cards.showMore || 'Show more'}</>
                                 )}
                             </ExpandToggle>
                         </>

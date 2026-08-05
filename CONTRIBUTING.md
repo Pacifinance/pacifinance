@@ -62,9 +62,9 @@ If you use an AI assistant, ask it to finish with a short English commit message
 
 ```text
 src/
-  components/   Reusable UI components
+  components/   Generic UI, reusable across unrelated features
   pages/        Route-level pages
-  sections/     Feature blocks
+  sections/     Feature blocks tied to one domain/page
   contexts/     Global state providers
   hooks/        Shared React hooks
   services/     API clients
@@ -81,6 +81,18 @@ api/index.ts    Vercel serverless entrypoint
 ```
 
 Context provider order is fixed: `MediaQuery > Language > Theme > DevMode > User > Currency > Page > Privacy > Toast`.
+
+**`components/` vs `sections/`:** the test isn't "does it use a context?", it's "which domain does it belong to?"
+A file can live in `components/` while still reading a context, as long as that context is a
+cross-cutting UI concern (`LanguageContext`, `ThemeContext`, `ToastContext`) rather than
+business/domain data (`UserContext`, a service call, a domain-specific hook like
+`useDemoServices`). In practice:
+- **`components/`** — generic and reusable across unrelated features (e.g. `LocalizedLink`,
+  `ThemedSelect`, `CategoryPicker`, `LanguageSelector`, `PWAInstallGuide`). May read
+  language/theme/toast context, never domain data.
+- **`sections/`** — tied to one domain or feature (transactions, investments, goals), even if
+  it's reused in more than one place within that same domain (e.g. `InvestmentHoldingsPanel`
+  is used from two pages but stays investment-specific, so it stays in `sections/`).
 
 ## Critical Rules
 

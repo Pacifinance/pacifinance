@@ -18,7 +18,7 @@ import { useToast } from "../contexts/ToastContext";
 import { useLocalizedNavigate } from "../hooks/useLocalizedNavigate";
 import LogoPaci from "../components/Logo";
 import SidebarMobile from "../components/SidebarMobile";
-import BottomNavBar from "../components/BottomNavBar";
+import BottomNavBar from "./BottomNavBar";
 import QuickAddTransaction from "./QuickAddTransaction";
 import SidebarModals from "../components/SidebarModals";
 import { ThemeContext } from "../contexts/ThemeContext";
@@ -154,7 +154,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
         },
     });
 
-    // Funzione per verificare se una pagina è attiva
+    // Function to check whether a page is active
     const isActivePage = (path) => {
         return location.pathname === path;
     };
@@ -368,7 +368,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                color: isHidden ? '#ef4444' : (theme.mode === 'dark' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.5)'),
+                                color: isHidden ? theme.dangerColor : (theme.mode === 'dark' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.5)'),
                                 fontSize: '1rem',
                                 transition: 'all 0.2s ease',
                                 backgroundColor: isHidden ? 'rgba(239,68,68,0.08)' : 'transparent',

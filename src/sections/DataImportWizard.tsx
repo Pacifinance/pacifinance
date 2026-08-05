@@ -58,7 +58,7 @@ import {
 } from '../utils/categoryPatterns';
 import { getAllOutflows, getAllIncomes, getCustomCategories, getOutflowsTags } from '../utils/userDataSelectors';
 import ImportPlatformGuide from '../components/ImportPlatformGuide';
-import MonthTransactionsViewer from '../components/MonthTransactionsViewer';
+import MonthTransactionsViewer from './MonthTransactionsViewer';
 import CategoryPicker from '../components/CategoryPicker';
 import { findLikelyDuplicates, findDuplicatesWithinBatch, findLikelyTransfers } from '../utils/duplicateDetection';
 
@@ -88,7 +88,7 @@ const StepDot = styled.div`
   font-size: 0.85rem;
   font-weight: 600;
   transition: all 0.3s ease;
-  background-color: ${p => p.$active ? '#079164' : p.$done ? '#079164' : (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)')};
+  background-color: ${p => p.$active ? p.theme.secondaryColor : p.$done ? p.theme.secondaryColor : (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)')};
   color: ${p => p.$active || p.$done ? 'white' : (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.4)')};
   opacity: ${p => p.$active ? 1 : p.$done ? 0.8 : 0.5};
 `;
@@ -97,7 +97,7 @@ const StepConnector = styled.div`
   width: 40px;
   height: 2px;
   align-self: center;
-  background-color: ${p => p.$done ? '#079164' : (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)')};
+  background-color: ${p => p.$done ? p.theme.secondaryColor : (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)')};
   transition: all 0.3s ease;
 `;
 
@@ -110,16 +110,16 @@ const Card = styled.div`
 `;
 
 const DropZone = styled.div`
-  border: 2px dashed ${p => p.$dragging ? '#079164' : (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)')};
+  border: 2px dashed ${p => p.$dragging ? p.theme.secondaryColor : (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)')};
   border-radius: 16px;
   padding: 3rem 2rem;
   text-align: center;
   cursor: pointer;
   transition: all 0.3s ease;
   background-color: ${p => p.$dragging ? 'rgba(7, 145, 100, 0.08)' : 'transparent'};
-  
+
   &:hover {
-    border-color: #079164;
+    border-color: ${p => p.theme.secondaryColor};
     background-color: rgba(7, 145, 100, 0.05);
   }
 `;
@@ -333,7 +333,7 @@ const ProgressBar = styled.div`
   
   div {
     height: 100%;
-    background-color: #079164;
+    background-color: ${p => p.theme.secondaryColor};
     border-radius: 3px;
     transition: width 0.3s ease;
   }
@@ -400,7 +400,7 @@ const NoteInput = styled.input`
   box-sizing: border-box;
   &:focus {
     outline: none;
-    border-color: #079164;
+    border-color: ${p => p.theme.secondaryColor};
   }
 `;
 
@@ -411,7 +411,7 @@ const InfoTooltip = styled.span`
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background-color: #079164;
+  background-color: ${p => p.theme.secondaryColor};
   color: #fff;
   font-size: 0.65rem;
   font-weight: 700;
@@ -1244,7 +1244,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
               onDragLeave={() => setDragging(false)}
               onDrop={onDrop}
             >
-              <CloudUploadIcon style={{ fontSize: 48, color: '#079164', marginBottom: '1rem' }} />
+              <CloudUploadIcon style={{ fontSize: 48, color: theme.secondaryColor, marginBottom: '1rem' }} />
               <p style={{ color: theme.textColor, fontSize: '1rem', fontWeight: 500, marginBottom: '0.5rem' }}>
                 {t.dropzoneTitle || 'Drag & drop your file here'}
               </p>
@@ -1371,9 +1371,9 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                   })}
                   {/* Header row highlighted */}
                   <tr style={{ backgroundColor: theme.mode === 'dark' ? 'rgba(7,145,100,0.15)' : 'rgba(7,145,100,0.08)' }}>
-                    <td style={{ textAlign: 'center', fontSize: '0.75rem', fontWeight: 700, color: '#079164' }}>{headerRowIndex + 1}</td>
+                    <td style={{ textAlign: 'center', fontSize: '0.75rem', fontWeight: 700, color: theme.secondaryColor }}>{headerRowIndex + 1}</td>
                     {headers.map((h, i) => (
-                      <td key={i} style={{ fontWeight: 700, color: '#079164' }}>{h}</td>
+                      <td key={i} style={{ fontWeight: 700, color: theme.secondaryColor }}>{h}</td>
                     ))}
                   </tr>
                   {/* Data rows */}
@@ -1645,7 +1645,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
             {liveSummary && (
               <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '0.8rem', marginBottom: '1.5rem' }}>
                 <div style={{ padding: '1rem', borderRadius: 10, backgroundColor: 'rgba(7,145,100,0.08)', textAlign: 'center' }}>
-                  <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#079164' }}>{liveSummary.totalTransactions}</div>
+                  <div style={{ fontSize: '1.5rem', fontWeight: 700, color: theme.secondaryColor }}>{liveSummary.totalTransactions}</div>
                   <div style={{ fontSize: '0.8rem', color: theme.textColor, opacity: 0.7 }}>{t.totalTransactions || 'Total transactions'}</div>
                 </div>
                 <div style={{ padding: '1rem', borderRadius: 10, backgroundColor: 'rgba(220,53,69,0.08)', textAlign: 'center' }}>
@@ -2063,7 +2063,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
             <>
               <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
               {importResult.failed === 0 ? (
-                  <CheckCircleIcon style={{ fontSize: 64, color: '#079164' }} />
+                  <CheckCircleIcon style={{ fontSize: 64, color: theme.secondaryColor }} />
                 ) : (
                   <WarningIcon style={{ fontSize: 64, color: '#ffc107' }} />
                 )}
@@ -2076,7 +2076,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
               </h3>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.8rem', maxWidth: 400, margin: '0 auto 1.5rem' }}>
                 <div style={{ padding: '1rem', borderRadius: 10, backgroundColor: 'rgba(7,145,100,0.08)', textAlign: 'center' }}>
-                  <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#079164' }}>{importResult.success}</div>
+                  <div style={{ fontSize: '1.5rem', fontWeight: 700, color: theme.secondaryColor }}>{importResult.success}</div>
                   <div style={{ fontSize: '0.8rem', color: theme.textColor, opacity: 0.7 }}>{t.successful || 'Successful'}</div>
                 </div>
                 {importResult.failed > 0 && (
@@ -2130,7 +2130,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                   backgroundColor: undoResult.failed === 0 ? 'rgba(7,145,100,0.08)' : 'rgba(220,53,69,0.08)',
                   textAlign: 'center',
                 }}>
-                  <p style={{ color: undoResult.failed === 0 ? '#079164' : '#dc3545', fontSize: '0.9rem', fontWeight: 600 }}>
+                  <p style={{ color: undoResult.failed === 0 ? theme.secondaryColor : '#dc3545', fontSize: '0.9rem', fontWeight: 600 }}>
                     {undoResult.failed === 0
                       ? (t.undoSuccess || `✅ Undo completed — ${undoResult.success} transactions removed`).replace('{count}', undoResult.success)
                       : (t.undoPartial || `⚠️ Undo partial — ${undoResult.success} removed, ${undoResult.failed} failed`).replace('{success}', undoResult.success).replace('{failed}', undoResult.failed)

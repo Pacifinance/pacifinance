@@ -43,7 +43,7 @@ function Info({ theme }) {
         setOpenFAQ(openFAQ === index ? null : index);
     };
 
-    // Gestione più robusta dei testi da translations
+    // More robust handling of text from translations
     const getTranslation = (path) => {
         const keys = path.split('.');
         let result = translations;
@@ -53,14 +53,14 @@ function Info({ theme }) {
                 result = result[key];
             } else {
                 console.warn(`Translation not found for path: ${path}`);
-                return path; // Fallback al path originale
+                return path; // Fall back to the original path
             }
         }
         
         return result || path;
     };
 
-    // Dati FAQ con gestione sicura delle traduzioni
+    // FAQ data with safe translation handling
     const faqData = Array.from({ length: 8 }, (_, index) => {
         const questionKey = `info.faq.question${index + 1}`;
         const answerKey = `info.faq.answer${index + 1}`;
@@ -71,9 +71,9 @@ function Info({ theme }) {
             question,
             answer
         };
-    }).filter(item => !item.question.startsWith('info.faq.question')); // Filtra se la traduzione non è stata trovata
+    }).filter(item => !item.question.startsWith('info.faq.question')); // Filter out if the translation wasn't found
 
-    // Features della piattaforma
+    // Platform features
     const features = [
         {
             icon: BsShield,
@@ -311,7 +311,7 @@ function Info({ theme }) {
                     <ModernSectionCard theme={theme}>
                         <ModernSectionTitle theme={theme}>
                             <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                <BsPhone style={{ color: '#079164' }} />
+                                <BsPhone style={{ color: theme.secondaryColor }} />
                                 {getTranslation('pwaInstall.title')}
                             </span>
                         </ModernSectionTitle>

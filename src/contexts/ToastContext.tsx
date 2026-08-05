@@ -1,6 +1,6 @@
 
 import React, { createContext, useContext, useState } from 'react';
-import ToastNotification from '../components/ToastNotification';
+import ToastNotification from '../sections/ToastNotification';
 import { MediaQueryContext } from './MediaQueryContext';
 import { LanguageContext } from './LanguageContext';
 

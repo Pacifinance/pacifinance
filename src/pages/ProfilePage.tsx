@@ -67,7 +67,7 @@ import {
     MyButton
 } from '../styles/MyStyled';
 
-import GamificationSection from '../components/GamificationSection';
+import GamificationSection from '../sections/GamificationSection';
 import AvatarIcon from '../components/AvatarIcon';
 import { canRegenerateAvatar, regenerateAvatar } from '../utils/avatarGenerator';
 import { useToast } from '../contexts/ToastContext';
@@ -859,7 +859,7 @@ const ProfilePage = () => {
                     </QuickInfoContent>
                 </QuickInfoCard>
                 <QuickInfoCard theme={theme}>
-                    <QuickInfoIcon theme={theme} $bg="linear-gradient(135deg, #f59e0b, #d97706)">
+                    <QuickInfoIcon theme={theme} $bg={`linear-gradient(135deg, ${theme.warningColor}, #d97706)`}>
                         <Star size={16} color="white" />
                     </QuickInfoIcon>
                     <QuickInfoContent>

@@ -370,7 +370,7 @@ export const getEntriesForMonthKey = (
 export const getCategoryBreakdownForEntries = (entries: TransactionDto[], type: 'expense' | 'income'): CategoryBreakdown =>
   aggregateTransactionsByCategory([entries], type)[0] || {};
 
-// Totale spese/income/saved del mese corrente
+// Total expenses/income/saved for the current month
 export const getTotalOutflowsCurrentMonth = (userData: UserDataLike): number => {
   if (typeof userData?.expenses?.totalOutflowsMonth === 'number') {
     return userData.expenses.totalOutflowsMonth;

@@ -59,7 +59,7 @@ export default function SitemapPage() {
             <h1
               className="text-5xl font-bold mb-12 text-center"
               style={{ 
-                color: '#079164',
+                color: theme.secondaryColor,
                 textShadow: theme.mode === 'dark' 
                   ? '0 2px 4px rgba(0, 0, 0, 0.3)'
                   : '0 2px 4px rgba(0, 0, 0, 0.1)'
@@ -85,7 +85,7 @@ export default function SitemapPage() {
                 >
                   <h3
                     className="font-bold text-lg mb-2 group-hover:text-opacity-80 transition-all"
-                    style={{ color: '#079164' }}
+                    style={{ color: theme.secondaryColor }}
                   >
                     {page.name}
                   </h3>

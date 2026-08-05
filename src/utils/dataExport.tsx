@@ -5,7 +5,7 @@ import JSZip from 'jszip';
 import { getIncomesArray, getOutflowsArray } from './userDataSelectors';
 import { addCurrency } from './money';
 
-// Funzione per filtrare i dati in base alle opzioni selezionate
+// Function to filter data based on the selected options
 function filterDataByDateRange(data, filterOptions) {
   if (!filterOptions || filterOptions.type === 'all') {
     return { ...data, isFiltered: false, filterInfo: null };
@@ -16,7 +16,7 @@ function filterDataByDateRange(data, filterOptions) {
   let filterInfo = {};
 
   if (filterOptions.type === 'last12') {
-    // Filtra gli ultimi 12 mesi
+    // Filter the last 12 months
     const twelveMonthsAgo = new Date();
     twelveMonthsAgo.setMonth(now.getMonth() - 12);
 
@@ -26,7 +26,7 @@ function filterDataByDateRange(data, filterOptions) {
       endDate: now.toLocaleDateString()
     };
 
-    // Filtra bilanci
+    // Filter balances
     if (data.balances) {
       filteredData.balances = data.balances.filter(balance => {
         const balanceDate = new Date(balance.date || balance.userDate);
@@ -34,7 +34,7 @@ function filterDataByDateRange(data, filterOptions) {
       });
     }
 
-    // Filtra transazioni income
+    // Filter income transactions
     if (data.detailedIncomes) {
       filteredData.detailedIncomes = data.detailedIncomes.filter(income => {
         const incomeDate = new Date(income.date);
@@ -42,7 +42,7 @@ function filterDataByDateRange(data, filterOptions) {
       });
     }
 
-    // Filtra transazioni expense
+    // Filter expense transactions
     if (data.detailedOutflows) {
       filteredData.detailedOutflows = data.detailedOutflows.filter(expense => {
         const expenseDate = new Date(expense.date);
@@ -51,7 +51,7 @@ function filterDataByDateRange(data, filterOptions) {
     }
 
   } else if (filterOptions.type === 'specific' && filterOptions.month && filterOptions.year) {
-    // Filtra per mese e anno specifico
+    // Filter by specific month and year
     const targetMonth = filterOptions.month - 1; // JS months are 0-based
     const targetYear = filterOptions.year;
 
@@ -62,7 +62,7 @@ function filterDataByDateRange(data, filterOptions) {
       monthName: new Date(targetYear, targetMonth).toLocaleDateString('en', { month: 'long', year: 'numeric' })
     };
 
-    // Filtra bilanci per il mese specifico
+    // Filter balances for the specific month
     if (data.balances) {
       filteredData.balances = data.balances.filter(balance => {
         const balanceDate = new Date(balance.date || balance.userDate);
@@ -70,7 +70,7 @@ function filterDataByDateRange(data, filterOptions) {
       });
     }
 
-    // Filtra transazioni income
+    // Filter income transactions
     if (data.detailedIncomes) {
       filteredData.detailedIncomes = data.detailedIncomes.filter(income => {
         const incomeDate = new Date(income.date);
@@ -78,7 +78,7 @@ function filterDataByDateRange(data, filterOptions) {
       });
     }
 
-    // Filtra transazioni expense
+    // Filter expense transactions
     if (data.detailedOutflows) {
       filteredData.detailedOutflows = data.detailedOutflows.filter(expense => {
         const expenseDate = new Date(expense.date);
@@ -86,7 +86,7 @@ function filterDataByDateRange(data, filterOptions) {
       });
     }
 
-    // Ricalcola le statistiche delle categorie per il mese specifico
+    // Recalculate category statistics for the specific month
     const categoryStats = {};
     filteredData.detailedOutflows.forEach(expense => {
       const category = expense.category || 'Other';
@@ -105,16 +105,16 @@ function filterDataByDateRange(data, filterOptions) {
     }));
   }
 
-  // Aggiorna le informazioni di filtro
+  // Update the filter info
   filteredData.isFiltered = true;
   filteredData.filterInfo = filterInfo;
 
   return filteredData;
 }
 
-// Funzione principale per preparare i dati per l'export
+// Main function to prepare data for export
 export function prepareUserDataForExport(userData, _language = 'en', filterOptions = null) {
-  // Controllo di sicurezza iniziale
+  // Initial safety check
   if (!userData || typeof userData !== 'object') {
     return {
       userInfo: {
@@ -137,7 +137,7 @@ export function prepareUserDataForExport(userData, _language = 'en', filterOptio
     };
   }
   
-  // Rileva se è un utente mock - controlla diversi indicatori
+  // Detect whether this is a mock user - checks several indicators
   const isMockUser = userData?.userId === 'dev-user-123' || 
                      userData?.userType === 'premium' || 
                      userData?.username === 'Developer User' ||
@@ -145,10 +145,10 @@ export function prepareUserDataForExport(userData, _language = 'en', filterOptio
   
 
 
-  // Gestisce i dati dall'API /user/alldata
+  // Handles data from the /user/alldata API
   if (userData?.user && userData?.balances && userData?.expenses) {
-    // Dati dall'API - processa direttamente senza ricorsione
-    
+    // Data from the API - process directly, no recursion
+
     const userInfo = {
       userId: userData.user.userId || 'N/A',
       creationDate: userData.user.creationDate ? new Date(userData.user.creationDate).toLocaleDateString() : 'N/A',
@@ -161,7 +161,7 @@ export function prepareUserDataForExport(userData, _language = 'en', filterOptio
       userType: 'real'
     };
 
-    // Processa i bilanci con calcolo del totale
+    // Process balances with total calculation
     const balances = Array.isArray(userData.balances) ? userData.balances.map((balance, index) => {
       const total = addCurrency(
         balance.bank || 0, balance.cash || 0, balance.digitalServices || 0,
@@ -183,7 +183,7 @@ export function prepareUserDataForExport(userData, _language = 'en', filterOptio
       };
     }) : [];
 
-    // Processa le spese/entrate
+    // Process expenses/incomes
     const expenses = Array.isArray(userData.expenses) ? userData.expenses.map((expense, index) => ({
       id: index + 1,
       date: new Date(expense.date).toLocaleDateString(),
@@ -195,7 +195,7 @@ export function prepareUserDataForExport(userData, _language = 'en', filterOptio
       category: expense.categoryTag || 'N/A'
     })) : [];
 
-    // Calcola statistiche mensili
+    // Calculate monthly statistics
     const currentYear = new Date().getFullYear();
     const monthlyStats = Array(12).fill(0).map((_, monthIndex) => {
       const monthExpenses = userData.expenses.filter(expense => {
@@ -218,7 +218,7 @@ export function prepareUserDataForExport(userData, _language = 'en', filterOptio
       };
     });
 
-    // Raggruppa spese per categoria
+    // Group expenses by category
     const categoryStats = {};
     userData.expenses.filter(e => e.isExpense).forEach(expense => {
       const category = expense.categoryTag || 'Other';
@@ -236,7 +236,7 @@ export function prepareUserDataForExport(userData, _language = 'en', filterOptio
       averageAmount: Number(stats.total / stats.count || 0).toFixed(2)
     }));
 
-    // Statistiche demografiche e performance
+    // Demographic and performance statistics
     const totalBalance = balances.length > 0 ? 
       parseFloat(balances[balances.length - 1]?.total || 0) : 0;
     
@@ -274,11 +274,11 @@ export function prepareUserDataForExport(userData, _language = 'en', filterOptio
       demographics
     };
 
-    // Applica i filtri se specificati
+    // Apply filters if specified
     return filterDataByDateRange(baseData, filterOptions);
   }
 
-  // Per utenti mock o dati nel formato context esistente
+  // For mock users or data in the existing context format
   if (isMockUser) {
 
     
@@ -329,7 +329,7 @@ export function prepareUserDataForExport(userData, _language = 'en', filterOptio
       return acc;
     }, []);
 
-    // Calcola le medie per categoria
+    // Calculate the averages per category
     categoryExpenses.forEach(category => {
       category.averageAmount = category.totalAmount / category.transactionCount;
       category.totalAmount = Number(category.totalAmount).toFixed(2);
@@ -358,13 +358,12 @@ export function prepareUserDataForExport(userData, _language = 'en', filterOptio
       }
     };
 
-    // Applica i filtri se specificati
+    // Apply filters if specified
     return filterDataByDateRange(baseData, filterOptions);
   }
 
-  // Per utenti reali con dati context esistenti
+  // For real users with existing context data
 
-  
   const userInfo = {
     userId: userData.userId || 'N/A',
     creationDate: userData.creationDate || 'N/A',
@@ -377,7 +376,7 @@ export function prepareUserDataForExport(userData, _language = 'en', filterOptio
     userType: 'real'
   };
 
-  // Validazione e mapping sicuro per utenti reali
+  // Safe validation and mapping for real users
   const balances = Array.isArray(userData.balances) ? userData.balances.map((balance, index) => ({
     month: `Month ${index + 1}`,
     date: balance.date || 'N/A',
@@ -556,7 +555,7 @@ function generateMockDetailedOutflows() {
   const now = new Date();
   const transactions = [];
   
-  // Genera 40-80 transazioni negli ultimi 12 mesi
+  // Generate 40-80 transactions over the last 12 months
   const numTransactions = 40 + Math.floor(Math.random() * 40);
   
   for (let i = 0; i < numTransactions; i++) {
@@ -583,18 +582,18 @@ export const exportToCSV = async (userData, language, filterOptions = null) => {
     const data = prepareUserDataForExport(userData, language, filterOptions);
     
     if (!data || !data.userInfo) {
-      throw new Error('Dati preparati non validi');
+      throw new Error('Prepared data is invalid');
     }
 
-    // Controlla se i dati filtrati sono vuoti
-    const hasData = (data.balances && data.balances.length > 0) || 
-                   (data.detailedIncomes && data.detailedIncomes.length > 0) || 
+    // Check whether the filtered data is empty
+    const hasData = (data.balances && data.balances.length > 0) ||
+                   (data.detailedIncomes && data.detailedIncomes.length > 0) ||
                    (data.detailedOutflows && data.detailedOutflows.length > 0);
 
     if (data.isFiltered && !hasData) {
-      // Dati vuoti per il periodo selezionato
-      const filterMsg = data.filterInfo?.type === 'specific' 
-        ? `per ${data.filterInfo.monthName}` 
+      // No data for the selected period
+      const filterMsg = data.filterInfo?.type === 'specific'
+        ? `per ${data.filterInfo.monthName}`
         : `per il periodo selezionato`;
         
       // Warning: the caller (SettingsPage) handles user-facing feedback via toast
@@ -604,29 +603,29 @@ export const exportToCSV = async (userData, language, filterOptions = null) => {
       );
     }
 
-    // Crea un nuovo ZIP per contenere tutti i file CSV
+    // Create a new ZIP to hold all the CSV files
     const zip = new JSZip();
-    
-    // Timestamp per i nomi file
+
+    // Timestamp for the file names
     const today = new Date();
     const timestamp = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
 
-    // 1. Foglio: User Information
+    // 1. Sheet: User Information
     const userInfoCSV = convertSingleArrayToCSV([data.userInfo], 'User Information');
     zip.file('01_User_Information.csv', userInfoCSV);
 
-    // 2. Foglio: Balance History 
+    // 2. Sheet: Balance History
     if (data.balances && data.balances.length > 0) {
       const balancesCSV = convertSingleArrayToCSV(data.balances, 'Balance History');
       zip.file('02_Balance_History.csv', balancesCSV);
     }
 
-    // 3. Foglio: Monthly Statistics
+    // 3. Sheet: Monthly Statistics
     if (data.monthlyStats && data.monthlyStats.length > 0) {
       const monthlyStatsCSV = convertSingleArrayToCSV(data.monthlyStats, 'Monthly Statistics');
       zip.file('03_Monthly_Statistics.csv', monthlyStatsCSV);
     } else {
-      // Crea statistiche mensili di base dai dati disponibili
+      // Build basic monthly statistics from the available data
       const basicMonthlyData = data.monthlyData.incomes.map((income, index) => ({
         month: `Month ${index + 1}`,
         income: income || 0,
@@ -637,31 +636,31 @@ export const exportToCSV = async (userData, language, filterOptions = null) => {
       zip.file('03_Monthly_Income_Expenses.csv', basicMonthlyCSV);
     }
 
-    // 4. Foglio: Income Transactions
+    // 4. Sheet: Income Transactions
     if (data.detailedIncomes && data.detailedIncomes.length > 0) {
       const incomesCSV = convertSingleArrayToCSV(data.detailedIncomes, 'Income Transactions');
       zip.file('04_Income_Transactions.csv', incomesCSV);
     }
 
-    // 5. Foglio: Expense Transactions
+    // 5. Sheet: Expense Transactions
     if (data.detailedOutflows && data.detailedOutflows.length > 0) {
       const expensesCSV = convertSingleArrayToCSV(data.detailedOutflows, 'Expense Transactions');
       zip.file('05_Expense_Transactions.csv', expensesCSV);
     }
 
-    // 6. Foglio: Category Summary
+    // 6. Sheet: Category Summary
     if (data.categoryExpenses && data.categoryExpenses.length > 0) {
       const categoryCSV = convertSingleArrayToCSV(data.categoryExpenses, 'Expenses by Category');
       zip.file('06_Category_Summary.csv', categoryCSV);
     }
 
-    // 7. Foglio: Account Performance & Demographics
+    // 7. Sheet: Account Performance & Demographics
     if (data.demographics && Object.keys(data.demographics).length > 0) {
       const demographicsCSV = convertSingleArrayToCSV([data.demographics], 'Account Performance');
       zip.file('07_Account_Performance.csv', demographicsCSV);
     }
 
-    // 8. Foglio: Export Information
+    // 8. Sheet: Export Information
     const exportInfo = {
       exportDate: new Date().toISOString(),
       exportTime: new Date().toLocaleString(),
@@ -673,56 +672,56 @@ export const exportToCSV = async (userData, language, filterOptions = null) => {
     const exportInfoCSV = convertSingleArrayToCSV([exportInfo], 'Export Information');
     zip.file('00_Export_Info.csv', exportInfoCSV);
 
-    // Genera il file ZIP
+    // Generate the ZIP file
     const zipBlob = await zip.generateAsync({ type: 'blob' });
-    
-    // Download del file ZIP
+
+    // Download the ZIP file
     saveAs(zipBlob, `pacifinance_data_sheets_${timestamp}.zip`);
 
   } catch (error) {
-    console.error('Errore durante l\'export CSV strutturato:', error);
-    throw new Error('Impossibile generare i file CSV strutturati: ' + error.message);
+    console.error('Error during structured CSV export:', error);
+    throw new Error('Unable to generate the structured CSV files: ' + error.message);
   }
 };
 
-// Export in formato Excel
+// Export in Excel format
 export const exportToExcel = async (userData, language, filterOptions = null) => {
   try {
     const data = prepareUserDataForExport(userData, language, filterOptions);
     
     if (!data || !data.userInfo) {
-      throw new Error('Dati preparati non validi');
+      throw new Error('Prepared data is invalid');
     }
-  
-  // Crea workbook
+
+  // Create workbook
   const { default: ExcelJS } = await import('exceljs');
   const workbook = new ExcelJS.Workbook();
-  
-  // Foglio 1: Informazioni Utente
+
+  // Sheet 1: User Information
   const userInfoWS = workbook.addWorksheet('User Info');
   const userInfoHeaders = Object.keys(data.userInfo);
   userInfoWS.addRow(userInfoHeaders);
   userInfoWS.addRow(Object.values(data.userInfo));
-  
-  // Stile headers
+
+  // Header styling
   userInfoWS.getRow(1).font = { bold: true, color: { argb: 'FFFFFFFF' } };
   userInfoWS.getRow(1).fill = {
     type: 'pattern',
     pattern: 'solid',
     fgColor: { argb: 'FF079164' }
   };
-  
-  // Foglio 2: Bilanci Mensili
+
+  // Sheet 2: Monthly Balances
   const balancesWS = workbook.addWorksheet('Monthly Balances');
   if (data.balances && data.balances.length > 0) {
     const balanceHeaders = Object.keys(data.balances[0]);
     balancesWS.addRow(balanceHeaders);
-    
+
     data.balances.forEach(balance => {
       balancesWS.addRow(Object.values(balance));
     });
-    
-    // Stile headers
+
+    // Header styling
     balancesWS.getRow(1).font = { bold: true, color: { argb: 'FFFFFFFF' } };
     balancesWS.getRow(1).fill = {
       type: 'pattern',
@@ -730,8 +729,8 @@ export const exportToExcel = async (userData, language, filterOptions = null) =>
       fgColor: { argb: 'FF079164' }
     };
   }
-  
-  // Foglio 3: Dati Mensili
+
+  // Sheet 3: Monthly Data
   const monthlyWS = workbook.addWorksheet('Monthly Data');
   const monthlyHeaders = ['Month', 'Income', 'Outflow', 'Net'];
   monthlyWS.addRow(monthlyHeaders);
@@ -746,7 +745,7 @@ export const exportToExcel = async (userData, language, filterOptions = null) =>
     ]);
   });
   
-  // Stile headers
+  // Header styling
   monthlyWS.getRow(1).font = { bold: true, color: { argb: 'FFFFFFFF' } };
   monthlyWS.getRow(1).fill = {
     type: 'pattern',
@@ -754,13 +753,13 @@ export const exportToExcel = async (userData, language, filterOptions = null) =>
     fgColor: { argb: 'FF079164' }
   };
   
-  // Aggiungi altri fogli se i dati sono disponibili
+  // Add other sheets if data is available
   if (data.detailedBalances && data.detailedBalances.length > 0) {
     const detailedBalancesWS = workbook.addWorksheet('Detailed Balances');
     const balanceDetailHeaders = Object.keys(data.detailedBalances[0]);
     detailedBalancesWS.addRow(balanceDetailHeaders);
     
-    // Stile headers
+    // Header styling
     detailedBalancesWS.getRow(1).font = { bold: true, color: { argb: 'FFFFFFFF' } };
     detailedBalancesWS.getRow(1).fill = {
       type: 'pattern',
@@ -768,7 +767,7 @@ export const exportToExcel = async (userData, language, filterOptions = null) =>
       fgColor: { argb: 'FF079164' }
     };
     
-    // Aggiungi dati
+    // Add data
     data.detailedBalances.forEach(balance => {
       detailedBalancesWS.addRow(Object.values(balance));
     });
@@ -785,7 +784,7 @@ export const exportToExcel = async (userData, language, filterOptions = null) =>
     const incomeDetailHeaders = Object.keys(data.detailedIncomes[0]);
     incomesDetailWS.addRow(incomeDetailHeaders);
     
-    // Stile headers
+    // Header styling
     incomesDetailWS.getRow(1).font = { bold: true, color: { argb: 'FFFFFFFF' } };
     incomesDetailWS.getRow(1).fill = {
       type: 'pattern',
@@ -793,7 +792,7 @@ export const exportToExcel = async (userData, language, filterOptions = null) =>
       fgColor: { argb: 'FF079164' }
     };
     
-    // Aggiungi dati
+    // Add data
     data.detailedIncomes.forEach(income => {
       incomesDetailWS.addRow(Object.values(income));
     });
@@ -810,7 +809,7 @@ export const exportToExcel = async (userData, language, filterOptions = null) =>
     const outflowDetailHeaders = Object.keys(data.detailedOutflows[0]);
     outflowsDetailWS.addRow(outflowDetailHeaders);
     
-    // Stile headers
+    // Header styling
     outflowsDetailWS.getRow(1).font = { bold: true, color: { argb: 'FFFFFFFF' } };
     outflowsDetailWS.getRow(1).fill = {
       type: 'pattern',
@@ -818,7 +817,7 @@ export const exportToExcel = async (userData, language, filterOptions = null) =>
       fgColor: { argb: 'FF079164' }
     };
     
-    // Aggiungi dati
+    // Add data
     data.detailedOutflows.forEach(outflow => {
       outflowsDetailWS.addRow(Object.values(outflow));
     });
@@ -830,14 +829,14 @@ export const exportToExcel = async (userData, language, filterOptions = null) =>
     });
   }
   
-  // Foglio 9: Dati Demografici (per utenti mock)
+  // Sheet 9: Demographic Data (for mock users)
   if (data.demographics && Object.keys(data.demographics).length > 0) {
     const demoWS = workbook.addWorksheet('Demographics');
     const demoHeaders = Object.keys(data.demographics);
     demoWS.addRow(demoHeaders);
     demoWS.addRow(Object.values(data.demographics));
     
-    // Stile headers
+    // Header styling
     demoWS.getRow(1).font = { bold: true, color: { argb: 'FFFFFFFF' } };
     demoWS.getRow(1).fill = {
       type: 'pattern',
@@ -852,7 +851,7 @@ export const exportToExcel = async (userData, language, filterOptions = null) =>
     });
   }
   
-  // Auto-size columns per tutti i fogli
+  // Auto-size columns for all sheets
   userInfoHeaders.forEach((header, index) => {
     const column = userInfoWS.getColumn(index + 1);
     column.width = Math.max(header.length, 15);
@@ -863,7 +862,7 @@ export const exportToExcel = async (userData, language, filterOptions = null) =>
     column.width = Math.max(header.length, 12);
   });
   
-  // Salva file
+  // Save file
   const today = new Date();
   const timestamp = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
   
@@ -881,17 +880,17 @@ export const exportToExcel = async (userData, language, filterOptions = null) =>
     throw error;
   }
   } catch (error) {
-    console.error('Errore durante l\'export Excel:', error);
-    throw new Error('Impossibile generare il file Excel: ' + error.message);
+    console.error('Error during Excel export:', error);
+    throw new Error('Unable to generate the Excel file: ' + error.message);
   }
 };
 
-// Export in formato JSON
+// Export in JSON format
 export const exportToJSON = (userData, language, filterOptions = null) => {
   try {
     const data = prepareUserDataForExport(userData, language, filterOptions);
   
-  // Aggiungi metadati per il file JSON
+  // Add metadata for the JSON file
   const enrichedData = {
     exportInfo: {
       exportDate: new Date().toISOString(),
@@ -910,8 +909,8 @@ export const exportToJSON = (userData, language, filterOptions = null) => {
     const blob = new Blob([jsonString], { type: 'application/json;charset=utf-8;' });
     saveAs(blob, `pacifinance_complete_data_${timestamp}.json`);
   } catch (error) {
-    console.error('Errore durante l\'export JSON:', error);
-    throw new Error('Impossibile generare il file JSON: ' + error.message);
+    console.error('Error during JSON export:', error);
+    throw new Error('Unable to generate the JSON file: ' + error.message);
   }
 };
 
@@ -973,16 +972,16 @@ const createPieChartScript = (categoryExpenses, currencySymbol) => {
   `;
 };
 
-// Export in formato PDF (documento leggibile)
+// Export in PDF format (readable document)
 export const exportToPDF = async (userData, language, filterOptions = null, formatAmount, currencySymbol) => {
   try {
     const data = prepareUserDataForExport(userData, language, filterOptions);
-    
+
     if (!data || !data.userInfo) {
-      throw new Error('Dati preparati non validi per PDF');
+      throw new Error('Prepared data is invalid for PDF');
     }
 
-    // Controlla se i dati filtrati sono vuoti
+    // Check whether the filtered data is empty
     const hasData = (data.balances && data.balances.length > 0) || 
                    (data.detailedIncomes && data.detailedIncomes.length > 0) || 
                    (data.detailedOutflows && data.detailedOutflows.length > 0);
@@ -1225,23 +1224,23 @@ export const exportToPDF = async (userData, language, filterOptions = null, form
       </html>
     `;
     
-    // Apre una nuova finestra con il contenuto HTML per la stampa
+    // Open a new window with the HTML content for printing
     const printWindow = window.open('', '_blank');
     printWindow.document.write(htmlContent);
     printWindow.document.close();
     printWindow.focus();
-    
-    // Aspetta che il contenuto sia caricato e poi apre il dialog di stampa
+
+    // Wait for the content to load, then open the print dialog
     setTimeout(() => {
       printWindow.print();
     }, 1000);
   } catch (error) {
-    console.error('Errore durante l\'export PDF:', error);
-    throw new Error('Impossibile generare il documento PDF: ' + error.message);
+    console.error('Error during PDF export:', error);
+    throw new Error('Unable to generate the PDF document: ' + error.message);
   }
 };
 
-// Funzione helper per convertire array di oggetti in CSV pulito (per fogli separati)
+// Helper function to convert an array of objects into clean CSV (for separate sheets)
 const convertSingleArrayToCSV = (data, title) => {
   if (!data || !Array.isArray(data) || data.length === 0) {
     return `${title}\nNo data available\n`;
@@ -1256,35 +1255,35 @@ const convertSingleArrayToCSV = (data, title) => {
     return `${title}\nNo data fields available\n`;
   }
 
-  // Formatta i nomi delle colonne per renderli più leggibili
+  // Format column names to make them more readable
   const formattedHeaders = headers.map(header => {
     return header
-      .replace(/([A-Z])/g, ' $1') // Aggiungi spazio prima delle maiuscole
-      .replace(/^./, str => str.toUpperCase()) // Maiuscola iniziale
+      .replace(/([A-Z])/g, ' $1') // Add a space before uppercase letters
+      .replace(/^./, str => str.toUpperCase()) // Capitalize the first letter
       .trim();
   });
-  
+
   const csvRows = [
-    `# ${title}`, // Titolo come commento
+    `# ${title}`, // Title as a comment
     `# Generated on: ${new Date().toLocaleString()}`,
-    '', // Riga vuota per separazione
-    formattedHeaders.join(','), // Headers formattati
+    '', // Blank row for separation
+    formattedHeaders.join(','), // Formatted headers
     ...data.map(row => {
       if (!row || typeof row !== 'object') return '';
       return headers.map(header => {
         const value = row[header];
         if (value === null || value === undefined) return '';
-        
-        // Gestione speciale per valori stringa che contengono virgole
+
+        // Special handling for string values that contain commas
         if (typeof value === 'string') {
           if (value.includes(',') || value.includes('"') || value.includes('\n')) {
             return `"${value.replace(/"/g, '""')}"`;
           }
         }
-        
+
         return String(value);
       }).join(',');
-    }).filter(row => row !== '') // Rimuovi righe vuote
+    }).filter(row => row !== '') // Remove blank rows
   ];
   
   return csvRows.join('\n');

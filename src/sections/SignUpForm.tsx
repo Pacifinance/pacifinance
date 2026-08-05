@@ -277,7 +277,6 @@ export default function SignUpForm() {
                 setShowSuccessModal(true);
                 //window.umami.trackEvent('SignUp');
             } else {
-                // alert("Si è verificato un errore nella registrazione del tuo account. Per favore riprova tra un istante.");
                 showError(
                     `
                 <div>
@@ -311,7 +310,6 @@ export default function SignUpForm() {
             `,
                 5000,
             );
-            //   alert("Si è verificato un errore nella registrazione del tuo account. Per favore riprova tra un istante.");
         }
     };
 
@@ -580,7 +578,7 @@ export default function SignUpForm() {
                                 <div
                                     className="p-3 rounded-lg border-l-4"
                                     style={{
-                                        borderLeftColor: '#f59e0b',
+                                        borderLeftColor: theme.warningColor,
                                         backgroundColor: theme.mode === 'dark' ? 'rgba(120, 53, 15, 0.28)' : '#fff7ed',
                                     }}
                                 >

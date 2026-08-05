@@ -57,7 +57,7 @@ const DashboardPage = () => {
         const bgColor = theme?.backgroundColor || (isDark ? '#222831' : '#f5f5f5');
         const textColor = theme?.textColor || (isDark ? '#e0e0e0' : '#333333');
         const subtextColor = isDark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.45)';
-        const brandColor = '#079164';
+        const brandColor = theme?.secondaryColor || '#079164';
 
         return (
             <div style={{ 

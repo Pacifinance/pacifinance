@@ -58,3 +58,27 @@ self.addEventListener('fetch', (event) => {
     );
   }
 });
+
+self.addEventListener('push', (event) => {
+  let payload = {};
+  try { payload = event.data ? event.data.json() : {}; } catch { payload = { body: event.data?.text() }; }
+  const title = payload.title || 'Pacifinance';
+  event.waitUntil(self.registration.showNotification(title, {
+    body: payload.body || '',
+    icon: '/faviconLogo/android-chrome-192x192.png',
+    badge: '/faviconLogo/favicon-32x32.png',
+    tag: payload.tag || 'pacifinance-reminder',
+    data: {url: payload.url || '/dashboard'},
+  }));
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const requestedUrl = new URL(event.notification.data?.url || '/dashboard', self.location.origin);
+  // Never let a push payload send the user off-site: only same-origin targets are honored.
+  const target = (requestedUrl.origin === self.location.origin ? requestedUrl : new URL('/dashboard', self.location.origin)).href;
+  event.waitUntil(self.clients.matchAll({type: 'window', includeUncontrolled: true}).then((clients) => {
+    const existing = clients.find((client) => client.url === target);
+    return existing ? existing.focus() : self.clients.openWindow(target);
+  }));
+});

@@ -4,7 +4,7 @@
         "platforms": {
             "genericBank": { "label": "Any other bank or service", "steps": "Look for Transactions, Activity or Statements, then choose Export. Prefer CSV; Excel also works. Include at least date, description and amount, select the required period and, where possible, completed transactions only. On the next screen you can manually choose the header row and columns." },
             "genericDigital": { "label": "Other wallets and digital services", "steps": "Look in settings or history for Activity, Transactions, Statements, Reports or Export data. Download CSV or Excel containing date, description and amount; avoid PDFs and individual receipts. If several currencies are present, export them separately where possible." },
-            "paypal": { "label": "PayPal", "steps": "On the website: Activity → Download icon → Custom → create an activity report → CSV. Include at least Date, Time, Description, Currency, Net and Name. You may delete email, bank-account and identifier columns first; if left in the file, Pacifinance ignores them and does not send them to the server." },
+            "paypal": { "label": "PayPal", "steps": "On the website: Activity → Download icon → Custom → create an activity report → CSV. Include Date, Time, Description, Currency, Net and Name. Email, account and identifier fields are redacted; personal names are replaced by the neutral description, while recognizable business names are retained." },
             "wise": { "label": "Wise", "steps": "Profile → Statements and reports → Statements → Create a statement → choose balances, period and CSV. Alternatively on web: Transactions → See all → Filter and download → CSV. Wise allows up to 365 days per file." },
             "traderepublic": { "label": "Trade Republic", "steps": "Open Cash → Transactions and download the export or statement for the required period. Use Cash movements for income and outflows; import instrument trades separately from Investments." },
             "fineco": { "label": "Fineco", "steps": "Fineco website → Account and Cards → Transaction list → choose period and filters → export to Excel. Exclude Trading movements here; they can be imported separately as investments." },
@@ -2303,7 +2303,7 @@
         "undoSuccess": "✅ Undo completed — {count} transactions removed",
         "undoPartial": "⚠️ Undo partial — {success} removed, {failed} failed",
         "bankDetected": "Detected: {bank} — columns mapped automatically.",
-        "paypalPrivacyNotice": "PayPal columns containing email addresses, bank-account details, transaction IDs and invoice references are ignored and will not be sent to the server. You may still delete them from the CSV before importing.",
+        "paypalPrivacyNotice": "Email, bank-account, identifier and reference fields are redacted in the preview and are not sent to the server. Personal names are replaced by the transaction description; only clearly recognizable business counterparts remain. You may still remove sensitive columns first.",
         "paypalTechnicalRowsSkipped": "{count} PayPal bookkeeping rows (card funding, currency conversions or authorization holds) were skipped to prevent duplicates and artificial movements.",
         "paymentSourceTitle": "Payment source and account balance",
         "paymentAccount": "Payment account",

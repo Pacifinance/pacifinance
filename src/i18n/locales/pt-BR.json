@@ -4,7 +4,7 @@
         "platforms": {
             "genericBank": { "label": "Qualquer outro banco ou serviço", "steps": "Procure Transações, Atividade ou Extratos e escolha Exportar. Prefira CSV; Excel também funciona. Inclua pelo menos data, descrição e valor, selecione o período desejado e, se possível, apenas transações concluídas. Na próxima etapa você poderá escolher manualmente o cabeçalho e as colunas." },
             "genericDigital": { "label": "Outras carteiras e serviços digitais", "steps": "Procure nas configurações ou no histórico por Atividade, Transações, Extratos, Relatórios ou Exportar dados. Baixe CSV ou Excel com data, descrição e valor; evite PDF e recibos individuais. Se houver várias moedas, exporte-as separadamente quando possível." },
-            "paypal": { "label": "PayPal", "steps": "No site: Atividade → ícone Baixar → Personalizado → crie o relatório de atividades → CSV. Inclua pelo menos Data, Hora, Descrição, Moeda, Líquido e Nome. Você pode excluir colunas de e-mail, conta bancária e identificadores; se mantidas, o Pacifinance as ignora e não as envia ao servidor." },
+            "paypal": { "label": "PayPal", "steps": "No site: Atividade → ícone Baixar → Personalizado → crie o relatório de atividades → CSV. Inclua Data, Hora, Descrição, Moeda, Líquido e Nome. E-mails, contas e identificadores são ocultados; nomes pessoais são substituídos pela descrição neutra e empresas reconhecíveis são mantidas." },
             "wise": { "label": "Wise", "steps": "Perfil → Extratos e relatórios → Extratos → Criar extrato → escolha saldos, período e CSV. Como alternativa na web: Transações → Ver tudo → Filtrar e baixar → CSV. A Wise permite até 365 dias por arquivo." },
             "traderepublic": { "label": "Trade Republic", "steps": "Abra Cash → Transações e baixe a exportação ou o extrato do período desejado. Use movimentos Cash para receitas e despesas; importe negociações de ativos separadamente em Investimentos." },
             "fineco": { "label": "Fineco", "steps": "Site Fineco → Conta e cartões → Lista de transações → escolha período e filtros → exporte para Excel. Exclua movimentos de trading aqui; eles podem ser importados separadamente como investimentos." },
@@ -2207,7 +2207,7 @@
         "undoSuccess": "✅ Desfeito — {count} transações removidas",
         "undoPartial": "⚠️ Desfeito parcialmente — {success} removidas, {failed} falharam",
         "bankDetected": "Detectado: {bank} — colunas mapeadas automaticamente.",
-        "paypalPrivacyNotice": "As colunas do PayPal com e-mails, dados bancários, códigos de transação e referências de fatura são ignoradas e não são enviadas ao servidor. Você também pode removê-las do CSV antes da importação.",
+        "paypalPrivacyNotice": "E-mails, dados bancários, identificadores e referências são ocultados já na prévia e não são enviados ao servidor. Nomes pessoais são substituídos pela descrição; apenas empresas claramente reconhecíveis permanecem.",
         "paypalTechnicalRowsSkipped": "{count} linhas técnicas do PayPal (financiamento por cartão, conversões ou bloqueios de autorização) foram ignoradas.",
         "paymentSourceTitle": "Fonte de pagamento e saldo da conta",
         "paymentAccount": "Conta de pagamento",

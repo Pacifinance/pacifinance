@@ -4,7 +4,7 @@
         "platforms": {
             "genericBank": { "label": "Jede andere Bank oder jeder andere Dienst", "steps": "Suche nach Transaktionen, Umsätzen oder Kontoauszügen und wähle Exportieren. CSV ist vorzuziehen; Excel funktioniert ebenfalls. Füge mindestens Datum, Beschreibung und Betrag ein, wähle den Zeitraum und möglichst nur abgeschlossene Umsätze. Im nächsten Schritt kannst du Kopfzeile und Spalten manuell festlegen." },
             "genericDigital": { "label": "Andere Wallets und digitale Dienste", "steps": "Suche in Einstellungen oder Verlauf nach Aktivität, Transaktionen, Kontoauszügen, Berichten oder Datenexport. Lade CSV oder Excel mit Datum, Beschreibung und Betrag herunter; vermeide PDF und Einzelbelege. Exportiere mehrere Währungen möglichst getrennt." },
-            "paypal": { "label": "PayPal", "steps": "Auf der Website: Aktivitäten → Download-Symbol → Benutzerdefiniert → Aktivitätsbericht erstellen → CSV. Füge mindestens Datum, Uhrzeit, Beschreibung, Währung, Netto und Name hinzu. E-Mail-, Bankkonto- und Kennungsspalten kannst du vorher löschen; andernfalls ignoriert Pacifinance sie und sendet sie nicht an den Server." },
+            "paypal": { "label": "PayPal", "steps": "Auf der Website: Aktivitäten → Download-Symbol → Benutzerdefiniert → Aktivitätsbericht erstellen → CSV. Füge Datum, Uhrzeit, Beschreibung, Währung, Netto und Name hinzu. E-Mail-, Konto- und Kennungsdaten werden ausgeblendet; Personennamen werden durch die neutrale Beschreibung ersetzt, erkennbare Firmennamen bleiben erhalten." },
             "wise": { "label": "Wise", "steps": "Profil → Kontoauszüge und Berichte → Kontoauszüge → Kontoauszug erstellen → Salden, Zeitraum und CSV wählen. Alternativ im Web: Transaktionen → Alle anzeigen → Filtern und herunterladen → CSV. Wise erlaubt höchstens 365 Tage pro Datei." },
             "traderepublic": { "label": "Trade Republic", "steps": "Öffne Cash → Transaktionen und lade den Export oder Kontoauszug für den gewünschten Zeitraum herunter. Nutze Cash-Bewegungen für Einnahmen und Ausgaben; Wertpapiergeschäfte werden separat unter Investments importiert." },
             "fineco": { "label": "Fineco", "steps": "Fineco-Website → Konto und Karten → Umsatzliste → Zeitraum und Filter wählen → nach Excel exportieren. Schließe Trading-Bewegungen hier aus; sie können separat als Investments importiert werden." },
@@ -2207,7 +2207,7 @@
         "undoSuccess": "✅ Rückgängig abgeschlossen — {count} Transaktionen entfernt",
         "undoPartial": "⚠️ Teilweise rückgängig — {success} entfernt, {failed} fehlgeschlagen",
         "bankDetected": "Erkannt: {bank} — Spalten automatisch zugeordnet.",
-        "paypalPrivacyNotice": "PayPal-Spalten mit E-Mail-Adressen, Bankkontodaten, Transaktionscodes und Rechnungsreferenzen werden ignoriert und nicht an den Server gesendet. Du kannst sie vor dem Import trotzdem aus der CSV löschen.",
+        "paypalPrivacyNotice": "E-Mail-, Bankkonto-, Kennungs- und Referenzdaten werden bereits in der Vorschau ausgeblendet und nicht an den Server gesendet. Personennamen werden durch die Transaktionsbeschreibung ersetzt; nur klar erkennbare Unternehmen bleiben sichtbar.",
         "paypalTechnicalRowsSkipped": "{count} technische PayPal-Zeilen (Kartenaufladungen, Währungsumrechnungen oder Autorisierungsreservierungen) wurden übersprungen.",
         "paymentSourceTitle": "Zahlungsquelle und Kontostand",
         "paymentAccount": "Zahlungskonto",

@@ -27,6 +27,8 @@ describe('SharedTransactionLinkModal existing split', () => {
 
     expect(screen.getByRole('heading', {name: 'Edit shared expense'})).toBeInTheDocument();
     expect(screen.getByRole('spinbutton')).toHaveValue(4);
+    fireEvent.change(screen.getByRole('spinbutton'), {target: {value: ''}});
+    expect(screen.getByRole('spinbutton')).toHaveValue(null);
     fireEvent.change(screen.getByRole('spinbutton'), {target: {value: '5'}});
     fireEvent.click(screen.getByRole('button', {name: 'Update'}));
     await waitFor(() => expect(onConfirm).toHaveBeenCalledWith(8));

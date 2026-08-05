@@ -35,14 +35,16 @@ export default function SharedTransactionLinkModal({theme, mode, transaction, re
   const ratio = existingReceivable ? existingReceivable.totalAmount / existingReceivable.ownShare : 2;
   const inferredPeople = Number.isInteger(ratio) && ratio >= 2 ? ratio : null;
   const [method, setMethod] = useState<'people'|'share'>(inferredPeople ? 'people' : 'share');
-  const [people, setPeople] = useState(inferredPeople ?? 2);
+  const [people, setPeople] = useState<number | string>(inferredPeople ?? 2);
   const [share, setShare] = useState((existingReceivable?.ownShare ?? transaction.amount / 2).toFixed(2));
   const [receivableId, setReceivableId] = useState('');
   const [saving, setSaving] = useState(false);
+  const peopleNumber = Number(people);
+  const validPeople = Number.isInteger(peopleNumber) && peopleNumber >= 2;
   useEffect(() => {
-    if (method === 'people') setShare((transaction.amount / Math.max(2, people)).toFixed(2));
-  }, [method, people, transaction.amount]);
-  const ownShare = method === 'people' ? transaction.amount / Math.max(2, people) : Number(share);
+    if (method === 'people' && validPeople) setShare((transaction.amount / peopleNumber).toFixed(2));
+  }, [method, peopleNumber, transaction.amount, validPeople]);
+  const ownShare = method === 'people' ? (validPeople ? transaction.amount / peopleNumber : Number.NaN) : Number(share);
   const valid = mode === 'outflow' ? Number.isFinite(ownShare) && ownShare >= 0 && ownShare < transaction.amount : Boolean(receivableId);
   const pending = useMemo(() => receivables.filter(item => item.status !== 'settled'), [receivables]);
   const submit = async () => { if (!valid) return; setSaving(true); try { await onConfirm(mode === 'outflow' ? ownShare : Number(receivableId)); } finally { setSaving(false); } };
@@ -53,8 +55,8 @@ export default function SharedTransactionLinkModal({theme, mode, transaction, re
       <Summary theme={theme}>{transaction.notes || '—'} · {currencySymbol}{transaction.amount.toFixed(2)}</Summary>
       {mode === 'outflow' ? <>
         <Segments><Segment type="button" theme={theme} $active={method === 'people'} onClick={() => setMethod('people')}>{labels.splitByPeople}</Segment><Segment type="button" theme={theme} $active={method === 'share'} onClick={() => setMethod('share')}>{labels.specifyShare}</Segment></Segments>
-        {method === 'people' ? <Field>{labels.people}<Control theme={theme} type="number" min="2" step="1" value={people} onChange={e => setPeople(Math.max(2, Number(e.target.value) || 2))}/></Field> : <Field>{labels.ownShare}<Control theme={theme} type="number" min="0" max={transaction.amount} step="0.01" value={share} onChange={e => setShare(e.target.value)}/></Field>}
-        <Preview>{labels.ownShare}: {currencySymbol}{ownShare.toFixed(2)} · {labels.owed}: {currencySymbol}{Math.max(0, transaction.amount - ownShare).toFixed(2)}</Preview>
+        {method === 'people' ? <Field>{labels.people}<Control theme={theme} type="number" min="2" step="1" value={people} onChange={e => setPeople(e.target.value)} onBlur={() => { if (!validPeople) setPeople(2); }}/></Field> : <Field>{labels.ownShare}<Control theme={theme} type="number" min="0" max={transaction.amount} step="0.01" value={share} onChange={e => setShare(e.target.value)}/></Field>}
+        <Preview>{labels.ownShare}: {Number.isFinite(ownShare) ? `${currencySymbol}${ownShare.toFixed(2)}` : '—'} · {labels.owed}: {Number.isFinite(ownShare) ? `${currencySymbol}${Math.max(0, transaction.amount - ownShare).toFixed(2)}` : '—'}</Preview>
       </> : <>
         <Field>{labels.chooseExpense}<Select theme={theme} value={receivableId} onChange={e => setReceivableId(e.target.value)}><option value="">{pending.length ? `— ${labels.chooseExpense} —` : labels.noReceivables}</option>{pending.map(item => <option key={item.id} value={item.id}>{item.notes || '—'} · {currencySymbol}{Math.max(0, item.receivableAmount - item.settledAmount).toFixed(2)}</option>)}</Select></Field>
         <Help>{labels.reimbursementHelp}</Help>

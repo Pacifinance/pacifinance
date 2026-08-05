@@ -61,6 +61,25 @@ describe('detectBankFormat', () => {
       expect(filterRow(row('Conversione di valuta generica'))).toBe(false);
       expect(filterRow(row('Blocco conto per autorizzazione aperta'))).toBe(false);
     });
+
+    it('redacts sensitive preview fields and does not persist personal names as notes', () => {
+      const { sanitizeRow } = detectBankFormat(header);
+      const personal = header.map(() => '');
+      personal[3] = 'Pagamento da cellulare';
+      personal[9] = 'ABC123';
+      personal[10] = 'person@example.com';
+      personal[11] = 'Mario Rossi';
+      personal[13] = 'IT00 TEST';
+      const sanitizedPersonal = sanitizeRow(personal);
+      expect(sanitizedPersonal[9]).toBe('');
+      expect(sanitizedPersonal[10]).toBe('');
+      expect(sanitizedPersonal[13]).toBe('');
+      expect(sanitizedPersonal[11]).toBe('Pagamento da cellulare');
+
+      const business = [...personal];
+      business[11] = 'Example Services Srl';
+      expect(sanitizeRow(business)[11]).toBe('Example Services Srl');
+    });
   });
 
   it('is not thrown off by header case or surrounding whitespace', () => {

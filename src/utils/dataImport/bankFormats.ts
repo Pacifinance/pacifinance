@@ -40,6 +40,8 @@ export interface DetectedBankFormat {
   filterRow?: (row: string[]) => boolean;
   /** i18n key (under dataImport.*) describing what filterRow excludes. */
   filterReasonKey?: string;
+  /** Removes or replaces sensitive source values before preview and parsing. */
+  sanitizeRow?: (row: string[]) => string[];
 }
 
 const findColumn = (header: string[], ...names: string[]): number => {
@@ -94,6 +96,15 @@ export function detectBankFormat(header: string[]): DetectedBankFormat | null {
   // not mapped, so they never enter the API payload.
   if (hasConcepts(header, 'date', 'time', 'description', 'currency', 'net', 'name', 'transactionId', 'senderEmail')) {
     const descriptionIdx = findConcept(header, 'description');
+    const nameIdx = findConcept(header, 'name');
+    const sensitiveIndexes = header.flatMap((value, index) => {
+      const normalized = value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      return /(e-?mail|transaction|transazione|transaktions|codice|bank|banc|conto|account|fattura|invoice|rechnung|referenc|riferimento|referencia)/.test(normalized)
+        ? [index]
+        : [];
+    });
+    const looksLikeBusiness = (value: string): boolean =>
+      /(?:\b(?:srl|spa|sas|ltd|limited|gmbh|inc|llc|plc|sa|sca)\b|\.com\b|airlines?\b)/i.test(value.trim());
     const technicalRows = [
       /versamento generico con carta/i,
       /generic card deposit/i,
@@ -117,6 +128,15 @@ export function detectBankFormat(header: string[]): DetectedBankFormat | null {
       },
       filterRow: (row) => !technicalRows.some((pattern) => pattern.test((row[descriptionIdx] || '').trim())),
       filterReasonKey: 'paypalTechnicalRowsSkipped',
+      sanitizeRow: (row) => {
+        const sanitized = [...row];
+        sensitiveIndexes.forEach((index) => { sanitized[index] = ''; });
+        // Personal counterpart names are not persisted as notes. Verified
+        // company names remain useful for categorization; otherwise fall back
+        // to PayPal's neutral transaction description.
+        if (!looksLikeBusiness(row[nameIdx] || '')) sanitized[nameIdx] = row[descriptionIdx] || '';
+        return sanitized;
+      },
     };
   }
 

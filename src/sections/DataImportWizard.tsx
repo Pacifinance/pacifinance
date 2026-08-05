@@ -858,6 +858,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
         } else {
           setBankFilteredCount(0);
         }
+        if (bankFormat.sanitizeRow) r = r.map(bankFormat.sanitizeRow);
         setDateCol(bankFormat.mapping.dateCol);
         setAmountCol(bankFormat.mapping.amountCol);
         setCategoryCol(bankFormat.mapping.categoryCol ?? -1);
@@ -938,6 +939,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
       } else {
         setBankFilteredCount(0);
       }
+      if (bankFormat.sanitizeRow) r = r.map(bankFormat.sanitizeRow);
       setDateCol(bankFormat.mapping.dateCol);
       setAmountCol(bankFormat.mapping.amountCol);
       setCategoryCol(bankFormat.mapping.categoryCol ?? -1);
@@ -2169,11 +2171,21 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                                         type="number"
                                         min="2"
                                         step="1"
-                                        value={rowSharedPeople[tx.rowIndex] || 2}
+                                        value={rowSharedPeople[tx.rowIndex] ?? 2}
                                         onChange={(event) => {
-                                          const people = Math.max(2, Number(event.target.value) || 2);
-                                          setRowSharedPeople((current) => ({...current, [tx.rowIndex]: people}));
-                                          setRowSharedExpenses((current) => ({...current, [tx.rowIndex]: (tx.amount / people).toFixed(2)}));
+                                          const rawPeople = event.target.value;
+                                          const people = Number(rawPeople);
+                                          setRowSharedPeople((current) => ({...current, [tx.rowIndex]: rawPeople}));
+                                          if (Number.isInteger(people) && people >= 2) {
+                                            setRowSharedExpenses((current) => ({...current, [tx.rowIndex]: (tx.amount / people).toFixed(2)}));
+                                          }
+                                        }}
+                                        onBlur={() => {
+                                          const people = Number(rowSharedPeople[tx.rowIndex]);
+                                          if (!Number.isInteger(people) || people < 2) {
+                                            setRowSharedPeople((current) => ({...current, [tx.rowIndex]: 2}));
+                                            setRowSharedExpenses((current) => ({...current, [tx.rowIndex]: (tx.amount / 2).toFixed(2)}));
+                                          }
                                         }}
                                       />
                                     </AmountInputWrap>

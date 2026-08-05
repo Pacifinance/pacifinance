@@ -17,6 +17,7 @@ import {
   faTableCells,
   faThLarge,
   faUsers,
+  faFilter,
 } from '@fortawesome/free-solid-svg-icons';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
@@ -1876,8 +1877,9 @@ export default function OutflowSection({
         ) : (
             <CardViewWrap>
               <FilterToggleRow theme={theme} type="button" onClick={() => setShowMobileFilters((v) => !v)}>
-                <span>
-                  {translations.general.filters || 'Filters'}
+                <span className="filter-toggle-label">
+                  <FontAwesomeIcon icon={faFilter} />
+                  {translations.general.filterTransactions || translations.general.filters || 'Filters'}
                   {activeFilterCount > 0 && <FilterBadge theme={theme}>{activeFilterCount}</FilterBadge>}
                 </span>
                 <FontAwesomeIcon icon={showMobileFilters ? faSortUp : faSortDown} />

@@ -43,32 +43,47 @@ const ToggleButton = styled.button`
   &:hover { opacity: 0.85; }
 `;
 
-const GuideList = styled.dl`
+const GuideList = styled.div`
   margin: 0.4rem 0 0;
-  padding: 0.7rem 0.85rem;
+  padding: 0.35rem 0.5rem;
   border-radius: 10px;
   background: ${(p) => (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)')};
   border: 1px solid ${(p) => (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)')};
+`;
 
-  dt {
-    font-size: 0.8rem;
-    font-weight: 700;
-    color: ${(p) => p.theme.textColor};
-    margin-top: 0.6rem;
-    &:first-child { margin-top: 0; }
-  }
-  dd {
-    margin: 0.15rem 0 0;
-    font-size: 0.78rem;
-    color: ${(p) => p.theme.textColor};
-    opacity: 0.75;
-    line-height: 1.4;
-  }
+const EntryButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.6rem 0.45rem;
+  border: 0;
+  border-bottom: 1px solid ${(p) => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)'};
+  background: transparent;
+  color: ${(p) => p.theme.textColor};
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+
+  &:hover { color: ${(p) => p.theme.buttonBackgroundColor}; }
+  &:focus-visible { outline: 2px solid ${(p) => p.theme.buttonBackgroundColor}; outline-offset: -2px; border-radius: 6px; }
+`;
+
+const EntryDetails = styled.div`
+  padding: 0.15rem 1.5rem 0.7rem 0.45rem;
+  border-bottom: 1px solid ${(p) => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)'};
+  color: ${(p) => p.theme.textColor};
+  opacity: 0.78;
+  font-size: 0.78rem;
+  line-height: 1.45;
 `;
 
 export default function ImportPlatformGuide({ theme, platformIds }: ImportPlatformGuideProps) {
   const { translations } = useContext(LanguageContext);
   const [open, setOpen] = useState(false);
+  const [openEntries, setOpenEntries] = useState<Set<string>>(() => new Set());
   const t = translations.importGuide;
   if (!t) return null;
 
@@ -87,12 +102,27 @@ export default function ImportPlatformGuide({ theme, platformIds }: ImportPlatfo
       </ToggleButton>
       {open && (
         <GuideList theme={theme}>
-          {entries.map((entry) => (
-            <React.Fragment key={entry.id}>
-              <dt>{entry.label}</dt>
-              <dd>{entry.steps}</dd>
-            </React.Fragment>
-          ))}
+          {entries.map((entry) => {
+            const entryOpen = openEntries.has(entry.id);
+            const detailsId = `import-guide-${entry.id}`;
+            return <div key={entry.id}>
+              <EntryButton
+                type="button"
+                theme={theme}
+                aria-expanded={entryOpen}
+                aria-controls={detailsId}
+                onClick={() => setOpenEntries((current) => {
+                  const next = new Set(current);
+                  if (next.has(entry.id)) next.delete(entry.id); else next.add(entry.id);
+                  return next;
+                })}
+              >
+                {entry.label}
+                <FontAwesomeIcon icon={entryOpen ? faChevronDown : faChevronRight} style={{ fontSize: '0.7rem' }} />
+              </EntryButton>
+              {entryOpen && <EntryDetails id={detailsId} theme={theme}>{entry.steps}</EntryDetails>}
+            </div>;
+          })}
         </GuideList>
       )}
     </Wrapper>

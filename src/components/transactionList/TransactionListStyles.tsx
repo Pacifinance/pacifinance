@@ -72,14 +72,31 @@ export const FilterToggleRow = styled.button`
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  border: none;
-  background: transparent;
-  padding: 0.7rem 1rem;
+  border: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : '#e2e8f0'};
+  background: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.045)' : '#f8fafc'};
+  padding: 0.75rem 0.9rem;
+  border-radius: 10px;
   font-size: 0.82rem;
   font-weight: 700;
   color: ${p => p.theme.textColor};
   cursor: pointer;
-  border-bottom: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : '#eef2f7'};
+  transition: border-color 0.2s ease, background 0.2s ease;
+
+  &:hover {
+    border-color: ${p => p.theme.buttonBackgroundColor};
+    background: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.075)' : '#f1f5f9'};
+  }
+
+  .filter-toggle-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+  }
+
+  .filter-toggle-label > svg {
+    color: ${p => p.theme.buttonBackgroundColor};
+    font-size: 0.9rem;
+  }
 `;
 
 export const FilterBadge = styled.span`
@@ -97,7 +114,9 @@ export const FilterPanel = styled.div`
   flex-direction: column;
   gap: 0.65rem;
   padding: 0.85rem 1rem;
-  border-bottom: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : '#eef2f7'};
+  margin-top: 0.45rem;
+  border: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : '#e2e8f0'};
+  border-radius: 10px;
   background: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.02)' : '#f8fafc'};
 `;
 

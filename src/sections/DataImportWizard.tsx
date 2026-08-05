@@ -185,6 +185,13 @@ const PreviewTable = styled.div`
   td {
     color: ${p => p.theme.textColor};
   }
+  td.transaction-details-cell {
+    min-width: 230px;
+    max-width: 280px;
+    white-space: normal;
+    overflow: visible;
+    vertical-align: top;
+  }
 `;
 
 const SelectField = styled.select`
@@ -403,6 +410,118 @@ const NoteInput = styled.input`
     outline: none;
     border-color: ${p => p.theme.secondaryColor};
   }
+`;
+
+const TransactionDetails = styled.div`
+  display: grid;
+  gap: 0.55rem;
+  min-width: 0;
+`;
+
+const ImportOptionPanel = styled.div`
+  display: grid;
+  gap: 0.55rem;
+  padding: 0.65rem;
+  border: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.12)' : 'rgba(15,23,42,0.1)'};
+  border-radius: 9px;
+  background: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.035)' : 'rgba(15,23,42,0.025)'};
+  color: ${p => p.theme.textColor};
+  font-size: 0.76rem;
+  white-space: normal;
+`;
+
+const ImportOptionTitle = styled.label`
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-width: 0;
+  cursor: pointer;
+  color: ${p => p.theme.textColor};
+  font-weight: 650;
+`;
+
+const ShareAmountRow = styled.label`
+  display: grid;
+  grid-template-columns: minmax(76px, auto) minmax(0, 1fr);
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+`;
+
+const AmountInputWrap = styled.div`
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  border: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.18)' : 'rgba(15,23,42,0.14)'};
+  border-radius: 7px;
+  background: ${p => p.theme.mode === 'dark' ? 'rgba(0,0,0,0.16)' : '#fff'};
+  color: ${p => p.theme.textColor};
+  overflow: hidden;
+
+  span { padding-left: 0.55rem; opacity: 0.68; }
+  input {
+    width: 100%; min-width: 0; padding: 0.45rem 0.55rem 0.45rem 0.25rem;
+    border: 0; outline: 0; background: transparent; color: inherit; font: inherit;
+  }
+`;
+
+const CompactSelect = styled(SelectField)`
+  min-width: 0;
+  padding: 0.5rem 2rem 0.5rem 0.65rem;
+  font-size: 0.78rem;
+  color-scheme: ${p => p.theme.mode === 'dark' ? 'dark' : 'light'};
+`;
+
+const ImportOptionHelp = styled.small`
+  display: block;
+  min-width: 0;
+  color: ${p => p.theme.textColor};
+  opacity: 0.68;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+  white-space: normal;
+`;
+
+const PaymentSourceFields = styled.div`
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) minmax(260px, 1.15fr);
+  gap: 0.75rem;
+  align-items: end;
+
+  @media (max-width: 680px) { grid-template-columns: 1fr; }
+`;
+
+const PaymentField = styled.label`
+  display: grid;
+  gap: 0.35rem;
+  min-width: 0;
+  color: ${p => p.theme.textColor};
+  font-size: 0.75rem;
+  font-weight: 650;
+`;
+
+const NewAccountFields = styled.div`
+  display: grid;
+  grid-template-columns: minmax(130px, 1fr) minmax(145px, 0.8fr);
+  gap: 0.55rem;
+  min-width: 0;
+
+  @media (max-width: 520px) { grid-template-columns: 1fr; }
+`;
+
+const AccountNameInput = styled.input`
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.18)' : 'rgba(15,23,42,0.14)'};
+  border-radius: 8px;
+  background: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.07)' : '#fff'};
+  color: ${p => p.theme.textColor};
+  font: inherit;
+
+  &::placeholder { color: ${p => p.theme.textColor}; opacity: 0.48; }
+  &:focus { outline: 2px solid ${p => p.theme.buttonBackgroundColor}55; border-color: ${p => p.theme.buttonBackgroundColor}; }
 `;
 
 const InfoTooltip = styled.span`
@@ -1776,25 +1895,34 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
             <p style={{ color: theme.textColor, opacity: 0.72, fontSize: '0.8rem', lineHeight: 1.45, marginBottom: '0.65rem' }}>
               {(t.paymentSourceHelp || 'The file provider is a bank or payment source, not a transaction category. Link it to an account to keep every movement traceable.')}
             </p>
-            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'minmax(220px, 1fr) minmax(180px, 1fr)', gap: '0.65rem' }}>
-              <select value={selectedAccountId} onChange={(event) => setSelectedAccountId(event.target.value)}>
-                <option value="">{t.noLinkedAccount || 'Do not link an account'}</option>
-                {liquidityAccounts.map((accountItem) => (
-                  <option key={accountItem.id} value={accountItem.id}>{accountItem.label}</option>
-                ))}
-                <option value="new">{t.createPaymentAccount || '+ Create a payment account'}</option>
-              </select>
+            <PaymentSourceFields>
+              <PaymentField theme={theme}>
+                <span>{t.paymentAccount || t.paymentSourceTitle || 'Payment account'}</span>
+                <CompactSelect theme={theme} value={selectedAccountId} onChange={(event) => setSelectedAccountId(event.target.value)}>
+                  <option value="">{t.noLinkedAccount || 'Do not link an account'}</option>
+                  {liquidityAccounts.map((accountItem) => (
+                    <option key={accountItem.id} value={accountItem.id}>{accountItem.label}</option>
+                  ))}
+                  <option value="new">{t.createPaymentAccount || '+ Create a payment account'}</option>
+                </CompactSelect>
+              </PaymentField>
               {selectedAccountId === 'new' && (
-                <div style={{ display: 'flex', gap: '0.4rem' }}>
-                  <input value={newAccountLabel} onChange={(event) => setNewAccountLabel(event.target.value)} placeholder={t.accountName || 'Account name'} />
-                  <select value={newAccountAssetKey} onChange={(event) => setNewAccountAssetKey(event.target.value)}>
-                    <option value="bank">{t.bankAccount || 'Bank'}</option>
-                    <option value="digitalServices">{t.digitalAccount || 'Payment platform'}</option>
-                    <option value="cash">{t.cashAccount || 'Cash'}</option>
-                  </select>
-                </div>
+                <NewAccountFields>
+                  <PaymentField theme={theme}>
+                    <span>{t.accountName || 'Account name'}</span>
+                    <AccountNameInput theme={theme} value={newAccountLabel} onChange={(event) => setNewAccountLabel(event.target.value)} placeholder={t.accountName || 'Account name'} />
+                  </PaymentField>
+                  <PaymentField theme={theme}>
+                    <span>{t.accountType || 'Account type'}</span>
+                    <CompactSelect theme={theme} value={newAccountAssetKey} onChange={(event) => setNewAccountAssetKey(event.target.value)}>
+                      <option value="bank">{t.bankAccount || 'Bank'}</option>
+                      <option value="digitalServices">{t.digitalAccount || 'Payment platform'}</option>
+                      <option value="cash">{t.cashAccount || 'Cash'}</option>
+                    </CompactSelect>
+                  </PaymentField>
+                </NewAccountFields>
               )}
-            </div>
+            </PaymentSourceFields>
             {selectedAccountId && (
               <label style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', color: theme.textColor, fontSize: '0.82rem', cursor: 'pointer', marginTop: '0.75rem' }}>
                 <input type="checkbox" checked={updateAccountBalance} onChange={(event) => setUpdateAccountBalance(event.target.checked)} />
@@ -1947,7 +2075,8 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                             />
                           </CategoryPickerWrap>
                         </td>
-                        <td>
+                        <td className="transaction-details-cell">
+                          <TransactionDetails>
                           <NoteInput
                             theme={theme}
                             value={getEffectiveNote(tx)}
@@ -1956,9 +2085,9 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                             placeholder={t.addNote || '—'}
                           />
                           {tx.isOutflow ? (
-                            <div style={{ marginTop: '0.55rem', color: theme.textColor, fontSize: '0.75rem' }}>
-                              <label style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', cursor: 'pointer' }}>
-                                <input
+                            <ImportOptionPanel theme={theme}>
+                              <ImportOptionTitle theme={theme}>
+                                <StyledCheckbox
                                   type="checkbox"
                                   checked={rowSharedExpenses[tx.rowIndex] !== undefined}
                                   onChange={(event) => setRowSharedExpenses((current) => {
@@ -1969,30 +2098,36 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                                   })}
                                 />
                                 {t.sharedExpense || 'Shared expense'}
-                              </label>
+                              </ImportOptionTitle>
                               {rowSharedExpenses[tx.rowIndex] !== undefined && (
-                                <label style={{ display: 'block', marginTop: '0.35rem' }}>
-                                  {t.myShare || 'My share'}
-                                  <NoteInput
-                                    theme={theme}
-                                    type="number"
-                                    min="0"
-                                    max={tx.amount}
-                                    step="0.01"
-                                    value={rowSharedExpenses[tx.rowIndex]}
-                                    onChange={(event) => setRowSharedExpenses((current) => ({ ...current, [tx.rowIndex]: event.target.value }))}
-                                  />
-                                  <small style={{ display: 'block', opacity: 0.65, marginTop: 2 }}>
+                                <>
+                                  <ShareAmountRow theme={theme}>
+                                    <span>{t.myShare || 'My share'}</span>
+                                    <AmountInputWrap theme={theme}>
+                                      <span>{currencySymbol}</span>
+                                      <input
+                                        type="number"
+                                        min="0"
+                                        max={tx.amount}
+                                        step="0.01"
+                                        value={rowSharedExpenses[tx.rowIndex]}
+                                        onChange={(event) => setRowSharedExpenses((current) => ({ ...current, [tx.rowIndex]: event.target.value }))}
+                                      />
+                                    </AmountInputWrap>
+                                  </ShareAmountRow>
+                                  <ImportOptionHelp theme={theme}>
                                     {(t.sharedExpenseCreditPreview || 'A receivable of {amount} will remain visible until reimbursed.')
                                       .replace('{amount}', `${currencySymbol}${Math.max(0, tx.amount - Number(rowSharedExpenses[tx.rowIndex] || 0)).toFixed(2)}`)}
-                                  </small>
-                                </label>
+                                  </ImportOptionHelp>
+                                </>
                               )}
-                            </div>
+                            </ImportOptionPanel>
                           ) : (receivables.some((item) => item.status !== 'settled') || Object.keys(rowSharedExpenses).length > 0) && (
-                            <label style={{ display: 'block', marginTop: '0.55rem', color: theme.textColor, fontSize: '0.75rem' }}>
-                              {t.linkReimbursement || 'Link as reimbursement'}
-                              <select
+                            <ImportOptionPanel theme={theme}>
+                              <ImportOptionTitle as="div" theme={theme}>{t.linkReimbursement || 'Link as reimbursement'}</ImportOptionTitle>
+                              <CompactSelect
+                                theme={theme}
+                                aria-label={t.linkReimbursement || 'Link as reimbursement'}
                                 value={rowReimbursements[tx.rowIndex] ?? ''}
                                 onChange={(event) => setRowReimbursements((current) => {
                                   const next = { ...current };
@@ -2000,7 +2135,6 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                                   else delete next[tx.rowIndex];
                                   return next;
                                 })}
-                                style={{ display: 'block', width: '100%', marginTop: 4 }}
                               >
                                 <option value="">{t.notAReimbursement || 'Ordinary income'}</option>
                                 {receivables.filter((item) => item.status !== 'settled').map((item) => (
@@ -2015,26 +2149,28 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                                       .replace('{amount}', `${currencySymbol}${Math.max(0, item.amount - Number(rowSharedExpenses[item.rowIndex] || 0)).toFixed(2)}`)}
                                   </option>
                                 ))}
-                              </select>
+                              </CompactSelect>
                               {rowReimbursements[tx.rowIndex] && (
                                 <>
-                                  <select
+                                  <CompactSelect
+                                    theme={theme}
+                                    aria-label={t.selectReceivingAccount || 'Select receiving account'}
                                     value={rowAccountIds[tx.rowIndex] ?? selectedAccountId}
                                     onChange={(event) => setRowAccountIds((current) => ({ ...current, [tx.rowIndex]: event.target.value }))}
-                                    style={{ display: 'block', width: '100%', marginTop: 4 }}
                                   >
                                     <option value="">{t.selectReceivingAccount || 'Select receiving account'}</option>
                                     {liquidityAccounts.map((accountItem) => (
                                       <option key={accountItem.id} value={accountItem.id}>{accountItem.label}</option>
                                     ))}
-                                  </select>
-                                  <small style={{ display: 'block', opacity: 0.65, marginTop: 2 }}>
+                                  </CompactSelect>
+                                  <ImportOptionHelp theme={theme}>
                                     {t.reimbursementStatsHelp || 'It updates the receivable and account, but is excluded from income statistics.'}
-                                  </small>
+                                  </ImportOptionHelp>
                                 </>
                               )}
-                            </label>
+                            </ImportOptionPanel>
                           )}
+                          </TransactionDetails>
                         </td>
                       </tr>
                     );

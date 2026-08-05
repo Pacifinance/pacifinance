@@ -1,7 +1,7 @@
 import React from 'react';
 import { Select, MenuItem } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes, faCalendarAlt, faPen, faCheck, faRotateLeft, faSortUp, faSortDown, faSort, faLayerGroup, faTableCells, faThLarge } from '@fortawesome/free-solid-svg-icons';
+import { faTimes, faCalendarAlt, faPen, faCheck, faRotateLeft, faSortUp, faSortDown, faSort, faLayerGroup, faTableCells, faThLarge, faFilter } from '@fortawesome/free-solid-svg-icons';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
 import { translateTag } from '../data/tagTranslations';
@@ -1179,8 +1179,9 @@ export default function IncomeSection({
         ) : (
           <CardViewWrap>
             <FilterToggleRow theme={theme} type="button" onClick={() => setShowMobileFilters((v) => !v)}>
-              <span>
-                {translations.general.filters || 'Filtri'}
+              <span className="filter-toggle-label">
+                <FontAwesomeIcon icon={faFilter} />
+                {translations.general.filterTransactions || translations.general.filters || 'Filters'}
                 {incomeActiveFilterCount > 0 && <FilterBadge theme={theme}>{incomeActiveFilterCount}</FilterBadge>}
               </span>
               <FontAwesomeIcon icon={showMobileFilters ? faSortUp : faSortDown} />

@@ -431,9 +431,30 @@ export default function InsertValue({
   };
 
   const openSharedLinkModal = async (mode, transaction) => {
-    await refreshSharedReceivables();
-    setSharedLinkModal({mode, transaction});
+    const items = await sharedExpenseService.getReceivables();
+    const receivables = Array.isArray(items) ? items : [];
+    setSharedReceivables(receivables);
+    const existingReceivable = mode === 'outflow'
+      ? receivables.find((item) => Number(item.expenseId) === Number(transaction.id)) ?? null
+      : null;
+    setSharedLinkModal({
+      mode,
+      transaction: existingReceivable
+        ? {...transaction, amount: existingReceivable.totalAmount}
+        : {...transaction, amount: transaction.cashAmount ?? transaction.amount},
+      existingReceivable,
+    });
   };
+
+  useEffect(() => {
+    let active = true;
+    sharedExpenseService.getReceivables().then((items) => {
+      if (active) setSharedReceivables(Array.isArray(items) ? items : []);
+    }).catch(() => {
+      if (active) setSharedReceivables([]);
+    });
+    return () => { active = false; };
+  }, [sharedExpenseService]);
 
   const confirmSharedLink = async (value) => {
     if (!sharedLinkModal?.transaction?.id) return;
@@ -2418,6 +2439,7 @@ export default function InsertValue({
             onDeleteOutflow={handleDeleteOutflow}
             onSaveEdit={handleSaveEditOutflow}
             onMarkSharedExpense={(row) => openSharedLinkModal('outflow', row)}
+            sharedReceivables={sharedReceivables}
             onOpenMultiInsert={() => setShowMultiInsert(true)}
             selectedOption={selectedOption}
             setSelectedOption={setSelectedOption}
@@ -2742,6 +2764,7 @@ export default function InsertValue({
               mode={sharedLinkModal.mode}
               transaction={sharedLinkModal.transaction}
               receivables={sharedReceivables}
+              existingReceivable={sharedLinkModal.existingReceivable}
               currencySymbol={currencySymbol}
               labels={translations.insert.sharedTransactionLink}
               onClose={() => setSharedLinkModal(null)}

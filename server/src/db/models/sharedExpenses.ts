@@ -181,6 +181,37 @@ async function linkExistingExpense(user_id: string, expense_id: number, own_shar
     const ownShare = roundCurrency(own_share)
     if (ownShare < 0 || ownShare >= totalAmount) return null
 
+    const {data: existing, error: existingError} = await supabase.from("shared_expense_receivables")
+        .select(RECEIVABLE_SELECT).eq("user_id", user_id).eq("expense_id", expense_id).maybeSingle()
+    if (existingError) return null
+
+    if (existing) {
+        const previous = existing as unknown as ReceivableRow
+        const receivableAmount = roundCurrency(totalAmount - ownShare)
+        // Never allow an edit to make already-recorded reimbursements exceed
+        // the newly calculated amount owed.
+        if (receivableAmount < Number(previous.settled_amount) - 0.005) return null
+        const {data: updated, error: updateReceivableError} = await supabase.from("shared_expense_receivables").update({
+            total_amount: totalAmount,
+            own_share: ownShare,
+            receivable_amount: receivableAmount,
+        }).eq("user_id", user_id).eq("id", previous.id).select(RECEIVABLE_SELECT).single()
+        if (updateReceivableError || !updated) return null
+        const {error: updateExpenseError} = await supabase.from("expenses").update({
+            amount: ownShare,
+            cash_amount: totalAmount,
+        }).eq("user_id", user_id).eq("id", expense_id)
+        if (updateExpenseError) {
+            await supabase.from("shared_expense_receivables").update({
+                total_amount: previous.total_amount,
+                own_share: previous.own_share,
+                receivable_amount: previous.receivable_amount,
+            }).eq("user_id", user_id).eq("id", previous.id)
+            return null
+        }
+        return toReceivable(updated as unknown as ReceivableRow)
+    }
+
     const receivable = await insertReceivable(user_id, {
         occurredAt: new Date(String(expense.occurred_at)),
         notes: decryptField(expense.notes as string | null),

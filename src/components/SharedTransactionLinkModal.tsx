@@ -7,11 +7,13 @@ interface ModalLabels {
   outflowTitle: string; incomeTitle: string; splitByPeople: string; specifyShare: string;
   people: string; ownShare: string; owed: string; chooseExpense: string; cancel: string;
   confirm: string; noReceivables: string; reimbursementHelp: string;
+  editOutflowTitle?: string; update?: string;
 }
 interface SharedTransactionLinkModalProps {
   theme: Record<string, string> & {mode: string};
   mode: 'outflow' | 'income'; transaction: TransactionRow;
   receivables: SharedExpenseReceivableDto[]; currencySymbol: string; labels: ModalLabels;
+  existingReceivable?: SharedExpenseReceivableDto | null;
   onClose: () => void; onConfirm: (value: number) => Promise<void>;
 }
 
@@ -29,13 +31,17 @@ const Help = styled.p`margin:0;font-size:.75rem;line-height:1.45;opacity:.7;`;
 const Actions = styled.div`display:flex;justify-content:flex-end;gap:.5rem;`;
 const Button = styled.button<{$primary?:boolean}>`border:0;border-radius:8px;padding:.6rem .85rem;background:${p => p.$primary ? p.theme.buttonBackgroundColor : (p.theme.mode === 'dark' ? 'rgba(255,255,255,.1)' : '#e2e8f0')};color:${p => p.$primary ? '#fff' : p.theme.textColor};font-weight:700;cursor:pointer;&:disabled{opacity:.5;cursor:not-allowed;}`;
 
-export default function SharedTransactionLinkModal({theme, mode, transaction, receivables, currencySymbol, labels, onClose, onConfirm}: SharedTransactionLinkModalProps) {
-  const [method, setMethod] = useState<'people'|'share'>('people');
-  const [people, setPeople] = useState(2);
-  const [share, setShare] = useState((transaction.amount / 2).toFixed(2));
+export default function SharedTransactionLinkModal({theme, mode, transaction, receivables, existingReceivable, currencySymbol, labels, onClose, onConfirm}: SharedTransactionLinkModalProps) {
+  const ratio = existingReceivable ? existingReceivable.totalAmount / existingReceivable.ownShare : 2;
+  const inferredPeople = Number.isInteger(ratio) && ratio >= 2 ? ratio : null;
+  const [method, setMethod] = useState<'people'|'share'>(inferredPeople ? 'people' : 'share');
+  const [people, setPeople] = useState(inferredPeople ?? 2);
+  const [share, setShare] = useState((existingReceivable?.ownShare ?? transaction.amount / 2).toFixed(2));
   const [receivableId, setReceivableId] = useState('');
   const [saving, setSaving] = useState(false);
-  useEffect(() => setShare((transaction.amount / Math.max(2, people)).toFixed(2)), [people, transaction.amount]);
+  useEffect(() => {
+    if (method === 'people') setShare((transaction.amount / Math.max(2, people)).toFixed(2));
+  }, [method, people, transaction.amount]);
   const ownShare = method === 'people' ? transaction.amount / Math.max(2, people) : Number(share);
   const valid = mode === 'outflow' ? Number.isFinite(ownShare) && ownShare >= 0 && ownShare < transaction.amount : Boolean(receivableId);
   const pending = useMemo(() => receivables.filter(item => item.status !== 'settled'), [receivables]);
@@ -43,7 +49,7 @@ export default function SharedTransactionLinkModal({theme, mode, transaction, re
 
   return <Backdrop role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
     <Dialog theme={theme} role="dialog" aria-modal="true" aria-labelledby="shared-link-title">
-      <Title id="shared-link-title">{mode === 'outflow' ? labels.outflowTitle : labels.incomeTitle}</Title>
+      <Title id="shared-link-title">{mode === 'outflow' ? (existingReceivable ? labels.editOutflowTitle : labels.outflowTitle) : labels.incomeTitle}</Title>
       <Summary theme={theme}>{transaction.notes || '—'} · {currencySymbol}{transaction.amount.toFixed(2)}</Summary>
       {mode === 'outflow' ? <>
         <Segments><Segment type="button" theme={theme} $active={method === 'people'} onClick={() => setMethod('people')}>{labels.splitByPeople}</Segment><Segment type="button" theme={theme} $active={method === 'share'} onClick={() => setMethod('share')}>{labels.specifyShare}</Segment></Segments>
@@ -53,7 +59,7 @@ export default function SharedTransactionLinkModal({theme, mode, transaction, re
         <Field>{labels.chooseExpense}<Select theme={theme} value={receivableId} onChange={e => setReceivableId(e.target.value)}><option value="">{pending.length ? `— ${labels.chooseExpense} —` : labels.noReceivables}</option>{pending.map(item => <option key={item.id} value={item.id}>{item.notes || '—'} · {currencySymbol}{Math.max(0, item.receivableAmount - item.settledAmount).toFixed(2)}</option>)}</Select></Field>
         <Help>{labels.reimbursementHelp}</Help>
       </>}
-      <Actions><Button theme={theme} type="button" onClick={onClose}>{labels.cancel}</Button><Button theme={theme} type="button" $primary disabled={!valid || saving} onClick={submit}>{labels.confirm}</Button></Actions>
+      <Actions><Button theme={theme} type="button" onClick={onClose}>{labels.cancel}</Button><Button theme={theme} type="button" $primary disabled={!valid || saving} onClick={submit}>{existingReceivable ? labels.update : labels.confirm}</Button></Actions>
     </Dialog>
   </Backdrop>;
 }

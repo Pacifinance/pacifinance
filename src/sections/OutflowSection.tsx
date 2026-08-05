@@ -57,6 +57,19 @@ const SectionWrapper = styled.div`
   gap: 1.5rem;
 `;
 
+const SharedExpenseBadge = styled.div`
+  width: fit-content;
+  margin-top: 0.25rem;
+  padding: 0.2rem 0.45rem;
+  border-radius: 999px;
+  border: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(16,185,129,.4)' : 'rgba(5,150,105,.3)'};
+  background: ${p => p.theme.mode === 'dark' ? 'rgba(16,185,129,.13)' : 'rgba(5,150,105,.09)'};
+  color: ${p => p.theme.textColor};
+  font-size: 0.7rem;
+  font-weight: 650;
+  white-space: normal;
+`;
+
 const FormCard = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -648,6 +661,7 @@ export default function OutflowSection({
   onDeleteOutflow,
   onSaveEdit,
   onMarkSharedExpense,
+  sharedReceivables = [],
   onOpenMultiInsert,
   // New props for balance selection
   selectedOption,
@@ -691,6 +705,18 @@ export default function OutflowSection({
   const sharedOwnShare = sharedTotalTyped / sharedPeopleCountNum;
   const sharedReceivable = sharedTotalTyped - sharedOwnShare;
   const formatPlain = (n: number) => `${currencySymbol}${(Number.isFinite(n) ? n : 0).toFixed(2)}`;
+  const getSharedReceivable = (expenseId: number) => sharedReceivables.find(
+    (item) => Number(item.expenseId) === Number(expenseId),
+  );
+  const sharedSummary = (item) => {
+    if (!item) return null;
+    const ratio = item.ownShare > 0 ? item.totalAmount / item.ownShare : 0;
+    const people = Number.isInteger(ratio) && ratio >= 2 ? ratio : null;
+    const peopleText = people
+      ? ` · ${translations.insert.sharedTransactionLink.peopleCountShort.replace('{count}', String(people))}`
+      : '';
+    return `${translations.insert.sharedTransactionLink.sharedStatus}${peopleText} · ${translations.insert.sharedTransactionLink.ownShare}: ${formatNumber(fromEUR(item.ownShare))} ${currencySymbol}`;
+  };
 
   const [sortColumn, setSortColumn] = React.useState(null);
   const [sortDirection, setSortDirection] = React.useState('asc');
@@ -1188,7 +1214,10 @@ export default function OutflowSection({
                 ? '****'
                 : formatNumber(add.amount)}{' '}{currencySymbol}
             </td>
-            <td>{isHidden ? '****' : add.notes}</td>
+            <td>
+              {isHidden ? '****' : add.notes}
+              {!isHidden && getSharedReceivable(add.id) && <SharedExpenseBadge theme={theme}>{sharedSummary(getSharedReceivable(add.id))}</SharedExpenseBadge>}
+            </td>
             <td>
               {isHidden
                 ? '****'
@@ -1210,7 +1239,7 @@ export default function OutflowSection({
                 <ActionBtn
                   className="edit"
                   onClick={() => onMarkSharedExpense?.(add)}
-                  title={translations.insert.sharedTransactionLink?.outflowAction || 'Split expense'}
+                  title={getSharedReceivable(add.id) ? translations.insert.sharedTransactionLink.editOutflowAction : translations.insert.sharedTransactionLink.outflowAction}
                 >
                   <FontAwesomeIcon icon={faUsers} />
                 </ActionBtn>
@@ -1387,6 +1416,9 @@ export default function OutflowSection({
               {!isHidden && add.notes && (
                 <CardNote theme={theme}>{add.notes}</CardNote>
               )}
+              {!isHidden && getSharedReceivable(add.id) && (
+                <SharedExpenseBadge theme={theme}>{sharedSummary(getSharedReceivable(add.id))}</SharedExpenseBadge>
+              )}
               <CardActionsRow>
                 <ActionBtn
                   className="edit"
@@ -1399,7 +1431,7 @@ export default function OutflowSection({
                 <ActionBtn
                   className="edit"
                   onClick={() => onMarkSharedExpense?.(add)}
-                  title={translations.insert.sharedTransactionLink?.outflowAction || 'Split expense'}
+                  title={getSharedReceivable(add.id) ? translations.insert.sharedTransactionLink.editOutflowAction : translations.insert.sharedTransactionLink.outflowAction}
                 >
                   <FontAwesomeIcon icon={faUsers} />
                 </ActionBtn>

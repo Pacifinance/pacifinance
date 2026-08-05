@@ -62,7 +62,7 @@ import ImportPlatformGuide from '../components/ImportPlatformGuide';
 import MonthTransactionsViewer from './MonthTransactionsViewer';
 import CategoryPicker from '../components/CategoryPicker';
 import { findLikelyDuplicates, findDuplicatesWithinBatch, findLikelyTransfers } from '../utils/duplicateDetection';
-import { isInstallmentNote, suggestNoteFromHistory } from '../utils/transactionNoteSuggestions';
+import { inferPaymentTypeLabel, suggestNoteFromHistory } from '../utils/transactionNoteSuggestions';
 
 // ═══════════════════════════════════════════
 // Styled Components
@@ -1232,9 +1232,12 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
         const result = await financeService.addExpensesAndIncomesBatch({
           expenses: batch.map(tx => {
             const effectiveNote = getEffectiveNote(tx);
-            const installmentType = paymentTags.find((tag) => tag.label?.toLowerCase() === 'installment');
-            const paymentType = tx.isOutflow && isInstallmentNote(effectiveNote) && installmentType
-              ? installmentType.index
+            const inferredLabel = tx.isOutflow
+              ? inferPaymentTypeLabel(effectiveNote, getAllOutflows(userData).flat().filter(Boolean))
+              : null;
+            const inferredType = paymentTags.find((tag) => tag.label?.toLowerCase() === inferredLabel);
+            const paymentType = tx.isOutflow && inferredType
+              ? inferredType.index
               : defaultPaymentType;
             const expense = toAPIFormat({ ...tx, notes: effectiveNote, amount: toEUR(tx.amount) }, paymentType).expense;
             const rowAccount = liquidityAccounts.find((item) => String(item.id) === String(rowAccountIds[tx.rowIndex])) || account;

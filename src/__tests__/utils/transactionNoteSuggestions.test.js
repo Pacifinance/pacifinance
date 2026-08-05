@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { isInstallmentNote, suggestNoteFromHistory } from '../../utils/transactionNoteSuggestions';
+import { inferPaymentTypeLabel, isInstallmentNote, suggestNoteFromHistory } from '../../utils/transactionNoteSuggestions';
 
 describe('isInstallmentNote', () => {
   it.each([
@@ -16,6 +16,31 @@ describe('isInstallmentNote', () => {
 
   it('does not classify an ordinary payment as an installment', () => {
     expect(isInstallmentNote('APPLE.COM/IT')).toBe(false);
+  });
+});
+
+describe('inferPaymentTypeLabel', () => {
+  it.each([
+    ['Abbonamento palestra', 'subscription'],
+    ['Streaming subscription', 'subscription'],
+    ['Addebito periodico assicurazione', 'periodic payment'],
+    ['Direct debit insurance', 'periodic payment'],
+    ['Prélèvement automatique assurance', 'periodic payment'],
+    ['Wiederkehrend Versicherung', 'periodic payment'],
+    ['PAYPAL *PAGA IN 3 RATE', 'installment'],
+    ['Paiement unique', 'single payment'],
+  ])('classifies %s as %s', (note, expected) => {
+    expect(inferPaymentTypeLabel(note)).toBe(expected);
+  });
+
+  it('learns a non-single type from a similar historical merchant', () => {
+    expect(inferPaymentTypeLabel('NETFLIX.COM', [
+      { notes: 'Netflix mensile', paymentType: { label: 'subscription' } },
+    ])).toBe('subscription');
+  });
+
+  it('does not infer a type for unrelated text', () => {
+    expect(inferPaymentTypeLabel('Supermercato')).toBeNull();
   });
 });
 

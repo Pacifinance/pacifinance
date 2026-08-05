@@ -42,7 +42,7 @@ import { isPastMonthDate as isPastMonthDateUtil, getBalanceUserDateForMonth } fr
 import { usePastDateBalancePref, PAST_DATE_BALANCE_CHOICES } from '../hooks/usePastDateBalancePref';
 import { addCurrency, roundCurrency } from '../utils/money';
 import { findLikelyDuplicates } from '../utils/duplicateDetection';
-import { isInstallmentNote, suggestNoteFromHistory } from '../utils/transactionNoteSuggestions';
+import { inferPaymentTypeLabel, suggestNoteFromHistory } from '../utils/transactionNoteSuggestions';
 import { learnFromTransaction } from '../utils/categoryPatterns';
 const PastDateBalanceChoiceModal = lazy(() => import('./PastDateBalanceChoiceModal'));
 const EditTransactionModal = lazy(() => import('./EditTransactionModal'));
@@ -596,13 +596,15 @@ export default function InsertValue({
   // expense is an installment. Keep the inferred type editable, but make the
   // form internally consistent instead of leaving it as a one-off payment.
   useEffect(() => {
-    if (!isInstallmentNote(noteOutflowAreaValue)) return;
-    const installmentType = paymentTags.find((tag) => tag.label?.toLowerCase() === 'installment');
-    if (!installmentType) return;
-    setTypoOutflow((current) => current.key === installmentType.index
+    const history = getAllOutflows(userData).flat().filter(Boolean);
+    const inferredLabel = inferPaymentTypeLabel(noteOutflowAreaValue, history);
+    if (!inferredLabel) return;
+    const inferredType = paymentTags.find((tag) => tag.label?.toLowerCase() === inferredLabel);
+    if (!inferredType) return;
+    setTypoOutflow((current) => current.key === inferredType.index
       ? current
-      : { key: installmentType.index, value: installmentType.label });
-  }, [noteOutflowAreaValue, paymentTags]);
+      : { key: inferredType.index, value: inferredType.label });
+  }, [noteOutflowAreaValue, paymentTags, userData]);
   const [selectedIncomesMonth, setSelectedIncomesMonth] = useState(0);
   const [selectedOutflowsMonth, setSelectedOutflowsMonth] = useState(0);
 

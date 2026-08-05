@@ -10,6 +10,19 @@ export interface NoteSuggestionEntry {
 
 const INSTALLMENT_WORDS = /\b(rata|rate|raten|ratenzahlung|installments?|instalments?|mensualites?|echeances?|cuotas?|plazos?|parcelas?|prestacoes?)\b/i;
 const INSTALLMENT_SEQUENCE = /\b(\d{1,3})\s*(?:\/|di|of|von|sur|de)\s*(\d{1,3})\b/i;
+const SUBSCRIPTION_WORDS = /\b(abbonamento|subscription|membership|abo|abonnement|suscripcion|assinatura)\b/i;
+const PERIODIC_WORDS = /\b(periodic[oa]?|periodique|periodisch|periodico|recurring|ricorrente|recurrente|wiederkehrend|domiciliazione|lastschrift|addebito (?:diretto|automatico)|direct debit|prelevement automatique|domiciliacion|debito direto)\b/i;
+const SINGLE_WORDS = /\b(pagamento unico|single payment|one off|einmalzahlung|paiement unique|pago unico|pagamento unico)\b/i;
+
+export type PaymentTypeLabel = 'single payment' | 'subscription' | 'installment' | 'periodic payment';
+
+export interface PaymentTypeHistoryEntry {
+  notes?: string | null;
+  paymentType?: { label?: string | null } | string | null;
+}
+
+const normalizeForRecognition = (value: string | null | undefined): string =>
+  (value || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
 function sameCategory(a: NoteSuggestionEntry, b: NoteSuggestionEntry): boolean {
   if (a.userCategoryId != null || b.userCategoryId != null) return a.userCategoryId != null && a.userCategoryId === b.userCategoryId;
@@ -27,8 +40,31 @@ function advanceInstallment(note: string): string | null {
 
 /** Recognizes installment wording in every language currently supported by the app. */
 export function isInstallmentNote(note: string | null | undefined): boolean {
-  const normalized = (note || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  const normalized = normalizeForRecognition(note);
   return INSTALLMENT_WORDS.test(normalized);
+}
+
+/** Infers an expense payment type from explicit wording, then from similar historical merchants. */
+export function inferPaymentTypeLabel(
+  note: string | null | undefined,
+  history: PaymentTypeHistoryEntry[] = [],
+): PaymentTypeLabel | null {
+  const normalized = normalizeForRecognition(note);
+  if (!normalized) return null;
+  if (isInstallmentNote(normalized)) return 'installment';
+  if (SUBSCRIPTION_WORDS.test(normalized)) return 'subscription';
+  if (PERIODIC_WORDS.test(normalized)) return 'periodic payment';
+  if (SINGLE_WORDS.test(normalized)) return 'single payment';
+
+  const tokens = new Set(tokenizeNote(normalized));
+  if (tokens.size === 0) return null;
+  for (const entry of history) {
+    const sharesMerchant = tokenizeNote(entry.notes).some((token) => tokens.has(token));
+    if (!sharesMerchant) continue;
+    const label = typeof entry.paymentType === 'string' ? entry.paymentType : entry.paymentType?.label;
+    if (label === 'subscription' || label === 'installment' || label === 'periodic payment') return label;
+  }
+  return null;
 }
 
 /** Returns a historical note worth offering to the user; it never mutates the draft. */

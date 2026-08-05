@@ -296,6 +296,8 @@ export const autoDetectColumns = (headers, rows) => {
 
   // Pass 1: exact header-name match for the date column takes priority over
   // any substring match found in the pass below.
+  const amountCandidates = [];
+
   headers.forEach((header, colIdx) => {
     if (result.dateCol === null && EXACT_DATE_NAMES.includes(header.trim().toLowerCase())) {
       result.dateCol = colIdx;
@@ -315,15 +317,20 @@ export const autoDetectColumns = (headers, rows) => {
       }
     }
 
-    // Amount detection
-    if (result.amountCol === null) {
-      if (/importo|amount|valore|value|cifra|suma|betrag|prezzo|costo/i.test(h)) {
-        result.amountCol = colIdx;
-      } else if (samples.length > 0 && samples.filter(s => parseAmount(s) !== null).length >= samples.length * 0.7) {
-        // Most values are parseable as numbers → likely amount
-        if (result.dateCol !== colIdx) {
-          result.amountCol = colIdx;
-        }
+    // Collect amount candidates and score them after every column has been
+    // inspected. This prevents an early numeric ID/reference column from
+    // winning merely because it appears before the actual transaction value.
+    if (colIdx !== result.dateCol && samples.length > 0) {
+      const parsed = samples.map(parseAmount).filter(value => value !== null);
+      const numericRate = parsed.length / samples.length;
+      if (numericRate >= 0.7) {
+        const headerHint = /importo|amount|valore|value|cifra|suma|betrag|prezzo|costo|saldo|balance/i.test(h);
+        const idPenalty = /(^|\b)(id|reference|riferimento|codice|code|numero|number|nr)(\b|$)/i.test(h);
+        const hasSignedOrDecimal = samples.some(value => /[-+(),.]|\d,\d/.test(String(value)));
+        amountCandidates.push({
+          colIdx,
+          score: numericRate * 4 + (headerHint ? 8 : 0) + (hasSignedOrDecimal ? 2 : 0) - (idPenalty ? 8 : 0),
+        });
       }
     }
 
@@ -358,6 +365,9 @@ export const autoDetectColumns = (headers, rows) => {
       }
     }
   });
+
+  amountCandidates.sort((a, b) => b.score - a.score);
+  result.amountCol = amountCandidates[0]?.colIdx ?? null;
 
   return result;
 };
@@ -395,6 +405,61 @@ export const detectDualAmountColumns = (headers, rows) => {
   });
 
   return incomeCol !== null && outflowCol !== null ? { incomeCol, outflowCol } : null;
+};
+
+/**
+ * Locate the most likely header row in exports that contain titles, account
+ * metadata or blank lines before the transaction table. Unknown column names
+ * are supported by inspecting the values below each candidate row.
+ * @param {string[][]} allRows
+ */
+export const detectTableStructure = (allRows) => {
+  const fallback = {
+    headerRowIndex: 0,
+    dateCol: null,
+    amountCol: null,
+    categoryCol: null,
+    notesCol: null,
+    mccCol: null,
+    timeCol: null,
+    dualAmountColumns: null,
+    dateFormat: null,
+  };
+  if (!Array.isArray(allRows) || allRows.length < 2) return fallback;
+
+  let best = null;
+  const candidateCount = Math.min(30, allRows.length - 1);
+  for (let headerRowIndex = 0; headerRowIndex < candidateCount; headerRowIndex += 1) {
+    const headers = allRows[headerRowIndex] || [];
+    if (headers.filter(value => String(value || '').trim()).length < 2) continue;
+
+    const rows = allRows.slice(headerRowIndex + 1, headerRowIndex + 21);
+    const detected = autoDetectColumns(headers, rows);
+    const dualAmountColumns = detectDualAmountColumns(headers, rows);
+    const dateSamples = detected.dateCol === null ? [] : rows.map(row => row[detected.dateCol]);
+    const dateFormat = detectDateFormat(dateSamples);
+    if (detected.dateCol === null || !dateFormat || (detected.amountCol === null && !dualAmountColumns)) continue;
+
+    const usableRows = rows.filter((row) => {
+      if (!parseDate(row[detected.dateCol], dateFormat)) return false;
+      if (dualAmountColumns) {
+        return parseAmount(row[dualAmountColumns.incomeCol]) !== null
+          || parseAmount(row[dualAmountColumns.outflowCol]) !== null;
+      }
+      return parseAmount(row[detected.amountCol]) !== null;
+    }).length;
+    if (usableRows === 0) continue;
+
+    const headerHints = headers.filter(value => /date|data|amount|importo|debit|credit|entrata|uscita|description|descrizione/i.test(String(value))).length;
+    const score = usableRows * 3 + headerHints * 2 + (dualAmountColumns ? 2 : 0);
+    if (!best || score > best.score) {
+      best = { ...detected, headerRowIndex, dualAmountColumns, dateFormat, score };
+    }
+  }
+
+  if (!best) return fallback;
+  const { score: _score, ...structure } = best;
+  return structure;
 };
 
 // ═══════════════════════════════════════════

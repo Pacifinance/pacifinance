@@ -37,6 +37,7 @@ import {
   parseFile,
   autoDetectColumns,
   detectDualAmountColumns,
+  detectTableStructure,
   detectDateFormat,
   DATE_FORMATS,
   processRows,
@@ -589,6 +590,16 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
   // reinventing an untranslated, custom-category-blind dropdown of its own.
   const outflowsTags = useMemo(() => getOutflowsTags(userData), [userData]);
   const customCategories = useMemo(() => getCustomCategories(userData), [userData]);
+  const columnOptions = useMemo(() => headers.map((header, index) => {
+    const examples = [...new Set(rows
+      .slice(0, 8)
+      .map(row => String(row[index] ?? '').trim())
+      .filter(Boolean))].slice(0, 2);
+    return {
+      index,
+      label: examples.length > 0 ? `${header || `#${index + 1}`} — ${examples.join(' · ')}` : (header || `#${index + 1}`),
+    };
+  }), [headers, rows]);
 
   // Resolves a display label for an official category index, preferring the
   // custom sub-category's own label when one is set (matches what
@@ -680,8 +691,11 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
       setFile(selectedFile);
       setAllRawRows(rawRows);
 
-      // Default: first row is the header
-      const hIdx = 0;
+      // Statements often contain account metadata before the transaction
+      // table. Locate it from both header names and the values underneath;
+      // the user can still override this row manually in the next step.
+      const structure = detectTableStructure(rawRows);
+      const hIdx = structure.headerRowIndex;
       setHeaderRowIndex(hIdx);
       const h = rawRows[hIdx] || [];
       let r = rawRows.slice(hIdx + 1);
@@ -823,13 +837,24 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
 
   const handleApplySavedMapping = (saved) => {
     const m = saved.mapping;
-    setDateCol(m.dateCol ?? -1);
-    setAmountCol(m.amountCol ?? -1);
+    const normalize = value => String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    const resolveColumn = (index, name) => {
+      if (name) {
+        const matched = headers.findIndex(header => normalize(header) === normalize(name));
+        if (matched >= 0) return matched;
+      }
+      return Number.isInteger(index) && index >= 0 && index < headers.length ? index : -1;
+    };
+    const names = m.columnNames || {};
+    setDateCol(resolveColumn(m.dateCol, names.date));
+    setAmountCol(resolveColumn(m.amountCol, names.amount));
     setDualAmountMode(m.dualAmountMode || false);
-    setIncomeCol(m.incomeCol ?? -1);
-    setOutflowCol(m.outflowCol ?? -1);
-    setCategoryCol(m.categoryCol ?? -1);
-    setNotesCol(m.notesCol ?? -1);
+    setIncomeCol(resolveColumn(m.incomeCol, names.income));
+    setOutflowCol(resolveColumn(m.outflowCol, names.outflow));
+    setCategoryCol(resolveColumn(m.categoryCol, names.category));
+    setNotesCol(resolveColumn(m.notesCol, names.notes));
+    setMccCol(resolveColumn(m.mccCol, names.mcc));
+    setTimeCol(resolveColumn(m.timeCol, names.time));
     setDateFormat(m.dateFormat || '');
     setTransactionType(m.transactionType || 'auto');
     setDefaultOutflowCategory(m.defaultOutflowCategoryIndex ?? m.defaultCategoryIndex ?? 9999);
@@ -845,6 +870,18 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
       outflowCol: dualAmountMode ? outflowCol : -1,
       categoryCol: categoryCol === -1 ? null : categoryCol,
       notesCol: notesCol === -1 ? null : notesCol,
+      mccCol: mccCol === -1 ? null : mccCol,
+      timeCol: timeCol === -1 ? null : timeCol,
+      columnNames: {
+        date: headers[dateCol] ?? null,
+        amount: headers[amountCol] ?? null,
+        income: headers[incomeCol] ?? null,
+        outflow: headers[outflowCol] ?? null,
+        category: headers[categoryCol] ?? null,
+        notes: headers[notesCol] ?? null,
+        mcc: headers[mccCol] ?? null,
+        time: headers[timeCol] ?? null,
+      },
       dateFormat, transactionType,
       defaultOutflowCategoryIndex: defaultOutflowCategory,
       defaultIncomeCategoryIndex: defaultIncomeCategory,
@@ -1437,7 +1474,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                 </label>
                 <SelectField theme={theme} value={dateCol} onChange={e => setDateCol(parseInt(e.target.value))}>
                   <option value={-1}>— {t.selectColumn || 'Select column'} —</option>
-                  {headers.map((h, i) => <option key={i} value={i}>{h}</option>)}
+                  {columnOptions.map(({ index, label }) => <option key={index} value={index}>{label}</option>)}
                 </SelectField>
               </div>
 
@@ -1460,7 +1497,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                   </label>
                   <SelectField theme={theme} value={amountCol} onChange={e => setAmountCol(parseInt(e.target.value))}>
                     <option value={-1}>— {t.selectColumn || 'Select column'} —</option>
-                    {headers.map((h, i) => <option key={i} value={i}>{h}</option>)}
+                    {columnOptions.map(({ index, label }) => <option key={index} value={index}>{label}</option>)}
                   </SelectField>
                 </div>
               ) : (
@@ -1471,7 +1508,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                     </label>
                     <SelectField theme={theme} value={outflowCol} onChange={e => setOutflowCol(parseInt(e.target.value))}>
                       <option value={-1}>— {t.noColumn || 'None'} —</option>
-                      {headers.map((h, i) => <option key={i} value={i}>{h}</option>)}
+                      {columnOptions.map(({ index, label }) => <option key={index} value={index}>{label}</option>)}
                     </SelectField>
                   </div>
                   <div>
@@ -1480,7 +1517,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                     </label>
                     <SelectField theme={theme} value={incomeCol} onChange={e => setIncomeCol(parseInt(e.target.value))}>
                       <option value={-1}>— {t.noColumn || 'None'} —</option>
-                      {headers.map((h, i) => <option key={i} value={i}>{h}</option>)}
+                      {columnOptions.map(({ index, label }) => <option key={index} value={index}>{label}</option>)}
                     </SelectField>
                   </div>
                 </>
@@ -1527,7 +1564,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                 </label>
                 <SelectField theme={theme} value={categoryCol} onChange={e => setCategoryCol(parseInt(e.target.value))}>
                   <option value={-1}>— {t.noColumn || 'None'} —</option>
-                  {headers.map((h, i) => <option key={i} value={i}>{h}</option>)}
+                  {columnOptions.map(({ index, label }) => <option key={index} value={index}>{label}</option>)}
                 </SelectField>
               </div>
 
@@ -1588,7 +1625,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                 </label>
                 <SelectField theme={theme} value={notesCol} onChange={e => setNotesCol(parseInt(e.target.value))}>
                   <option value={-1}>— {t.noColumn || 'None'} —</option>
-                  {headers.map((h, i) => <option key={i} value={i}>{h}</option>)}
+                  {columnOptions.map(({ index, label }) => <option key={index} value={index}>{label}</option>)}
                 </SelectField>
               </div>
             </div>

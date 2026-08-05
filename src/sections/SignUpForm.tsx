@@ -578,16 +578,19 @@ export default function SignUpForm() {
 
                                 {/* Warning */}
                                 <div
-                                    className="p-3 rounded-lg border-l-4 bg-orange-50 dark:bg-orange-900/20"
-                                    style={{ borderLeftColor: '#ff9800' }}
+                                    className="p-3 rounded-lg border-l-4"
+                                    style={{
+                                        borderLeftColor: '#f59e0b',
+                                        backgroundColor: theme.mode === 'dark' ? 'rgba(120, 53, 15, 0.28)' : '#fff7ed',
+                                    }}
                                 >
                                     <div className="flex items-start space-x-2">
-                                        <InfoIcon style={{ color: '#ff9800', fontSize: '20px', marginTop: '2px' }} />
+                                        <InfoIcon style={{ color: theme.mode === 'dark' ? '#fbbf24' : '#b45309', fontSize: '20px', marginTop: '2px' }} />
                                         <div className="text-sm">
-                                            <strong className="text-orange-600 dark:text-orange-400">
+                                            <strong style={{ color: theme.mode === 'dark' ? '#fde68a' : '#7c2d12' }}>
                                                 {language === 'it' ? '⚠️ Importante!' : '⚠️ Important!'}
                                             </strong>
-                                            <p className="mt-1 text-orange-700 dark:text-orange-300">
+                                            <p className="mt-1" style={{ color: theme.mode === 'dark' ? '#ffedd5' : '#431407' }}>
                                                 {language === 'it'
                                                     ? 'Salva questo ID insieme alla password e al recovery code in un gestore di password sicuro (o scarica la scheda di recupero qui sopra).'
                                                     : 'Save this ID together with the password and recovery code in a secure password manager (or download the recovery card above).'

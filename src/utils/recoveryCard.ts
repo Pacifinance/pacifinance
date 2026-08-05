@@ -6,6 +6,7 @@
 // let the browser's native print-to-PDF handle the rest) rather than
 // introducing a second one.
 import { saveAs } from 'file-saver';
+import { addLanguageToPath, getInitialLanguage } from './i18nRouting';
 // qrcode is loaded on demand (same reasoning as exceljs in dataImport.ts):
 // this card is only generated on a deferred, infrequent action (signup
 // success, or from Settings), so it shouldn't land in the eagerly-loaded
@@ -40,7 +41,9 @@ const fileBaseName = (userId: string) => `Pacifinance-RecoveryCard-${userId}`;
  */
 export function buildRecoveryDeepLink({ userId, base32 }: { userId: string; base32: string }): string {
   const origin = window.location.origin;
-  return `${origin}/auth#recover&id=${encodeURIComponent(userId)}&code=${encodeURIComponent(base32)}`;
+  const language = getInitialLanguage(window.location.pathname);
+  const recoveryPath = addLanguageToPath('/auth', language);
+  return `${origin}${recoveryPath}#recover&id=${encodeURIComponent(userId)}&code=${encodeURIComponent(base32)}`;
 }
 
 /** Parses the `#recover&id=...&code=...` fragment produced by buildRecoveryDeepLink. */

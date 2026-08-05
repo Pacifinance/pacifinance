@@ -78,6 +78,8 @@ import { FaExclamationTriangle, FaBullseye } from 'react-icons/fa';
 import { GiUmbrella } from 'react-icons/gi';
 import { isNewUser } from '../utils/userDataSelectors';
 import { addCurrency } from '../utils/money';
+import { useCryptoGroupingPref } from '../hooks/useCryptoGroupingPref';
+import CryptoGroupingToggle from '../components/CryptoGroupingToggle';
 
 const ResponsivePadding = styled.div`
   width: min(100%, 1440px);
@@ -108,6 +110,7 @@ const Dashboard = ({ theme, userData, isHidden }) => {
         sections, visibleSections, moveSection, toggleSection, resetLayout, viewMode, toggleViewMode,
         collapsedGroups, toggleGroupCollapsed
     } = useDashboardLayout();
+    const { mode: cryptoGroupingMode, setMode: setCryptoGroupingMode, isCombined: combineCrypto } = useCryptoGroupingPref();
     const { investmentService, liquidityAccountService } = useDemoServices();
     const [investmentHoldings, setInvestmentHoldings] = useState([]);
     const [liquidityAccounts, setLiquidityAccounts] = useState([]);
@@ -328,8 +331,20 @@ const Dashboard = ({ theme, userData, isHidden }) => {
         },
     ];
 
+    const displayedInvestments = combineCrypto
+        ? allInvestments
+            .filter((investment) => investment.key !== 'bitcoin')
+            .map((investment) => investment.key === 'crypto'
+                ? {
+                    ...investment,
+                    name: translations.cryptoGrouping.combinedCard,
+                    value: allInvestments.find((item) => item.key === 'bitcoin').value + investment.value,
+                }
+                : investment)
+        : allInvestments;
+
     // Filter investments to show only those with a value > 0
-    const investments = allInvestments.filter(investment => investment.value > 0);
+    const investments = displayedInvestments.filter(investment => investment.value > 0);
 
     const totalTraditional = addCurrency(...traditionalAssets.map(asset => asset.value));
     const totalInvestments = addCurrency(...allInvestments.map(investment => investment.value));
@@ -655,6 +670,14 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                                 expandLabel={translations.dashboard.expandSection}
                                 collapseLabel={translations.dashboard.collapseSection}
                             >
+                                <CryptoGroupingToggle
+                                    theme={theme}
+                                    mode={cryptoGroupingMode}
+                                    onChange={setCryptoGroupingMode}
+                                    separateLabel={translations.cryptoGrouping.separate}
+                                    combinedLabel={translations.cryptoGrouping.combined}
+                                    explanation={translations.cryptoGrouping.explanation}
+                                />
                                 <PortfolioGrid>
                                     <PortfolioAssetCard
                                         theme={theme}
@@ -723,7 +746,10 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                                 <PortfolioGrid>
                                     {investments.map((investment) => {
                                         const IconComponent = investment.icon;
-                                        const subEntries = (activeHoldingsByAssetKey[investment.key] || [])
+                                        const holdingKeys = combineCrypto && investment.key === 'crypto'
+                                            ? ['bitcoin', 'crypto']
+                                            : [investment.key];
+                                        const subEntries = holdingKeys.flatMap((key) => activeHoldingsByAssetKey[key] || [])
                                             .slice()
                                             .sort((a, b) => (b.currentValue ?? b.investedAmount ?? 0) - (a.currentValue ?? a.investedAmount ?? 0));
                                         return (
@@ -753,7 +779,7 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                                                     : undefined}
                                                 actions={(
                                                     <>
-                                                        {isVerifiableAssetKey(investment.key) && (
+                                                        {isVerifiableAssetKey(investment.key) && !(combineCrypto && investment.key === 'crypto') && (
                                                             <button
                                                                 type="button"
                                                                 className="icon-action"

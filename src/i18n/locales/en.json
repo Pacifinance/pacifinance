@@ -3133,5 +3133,11 @@
         "communityPricesDescription": "When a community-submitted price is verified for an instrument you hold.",
         "day": "Day",
         "hour": "Hour"
+    },
+    "cryptoGrouping": {
+        "separate": "Bitcoin separate",
+        "combined": "Crypto with Bitcoin",
+        "combinedCard": "Crypto (including Bitcoin)",
+        "explanation": "Bitcoin is separate from other crypto by default so both exposures remain visible. Combine them to quickly assess the performance and composition of the whole crypto market. Saved data is not changed."
     }
 }

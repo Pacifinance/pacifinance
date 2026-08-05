@@ -3037,5 +3037,11 @@
         "communityPricesDescription": "Wenn ein von der Community eingereichter Preis für ein von dir gehaltenes Instrument bestätigt wird.",
         "day": "Tag",
         "hour": "Uhrzeit"
+    },
+    "cryptoGrouping": {
+        "separate": "Bitcoin getrennt",
+        "combined": "Krypto mit Bitcoin",
+        "combinedCard": "Krypto (inklusive Bitcoin)",
+        "explanation": "Bitcoin wird standardmäßig von anderen Kryptowährungen getrennt, damit beide Engagements sichtbar bleiben. Fasse sie zusammen, um Performance und Zusammensetzung des gesamten Kryptomarkts schnell zu bewerten. Gespeicherte Daten bleiben unverändert."
     }
 }

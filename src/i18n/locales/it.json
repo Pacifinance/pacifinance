@@ -3133,5 +3133,11 @@
         "communityPricesDescription": "Quando un prezzo inviato dalla community viene verificato per uno strumento che possiedi.",
         "day": "Giorno",
         "hour": "Ora"
+    },
+    "cryptoGrouping": {
+        "separate": "Bitcoin separato",
+        "combined": "Crypto con Bitcoin",
+        "combinedCard": "Crypto (Bitcoin incluso)",
+        "explanation": "Per impostazione predefinita Bitcoin è separato dalle altre crypto per rendere visibili le due esposizioni. Puoi unirli per valutare rapidamente rendimento e composizione dell'intero mercato crypto. I dati salvati non cambiano."
     }
 }

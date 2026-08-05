@@ -1,4 +1,4 @@
-import React, {useState, useContext, useEffect} from 'react';
+import React, {useState, useContext, useEffect, useMemo} from 'react';
 import BalancesStats from './BalancesStats';
 import BalancesChart from './BalancesChart';
 import InOutCharts from './InOutChart';
@@ -19,6 +19,9 @@ import PortfolioInsights from './PortfolioInsights';
 import { getIncomesArray, getOutflowsArray, getBalanceChartData, getTotalIncomesCurrentMonth } from '../utils/userDataSelectors';
 import { useLocalizedNavigate } from '../hooks/useLocalizedNavigate';
 import type { InvestmentDividendSummaryDto } from '../types/api';
+import { useCryptoGroupingPref, type CryptoGroupingMode } from '../hooks/useCryptoGroupingPref';
+import { groupBitcoinWithCrypto } from '../utils/cryptoGrouping';
+import CryptoGroupingToggle from '../components/CryptoGroupingToggle';
 
 /** Every investment-holdings asset key that can appear in the category selector (excludes liquidity/bank/cash). */
 const HOLDING_ASSET_KEYS = ['stocks', 'etf', 'bitcoin', 'crypto', 'bonds', 'funds', 'commodities'];
@@ -528,6 +531,20 @@ export default function StatsCharts() {
     const [holdingsLoaded, setHoldingsLoaded] = useState(false);
     const [selectedHoldingAssetKey, setSelectedHoldingAssetKey] = useState(null);
     const [refreshingPrices, setRefreshingPrices] = useState(false);
+    const { mode: cryptoGroupingMode, setMode: setCryptoGroupingMode, isCombined: combineCrypto } = useCryptoGroupingPref();
+    const displayedHoldings = useMemo(
+        () => groupBitcoinWithCrypto(investmentHoldings, combineCrypto),
+        [investmentHoldings, combineCrypto],
+    );
+    const displayedHistory = useMemo(
+        () => groupBitcoinWithCrypto(holdingHistory, combineCrypto),
+        [holdingHistory, combineCrypto],
+    );
+
+    const handleCryptoGroupingChange = (mode: CryptoGroupingMode) => {
+        setCryptoGroupingMode(mode);
+        if (mode === 'combined' && selectedHoldingAssetKey === 'bitcoin') setSelectedHoldingAssetKey('crypto');
+    };
 
     // Lazy fetch: only pulled once the Portfolio Holdings tab is actually opened,
     // so users who never visit it never pay for the extra requests.
@@ -748,7 +765,7 @@ export default function StatsCharts() {
     const renderHoldingsContent = () => {
         const t = translations.graphs.statsHoldings;
         const availableAssetKeys = HOLDING_ASSET_KEYS.filter((key) =>
-            investmentHoldings.some((h) => h.assetKey === key)
+            displayedHoldings.some((h) => h.assetKey === key)
         );
 
         if (!holdingsLoaded) {
@@ -811,6 +828,15 @@ export default function StatsCharts() {
                     )}
                     </PortfolioToolbar>
 
+                    <CryptoGroupingToggle
+                        theme={theme}
+                        mode={cryptoGroupingMode}
+                        onChange={handleCryptoGroupingChange}
+                        separateLabel={translations.cryptoGrouping.separate}
+                        combinedLabel={translations.cryptoGrouping.combined}
+                        explanation={translations.cryptoGrouping.explanation}
+                    />
+
                     <CommunitySpotlight theme={theme}>
                         <span className="icon"><Users size={21}/></span>
                         <div><strong><ShieldCheck size={15}/>{t.communityDataTitle}</strong><p>{t.communityDataDescription}</p></div>
@@ -821,7 +847,7 @@ export default function StatsCharts() {
                         <ChartCard theme={theme} className="slide-in-left">
                             <HoldingsBreakdownChart
                                 theme={theme}
-                                holdings={investmentHoldings}
+                                holdings={displayedHoldings}
                                 assetKey={availableAssetKeys.length > 1 ? selectedHoldingAssetKey : availableAssetKeys[0]}
                                 isHidden={isHidden}
                             />
@@ -829,11 +855,11 @@ export default function StatsCharts() {
                         <ChartCard theme={theme} className="slide-in-right">
                             <HoldingsHistoryChart
                                 theme={theme}
-                                history={holdingHistory}
+                                history={displayedHistory}
                                 assetKey={availableAssetKeys.length > 1 ? selectedHoldingAssetKey : availableAssetKeys[0]}
                                 isHidden={isHidden}
                                 type="area"
-                                holdings={investmentHoldings}
+                                holdings={displayedHoldings}
                                 dividends={investmentDividends}
                             />
                         </ChartCard>
@@ -841,8 +867,8 @@ export default function StatsCharts() {
 
                     <PortfolioInsights
                         theme={theme}
-                        holdings={investmentHoldings}
-                        history={holdingHistory}
+                        holdings={displayedHoldings}
+                        history={displayedHistory}
                         goals={investmentGoals}
                         assetKey={availableAssetKeys.length > 1 ? selectedHoldingAssetKey : availableAssetKeys[0]}
                         isHidden={isHidden}

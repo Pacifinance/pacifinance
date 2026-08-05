@@ -2997,6 +2997,7 @@
         "enable": "Activar recordatorios",
         "disable": "Desactivar recordatorios",
         "unsupported": "Las notificaciones push no son compatibles con este navegador.",
+        "configurationError": "Las notificaciones aún no están configuradas en el servidor. Inténtalo de nuevo más tarde.",
         "permissionError": "No se pudieron activar las notificaciones. Comprueba el permiso de notificaciones del navegador para este sitio.",
         "disableError": "No se pudieron desactivar las notificaciones. Inténtalo de nuevo.",
         "loadError": "No se pudieron cargar tus preferencias de notificación.",

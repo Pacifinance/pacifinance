@@ -2995,6 +2995,7 @@
         "enable": "Ativar lembretes",
         "disable": "Desativar lembretes",
         "unsupported": "Notificações push não são suportadas neste navegador.",
+        "configurationError": "As notificações ainda não estão configuradas no servidor. Tente novamente mais tarde.",
         "permissionError": "Não foi possível ativar as notificações. Verifique a permissão de notificações do navegador para este site.",
         "disableError": "Não foi possível desativar as notificações. Tente novamente.",
         "loadError": "Não foi possível carregar suas preferências de notificação.",

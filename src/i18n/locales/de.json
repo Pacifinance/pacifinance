@@ -2995,6 +2995,7 @@
         "enable": "Erinnerungen aktivieren",
         "disable": "Erinnerungen deaktivieren",
         "unsupported": "Push-Benachrichtigungen werden von diesem Browser nicht unterstützt.",
+        "configurationError": "Benachrichtigungen sind auf dem Server noch nicht konfiguriert. Bitte versuche es später erneut.",
         "permissionError": "Benachrichtigungen konnten nicht aktiviert werden. Überprüfe die Benachrichtigungsberechtigung deines Browsers für diese Seite.",
         "disableError": "Benachrichtigungen konnten nicht deaktiviert werden. Bitte versuche es erneut.",
         "loadError": "Deine Benachrichtigungseinstellungen konnten nicht geladen werden.",

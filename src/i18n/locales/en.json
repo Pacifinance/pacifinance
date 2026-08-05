@@ -3082,6 +3082,7 @@
         "enable": "Enable reminders",
         "disable": "Disable reminders",
         "unsupported": "Push notifications aren't supported in this browser.",
+        "configurationError": "Notifications aren't configured on the server yet. Please try again later.",
         "permissionError": "Couldn't enable notifications. Check your browser's notification permission for this site.",
         "disableError": "Couldn't disable notifications. Please try again.",
         "loadError": "Couldn't load your notification preferences.",

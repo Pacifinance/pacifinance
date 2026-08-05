@@ -3082,6 +3082,7 @@
         "enable": "Attiva promemoria",
         "disable": "Disattiva promemoria",
         "unsupported": "Le notifiche push non sono supportate su questo browser.",
+        "configurationError": "Le notifiche non sono ancora configurate sul server. Riprova più tardi.",
         "permissionError": "Impossibile attivare le notifiche. Controlla il permesso per le notifiche del browser per questo sito.",
         "disableError": "Impossibile disattivare le notifiche. Riprova.",
         "loadError": "Impossibile caricare le preferenze di notifica.",

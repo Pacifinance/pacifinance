@@ -64,7 +64,6 @@ import {
     faPen,
     faCheck,
     faLifeRing
-    ,faBell
 } from "@fortawesome/free-solid-svg-icons";
 import { openPrintableRecoveryCard, downloadRecoveryCardText } from "../utils/recoveryCard";
 import { usePastDateBalancePref, PAST_DATE_BALANCE_CHOICES } from "../hooks/usePastDateBalancePref";
@@ -552,6 +551,10 @@ const SettingsPage = () => {
                                     />
                                 </SettingsRow>
                             </div>
+
+                            <SettingsDivider theme={theme} />
+
+                            <NotificationPreferences theme={theme} />
 
                             <SettingsDivider theme={theme} />
 
@@ -1604,14 +1607,6 @@ const SettingsPage = () => {
                                 )}
                                 </div>
                             </div>
-                        </SettingsGroup>
-
-                        <SettingsGroup
-                            theme={theme}
-                            icon={faBell}
-                            title={translations.notifications.title}
-                        >
-                            <NotificationPreferences theme={theme} />
                         </SettingsGroup>
 
                         {/* ═══ 6. App e Assistenza — PWA install + bug report ═══ */}

@@ -19,6 +19,7 @@ export interface BrowserPushSubscription {
 }
 
 export interface NotificationService {
+  getPushPublicKey(): Promise<string | null>;
   getPreferences(): Promise<NotificationPreferences>;
   savePreferences(preferences: NotificationPreferences): Promise<NotificationPreferences>;
   saveSubscription(subscription: BrowserPushSubscription): Promise<void>;
@@ -26,6 +27,10 @@ export interface NotificationService {
 }
 
 export const createNotificationService = (apiClient: AxiosInstance): NotificationService => ({
+  async getPushPublicKey() {
+    const response = await apiClient.get<{publicKey: string | null}>('/api/notifications/public-key');
+    return response.data.publicKey;
+  },
   async getPreferences() {
     const response = await apiClient.get<NotificationPreferences>('/api/notifications/preferences');
     return response.data;

@@ -2995,6 +2995,7 @@
         "enable": "Activer les rappels",
         "disable": "Désactiver les rappels",
         "unsupported": "Les notifications push ne sont pas prises en charge par ce navigateur.",
+        "configurationError": "Les notifications ne sont pas encore configurées sur le serveur. Réessayez plus tard.",
         "permissionError": "Impossible d'activer les notifications. Vérifiez l'autorisation de notification de votre navigateur pour ce site.",
         "disableError": "Impossible de désactiver les notifications. Veuillez réessayer.",
         "loadError": "Impossible de charger vos préférences de notification.",

@@ -634,6 +634,7 @@ export default function OutflowSection({
   onAddOutflow,
   onDeleteOutflow,
   onSaveEdit,
+  onMarkSharedExpense,
   onOpenMultiInsert,
   // New props for balance selection
   selectedOption,
@@ -1194,6 +1195,13 @@ export default function OutflowSection({
                   <FontAwesomeIcon icon={faPen} />
                 </ActionBtn>
                 <ActionBtn
+                  className="edit"
+                  onClick={() => onMarkSharedExpense?.(add)}
+                  title={translations.insert.sharedTransactionLink?.outflowAction || 'Split expense'}
+                >
+                  <FontAwesomeIcon icon={faUsers} />
+                </ActionBtn>
+                <ActionBtn
                   className="delete"
                   data-umami-event="deleteOutflow"
                   onClick={() => onDeleteOutflow(add.date, add.amount, add)}
@@ -1374,6 +1382,13 @@ export default function OutflowSection({
                   title={translations.insert.outflowSection.editingLabel}
                 >
                   <FontAwesomeIcon icon={faPen} />
+                </ActionBtn>
+                <ActionBtn
+                  className="edit"
+                  onClick={() => onMarkSharedExpense?.(add)}
+                  title={translations.insert.sharedTransactionLink?.outflowAction || 'Split expense'}
+                >
+                  <FontAwesomeIcon icon={faUsers} />
                 </ActionBtn>
                 <ActionBtn
                   className="delete"

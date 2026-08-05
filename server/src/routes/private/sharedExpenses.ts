@@ -60,6 +60,26 @@ sharedExpensesRouter.post("/settle", async (req, res) => {
     res.status(200).json(receivable)
 })
 
+sharedExpensesRouter.post("/link-expense", async (req, res) => {
+    const expenseId = Number(req.body.expense_id)
+    const ownShare = common.roundCurrency(Number(req.body.own_share))
+    const totalAmount = req.body.total_amount === undefined ? undefined : common.roundCurrency(Number(req.body.total_amount))
+    if (!Number.isFinite(expenseId) || !Number.isFinite(ownShare) || ownShare < 0) return res.status(400).send()
+    if (totalAmount !== undefined && (!Number.isFinite(totalAmount) || totalAmount <= 0)) return res.status(400).send()
+    const result = await db.sharedExpenses.linkExistingExpense(req.userId as string, expenseId, ownShare, totalAmount)
+    if (!result) return res.status(400).send()
+    res.status(200).json(result)
+})
+
+sharedExpensesRouter.post("/link-reimbursement", async (req, res) => {
+    const expenseId = Number(req.body.expense_id)
+    const receivableId = Number(req.body.receivable_id)
+    if (!Number.isFinite(expenseId) || !Number.isFinite(receivableId)) return res.status(400).send()
+    const result = await db.sharedExpenses.linkExistingReimbursement(req.userId as string, expenseId, receivableId)
+    if (!result) return res.status(400).send()
+    res.status(200).json(result)
+})
+
 sharedExpensesRouter.post("/delete", async (req, res) => {
     const id = Number(req.body.id)
     if (!Number.isFinite(id)) {

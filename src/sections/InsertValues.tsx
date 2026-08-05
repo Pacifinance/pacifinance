@@ -26,6 +26,7 @@ const MultiIncomeInsert = lazy(() => import("./MultiIncomeInsert"));
 const MultiBalanceInsert = lazy(() => import("./MultiBalanceInsert"));
 const RecurringTransactionsPanel = lazy(() => import("./RecurringTransactionsPanel"));
 const SharedExpensesPanel = lazy(() => import("./SharedExpensesPanel"));
+const SharedTransactionLinkModal = lazy(() => import("../components/SharedTransactionLinkModal"));
 import { groupAmountsByBalanceSource, parseFormattedAmount } from "../components/multiInsert/helpers";
 const groupIncomeAmountsBySource = groupAmountsByBalanceSource;
 import { ASSET_KEYS } from "./MultiBalanceInsert";
@@ -421,10 +422,34 @@ export default function InsertValue({
   const [sharedPeopleCount, setSharedPeopleCount] = useState(2);
   const [sharedReceivables, setSharedReceivables] = useState([]);
   const [showSharedExpensesPanel, setShowSharedExpensesPanel] = useState(false);
+  const [sharedLinkModal, setSharedLinkModal] = useState(null);
 
   const refreshSharedReceivables = async () => {
     const items = await sharedExpenseService.getReceivables();
     setSharedReceivables(Array.isArray(items) ? items : []);
+  };
+
+  const openSharedLinkModal = async (mode, transaction) => {
+    await refreshSharedReceivables();
+    setSharedLinkModal({mode, transaction});
+  };
+
+  const confirmSharedLink = async (value) => {
+    if (!sharedLinkModal?.transaction?.id) return;
+    try {
+      if (sharedLinkModal.mode === 'outflow') {
+        await sharedExpenseService.linkExistingExpense({expense_id: sharedLinkModal.transaction.id, own_share: value});
+      } else {
+        await sharedExpenseService.linkExistingReimbursement({expense_id: sharedLinkModal.transaction.id, receivable_id: value});
+      }
+      setSharedLinkModal(null);
+      await refreshSharedReceivables();
+      handleSetIsUpdated(false);
+      fetchData();
+      showSuccess(translations.insert.sharedTransactionLink?.saved || translations.general.saved);
+    } catch {
+      showError(translations.insert.sharedTransactionLink?.error || translations.errors?.generic);
+    }
   };
 
   const refreshRecurringItems = async () => {
@@ -1393,13 +1418,13 @@ export default function InsertValue({
     const proceed = await checkForDuplicateBeforeSubmit(true, capturedDate, eurAmount, capturedNote);
     if (!proceed) return;
     // Directly submit without further confirmation modal
-    await handleConfirmInEx(true, categoryAmount);
+    const createdExpense = await handleConfirmInEx(true, categoryAmount);
 
     if (receivableInfo) {
       try {
-        await sharedExpenseService.addReceivable({
-          date: capturedDate,
-          notes: capturedNote,
+        if (!createdExpense?.id) throw new Error('Created expense id is unavailable');
+        await sharedExpenseService.linkExistingExpense({
+          expense_id: createdExpense.id,
           total_amount: toEUR(receivableInfo.totalDisplay),
           own_share: toEUR(receivableInfo.ownShareDisplay),
         });
@@ -1925,6 +1950,7 @@ export default function InsertValue({
   };
 
   const handleConfirmInEx = async (isOutflow, categoryAmountOverride = null) => {
+    let createdExpense = null;
     let inExJson = {};
     // Full amount actually paid — used for the balance-source delta below,
     // since that's what really left the bank account (see checkForDuplicateBeforeSubmit
@@ -1965,6 +1991,7 @@ export default function InsertValue({
     try {
       const inExAdd = await financeService.addExpenseOrIncome(inExJson);
       if (inExAdd.status === 200) {
+        createdExpense = inExAdd.data;
         // Feed the local per-user category-suggestion engine (see
         // utils/categoryPatterns.ts) — manual entry is the main signal it
         // should learn from, not just CSV imports.
@@ -2090,6 +2117,7 @@ export default function InsertValue({
         showError(translations.insert.errors.incomeAddFailed);
       }
     }
+    return createdExpense;
   };
 
 
@@ -2293,6 +2321,7 @@ export default function InsertValue({
             onAddIncome={handleAddIncome}
             onDeleteIncome={handleDeleteIncome}
             onSaveEdit={handleSaveEditIncome}
+            onLinkReimbursement={(row) => openSharedLinkModal('income', row)}
             onOpenMultiInsert={() => setShowMultiIncomeInsert(true)}
             selectedOption={selectedOption}
             setSelectedOption={setSelectedOption}
@@ -2344,6 +2373,7 @@ export default function InsertValue({
             onAddOutflow={handleAddOutflow}
             onDeleteOutflow={handleDeleteOutflow}
             onSaveEdit={handleSaveEditOutflow}
+            onMarkSharedExpense={(row) => openSharedLinkModal('outflow', row)}
             onOpenMultiInsert={() => setShowMultiInsert(true)}
             selectedOption={selectedOption}
             setSelectedOption={setSelectedOption}
@@ -2657,6 +2687,21 @@ export default function InsertValue({
               newNote={duplicateModal.newNote}
               onConfirm={() => duplicateModal.onResolve?.(true)}
               onCancel={() => duplicateModal.onResolve?.(false)}
+            />
+          </Suspense>
+        )}
+
+        {sharedLinkModal && (
+          <Suspense fallback={null}>
+            <SharedTransactionLinkModal
+              theme={theme}
+              mode={sharedLinkModal.mode}
+              transaction={sharedLinkModal.transaction}
+              receivables={sharedReceivables}
+              currencySymbol={currencySymbol}
+              labels={translations.insert.sharedTransactionLink}
+              onClose={() => setSharedLinkModal(null)}
+              onConfirm={confirmSharedLink}
             />
           </Suspense>
         )}

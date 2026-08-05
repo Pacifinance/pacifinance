@@ -1,7 +1,7 @@
 import React from 'react';
 import { Select, MenuItem } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes, faCalendarAlt, faPen, faCheck, faRotateLeft, faSortUp, faSortDown, faSort, faLayerGroup, faTableCells, faThLarge, faFilter } from '@fortawesome/free-solid-svg-icons';
+import { faTimes, faCalendarAlt, faPen, faCheck, faRotateLeft, faSortUp, faSortDown, faSort, faLayerGroup, faTableCells, faThLarge, faFilter, faHandHoldingDollar } from '@fortawesome/free-solid-svg-icons';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
 import { translateTag } from '../data/tagTranslations';
@@ -321,6 +321,7 @@ export default function IncomeSection({
   onAddIncome,
   onDeleteIncome,
   onSaveEdit,
+  onLinkReimbursement,
   // New props for balance selection
   selectedOption,
   setSelectedOption,
@@ -789,6 +790,13 @@ export default function IncomeSection({
                   <FontAwesomeIcon icon={faPen} />
                 </ActionBtn>
                 <ActionBtn
+                  className="edit"
+                  onClick={() => onLinkReimbursement?.(add)}
+                  title={translations.insert.sharedTransactionLink?.incomeAction || 'Link reimbursement'}
+                >
+                  <FontAwesomeIcon icon={faHandHoldingDollar} />
+                </ActionBtn>
+                <ActionBtn
                   className="delete"
                   data-umami-event="deleteIncome"
                   onClick={() => onDeleteIncome(add.date, add.amount, add)}
@@ -955,6 +963,13 @@ export default function IncomeSection({
                   title={translations.insert.incomeSection.editingLabel}
                 >
                   <FontAwesomeIcon icon={faPen} />
+                </ActionBtn>
+                <ActionBtn
+                  className="edit"
+                  onClick={() => onLinkReimbursement?.(add)}
+                  title={translations.insert.sharedTransactionLink?.incomeAction || 'Link reimbursement'}
+                >
+                  <FontAwesomeIcon icon={faHandHoldingDollar} />
                 </ActionBtn>
                 <ActionBtn
                   className="delete"

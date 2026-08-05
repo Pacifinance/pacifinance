@@ -1055,6 +1055,7 @@
             "confirm": "Save anyway",
             "cancel": "Cancel"
         },
+        "sharedTransactionLink": { "outflowAction": "Dividir gasto", "incomeAction": "Vincular reembolso", "outflowTitle": "Dividir un gasto existente", "incomeTitle": "Vincular el ingreso como reembolso", "splitByPeople": "Dividir por personas", "specifyShare": "Indicar mi parte", "people": "Personas totales, incluyéndote", "ownShare": "Mi parte", "owed": "Adeudado por otros", "chooseExpense": "Gasto compartido que reembolsar", "cancel": "Cancelar", "confirm": "Confirmar", "noReceivables": "No hay créditos abiertos", "reimbursementHelp": "El ingreso permanece en el historial y actualiza el crédito, pero no se cuenta como ingreso ganado.", "saved": "Vínculo guardado.", "error": "No se pudo guardar el vínculo. Comprueba los importes y el crédito pendiente." },
         "sharedExpensesPanel": {
             "navLabel": "Gastos compartidos",
             "title": "Gastos compartidos",
@@ -2220,6 +2221,7 @@
         "applyBalanceDelta": "Actualizar esta cuenta con el cambio neto: {amount}",
         "applyBalanceDeltaWarning": "Actívalo solo si estos movimientos aún no están incluidos en el saldo actual.",
         "sharedExpense": "Gasto compartido",
+        "peopleCount": "Personas totales",
         "myShare": "Mi parte",
         "sharedExpenseCreditPreview": "Un crédito de {amount} seguirá visible hasta su reembolso.",
         "linkReimbursement": "Vincular como reembolso",

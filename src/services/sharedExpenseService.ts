@@ -12,6 +12,8 @@ import type {
   SharedExpenseReceivableDeleteRequest,
   SharedExpenseReceivableDto,
   SharedExpenseReceivableSettleRequest,
+  SharedExpenseLinkExistingRequest,
+  SharedExpenseLinkReimbursementRequest,
   SharedExpenseReceivablesGetResponse,
 } from '../types/api';
 
@@ -20,6 +22,8 @@ export interface SharedExpenseService {
   addReceivable(data: SharedExpenseReceivableAddRequest): Promise<SharedExpenseReceivableDto>;
   settleReceivable(data: SharedExpenseReceivableSettleRequest): Promise<SharedExpenseReceivableDto>;
   deleteReceivable(data: SharedExpenseReceivableDeleteRequest): Promise<AxiosResponse>;
+  linkExistingExpense(data: SharedExpenseLinkExistingRequest): Promise<SharedExpenseReceivableDto>;
+  linkExistingReimbursement(data: SharedExpenseLinkReimbursementRequest): Promise<SharedExpenseReceivablesGetResponse>;
 }
 
 export const createSharedExpenseService = (apiClient: AxiosInstance): SharedExpenseService => ({
@@ -41,6 +45,14 @@ export const createSharedExpenseService = (apiClient: AxiosInstance): SharedExpe
   async deleteReceivable(data) {
     const res = await apiClient.post('/api/shared-expenses/delete', data);
     return res;
+  },
+  async linkExistingExpense(data) {
+    const res = await apiClient.post<SharedExpenseReceivableDto>('/api/shared-expenses/link-expense', data);
+    return res.data;
+  },
+  async linkExistingReimbursement(data) {
+    const res = await apiClient.post<SharedExpenseReceivablesGetResponse>('/api/shared-expenses/link-reimbursement', data);
+    return Array.isArray(res.data) ? res.data : [];
   },
 });
 

@@ -928,3 +928,5 @@ export interface SharedExpenseReceivableSettleRequest {
 }
 
 export interface SharedExpenseReceivableDeleteRequest { id: number; }
+export interface SharedExpenseLinkExistingRequest { expense_id: number; own_share: number; total_amount?: number; }
+export interface SharedExpenseLinkReimbursementRequest { expense_id: number; receivable_id: number; }

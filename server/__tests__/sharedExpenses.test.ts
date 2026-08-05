@@ -95,6 +95,23 @@ describe("shared-expenses routes", () => {
         expect(mockDb.sharedExpenses.settleReceivable).not.toHaveBeenCalled()
     })
 
+    it("links an existing outflow using either its stored cash amount or an explicit total", async () => {
+        const response = await request(app, "/api/shared-expenses/link-expense", {
+            method: "POST", headers: {cookie: authCookie},
+            body: {expense_id: 12, own_share: 10, total_amount: 40}
+        })
+        expect(response.status).toBe(200)
+        expect(mockDb.sharedExpenses.linkExistingExpense).toHaveBeenCalledWith("user-uuid", 12, 10, 40)
+    })
+
+    it("links an existing income to a receivable", async () => {
+        const response = await request(app, "/api/shared-expenses/link-reimbursement", {
+            method: "POST", headers: {cookie: authCookie}, body: {expense_id: 22, receivable_id: 4}
+        })
+        expect(response.status).toBe(200)
+        expect(mockDb.sharedExpenses.linkExistingReimbursement).toHaveBeenCalledWith("user-uuid", 22, 4)
+    })
+
     it("deletes a receivable", async () => {
         const response = await request(app, "/api/shared-expenses/delete", {
             method: "POST",

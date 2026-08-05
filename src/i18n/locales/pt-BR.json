@@ -1053,6 +1053,7 @@
             "confirm": "Save anyway",
             "cancel": "Cancel"
         },
+        "sharedTransactionLink": { "outflowAction": "Dividir despesa", "incomeAction": "Vincular reembolso", "outflowTitle": "Dividir uma despesa existente", "incomeTitle": "Vincular receita como reembolso", "splitByPeople": "Dividir por pessoas", "specifyShare": "Informar minha parte", "people": "Total de pessoas, incluindo você", "ownShare": "Minha parte", "owed": "Devido pelos outros", "chooseExpense": "Despesa compartilhada a reembolsar", "cancel": "Cancelar", "confirm": "Confirmar", "noReceivables": "Nenhum crédito em aberto", "reimbursementHelp": "A receita permanece no histórico e atualiza o crédito, mas não é contabilizada como renda.", "saved": "Vínculo salvo.", "error": "Não foi possível salvar o vínculo. Verifique os valores e o crédito restante." },
         "sharedExpensesPanel": {
             "navLabel": "Despesas compartilhadas",
             "title": "Despesas compartilhadas",
@@ -2218,6 +2219,7 @@
         "applyBalanceDelta": "Atualizar esta conta com a variação líquida: {amount}",
         "applyBalanceDeltaWarning": "Ative apenas se estes movimentos ainda não estiverem incluídos no saldo atual.",
         "sharedExpense": "Despesa compartilhada",
+        "peopleCount": "Total de pessoas",
         "myShare": "Minha parte",
         "sharedExpenseCreditPreview": "Um crédito de {amount} ficará visível até o reembolso.",
         "linkReimbursement": "Vincular como reembolso",

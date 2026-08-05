@@ -110,8 +110,7 @@ expensesRouter.post("/add", async (req, res) => {
         return;
     }
     // Send status code 200 (OK)
-    res.status(200);
-    res.send();
+    res.status(200).json(doc);
 });
 
 const MAX_EXPENSE_IMPORT_BATCH = 500

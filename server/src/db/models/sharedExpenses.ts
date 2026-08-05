@@ -171,16 +171,77 @@ async function settleReceivable(user_id: string, receivable_id: number, amount: 
     return toReceivable(data as unknown as ReceivableRow)
 }
 
+/** Converts an already-recorded outflow into a shared expense. */
+async function linkExistingExpense(user_id: string, expense_id: number, own_share: number, explicit_total?: number) {
+    const {data: expense, error: expenseError} = await supabase.from("expenses")
+        .select("id, occurred_at, notes, amount, cash_amount, is_expense")
+        .eq("user_id", user_id).eq("id", expense_id).maybeSingle()
+    if (expenseError || !expense || expense.is_expense !== true) return null
+    const totalAmount = roundCurrency(explicit_total ?? Number(expense.cash_amount ?? expense.amount))
+    const ownShare = roundCurrency(own_share)
+    if (ownShare < 0 || ownShare >= totalAmount) return null
+
+    const receivable = await insertReceivable(user_id, {
+        occurredAt: new Date(String(expense.occurred_at)),
+        notes: decryptField(expense.notes as string | null),
+        totalAmount,
+        ownShare,
+        expenseId: expense_id,
+    })
+    if (!receivable) return null
+    const {error: updateError} = await supabase.from("expenses").update({
+        amount: ownShare,
+        cash_amount: totalAmount,
+    }).eq("user_id", user_id).eq("id", expense_id)
+    if (updateError) {
+        await deleteReceivable(user_id, receivable.id)
+        return null
+    }
+    return receivable
+}
+
+/** Links an existing income movement to a receivable and excludes it from income statistics. */
+async function linkExistingReimbursement(user_id: string, expense_id: number, receivable_id: number) {
+    const {data: income, error: incomeError} = await supabase.from("expenses")
+        .select("id, amount, is_expense").eq("user_id", user_id).eq("id", expense_id).maybeSingle()
+    if (incomeError || !income || income.is_expense === true || Number(income.amount) <= 0) return null
+    const {data: receivable, error: receivableError} = await supabase.from("shared_expense_receivables")
+        .select("receivable_amount, settled_amount").eq("user_id", user_id).eq("id", receivable_id).maybeSingle()
+    if (receivableError || !receivable) return null
+    const amount = roundCurrency(Number(income.amount))
+    const outstanding = roundCurrency(Number(receivable.receivable_amount) - Number(receivable.settled_amount))
+    if (amount > outstanding + 0.005) return null
+
+    const {error: updateError} = await supabase.from("expenses").update({exclude_from_statistics: true})
+        .eq("user_id", user_id).eq("id", expense_id)
+    if (updateError) return null
+    const links = await insertImportedReimbursements(user_id, [{expenseId: expense_id, receivableId: receivable_id, amount}])
+    if (!links) {
+        await supabase.from("expenses").update({exclude_from_statistics: false}).eq("user_id", user_id).eq("id", expense_id)
+        return null
+    }
+    return getReceivablesByUserId(user_id)
+}
+
 /**
  * Deletes a receivable owned by the user.
  */
 async function deleteReceivable(user_id: string, receivable_id: number) {
+    const {data: reimbursements, error: reimbursementError} = await supabase.from("shared_expense_reimbursements")
+        .select("expense_id").eq("user_id", user_id).eq("receivable_id", receivable_id)
+    if (reimbursementError) return null
     const {error, count} = await supabase.from("shared_expense_receivables")
         .delete({count: "exact"})
         .eq("user_id", user_id)
         .eq("id", receivable_id)
     if (error) console.error("sharedExpenses.deleteReceivable: failed to delete receivable", error)
     if (error) return null
+    const reimbursementExpenseIds = (reimbursements || []).map((row) => Number(row.expense_id)).filter(Number.isFinite)
+    if (reimbursementExpenseIds.length > 0) {
+        const {error: restoreError} = await supabase.from("expenses").update({exclude_from_statistics: false})
+            .eq("user_id", user_id).in("id", reimbursementExpenseIds)
+        if (restoreError) return null
+    }
     return {deletedCount: count ?? 0}
 }
 
@@ -191,4 +252,6 @@ export default {
     deleteReceivable,
     insertImportedReceivables,
     insertImportedReimbursements,
+    linkExistingExpense,
+    linkExistingReimbursement,
 }

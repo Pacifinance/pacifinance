@@ -1121,6 +1121,7 @@
             "confirm": "Save anyway",
             "cancel": "Cancel"
         },
+        "sharedTransactionLink": { "outflowAction": "Split expense", "incomeAction": "Link reimbursement", "outflowTitle": "Split an existing expense", "incomeTitle": "Link income as a reimbursement", "splitByPeople": "Split by people", "specifyShare": "Enter my share", "people": "Total people, including you", "ownShare": "My share", "owed": "Owed by others", "chooseExpense": "Shared expense to reimburse", "cancel": "Cancel", "confirm": "Confirm", "noReceivables": "No open receivables", "reimbursementHelp": "The income remains in history and updates the receivable, but is not counted as earned income.", "saved": "Link saved.", "error": "Couldn't save the link. Check the amounts and outstanding credit." },
         "sharedExpensesPanel": {
             "navLabel": "Shared expenses",
             "title": "Shared expenses",
@@ -2314,6 +2315,7 @@
         "applyBalanceDelta": "Update this account with the net change from selected movements: {amount}",
         "applyBalanceDeltaWarning": "Enable only if these movements are not already included in the current balance.",
         "sharedExpense": "Shared expense",
+        "peopleCount": "Total people",
         "myShare": "My share",
         "sharedExpenseCreditPreview": "A receivable of {amount} will remain visible until reimbursed.",
         "linkReimbursement": "Link as reimbursement",

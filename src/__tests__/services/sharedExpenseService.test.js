@@ -61,4 +61,18 @@ describe('sharedExpenseService', () => {
     expect(mockClient.post).toHaveBeenCalledWith('/api/shared-expenses/delete', { id: 2 });
     expect(result.status).toBe(200);
   });
+
+  it('links an existing outflow to a shared-expense receivable', async () => {
+    const payload = { expense_id: 12, own_share: 15 };
+    mockClient.post.mockResolvedValue({ data: { id: 4, expenseId: 12, ownShare: 15 } });
+    await service.linkExistingExpense(payload);
+    expect(mockClient.post).toHaveBeenCalledWith('/api/shared-expenses/link-expense', payload);
+  });
+
+  it('links an existing income as a reimbursement', async () => {
+    const payload = { expense_id: 22, receivable_id: 4 };
+    mockClient.post.mockResolvedValue({ data: [] });
+    await service.linkExistingReimbursement(payload);
+    expect(mockClient.post).toHaveBeenCalledWith('/api/shared-expenses/link-reimbursement', payload);
+  });
 });

@@ -1053,6 +1053,7 @@
             "confirm": "Save anyway",
             "cancel": "Cancel"
         },
+        "sharedTransactionLink": { "outflowAction": "Partager la dépense", "incomeAction": "Lier le remboursement", "outflowTitle": "Partager une dépense existante", "incomeTitle": "Lier le revenu comme remboursement", "splitByPeople": "Diviser par personnes", "specifyShare": "Saisir ma part", "people": "Nombre total de personnes, vous compris", "ownShare": "Ma part", "owed": "Dû par les autres", "chooseExpense": "Dépense partagée à rembourser", "cancel": "Annuler", "confirm": "Confirmer", "noReceivables": "Aucune créance ouverte", "reimbursementHelp": "Le revenu reste dans l'historique et met à jour la créance, sans être compté comme revenu gagné.", "saved": "Lien enregistré.", "error": "Impossible d'enregistrer le lien. Vérifiez les montants et la créance restante." },
         "sharedExpensesPanel": {
             "navLabel": "Dépenses partagées",
             "title": "Dépenses partagées",
@@ -2218,6 +2219,7 @@
         "applyBalanceDelta": "Mettre à jour ce compte avec la variation nette : {amount}",
         "applyBalanceDeltaWarning": "Activez uniquement si ces mouvements ne sont pas déjà inclus dans le solde actuel.",
         "sharedExpense": "Dépense partagée",
+        "peopleCount": "Nombre total de personnes",
         "myShare": "Ma part",
         "sharedExpenseCreditPreview": "Une créance de {amount} restera visible jusqu'au remboursement.",
         "linkReimbursement": "Lier comme remboursement",

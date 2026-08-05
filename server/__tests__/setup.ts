@@ -165,7 +165,9 @@ const mocks = vi.hoisted(() => {
             settleReceivable: vi.fn(),
             deleteReceivable: vi.fn(),
             insertImportedReceivables: vi.fn(),
-            insertImportedReimbursements: vi.fn()
+            insertImportedReimbursements: vi.fn(),
+            linkExistingExpense: vi.fn(),
+            linkExistingReimbursement: vi.fn()
         }
     }
 
@@ -358,6 +360,8 @@ export function resetServerMocks() {
     mockDb.sharedExpenses.insertReceivable.mockResolvedValue({id: 1})
     mockDb.sharedExpenses.settleReceivable.mockResolvedValue({id: 1})
     mockDb.sharedExpenses.deleteReceivable.mockResolvedValue({deletedCount: 1})
+    mockDb.sharedExpenses.linkExistingExpense.mockResolvedValue({id: 1})
+    mockDb.sharedExpenses.linkExistingReimbursement.mockResolvedValue([])
 
     mockRedis.get.mockResolvedValue(null)
     mockRedis.set.mockResolvedValue("OK")

@@ -632,6 +632,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
   const [rowUserCategoryIds, setRowUserCategoryIds] = useState({}); // { rowIndex: customCategoryId|null }
   const [rowNotes, setRowNotes] = useState({}); // { rowIndex: notesString }
   const [rowSharedExpenses, setRowSharedExpenses] = useState({}); // { rowIndex: own share in display currency }
+  const [rowSharedPeople, setRowSharedPeople] = useState({}); // { rowIndex: total people used for automatic split }
   const [rowReimbursements, setRowReimbursements] = useState({}); // { rowIndex: receivable id }
   const [rowAccountIds, setRowAccountIds] = useState({}); // optional per-row receiving account override
   const [showAllRows, setShowAllRows] = useState(false); // toggle to show all rows in preview
@@ -2092,8 +2093,13 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                                   checked={rowSharedExpenses[tx.rowIndex] !== undefined}
                                   onChange={(event) => setRowSharedExpenses((current) => {
                                     const next = { ...current };
-                                    if (event.target.checked) next[tx.rowIndex] = (tx.amount / 2).toFixed(2);
-                                    else delete next[tx.rowIndex];
+                                    if (event.target.checked) {
+                                      next[tx.rowIndex] = (tx.amount / 2).toFixed(2);
+                                      setRowSharedPeople((people) => ({...people, [tx.rowIndex]: 2}));
+                                    } else {
+                                      delete next[tx.rowIndex];
+                                      setRowSharedPeople((people) => { const updated = {...people}; delete updated[tx.rowIndex]; return updated; });
+                                    }
                                     return next;
                                   })}
                                 />
@@ -2101,6 +2107,22 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                               </ImportOptionTitle>
                               {rowSharedExpenses[tx.rowIndex] !== undefined && (
                                 <>
+                                  <ShareAmountRow theme={theme}>
+                                    <span>{t.peopleCount || 'People'}</span>
+                                    <AmountInputWrap theme={theme}>
+                                      <input
+                                        type="number"
+                                        min="2"
+                                        step="1"
+                                        value={rowSharedPeople[tx.rowIndex] || 2}
+                                        onChange={(event) => {
+                                          const people = Math.max(2, Number(event.target.value) || 2);
+                                          setRowSharedPeople((current) => ({...current, [tx.rowIndex]: people}));
+                                          setRowSharedExpenses((current) => ({...current, [tx.rowIndex]: (tx.amount / people).toFixed(2)}));
+                                        }}
+                                      />
+                                    </AmountInputWrap>
+                                  </ShareAmountRow>
                                   <ShareAmountRow theme={theme}>
                                     <span>{t.myShare || 'My share'}</span>
                                     <AmountInputWrap theme={theme}>

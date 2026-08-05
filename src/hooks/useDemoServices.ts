@@ -326,6 +326,12 @@ export const useDemoServices = () => {
           status: 'settled',
         }),
         deleteReceivable: async () => FAKE_SUCCESS,
+        linkExistingExpense: async (data): Promise<SharedExpenseReceivableDto> => ({
+          id: -Date.now(), date: new Date().toLocaleDateString('sv'), notes: '',
+          totalAmount: data.own_share * 2, ownShare: data.own_share,
+          receivableAmount: data.own_share, settledAmount: 0, status: 'pending', expenseId: data.expense_id,
+        }),
+        linkExistingReimbursement: async (): Promise<SharedExpenseReceivableDto[]> => [],
       },
     };
   }, [isDemoMode, services]);

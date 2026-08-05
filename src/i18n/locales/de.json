@@ -1053,6 +1053,7 @@
             "confirm": "Save anyway",
             "cancel": "Cancel"
         },
+        "sharedTransactionLink": { "outflowAction": "Ausgabe teilen", "incomeAction": "Erstattung verknüpfen", "outflowTitle": "Vorhandene Ausgabe teilen", "incomeTitle": "Einnahme als Erstattung verknüpfen", "splitByPeople": "Nach Personen teilen", "specifyShare": "Meinen Anteil eingeben", "people": "Personen insgesamt, einschließlich dir", "ownShare": "Mein Anteil", "owed": "Von anderen geschuldet", "chooseExpense": "Zu erstattende geteilte Ausgabe", "cancel": "Abbrechen", "confirm": "Bestätigen", "noReceivables": "Keine offenen Forderungen", "reimbursementHelp": "Die Einnahme bleibt im Verlauf und aktualisiert die Forderung, zählt aber nicht als Einkommen.", "saved": "Verknüpfung gespeichert.", "error": "Verknüpfung konnte nicht gespeichert werden. Prüfe Beträge und Restforderung." },
         "sharedExpensesPanel": {
             "navLabel": "Geteilte Ausgaben",
             "title": "Geteilte Ausgaben",
@@ -2218,6 +2219,7 @@
         "applyBalanceDelta": "Dieses Konto um die Nettoänderung aktualisieren: {amount}",
         "applyBalanceDeltaWarning": "Nur aktivieren, wenn diese Bewegungen noch nicht im aktuellen Saldo enthalten sind.",
         "sharedExpense": "Geteilte Ausgabe",
+        "peopleCount": "Personen insgesamt",
         "myShare": "Mein Anteil",
         "sharedExpenseCreditPreview": "Eine Forderung von {amount} bleibt bis zur Erstattung sichtbar.",
         "linkReimbursement": "Als Erstattung verknüpfen",

@@ -207,6 +207,65 @@ describe('detectPlatform / parseInvestmentCsv', () => {
     expect(closedPositions(parsed.transactions)).toMatchObject([{ key: 'ETH', quantity: 0 }]);
   });
 
+  it('ignores failed Ledger Wallet operations instead of changing holdings', () => {
+    const raw = [
+      'Operation Date,Status,Currency Ticker,Operation Type,Operation Amount,Operation Fees,Operation Hash,Account Name,Account xpub,Countervalue Ticker,Countervalue at Operation Date,Countervalue at CSV Export',
+      '2025-01-02T10:00:00.000Z,Failed,BTC,IN,0.01,0,hash-failed,Bitcoin 1,xpub,EUR,900,950',
+    ].join('\n');
+    const parsed = parseInvestmentCsv(raw);
+    expect(parsed.platform).toBe('ledger');
+    expect(parsed.transactions).toEqual([]);
+    expect(parsed.skippedRows).toBe(1);
+  });
+
+  it('parses the official Ledger Wallet operation export and preserves historical countervalues', () => {
+    const raw = [
+      'Operation Date,Status,Currency Ticker,Operation Type,Operation Amount,Operation Fees,Operation Hash,Account Name,Account xpub,Countervalue Ticker,Countervalue at Operation Date,Countervalue at CSV Export',
+      '2025-01-02T10:00:00.000Z,Confirmed,BTC,IN,0.01,0.00001,hash-in,Bitcoin 1,xpub,EUR,900,950',
+      '2025-03-03T11:00:00.000Z,Confirmed,BTC,OUT,0.002,0.00001,hash-out,Bitcoin 1,xpub,EUR,180,190',
+    ].join('\n');
+    const parsed = parseInvestmentCsv(raw);
+    expect(parsed.platform).toBe('ledger');
+    expect(parsed.transactions).toHaveLength(2);
+    expect(parsed.transactions[0]).toMatchObject({
+      side: 'buy', ticker: 'BTC', name: 'Bitcoin 1', date: '2025-01-02', quantity: 0.01,
+      price: 90000, total: 900, currency: 'BTC', totalCurrency: 'EUR', externalId: 'hash-in:BTC:IN',
+    });
+    expect(parsed.transactions[1]).toMatchObject({side: 'sell', quantity: 0.002, total: 180});
+  });
+
+  it('parses Binance account-statement balance changes and skips fiat rows', () => {
+    const raw = [
+      'User_ID,UTC_Time,Account,Operation,Coin,Change,Remark',
+      '123,2025-01-10 08:30:00,Spot,Transaction Buy,BTC,0.005,order-1',
+      '123,2025-01-10 08:30:00,Spot,Transaction Spend,EUR,-200,order-1',
+      '123,2025-02-11 09:00:00,Spot,Transaction Fee,BTC,-0.00001,order-2',
+      '123,not-a-date,Spot,Deposit,ETH,1,bad-date',
+    ].join('\n');
+    const parsed = parseInvestmentCsv(raw);
+    expect(parsed.platform).toBe('binance');
+    expect(parsed.transactions).toHaveLength(2);
+    expect(parsed.transactions[0]).toMatchObject({side: 'buy', ticker: 'BTC', quantity: 0.005, date: '2025-01-10'});
+    expect(parsed.transactions[1]).toMatchObject({side: 'sell', ticker: 'BTC', quantity: 0.00001, date: '2025-02-11'});
+    expect(parsed.skippedRows).toBe(2);
+  });
+
+  it('parses Crypto.com App purchases and both legs of crypto exchanges', () => {
+    const raw = [
+      'Timestamp (UTC),Transaction Description,Currency,Amount,To Currency,To Amount,Native Currency,Native Amount,Native Amount (in USD),Transaction Kind,Transaction Hash',
+      '2025-01-05 12:00:00,Buy BTC,BTC,0.01,,,EUR,900,930,crypto_purchase,hash-buy',
+      '2025-02-06 13:00:00,Exchange BTC to ETH,BTC,-0.002,ETH,0.05,EUR,180,186,crypto_exchange,hash-swap',
+      '2025-02-07 13:00:00,Fiat deposit,EUR,1000,,,EUR,1000,1030,fiat_deposit,hash-fiat',
+    ].join('\n');
+    const parsed = parseInvestmentCsv(raw);
+    expect(parsed.platform).toBe('cryptocom');
+    expect(parsed.transactions).toHaveLength(3);
+    expect(parsed.transactions[0]).toMatchObject({side: 'buy', ticker: 'BTC', quantity: 0.01, total: 900, totalCurrency: 'EUR'});
+    expect(parsed.transactions[1]).toMatchObject({side: 'sell', ticker: 'BTC', quantity: 0.002, externalId: 'hash-swap:BTC'});
+    expect(parsed.transactions[2]).toMatchObject({side: 'buy', ticker: 'ETH', quantity: 0.05, externalId: 'hash-swap:ETH'});
+    expect(parsed.skippedRows).toBe(1);
+  });
+
   it('returns null for unrecognized files', () => {
     expect(parseInvestmentCsv('foo,bar\n1,2')).toBeNull();
     expect(parseInvestmentCsv('')).toBeNull();
@@ -763,6 +822,20 @@ describe('buildHistoryEntries', () => {
 
     expect(entries).toHaveLength(1);
     expect(entries[0]).toMatchObject({ user_date: '2024-03-01', invested_amount: 600, quantity: 6 });
+  });
+
+  it('backfills monthly crypto quantities when an exchange export has no fiat countervalue', () => {
+    const transactions = [
+      tx({ isin: null, ticker: 'BTC', name: 'BTC', date: '2024-01-15', quantity: 0.1, price: null, total: null, currency: 'BTC', totalCurrency: null }),
+      tx({ isin: null, ticker: 'BTC', name: 'BTC', date: '2024-02-15', quantity: 0.05, price: null, total: null, currency: 'BTC', totalCurrency: null }),
+    ];
+    const entries = buildHistoryEntries(
+      transactions, 'BTC', 16, 1, new Map(), new Map(), convertAmountToEUR,
+    );
+    expect(entries).toEqual([
+      {holding_id: 16, user_date: '2024-01-01', current_value: null, invested_amount: null, quantity: 0.1},
+      {holding_id: 16, user_date: '2024-02-01', current_value: null, invested_amount: null, quantity: 0.15},
+    ]);
   });
 });
 

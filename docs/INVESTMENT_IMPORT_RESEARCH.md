@@ -1,6 +1,6 @@
 # Investment Platform Export Formats — Research for the Import Feature
 
-> Status: research reference (July 2026). Feeds the "import investments / reduce manual entry" roadmap items.
+> Status: research reference (August 2026). Feeds the "import investments / reduce manual entry" roadmap items.
 > Goal: let users import holdings & transactions from their broker/exchange exports instead of manual entry,
 > while keeping Pacifinance's privacy model (parsing client-side where possible, no third-party credentials stored server-side unless user-supplied read-only API keys).
 
@@ -62,10 +62,19 @@
 
 ## Part 2 — Crypto Exchanges
 
+### Ledger Wallet (formerly Ledger Live)
+- **Formats**: native CSV export of the operation history. Ledger's official implementation is
+  [`libs/ledger-live-common/src/csvExport.ts`](https://github.com/LedgerHQ/ledger-live/blob/develop/libs/ledger-live-common/src/csvExport.ts),
+  with an official snapshot containing real output rows in
+  [`csvExport.ts.snap`](https://github.com/LedgerHQ/ledger-live/blob/develop/libs/ledger-live-common/src/__tests__/__snapshots__/csvExport.ts.snap).
+- **Structure** (verbatim from the official source): `Operation Date,Status,Currency Ticker,Operation Type,Operation Amount,Operation Fees,Operation Hash,Account Name,Account xpub,Countervalue Ticker,Countervalue at Operation Date,Countervalue at CSV Export`.
+- **Quirks**: `Operation Type` is a wallet flow (`IN`/`OUT`), not an exchange order; only `Confirmed` rows affect holdings. Historical cost/value uses `Countervalue at Operation Date`, never the later export-date countervalue. A transfer between two imported personal wallets naturally cancels when both sides are present.
+
 ### Binance
 - **Formats**: CSV ("Export Transaction Records", async, quota-limited) + fully documented REST API (read-only keys).
 - **Structure** (verbatim): `User_ID,UTC_Time,Account,Operation,Coin,Change,Remark`. UTC times, decimal point.
 - **Quirks**: it's a **ledger, not a trade list** — one trade = 2–3 rows (bought asset, sold asset, fee) sharing a timestamp that must be re-joined; dozens of `Operation` values.
+- **Pacifinance import**: consumes each non-fiat balance change as one crypto acquisition/disposal leg. This preserves exact asset quantities, fees and transfers month by month without guessing a trading pair from unrelated same-second rows. Binance's statement has no per-row fiat countervalue, so imported history records quantity while leaving invested amount unknown.
 
 ### Coinbase
 - **Formats**: CSV statements + documented APIs (Coinbase App / Advanced Trade under CDP).
@@ -81,6 +90,7 @@
 - **Formats**: CSV from the app. The retail App has **no public API** (the separate Exchange does).
 - **Structure** (verbatim): `Timestamp (UTC),Transaction Description,Currency,Amount,To Currency,To Amount,Native Currency,Native Amount,Native Amount (in USD),Transaction Kind,Transaction Hash`.
 - **Quirks**: swaps via `Currency`/`To Currency` column pairs; large evolving `Transaction Kind` enum; very long decimal precision.
+- **Pacifinance import**: reads both legs independently, ignores fiat-only rows, and uses `Native Amount` as the historical countervalue when supplied. The official App export flow is documented at <https://help.crypto.com/en/articles/3438579-how-do-i-export-my-transaction-history-app> (Token Wallet export, up to three years per report).
 
 ### Bitpanda
 - **Formats**: CSV (separate trades and transactions exports) or PDF; **public REST API** (officially recommended over CSV).

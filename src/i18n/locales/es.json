@@ -14,6 +14,9 @@
                 "label": "Directa",
                 "steps": "Movimientos → Exportar (CSV o Excel)."
             },
+            "ledger": { "label": "Ledger Wallet", "steps": "Ajustes → Cuentas → Historial de operaciones → Guardar → CSV. Selecciona todas las cuentas cripto que quieras incluir." },
+            "binance": { "label": "Binance", "steps": "Cuenta → Historial de transacciones → Generar todos los extractos → Exportar CSV." },
+            "cryptocom": { "label": "Crypto.com App", "steps": "Cuentas → Historial → Exportar → Token Wallet → elige el período → Exportar CSV." },
             "revolut": {
                 "label": "Revolut",
                 "steps": "App de Revolut → Cuenta → Extracto → elige el período → Exportar CSV."
@@ -2843,7 +2846,7 @@
                         "title": "Importar inversiones desde CSV",
                         "subtitle": "Sube la exportación de transacciones de un bróker compatible — las posiciones se calcularán automáticamente.",
                         "dropHint": "Arrastra aquí uno o más archivos CSV o haz clic para seleccionarlos — si tu bróker limita la exportación a un período, sube todos los archivos juntos para reconstruir el historial completo",
-                        "unrecognized": "Formato no reconocido. Prueba con una exportación de Trading 212, DEGIRO o Directa.",
+                        "unrecognized": "Formato no reconocido. Usa un CSV compatible de un bróker, Ledger Wallet, Binance o Crypto.com App.",
                         "detected": "Detectado: {platform}",
                         "sourceLabel": "Fuente / bróker",
                         "sourceHint": "El formato genérico no identifica al proveedor. Indica el bróker correcto antes de importar.",
@@ -2861,6 +2864,9 @@
                                     "trading212": "Trading 212",
                                     "degiro": "DEGIRO",
                                     "directa": "Directa",
+                                    "ledger": "Ledger Wallet",
+                                    "binance": "Binance",
+                                    "cryptocom": "Crypto.com App",
                                     "generic": "formato genérico"
                         },
             "historyBackfillNote": "Los meses pasados encontrados en el archivo se rellenarán automáticamente como historial de la cartera.",

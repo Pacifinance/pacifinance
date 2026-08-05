@@ -22,8 +22,14 @@ export async function enableWebPush(publicKey: string): Promise<PushSubscription
   const permission = await Notification.requestPermission();
   if (permission !== 'granted') throw new Error('Notification permission denied');
   const registration = await navigator.serviceWorker.ready;
+  // Always start from a clean slate: reusing an existing subscription blindly is wrong
+  // whenever it was created with a different VAPID key (key rotated, or a leftover
+  // subscription from testing before VAPID_PUBLIC_KEY was configured) — the browser
+  // rejects subscribe() with a generic error in that case, which is hard to tell apart
+  // from a real failure downstream.
   const existing = await registration.pushManager.getSubscription();
-  return existing || registration.pushManager.subscribe({userVisibleOnly: true, applicationServerKey: decodeVapidKey(publicKey)});
+  if (existing) await existing.unsubscribe();
+  return registration.pushManager.subscribe({userVisibleOnly: true, applicationServerKey: decodeVapidKey(publicKey)});
 }
 
 export async function disableWebPush(): Promise<string | null> {

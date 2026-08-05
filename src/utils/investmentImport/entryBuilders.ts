@@ -66,14 +66,21 @@ export function buildHistoryEntries(
   const entries: InvestmentHoldingHistorySaveRequest[] = [];
   for (const snapshot of timeline) {
     const snapshotPosition = snapshot.positions.find((p) => p.key === positionKey);
-    if (!snapshotPosition || snapshotPosition.investedAmount == null) continue;
-    const investedAmountEUR = baseline + convertAmountToEUR(snapshotPosition.investedAmount, snapshotPosition.investedAmountCurrency);
+    if (!snapshotPosition) continue;
+    const investedAmountEUR = snapshotPosition.investedAmount != null
+      ? baseline + convertAmountToEUR(snapshotPosition.investedAmount, snapshotPosition.investedAmountCurrency)
+      : null;
     // Quantity actually held that month — for the "quantity bought per month"
     // figure and, in the future, to price a historical current_value
     // correctly (price × quantity held then, not today's quantity).
     const quantityThatMonth = quantityBaseline + snapshotPosition.quantity;
     const alreadyRecorded = recorded?.get(snapshot.monthKey);
-    if (alreadyRecorded != null && Math.abs(alreadyRecorded - investedAmountEUR) < 0.01) continue;
+    const alreadyRecordedQuantity = recordedQuantity?.get(snapshot.monthKey);
+    const sameInvestedAmount = investedAmountEUR == null
+      ? alreadyRecorded == null
+      : alreadyRecorded != null && Math.abs(alreadyRecorded - investedAmountEUR) < 0.01;
+    const sameQuantity = alreadyRecordedQuantity != null && Math.abs(alreadyRecordedQuantity - quantityThatMonth) < 0.00000001;
+    if ((investedAmountEUR != null && sameInvestedAmount) || (investedAmountEUR == null && sameInvestedAmount && sameQuantity)) continue;
     entries.push({
       holding_id: holdingId,
       user_date: `${snapshot.monthKey}-01`,

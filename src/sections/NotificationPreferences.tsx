@@ -95,7 +95,11 @@ export default function NotificationPreferences({theme}: NotificationPreferences
       const subscription = await enableWebPush(pushPublicKey);
       await notificationService.saveSubscription(serializePushSubscription(subscription));
       await persist({...preferences, enabled: true, timezone: defaults(language).timezone, language});
-    } catch { setMessage({text: t.permissionError, error: true}); setSaving(false); }
+    } catch (error) {
+      console.error('NotificationPreferences: failed to enable push notifications', error);
+      setMessage({text: t.permissionError, error: true});
+      setSaving(false);
+    }
   };
 
   const choices: Array<{key: keyof Preferences; title: string; description: string}> = [

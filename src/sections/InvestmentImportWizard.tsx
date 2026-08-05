@@ -28,7 +28,8 @@ import type {
   InvestmentHoldingHistorySaveRequest, InvestmentDividendSaveRequest, InvestmentTransactionSaveRequest,
 } from '../types/api';
 
-const INVESTMENT_IMPORT_PLATFORMS = ['trading212', 'degiro', 'directa'];
+const INVESTMENT_IMPORT_PLATFORMS = ['trading212', 'degiro', 'directa', 'ledger', 'binance', 'cryptocom'];
+const CRYPTO_IMPORT_PLATFORMS = new Set(['ledger', 'binance', 'cryptocom']);
 const MANUAL_KIND_OPTIONS: InvestmentKind[] = ['stock', 'etf', 'crypto', 'bond', 'fund'];
 
 /**
@@ -553,7 +554,7 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
    * each shown row's quantity/transactions/history come from the complete
    * merged set, so the numbers themselves are always the true total.
    */
-  const recomputeFromMerged = async (transactions: ImportedTransaction[], dividends: ImportedDividend[]) => {
+  const recomputeFromMerged = async (transactions: ImportedTransaction[], dividends: ImportedDividend[], importPlatform: string) => {
     const dividendsByKey = groupDividendsByPositionKey(dedupeDividends(dividends));
 
     setLoadingSavedTransactions(true);
@@ -590,7 +591,7 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
       const positionDividends = dividendsByKey.get(position.key) ?? [];
       return {
         position, transactions: positionTransactions, dividends: positionDividends, instrument: null,
-        status: 'pending', selected: true, historyMonths, manualKind: 'stock',
+        status: 'pending', selected: true, historyMonths, manualKind: CRYPTO_IMPORT_PLATFORMS.has(importPlatform) ? 'crypto' : 'stock',
         mergeStrategy: null, overrides: {},
       };
     });
@@ -706,7 +707,7 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
       ? (platform === 'generic' ? previous : '')
       : lastPlatform);
 
-    await recomputeFromMerged(mergedTransactions, mergedDividends);
+    await recomputeFromMerged(mergedTransactions, mergedDividends, lastPlatform);
   };
 
   // Decides how this row's save should treat an already-held instrument:

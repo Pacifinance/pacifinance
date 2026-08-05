@@ -14,6 +14,9 @@
                 "label": "Directa",
                 "steps": "Bewegungen → Exportieren (CSV oder Excel)."
             },
+            "ledger": { "label": "Ledger Wallet", "steps": "Einstellungen → Konten → Vorgangsverlauf → Speichern → CSV. Wähle alle einzuschließenden Kryptokonten aus." },
+            "binance": { "label": "Binance", "steps": "Konto → Transaktionsverlauf → Alle Kontoauszüge erstellen → CSV exportieren." },
+            "cryptocom": { "label": "Crypto.com App", "steps": "Konten → Verlauf → Exportieren → Token Wallet → Zeitraum wählen → CSV exportieren." },
             "revolut": {
                 "label": "Revolut",
                 "steps": "Revolut-App → Konto → Kontoauszug → Zeitraum wählen → CSV exportieren."
@@ -2841,7 +2844,7 @@
                         "title": "Investitionen aus CSV importieren",
                         "subtitle": "Laden Sie den Transaktions-Export eines unterstützten Brokers hoch — die Positionen werden automatisch berechnet.",
                         "dropHint": "Eine oder mehrere CSV-Dateien hier ablegen oder klicken zum Auswählen — wenn dein Broker den Export auf einen Zeitraum begrenzt, lade alle Dateien zusammen hoch, um den vollständigen Verlauf zu rekonstruieren",
-                        "unrecognized": "Format nicht erkannt. Versuchen Sie einen Export von Trading 212, DEGIRO oder Directa.",
+                        "unrecognized": "Format nicht erkannt. Verwende einen unterstützten CSV-Export eines Brokers, von Ledger Wallet, Binance oder der Crypto.com App.",
                         "detected": "Erkannt: {platform}",
                         "sourceLabel": "Quelle / Broker",
                         "sourceHint": "Das generische Format identifiziert den Anbieter nicht. Gib vor dem Import den richtigen Broker ein.",
@@ -2859,6 +2862,9 @@
                                     "trading212": "Trading 212",
                                     "degiro": "DEGIRO",
                                     "directa": "Directa",
+                                    "ledger": "Ledger Wallet",
+                                    "binance": "Binance",
+                                    "cryptocom": "Crypto.com App",
                                     "generic": "generisches Format"
                         },
             "historyBackfillNote": "Vergangene Monate aus der Datei werden automatisch als Portfolio-Verlauf nachgetragen.",

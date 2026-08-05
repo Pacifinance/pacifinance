@@ -10,7 +10,7 @@
  */
 import { parseImportNumber, parseImportDate, looksLikeIsin, extractCsvRows } from './normalize';
 
-export type ImportPlatform = 'trading212' | 'degiro' | 'directa' | 'generic';
+export type ImportPlatform = 'trading212' | 'degiro' | 'directa' | 'ledger' | 'binance' | 'cryptocom' | 'generic';
 
 export interface ImportedTransaction {
   /** 'buy' | 'sell' — dividends/fees/cash ops are filtered out for holdings import. */
@@ -88,6 +88,12 @@ export function detectPlatform(header: string[]): ImportPlatform | null {
   if (has('data operazione', 'tipo operazione', 'isin')) return 'directa';
   // DEGIRO Transactions.csv (EN/IT variants share Product+ISIN+Exchange structure)
   if (has('isin') && (has('product') || has('prodotto')) && (has('exchange') || has('borsa'))) return 'degiro';
+  // Ledger Wallet (formerly Ledger Live) operations export.
+  if (has('operation date', 'status', 'currency ticker', 'operation type', 'operation amount', 'operation hash')) return 'ledger';
+  // Binance Account Statement / Export Transaction Records balance ledger.
+  if (has('user_id', 'utc_time', 'account', 'operation', 'coin', 'change')) return 'binance';
+  // Crypto.com App transaction-history export (different from Crypto.com Exchange trade history).
+  if (has('timestamp (utc)', 'transaction description', 'currency', 'amount', 'transaction kind')) return 'cryptocom';
   // Generic fallback (Portfolio Performance / Ghostfolio style): a Date + ISIN-or-Ticker + Type/Action + quantity-ish column
   if ((has('date') || has('data')) && (lower.includes('isin') || lower.includes('ticker') || lower.includes('symbol'))
       && (lower.includes('type') || lower.includes('action') || lower.includes('tipo'))) return 'generic';
@@ -265,6 +271,100 @@ function parseDirecta(header: string[], rows: string[][]): ParsedImportFile {
   return { platform: 'directa', transactions, dividends, skippedRows };
 }
 
+/* ─── Crypto wallets / exchanges ─── */
+
+const FIAT_TICKERS = new Set([
+  'AED', 'ARS', 'AUD', 'BGN', 'BRL', 'CAD', 'CHF', 'CLP', 'CNY', 'COP', 'CZK', 'DKK', 'EUR', 'GBP',
+  'HKD', 'HUF', 'IDR', 'ILS', 'INR', 'JPY', 'KRW', 'MXN', 'MYR', 'NGN', 'NOK', 'NZD', 'PEN', 'PHP',
+  'PLN', 'RON', 'RUB', 'SEK', 'SGD', 'THB', 'TRY', 'TWD', 'UAH', 'USD', 'VND', 'ZAR',
+]);
+
+const cryptoTicker = (value: string | null): string | null => {
+  const ticker = value?.trim().toUpperCase() || null;
+  return ticker && !FIAT_TICKERS.has(ticker) ? ticker : null;
+};
+
+function parseLedger(header: string[], rows: string[][]): ParsedImportFile {
+  const col = {
+    date: findColumn(header, 'Operation Date'), status: findColumn(header, 'Status'), ticker: findColumn(header, 'Currency Ticker'),
+    type: findColumn(header, 'Operation Type'), amount: findColumn(header, 'Operation Amount'), hash: findColumn(header, 'Operation Hash'),
+    accountName: findColumn(header, 'Account Name'), countervalueTicker: findColumn(header, 'Countervalue Ticker'),
+    historicalCountervalue: findColumn(header, 'Countervalue at Operation Date'),
+  };
+  const transactions: ImportedTransaction[] = [];
+  let skippedRows = 0;
+  for (const row of rows) {
+    const status = (cell(row, col.status) || '').toLowerCase();
+    const type = (cell(row, col.type) || '').toUpperCase();
+    const ticker = cryptoTicker(cell(row, col.ticker));
+    const quantity = parseImportNumber(cell(row, col.amount));
+    const date = parseImportDate(cell(row, col.date));
+    if (status !== 'confirmed' || !ticker || !quantity || quantity <= 0 || !date || (type !== 'IN' && type !== 'OUT')) {
+      skippedRows++;
+      continue;
+    }
+    const total = parseImportNumber(cell(row, col.historicalCountervalue));
+    const hash = cell(row, col.hash);
+    transactions.push({
+      side: type === 'IN' ? 'buy' : 'sell', isin: null, ticker, name: cell(row, col.accountName) || ticker,
+      date, quantity, price: total != null ? Math.abs(total / quantity) : null, total: total != null ? Math.abs(total) : null,
+      currency: ticker, totalCurrency: cell(row, col.countervalueTicker)?.toUpperCase() || null,
+      externalId: hash ? `${hash}:${ticker}:${type}` : null,
+    });
+  }
+  return {platform: 'ledger', transactions, dividends: [], skippedRows};
+}
+
+function parseBinance(header: string[], rows: string[][]): ParsedImportFile {
+  const col = {
+    date: findColumn(header, 'UTC_Time'), coin: findColumn(header, 'Coin'), change: findColumn(header, 'Change'),
+  };
+  const transactions: ImportedTransaction[] = [];
+  let skippedRows = 0;
+  for (const row of rows) {
+    const ticker = cryptoTicker(cell(row, col.coin));
+    const change = parseImportNumber(cell(row, col.change));
+    const date = parseImportDate(cell(row, col.date));
+    if (!ticker || change == null || change === 0 || !date) { skippedRows++; continue; }
+    transactions.push({
+      side: change > 0 ? 'buy' : 'sell', isin: null, ticker, name: ticker, date, quantity: Math.abs(change),
+      price: null, total: null, currency: ticker, totalCurrency: null, externalId: null,
+    });
+  }
+  return {platform: 'binance', transactions, dividends: [], skippedRows};
+}
+
+function parseCryptoCom(header: string[], rows: string[][]): ParsedImportFile {
+  const col = {
+    date: findColumn(header, 'Timestamp (UTC)'), currency: findColumn(header, 'Currency'), amount: findColumn(header, 'Amount'),
+    toCurrency: findColumn(header, 'To Currency'), toAmount: findColumn(header, 'To Amount'),
+    nativeCurrency: findColumn(header, 'Native Currency'), nativeAmount: findColumn(header, 'Native Amount'),
+    description: findColumn(header, 'Transaction Description'), hash: findColumn(header, 'Transaction Hash'),
+  };
+  const transactions: ImportedTransaction[] = [];
+  let skippedRows = 0;
+  for (const row of rows) {
+    const date = parseImportDate(cell(row, col.date));
+    const nativeCurrency = cell(row, col.nativeCurrency)?.toUpperCase() || null;
+    const nativeAmount = parseImportNumber(cell(row, col.nativeAmount));
+    const hash = cell(row, col.hash);
+    const legs = [
+      {ticker: cryptoTicker(cell(row, col.currency)), amount: parseImportNumber(cell(row, col.amount))},
+      {ticker: cryptoTicker(cell(row, col.toCurrency)), amount: parseImportNumber(cell(row, col.toAmount))},
+    ].filter((leg): leg is {ticker: string; amount: number} => Boolean(leg.ticker) && leg.amount != null && leg.amount !== 0);
+    if (!date || legs.length === 0) { skippedRows++; continue; }
+    for (const leg of legs) {
+      const total = nativeAmount != null ? Math.abs(nativeAmount) : null;
+      transactions.push({
+        side: leg.amount > 0 ? 'buy' : 'sell', isin: null, ticker: leg.ticker, name: cell(row, col.description) || leg.ticker,
+        date, quantity: Math.abs(leg.amount), price: total != null ? total / Math.abs(leg.amount) : null, total,
+        currency: leg.ticker, totalCurrency: nativeCurrency, externalId: hash ? `${hash}:${leg.ticker}` : null,
+      });
+    }
+  }
+  return {platform: 'cryptocom', transactions, dividends: [], skippedRows};
+}
+
 /* ─── Generic (Portfolio Performance / Ghostfolio style) ─── */
 
 const GENERIC_BUY = ['buy', 'acquisto', 'kauf', 'purchase'];
@@ -356,6 +456,9 @@ export function parseInvestmentCsv(rawText: string): ParsedImportFile | null {
       case 'trading212': return parseTrading212(extracted.header, extracted.rows);
       case 'degiro': return parseDegiro(extracted.header, extracted.rows);
       case 'directa': return parseDirecta(extracted.header, extracted.rows);
+      case 'ledger': return parseLedger(extracted.header, extracted.rows);
+      case 'binance': return parseBinance(extracted.header, extracted.rows);
+      case 'cryptocom': return parseCryptoCom(extracted.header, extracted.rows);
       case 'generic': return parseGeneric(extracted.header, extracted.rows);
     }
   })();

@@ -985,6 +985,73 @@ export interface HistoricalPriceBackfillResult {
     monthsFilled: number
 }
 
+function lastDateOfMonth(monthKey: string): string {
+    const [year, month] = monthKey.split("-").map(Number)
+    return `${monthKey}-${String(new Date(Date.UTC(year, month, 0)).getUTCDate()).padStart(2, "0")}`
+}
+
+/**
+ * Stores provider prices once per instrument/month for the whole application.
+ * A provider observation supersedes an active community candidate, whose row
+ * remains available as audit history. Current-month rows are provisional and
+ * overwritten on the next daily refresh; closed months are final.
+ */
+async function saveCanonicalProviderPrices(
+    instrumentId: number,
+    source: Exclude<HistoricalPriceSource, "community">,
+    pricesEUR: Map<string, number>,
+): Promise<void> {
+    if (pricesEUR.size === 0) return
+    const monthKeys = [...pricesEUR.keys()]
+    const now = new Date()
+    const currentMonthKey = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, "0")}`
+    const today = now.toISOString().slice(0, 10)
+    const {data, error} = await supabase.from("instrument_historical_prices")
+        .select("id, month_key, source")
+        .eq("instrument_id", instrumentId)
+        .in("month_key", monthKeys)
+        .in("status", ["pending", "verified"])
+    if (error) {
+        console.error("investments.saveCanonicalProviderPrices: failed to read canonical prices", error)
+        return
+    }
+
+    const active = (data ?? []) as unknown as {id: number; month_key: string; source: HistoricalPriceSource}[]
+    const communityIds = active.filter((row) => row.source === "community").map((row) => row.id)
+    if (communityIds.length > 0) {
+        const superseded = await supabase.from("instrument_historical_prices")
+            .update({status: "superseded", rejection_note: "Superseded by verified provider price"})
+            .in("id", communityIds)
+        if (superseded.error) {
+            console.error("investments.saveCanonicalProviderPrices: failed to supersede community prices", superseded.error)
+            return
+        }
+    }
+
+    const providerByMonth = new Map(active.filter((row) => row.source !== "community").map((row) => [row.month_key, row]))
+    const newRows: Record<string, unknown>[] = []
+    for (const [monthKey, priceEur] of pricesEUR) {
+        const isFinal = monthKey < currentMonthKey
+        const payload = {
+            reference_date: isFinal ? lastDateOfMonth(monthKey) : today,
+            price_eur: roundCurrency(priceEur), raw_price: roundCurrency(priceEur), raw_currency: "EUR",
+            status: "verified", source, is_final: isFinal, submitted_by: null,
+            verified_at: now.toISOString(), rejection_note: null,
+        }
+        const existing = providerByMonth.get(monthKey)
+        if (existing) {
+            const updated = await supabase.from("instrument_historical_prices").update(payload).eq("id", existing.id)
+            if (updated.error) console.error("investments.saveCanonicalProviderPrices: failed to refresh provider price", updated.error)
+        } else {
+            newRows.push({instrument_id: instrumentId, month_key: monthKey, ...payload})
+        }
+    }
+    if (newRows.length > 0) {
+        const inserted = await supabase.from("instrument_historical_prices").insert(newRows)
+        if (inserted.error) console.error("investments.saveCanonicalProviderPrices: failed to insert provider prices", inserted.error)
+    }
+}
+
 /**
  * Fills in current_value for PAST months that only have cost-basis
  * (invested_amount) history, using each instrument's own historical monthly
@@ -1025,8 +1092,12 @@ async function backfillHistoricalPrices(user_id: string, eurRates: Record<string
     const results: HistoricalPriceBackfillResult[] = []
     for (const holding of backfillable) {
         const instrument = holding.instrument as NonNullable<typeof holding.instrument>
+        const now = new Date()
+        const currentMonthKey = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, "0")}`
         const gaps = (historyByHoldingId.get(holding.id) ?? [])
-            .filter((row) => row.currentValue == null && row.quantity != null && row.quantity > 0)
+            .filter((row) => (row.currentValue == null || row.priceSource === "community"
+                || (row.userDate.slice(0, 7) === currentMonthKey && row.priceSource === "provider"))
+                && row.quantity != null && row.quantity > 0)
             .sort((a, b) => a.userDate.localeCompare(b.userDate))
         if (gaps.length === 0) continue
 
@@ -1047,27 +1118,32 @@ async function backfillHistoricalPrices(user_id: string, eurRates: Record<string
         const priceCurrency = isCrypto ? "EUR" : (instrument.currency ?? "USD")
         const rate = priceCurrency === "EUR" ? 1 : eurRates[priceCurrency]
 
+        if (priceByMonth && rate) {
+            const pricesEUR = new Map([...priceByMonth].map(([monthKey, price]) => [monthKey, roundCurrency(price / rate)]))
+            await saveCanonicalProviderPrices(instrument.id, isCrypto ? "coingecko" : "finnhub", pricesEUR)
+        }
+
         // Free, human-verified fallback for whatever the paid provider can't
         // cover (no data for this range, or gated behind a paid tier) - see
         // getVerifiedCommunityPricesForInstrument. Already EUR, so it's never
         // divided by `rate` below, unlike the provider's native-currency price.
-        const communityByMonth = await getVerifiedCommunityPricesForInstrument(instrument.id)
-        if (!priceByMonth && communityByMonth.size === 0) continue
+        const canonicalByMonth = await getVerifiedCanonicalPricesForInstrument(instrument.id)
+        if (!priceByMonth && canonicalByMonth.size === 0) continue
 
         let monthsFilled = 0
         for (const gap of gaps) {
             const monthKey = gap.userDate.slice(0, 7)
             const price = priceByMonth?.get(monthKey)
-            const communityPriceEUR = communityByMonth.get(monthKey)
+            const canonical = canonicalByMonth.get(monthKey)
 
             let currentValue: number | null = null
             if (price != null && rate) currentValue = roundCurrency((price / rate) * (gap.quantity as number))
-            else if (communityPriceEUR != null) currentValue = roundCurrency(communityPriceEUR * (gap.quantity as number))
+            else if (canonical != null) currentValue = roundCurrency(canonical.priceEur * (gap.quantity as number))
             if (currentValue == null) continue
 
             const result = await upsertHoldingHistoryEntry(user_id, holding.id, new Date(gap.userDate), {
                 currentValue, investedAmount: gap.investedAmount, quantity: gap.quantity,
-                priceSource: price != null ? "provider" : "community",
+                priceSource: price != null || canonical?.source !== "community" ? "provider" : "community",
             })
             if (result.status === "ok") monthsFilled++
         }
@@ -1528,7 +1604,8 @@ async function getTransactionsByUserId(user_id: string): Promise<TransactionSumm
 // becomes visible to every user (see getVerifiedCommunityPricesForInstrument,
 // consumed by backfillHistoricalPrices) - not just the submitter.
 
-type CommunityPriceStatus = "pending" | "verified" | "rejected"
+type CommunityPriceStatus = "pending" | "verified" | "rejected" | "superseded"
+type HistoricalPriceSource = "community" | "coingecko" | "finnhub"
 
 type CommunityPriceRow = {
     id: number
@@ -1539,16 +1616,18 @@ type CommunityPriceRow = {
     raw_price: number
     raw_currency: string
     status: CommunityPriceStatus
-    submitted_by: string
+    submitted_by: string | null
     submitted_at: string
     verified_by: string | null
     verified_at: string | null
     rejection_note: string | null
+    source?: HistoricalPriceSource
+    is_final?: boolean
 }
 
 const COMMUNITY_PRICE_SELECT = [
     "id", "instrument_id", "month_key", "reference_date", "price_eur", "raw_price", "raw_currency",
-    "status", "submitted_by", "submitted_at", "verified_by", "verified_at", "rejection_note",
+    "status", "submitted_by", "submitted_at", "verified_by", "verified_at", "rejection_note", "source", "is_final",
 ].join(", ")
 
 function toCommunityPrice(row: CommunityPriceRow) {
@@ -1566,6 +1645,8 @@ function toCommunityPrice(row: CommunityPriceRow) {
         verifiedBy: row.verified_by,
         verifiedAt: row.verified_at,
         rejectionNote: row.rejection_note,
+        source: row.source ?? "community",
+        isFinal: row.is_final ?? true,
     }
 }
 export type CommunityPrice = ReturnType<typeof toCommunityPrice>
@@ -1624,15 +1705,12 @@ async function submitCommunityPrice(user_id: string, input: CommunityPriceInput,
     const eligible = await hasHeldInstrument(user_id, input.instrumentId)
     if (!eligible) return {status: "not_eligible"}
 
-    const [providerYear, providerMonth] = input.monthKey.split("-").map(Number)
-    const providerMonthEnd = `${input.monthKey}-${String(new Date(Date.UTC(providerYear, providerMonth, 0)).getUTCDate()).padStart(2, "0")}`
-    const {data: providerHistory, error: providerHistoryError} = await supabase.from("user_investment_holding_history")
+    const {data: providerHistory, error: providerHistoryError} = await supabase.from("instrument_historical_prices")
         .select("id")
-        .eq("user_id", user_id)
         .eq("instrument_id", input.instrumentId)
-        .eq("price_source", "provider")
-        .gte("user_date", `${input.monthKey}-01`)
-        .lte("user_date", providerMonthEnd)
+        .eq("month_key", input.monthKey)
+        .neq("source", "community")
+        .eq("status", "verified")
         .limit(1).maybeSingle()
     if (providerHistoryError) console.error("investments.submitCommunityPrice: failed to check provider history", providerHistoryError)
     if (providerHistory) return {status: "provider_available"}
@@ -1652,6 +1730,8 @@ async function submitCommunityPrice(user_id: string, input: CommunityPriceInput,
         raw_price: input.rawPrice,
         raw_currency: input.rawCurrency,
         submitted_by: user_id,
+        source: "community",
+        is_final: true,
     }
 
     const {data, error} = await supabase.from("instrument_historical_prices")
@@ -1662,7 +1742,7 @@ async function submitCommunityPrice(user_id: string, input: CommunityPriceInput,
         const {data: existingRow, error: existingErr} = await supabase.from("instrument_historical_prices")
             .select(COMMUNITY_PRICE_SELECT)
             .eq("instrument_id", input.instrumentId).eq("month_key", input.monthKey)
-            .neq("status", "rejected").maybeSingle()
+            .in("status", ["pending", "verified"]).maybeSingle()
         if (existingErr) console.error("investments.submitCommunityPrice: failed to look up conflicting submission", existingErr)
         if (existingRow) return {status: "conflict", existing: toCommunityPrice(existingRow as unknown as CommunityPriceRow)}
     }
@@ -1676,6 +1756,7 @@ async function getPendingCommunityPrices(): Promise<CommunityPriceWithInstrument
     const {data, error} = await supabase.from("instrument_historical_prices")
         .select(`${COMMUNITY_PRICE_SELECT}, instrument:investment_instruments(id, kind, symbol, name, currency)`)
         .eq("status", "pending")
+        .eq("source", "community")
         .order("submitted_at", {ascending: true})
     if (error) console.error("investments.getPendingCommunityPrices: failed to read pending submissions", error)
     if (error || !data) return []
@@ -1692,6 +1773,7 @@ async function getMyCommunityPriceSubmissions(user_id: string): Promise<Communit
     const {data, error} = await supabase.from("instrument_historical_prices")
         .select(`${COMMUNITY_PRICE_SELECT}, instrument:investment_instruments(id, kind, symbol, name, currency)`)
         .eq("submitted_by", user_id)
+        .neq("status", "superseded")
         .order("submitted_at", {ascending: false})
     if (error) console.error("investments.getMyCommunityPriceSubmissions: failed to read submissions", error)
     if (error || !data) return []
@@ -1781,9 +1863,21 @@ async function getVerifiedCommunityPricesForInstrument(instrument_id: number): P
         .select("month_key, price_eur")
         .eq("instrument_id", instrument_id)
         .eq("status", "verified")
+        .eq("source", "community")
     if (error) console.error("investments.getVerifiedCommunityPricesForInstrument: failed to read verified prices", error)
     if (error || !data) return new Map()
     return new Map((data as unknown as {month_key: string; price_eur: number}[]).map((row) => [row.month_key, row.price_eur]))
+}
+
+async function getVerifiedCanonicalPricesForInstrument(instrument_id: number): Promise<Map<string, {priceEur: number; source: HistoricalPriceSource}>> {
+    const {data, error} = await supabase.from("instrument_historical_prices")
+        .select("month_key, price_eur, source")
+        .eq("instrument_id", instrument_id)
+        .eq("status", "verified")
+    if (error) console.error("investments.getVerifiedCanonicalPricesForInstrument: failed to read canonical prices", error)
+    if (error || !Array.isArray(data)) return new Map()
+    return new Map((data as unknown as {month_key: string; price_eur: number; source?: HistoricalPriceSource}[])
+        .map((row) => [row.month_key, {priceEur: row.price_eur, source: row.source ?? "community"}]))
 }
 
 /**
@@ -1796,6 +1890,7 @@ async function getRecentlyVerifiedCommunityPrices(since: Date): Promise<number[]
     const {data, error} = await supabase.from("instrument_historical_prices")
         .select("instrument_id")
         .eq("status", "verified")
+        .eq("source", "community")
         .gte("verified_at", since.toISOString())
     if (error) console.error("investments.getRecentlyVerifiedCommunityPrices: failed to read recent verifications", error)
     if (error || !data) return []

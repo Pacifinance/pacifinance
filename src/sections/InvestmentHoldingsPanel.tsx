@@ -1202,7 +1202,8 @@ export default function InvestmentHoldingsPanel({
                     // Provider values (CoinGecko for crypto) are already
                     // authoritative: community input is only a fallback for a
                     // month the provider could not price.
-                    const communityContributionAvailable = monthKey < currentMonthKey && entry.priceSource !== 'provider';
+                    const hasVerifiedPrice = entry.priceSource === 'provider' || entry.priceSource === 'community';
+                    const communityContributionAvailable = monthKey < currentMonthKey && !hasVerifiedPrice;
 
                     return (
                       <React.Fragment key={entry.userDate}>

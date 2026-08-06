@@ -764,7 +764,7 @@ export type InvestmentTransactionsGetResponse = InvestmentTransactionSummaryDto[
  * a real quote it feeds backfillHistoricalPrices for every user.
  * ═══════════════════════════════════════════════════════════════════════════*/
 
-export type CommunityPriceStatus = 'pending' | 'verified' | 'rejected';
+export type CommunityPriceStatus = 'pending' | 'verified' | 'rejected' | 'superseded';
 
 export interface CommunityPriceDto {
   id: number;
@@ -779,11 +779,14 @@ export interface CommunityPriceDto {
   rawPrice: number;
   rawCurrency: string;
   status: CommunityPriceStatus;
-  submittedBy: string;
+  submittedBy: string | null;
   submittedAt: string;
   verifiedBy: string | null;
   verifiedAt: string | null;
   rejectionNote: string | null;
+  source?: 'community' | 'coingecko' | 'finnhub';
+  /** False only for the still-open current month. */
+  isFinal?: boolean;
 }
 
 /** Returned by /community-prices/pending and /community-prices/mine, which join instrument details for display. */

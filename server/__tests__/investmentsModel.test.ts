@@ -663,6 +663,8 @@ describe("investments model", () => {
                 error: null,
             }))
             vi.mocked(finnhubProvider.getHistoricalMonthlyPrices).mockResolvedValue(new Map([["2024-01", 100], ["2024-02", 110]]))
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: [], error: null})) // canonical provider lookup
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: null, error: null})) // canonical provider insert
             // getVerifiedCommunityPricesForInstrument's query - no community prices for this instrument.
             mockSupabase.from.mockReturnValueOnce(makeChain({data: [], error: null}))
             // upsertHoldingHistoryEntry's own holding lookup + upsert, once per gap month.
@@ -701,6 +703,8 @@ describe("investments model", () => {
                 .mockResolvedValueOnce(new Map([["2024-01", 90]])) // resolved exchange-suffixed symbol succeeds
             vi.mocked(symbolCache.getCachedSymbol).mockResolvedValue(undefined)
             vi.mocked(finnhubProvider.resolveInternationalSymbol).mockResolvedValue("IWDA.AS")
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: [], error: null})) // canonical provider lookup
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: null, error: null})) // canonical provider insert
             // getVerifiedCommunityPricesForInstrument's query - not reached for this month since the fallback already filled it.
             mockSupabase.from.mockReturnValueOnce(makeChain({data: [], error: null}))
             mockSupabase.from.mockReturnValueOnce(makeChain({data: euHoldingRow, error: null}))
@@ -736,6 +740,8 @@ describe("investments model", () => {
             mockSupabase.from.mockReturnValueOnce(makeChain({data: [cryptoHolding], error: null}))
             mockSupabase.from.mockReturnValueOnce(makeChain({data: [gapRow({quantity: 1})], error: null}))
             vi.mocked(coingeckoProvider.getHistoricalMonthlyPrices).mockResolvedValue(new Map([["2024-01", 40000]]))
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: [], error: null})) // canonical provider lookup
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: null, error: null})) // canonical provider insert
             // getVerifiedCommunityPricesForInstrument's query - no community prices for this instrument.
             mockSupabase.from.mockReturnValueOnce(makeChain({data: [], error: null}))
             mockSupabase.from.mockReturnValueOnce(makeChain({data: cryptoHolding, error: null}))
@@ -745,6 +751,28 @@ describe("investments model", () => {
 
             expect(coingeckoProvider.getHistoricalMonthlyPrices).toHaveBeenCalledWith("bitcoin", expect.any(Number), expect.any(Number))
             expect(finnhubProvider.getHistoricalMonthlyPrices).not.toHaveBeenCalled()
+            expect(result).toEqual([{holdingId: 16, monthsFilled: 1}])
+        })
+
+        it("refreshes a provisional provider value during the still-open current month", async () => {
+            const now = new Date()
+            const currentMonth = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, "0")}`
+            const cryptoHolding = {
+                ...holdingRow, asset_key: "crypto",
+                instrument: {...holdingRow.instrument, kind: "crypto", symbol: "BTC", currency: null, coingecko_id: "bitcoin"},
+            }
+            const currentRow = gapRow({quantity: 1, user_date: `${currentMonth}-01`, current_value: 39000, price_source: "provider"})
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: [cryptoHolding], error: null}))
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: [currentRow], error: null}))
+            vi.mocked(coingeckoProvider.getHistoricalMonthlyPrices).mockResolvedValue(new Map([[currentMonth, 41000]]))
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: [], error: null}))
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: null, error: null}))
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: [], error: null}))
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: cryptoHolding, error: null}))
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: {...currentRow, current_value: 41000}, error: null}))
+
+            const result = await investments.backfillHistoricalPrices("user-1", {EUR: 1})
+
             expect(result).toEqual([{holdingId: 16, monthsFilled: 1}])
         })
 
@@ -852,6 +880,7 @@ describe("investments model", () => {
             expect(result).toEqual([{
                 id: 1, instrumentId: 1, monthKey: "2024-01", priceEur: 100, rawPrice: 110, rawCurrency: "USD",
                 status: "pending", submittedBy: "user-1", submittedAt: "2026-01-01T00:00:00Z", verifiedBy: null, verifiedAt: null, rejectionNote: null,
+                source: "community", isFinal: true,
                 instrument: {id: 1, kind: "stock", symbol: "AAPL", name: "Apple Inc.", currency: "USD"},
             }])
         })

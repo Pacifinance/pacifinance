@@ -1188,6 +1188,8 @@
         }
     },
     "comparison": {
+        "layers": {"title":"Come leggere i dati","you":"Tu","group":"Gruppo di confronto","general":"Riferimento generale","hint":"I dati degli altri utenti compaiono solo quando la soglia privacy è rispettata."},
+        "rankingsAccessory": {"title":"Indicatori comportamentali","accessoryLabel":"Vista accessoria","description":"Le classifiche non valutano patrimonio, reddito o rendimento assoluto. Misurano solo abitudini osservabili e progresso verso i tuoi obiettivi.","savingConsistency":"Costanza nel risparmio","savingConsistencyDescription":"Mesi in cui hai raggiunto il tuo obiettivo di risparmio.","investmentRegularity":"Regolarità degli investimenti","investmentRegularityDescription":"Continuità dei mesi con almeno un contributo d'investimento.","contributionFrequency":"Frequenza dei contributi","contributionFrequencyDescription":"Numero di contributi nei mesi osservati, confrontato solo con gruppi sufficientemente grandi.","goalProgress":"Progresso sugli obiettivi","goalProgressDescription":"Avanzamento rispetto agli obiettivi che hai scelto di monitorare.","waitingForMetric":"Indicatore in preparazione","waitingForMetricDescription":"Servono dati storici omogenei e un gruppo sufficiente prima di pubblicare questo confronto.","waitingForGroup":"Gruppo di confronto non ancora disponibile","waitingForGroupDescription":"L'indicatore apparirà quando il gruppo raggiungerà almeno {minimum} partecipanti."},
         "guide": {"title": "Un confronto utile, senza esporre i tuoi dati", "description": "Partecipando, i tuoi valori confluiscono solo in statistiche aggregate e anonime.", "youTitle": "Tu", "youDescription": "I tuoi dati, visibili soltanto a te.", "similarTitle": "Gruppo di confronto", "similarDescription": "Un gruppo anonimo costruito con i fattori del profilo che scegli.", "allTitle": "Riferimento generale", "allDescription": "La statistica generale della community, meno personalizzata."},
         "title": "Confronto Anonimo",
         "subtitle": "Confronta le tue performance finanziarie con utenti simili in modo anonimo",
@@ -1253,8 +1255,8 @@
                 "title": "Patrimonio Medio",
                 "description": "Confronta il tuo patrimonio attuale e la crescita negli ultimi 12 mesi con altri utenti",
                 "yourBalance": "Il Tuo Patrimonio",
-                "avgSimilar": "Media Utenti Simili",
-                "avgAll": "Media Tutti gli Utenti",
+                "avgSimilar": "Mediana gruppo di confronto",
+                "avgAll": "Riferimento generale",
                 "growth12Months": "ultimi 12 mesi",
                 "noGrowthData": "Dati crescita non disponibili"
             },
@@ -1262,15 +1264,15 @@
                 "title": "Entrate Mensili",
                 "description": "Confronta le entrate dell'ultimo mese completo",
                 "yourIncome": "Le tue entrate",
-                "avgSimilar": "Media Utenti Simili",
-                "avgAll": "Media Tutti gli Utenti"
+                "avgSimilar": "Mediana gruppo di confronto",
+                "avgAll": "Riferimento generale"
             },
             "avgOutflows": {
                 "title": "Uscite Mensili",
                 "description": "Confronta le uscite dell'ultimo mese completo",
                 "yourOutflows": "Le tue uscite",
-                "avgSimilar": "Media Utenti Simili",
-                "avgAll": "Media Tutti gli Utenti"
+                "avgSimilar": "Mediana gruppo di confronto",
+                "avgAll": "Riferimento generale"
             },
             "savingsRate": {
                 "title": "Tasso di Risparmio",

@@ -1188,6 +1188,8 @@
         }
     },
     "comparison": {
+        "layers": {"title":"How to read this","you":"You","group":"Comparison group","general":"General reference","hint":"Other users' data appears only when the privacy threshold is met."},
+        "rankingsAccessory": {"title":"Behavior indicators","accessoryLabel":"Secondary view","description":"These rankings do not judge wealth, income or absolute returns. They describe observable habits and progress toward your own goals.","savingConsistency":"Saving consistency","savingConsistencyDescription":"Months in which you reached your saving target.","investmentRegularity":"Investment regularity","investmentRegularityDescription":"Continuity of months with at least one investment contribution.","contributionFrequency":"Contribution frequency","contributionFrequencyDescription":"Number of contributions in the observed period, shown only for sufficiently large groups.","goalProgress":"Goal progress","goalProgressDescription":"Progress toward the goals you chose to track.","waitingForMetric":"Indicator being prepared","waitingForMetricDescription":"Comparable history and a sufficiently large group are required before this comparison can be published.","waitingForGroup":"Comparison group not available yet","waitingForGroupDescription":"This indicator will appear when the group reaches at least {minimum} participants."},
         "guide": {"title": "Useful comparisons without exposing your data", "description": "When you participate, your values are used only in anonymous, aggregated statistics.", "youTitle": "You", "youDescription": "Your data, visible only to you.", "similarTitle": "Comparison group", "similarDescription": "An anonymous group built from the profile factors you choose.", "allTitle": "General reference", "allDescription": "The broader community reference, with less personalization."},
         "title": "Anonymous Comparison",
         "subtitle": "Compare your financial performance with similar users anonymously",
@@ -1253,8 +1255,8 @@
                 "title": "Average Balance",
                 "description": "Compare your current balance and 12-month growth with other users",
                 "yourBalance": "Your Balance",
-                "avgSimilar": "Similar Users Avg",
-                "avgAll": "All Users Avg",
+                "avgSimilar": "Comparison-group median",
+                "avgAll": "General reference",
                 "growth12Months": "last 12 months",
                 "noGrowthData": "Growth data not available"
             },
@@ -1262,15 +1264,15 @@
                 "title": "Monthly Income",
                 "description": "Compare income from the last complete month",
                 "yourIncome": "Your Income",
-                "avgSimilar": "Similar Users Avg",
-                "avgAll": "All Users Avg"
+                "avgSimilar": "Comparison-group median",
+                "avgAll": "General reference"
             },
             "avgOutflows": {
                 "title": "Monthly Outflows",
                 "description": "Compare outflows from the last complete month",
                 "yourOutflows": "Your Outflows",
-                "avgSimilar": "Similar Users Avg",
-                "avgAll": "All Users Avg"
+                "avgSimilar": "Comparison-group median",
+                "avgAll": "General reference"
             },
             "savingsRate": {
                 "title": "Savings Rate",

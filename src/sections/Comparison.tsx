@@ -232,6 +232,9 @@ const BenchmarkOverview = styled.section`
 
   .overview-actions { display: flex; flex: 0 0 auto; gap: 0.45rem; }
   .benchmark-toggle { background: ${props => props.theme.buttonBackgroundColor}; border: 1px solid ${props => props.theme.buttonBackgroundColor}; border-radius: 10px; color: white; cursor: pointer; font-weight: 700; padding: 0.6rem 0.85rem; }
+  .benchmark-unavailable { background: ${props => props.theme.mode === 'dark' ? 'rgba(251,191,36,.08)' : '#fffbeb'}; border: 1px solid ${props => props.theme.mode === 'dark' ? 'rgba(251,191,36,.24)' : '#fde68a'}; border-radius: 12px; color: ${props => props.theme.textColor}; margin-top: 1rem; padding: .9rem 1rem; }
+  .benchmark-unavailable strong { display: block; font-size: .88rem; margin-bottom: .25rem; }
+  .benchmark-unavailable p { font-size: .78rem; margin: 0; opacity: .75; }
 
   @media (max-width: 600px) {
     padding: 1rem;
@@ -259,6 +262,24 @@ const ComparisonGuide = styled.section`
 
   @media (max-width: 900px) { grid-template-columns: 1fr 1fr; }
   @media (max-width: 560px) { grid-template-columns: 1fr; padding: .9rem; }
+`;
+
+const ComparisonLayers = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .55rem;
+  margin: .25rem 0 1rem;
+  padding: .75rem 1rem;
+  border-radius: 14px;
+  background: ${props => props.theme.mode === 'dark' ? 'rgba(15,23,42,.72)' : '#f8fafc'};
+  border: 1px solid ${props => props.theme.borderColor || 'rgba(148,163,184,.2)'};
+  color: ${props => props.theme.textColor};
+  .layer { display: inline-flex; align-items: center; gap: .4rem; border-radius: 999px; padding: .36rem .62rem; font-size: .78rem; font-weight: 700; }
+  .layer.you { background: ${props => props.theme.buttonBackgroundColor}22; color: ${props => props.theme.buttonBackgroundColor}; }
+  .layer.group { background: rgba(59,130,246,.14); color: ${props => props.theme.mode === 'dark' ? '#93c5fd' : '#1d4ed8'}; }
+  .layer.general { background: ${props => props.theme.mode === 'dark' ? 'rgba(148,163,184,.14)' : '#e2e8f0'}; color: ${props => props.theme.mode === 'dark' ? '#cbd5e1' : '#475569'}; }
+  small { opacity: .7; font-weight: 500; }
 `;
 
 const InfoTrigger = styled.span`
@@ -809,6 +830,9 @@ const RankingsContainer = styled.div`
   gap: 1.5rem;
   width: 100%;
   max-width: none;
+  .benchmark-unavailable { background: ${props => props.theme.mode === 'dark' ? 'rgba(251,191,36,.08)' : '#fffbeb'}; border: 1px solid ${props => props.theme.mode === 'dark' ? 'rgba(251,191,36,.24)' : '#fde68a'}; border-radius: 12px; padding: 1rem; }
+  .benchmark-unavailable strong { color: ${props => props.theme.textColor}; display: block; font-size: .9rem; margin-bottom: .25rem; }
+  .benchmark-unavailable p { color: ${props => props.theme.textColor}; font-size: .8rem; margin: 0; opacity: .75; }
   
   @media (max-width: 768px) {
     gap: 1rem;
@@ -1697,6 +1721,13 @@ function Comparison({ theme, userData, isHidden}) {
                 <div className="guide-item"><span className="guide-number">3</span><div><strong>{translations.comparison.guide.allTitle}</strong><p>{translations.comparison.guide.allDescription}</p></div></div>
             </ComparisonGuide>
             {renderBenchmarkOverview()}
+            <ComparisonLayers theme={theme} aria-label={translations.comparison.layers.title}>
+                <strong>{translations.comparison.layers.title}</strong>
+                <span className="layer you">1 · {translations.comparison.layers.you}</span>
+                <span className="layer group">2 · {translations.comparison.layers.group}</span>
+                <span className="layer general">3 · {translations.comparison.layers.general}</span>
+                <small>{translations.comparison.layers.hint}</small>
+            </ComparisonLayers>
             <TopGrid>
                 <ComparisonCard theme={theme} accent="#3498db">
                     <CardHeader theme={theme}>
@@ -2042,7 +2073,7 @@ function Comparison({ theme, userData, isHidden}) {
         </>
     );
 
-    const renderRankingsTab = () => {
+    const renderLegacyRankingsTab = () => {
         const balanceRank = allComparisonAvailable ? getPercentageRankOnBalance(userData) : 0;
         const incomeRank = allComparisonAvailable ? getPercentageRankOnIncomes(userData) : 0;
         const expenseRank = allComparisonAvailable ? getPercentageRankOnOutflows(userData) : 0;
@@ -2200,6 +2231,35 @@ function Comparison({ theme, userData, isHidden}) {
                 )}
             </RankingsContainer>
         );
+    };
+
+    const renderRankingsTab = () => {
+        const t = translations.comparison.rankingsAccessory;
+        const cards = [
+            {title: t.savingConsistency, description: t.savingConsistencyDescription},
+            {title: t.investmentRegularity, description: t.investmentRegularityDescription},
+            {title: t.contributionFrequency, description: t.contributionFrequencyDescription},
+            {title: t.goalProgress, description: t.goalProgressDescription},
+        ];
+        return <RankingsContainer>
+            <RankingsHeader theme={theme}>
+                <h2><EmojiEventsIcon style={{ fontSize: '1.8rem', color: theme.buttonBackgroundColor }} />{t.title}</h2>
+                <div className="month-indicator">{t.accessoryLabel}</div>
+            </RankingsHeader>
+            <p style={{color: theme.textColor, opacity: .72, margin: '0 0 1rem'}}>{t.description}</p>
+            <RankingsGrid>
+                {cards.map((card) => <RankingGroup theme={theme} key={card.title}>
+                    <div className="group-header">
+                        <div className="icon-container"><QueryStatsIcon style={{ fontSize: '1.5rem', color: 'white' }} /></div>
+                        <div><h3>{card.title}</h3><p style={{color: theme.textColor, opacity: .68, margin: 0, fontSize: '.86rem'}}>{card.description}</p></div>
+                    </div>
+                    <div className="benchmark-unavailable" role="status">
+                        <strong>{similarComparisonAvailable ? t.waitingForMetric : t.waitingForGroup}</strong>
+                        <p>{similarComparisonAvailable ? t.waitingForMetricDescription : t.waitingForGroupDescription.replace('{minimum}', String(minimumBenchmarkSize))}</p>
+                    </div>
+                </RankingGroup>)}
+            </RankingsGrid>
+        </RankingsContainer>;
     };
 
     return (

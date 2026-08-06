@@ -1,0 +1,14 @@
+services:
+  web:
+    build:
+      context: .
+      target: web
+    ports: ["8080:80"]
+    restart: unless-stopped
+  api:
+    build:
+      context: .
+      target: api
+    env_file: .env
+    ports: ["3000:3000"]
+    restart: unless-stopped

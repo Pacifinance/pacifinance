@@ -74,6 +74,16 @@ Requirements:
 
 Install dependencies:
 
+### Docker self-hosting
+
+Copy `.env.example` to `.env`, configure Supabase and required provider keys, then run:
+
+```bash
+docker compose up --build
+```
+
+The web client is available on port 8080 and the API on port 3000. See [the backup runbook](docs/BACKUP_RECOVERY.md), [the threat model](docs/THREAT_MODEL.md), and [the Supabase/RLS checklist](docs/SUPABASE_RLS_AUDIT.md) before production use.
+
 ```bash
 npm install
 ```

@@ -71,7 +71,7 @@ export const FilterToggleRow = styled.button`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 100%;
+  width: auto;
   border: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : '#e2e8f0'};
   background: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.045)' : '#f8fafc'};
   padding: 0.75rem 0.9rem;
@@ -97,6 +97,10 @@ export const FilterToggleRow = styled.button`
     color: ${p => p.theme.buttonBackgroundColor};
     font-size: 0.9rem;
   }
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
 `;
 
 export const FilterBadge = styled.span`
@@ -111,19 +115,34 @@ export const FilterBadge = styled.span`
 
 export const FilterPanel = styled.div`
   display: ${p => p.$open ? 'flex' : 'none'};
-  flex-direction: column;
+  flex-flow: row wrap;
   gap: 0.65rem;
   padding: 0.85rem 1rem;
   margin-top: 0.45rem;
+  width: min(680px, 100%);
+  box-sizing: border-box;
   border: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : '#e2e8f0'};
   border-radius: 10px;
   background: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.02)' : '#f8fafc'};
+  box-shadow: ${p => p.theme.mode === 'dark' ? '0 12px 30px rgba(0,0,0,0.2)' : '0 12px 30px rgba(15,23,42,0.08)'};
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    width: 100%;
+  }
 `;
 
 export const FilterRow = styled.div`
   display: flex;
   flex-direction: column;
   gap: 4px;
+  flex: 1 1 190px;
+  min-width: 0;
+
+  input, select {
+    min-height: 36px;
+    border-radius: 8px;
+  }
 `;
 
 export const FilterLabel = styled.label`
@@ -152,6 +171,7 @@ export const ClearFiltersBtn = styled.button`
   font-size: 0.75rem;
   font-weight: 700;
   cursor: pointer;
+  align-self: flex-end;
 `;
 
 /* ─── Cards (compact — shrunk from the original size so more fit per screen) ─── */

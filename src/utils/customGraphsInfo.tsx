@@ -13,7 +13,10 @@ export const compactNumber = (value) => {
   if (abs >= 1_000_000) return `${sign}${(abs / 1_000_000).toFixed(abs % 1_000_000 === 0 ? 0 : 1)}M`;
   if (abs >= 10_000) return `${sign}${(abs / 1_000).toFixed(abs % 1_000 === 0 ? 0 : 1)}K`;
   if (abs >= 1_000) return `${sign}${(abs / 1_000).toFixed(1)}K`;
-  return `${sign}${abs}`;
+  // Raw arithmetic values (notably "saved = income - outflow") can contain
+  // floating-point tails such as 821.9799999999982. Chart labels should stay
+  // compact and human-readable while preserving cents when they are useful.
+  return `${sign}${Math.round(abs * 100) / 100}`;
 };
 
 export const CustomTick = ({x, y, payload, textAnchor, fill, angle, fontSize, dx, dy }) => {

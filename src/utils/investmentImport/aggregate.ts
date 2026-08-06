@@ -355,10 +355,21 @@ export interface MonthlyPositionSnapshot {
  * every month gets exactly the transactions dated on or before its end,
  * regardless of where else in the file later or earlier rows appear.
  */
-export function buildMonthlyPositionTimeline(transactions: ImportedTransaction[]): MonthlyPositionSnapshot[] {
-  const monthKeys = Array.from(new Set(
+export function buildMonthlyPositionTimeline(transactions: ImportedTransaction[], throughMonthKey?: string): MonthlyPositionSnapshot[] {
+  const transactionMonthKeys = Array.from(new Set(
     transactions.map((tx) => tx.date?.slice(0, 7)).filter((key): key is string => Boolean(key)),
   )).sort();
+  const monthKeys = [...transactionMonthKeys];
+  const firstMonth = transactionMonthKeys[0];
+  const lastTransactionMonth = transactionMonthKeys[transactionMonthKeys.length - 1];
+  if (firstMonth && lastTransactionMonth && throughMonthKey && throughMonthKey > lastTransactionMonth) {
+    let [year, month] = lastTransactionMonth.split('-').map(Number);
+    while (`${year}-${String(month).padStart(2, '0')}` < throughMonthKey) {
+      month += 1;
+      if (month === 13) { month = 1; year += 1; }
+      monthKeys.push(`${year}-${String(month).padStart(2, '0')}`);
+    }
+  }
   return monthKeys.map((monthKey) => ({
     monthKey,
     positions: aggregatePositionsAsOf(transactions, lastDayOfMonth(monthKey)),

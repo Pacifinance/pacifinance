@@ -1,6 +1,7 @@
 import { getTimeoutMs, withTimeout } from "../timeout"
 import { checkAndConsumeRateLimit } from "../rateLimiter"
 import cache from "../../cache/cache"
+import redis from "../../cache/redisClient"
 import type { UpsertInstrumentInput } from "../../db/models/investments"
 
 const CG_SEARCH_URL = "https://api.coingecko.com/api/v3/search"
@@ -111,6 +112,7 @@ const CG_RANGE_URL = "https://api.coingecko.com/api/v3/coins"
 // per user click), but must still never compete with search for the shared
 // demo-plan budget.
 const COINGECKO_HISTORY_LIMIT_PER_MIN = 25
+const HISTORY_CACHE_TTL_SEC = 86400
 
 type CoinGeckoRangeResponse = {
     prices?: [number, number][] // [unix ms, price]
@@ -131,6 +133,18 @@ type CoinGeckoRangeResponse = {
  */
 export async function getHistoricalMonthlyPrices(coinId: string, fromUnix: number, toUnix: number): Promise<Map<string, number> | null> {
     if (fromUnix >= toUnix) return null
+
+    // Normalize the dynamic timestamps to months: two users requesting the
+    // same coin a few seconds apart must hit the same shared Redis entry.
+    // A daily TTL keeps the still-open current month reasonably fresh.
+    const monthFor = (unix: number) => new Date(unix * 1000).toISOString().slice(0, 7)
+    const cacheKey = `coingecko:history:${coinId}:${monthFor(fromUnix)}:${monthFor(toUnix)}`
+    try {
+        const cached = await redis.get<Record<string, number>>(cacheKey)
+        if (cached && Object.keys(cached).length > 0) return new Map(Object.entries(cached))
+    } catch (error) {
+        console.error(`coingeckoProvider.getHistoricalMonthlyPrices: failed to read cache for ${coinId}`, error)
+    }
 
     const allowed = await checkAndConsumeRateLimit("coingecko-history", COINGECKO_HISTORY_LIMIT_PER_MIN)
     if (!allowed) return null
@@ -168,7 +182,13 @@ export async function getHistoricalMonthlyPrices(coinId: string, fromUnix: numbe
             const monthKey = `${pointDate.getUTCFullYear()}-${String(pointDate.getUTCMonth() + 1).padStart(2, "0")}`
             byMonth.set(monthKey, price) // later (more recent) points overwrite earlier ones in the same month
         }
-        return byMonth.size > 0 ? byMonth : null
+        if (byMonth.size === 0) return null
+        try {
+            await redis.set(cacheKey, Object.fromEntries(byMonth), { ex: HISTORY_CACHE_TTL_SEC })
+        } catch (error) {
+            console.error(`coingeckoProvider.getHistoricalMonthlyPrices: failed to cache prices for ${coinId}`, error)
+        }
+        return byMonth
     } catch (error) {
         console.error(`coingeckoProvider.getHistoricalMonthlyPrices: request failed for ${coinId}`, error)
         return null

@@ -984,6 +984,7 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
           historyEntries.push(...buildHistoryEntries(
             row.transactions, row.position.key, saved.id, row.instrument.id,
             recordedHistoryByInstrumentId, recordedQuantityByInstrumentId, convertAmountToEUR,
+            new Date().toLocaleDateString('sv').slice(0, 7),
           ));
           dividendEntries.push(...buildDividendEntries(row, saved.id));
           transactionEntries.push(...buildTransactionEntries(row.transactions, row.instrument.id, saved.id, effectiveImportSource, convertAmountToEUR));
@@ -1009,6 +1010,11 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
 
       setImportPhase('finalizing');
       await flushBatches(investmentService, historyEntries, dividendEntries, transactionEntries);
+      // The import has now created one quantity snapshot for every month up to
+      // today. Turn those gaps into market values immediately (CoinGecko for
+      // crypto), so a buy-and-hold position builds history even when there are
+      // no later transactions and the user never finds the manual backfill UI.
+      await investmentService.backfillHistoricalPrices().catch(() => []);
 
       setImportDone(true);
       trackAnalyticsEvent('investments-import-completed', {

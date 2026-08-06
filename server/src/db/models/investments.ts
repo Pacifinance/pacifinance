@@ -1605,6 +1605,9 @@ export type CommunityPriceSubmissionResult =
     | {status: "conflict"; existing: CommunityPrice}
     // The user never actually held this instrument - see hasHeldInstrument.
     | {status: "not_eligible"}
+    // A provider already supplied an authoritative value for this user's
+    // instrument/month; community input must remain fallback-only.
+    | {status: "provider_available"}
     // rawCurrency isn't a known exchange rate (eurRates lookup miss).
     | {status: "unknown_currency"}
 
@@ -1620,6 +1623,19 @@ export type CommunityPriceSubmissionResult =
 async function submitCommunityPrice(user_id: string, input: CommunityPriceInput, eurRates: Record<string, number>): Promise<CommunityPriceSubmissionResult | null> {
     const eligible = await hasHeldInstrument(user_id, input.instrumentId)
     if (!eligible) return {status: "not_eligible"}
+
+    const [providerYear, providerMonth] = input.monthKey.split("-").map(Number)
+    const providerMonthEnd = `${input.monthKey}-${String(new Date(Date.UTC(providerYear, providerMonth, 0)).getUTCDate()).padStart(2, "0")}`
+    const {data: providerHistory, error: providerHistoryError} = await supabase.from("user_investment_holding_history")
+        .select("id")
+        .eq("user_id", user_id)
+        .eq("instrument_id", input.instrumentId)
+        .eq("price_source", "provider")
+        .gte("user_date", `${input.monthKey}-01`)
+        .lte("user_date", providerMonthEnd)
+        .limit(1).maybeSingle()
+    if (providerHistoryError) console.error("investments.submitCommunityPrice: failed to check provider history", providerHistoryError)
+    if (providerHistory) return {status: "provider_available"}
 
     const rate = input.rawCurrency === "EUR" ? 1 : eurRates[input.rawCurrency]
     if (!rate) return {status: "unknown_currency"}

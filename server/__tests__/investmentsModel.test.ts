@@ -774,6 +774,7 @@ describe("investments model", () => {
         it("still counts as eligible via holding history alone (a manually-added holding later deleted)", async () => {
             mockSupabase.from.mockReturnValueOnce(makeChain({data: null, error: null})) // no live holding
             mockSupabase.from.mockReturnValueOnce(makeChain({data: {id: 3}, error: null})) // but history exists
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: null, error: null})) // no provider price for this month
             mockSupabase.from.mockReturnValueOnce(makeChain({
                 data: {id: 1, instrument_id: 1, month_key: "2024-01", price_eur: 136.36, raw_price: 150, raw_currency: "USD", status: "pending", submitted_by: "user-1", submitted_at: "2026-01-01T00:00:00Z", verified_by: null, verified_at: null, rejection_note: null},
                 error: null,
@@ -787,6 +788,7 @@ describe("investments model", () => {
         it("returns unknown_currency when there's no exchange rate for the submitted currency", async () => {
             mockSupabase.from.mockReturnValueOnce(makeChain({data: {id: 5}, error: null}))
             mockSupabase.from.mockReturnValueOnce(makeChain({data: null, error: null}))
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: null, error: null})) // no provider price
 
             const result = await investments.submitCommunityPrice("user-1", {...input, rawCurrency: "GBP"}, {EUR: 1, USD: 1.1})
 
@@ -796,6 +798,7 @@ describe("investments model", () => {
         it("converts to EUR at submission time and inserts a pending submission", async () => {
             mockSupabase.from.mockReturnValueOnce(makeChain({data: {id: 5}, error: null}))
             mockSupabase.from.mockReturnValueOnce(makeChain({data: null, error: null}))
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: null, error: null})) // no provider price
             mockSupabase.from.mockReturnValueOnce(makeChain({
                 data: {id: 1, instrument_id: 1, month_key: "2024-01", price_eur: 136.36, raw_price: 150, raw_currency: "USD", status: "pending", submitted_by: "user-1", submitted_at: "2026-01-01T00:00:00Z", verified_by: null, verified_at: null, rejection_note: null},
                 error: null,
@@ -809,6 +812,7 @@ describe("investments model", () => {
         it("returns the existing active submission as a conflict instead of overwriting it", async () => {
             mockSupabase.from.mockReturnValueOnce(makeChain({data: {id: 5}, error: null}))
             mockSupabase.from.mockReturnValueOnce(makeChain({data: null, error: null}))
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: null, error: null})) // no provider price
             mockSupabase.from.mockReturnValueOnce(makeChain({data: null, error: {code: "23505", message: "duplicate key"}}))
             mockSupabase.from.mockReturnValueOnce(makeChain({
                 data: {id: 9, instrument_id: 1, month_key: "2024-01", price_eur: 100, raw_price: 100, raw_currency: "EUR", status: "verified", submitted_by: "user-2", submitted_at: "2026-01-01T00:00:00Z", verified_by: "admin-1", verified_at: "2026-01-02T00:00:00Z", rejection_note: null},
@@ -818,6 +822,17 @@ describe("investments model", () => {
             const result = await investments.submitCommunityPrice("user-1", input, {EUR: 1, USD: 1.1})
 
             expect(result).toMatchObject({status: "conflict", existing: {id: 9, status: "verified"}})
+        })
+
+        it("rejects a community proposal when the provider already verified that month", async () => {
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: {id: 5}, error: null}))
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: null, error: null}))
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: {id: 44}, error: null}))
+
+            const result = await investments.submitCommunityPrice("user-1", input, {EUR: 1, USD: 1.1})
+
+            expect(result).toEqual({status: "provider_available"})
+            expect(mockSupabase.from).toHaveBeenCalledTimes(3)
         })
     })
 

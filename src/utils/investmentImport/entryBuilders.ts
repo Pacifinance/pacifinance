@@ -55,8 +55,9 @@ export function buildHistoryEntries(
   recordedHistoryByInstrumentId: Map<number, Map<string, number | null>>,
   recordedQuantityByInstrumentId: Map<number, Map<string, number | null>>,
   convertAmountToEUR: (amount: number, currency: string | null) => number,
+  throughMonthKey?: string,
 ): InvestmentHoldingHistorySaveRequest[] {
-  const timeline = buildMonthlyPositionTimeline(transactions);
+  const timeline = buildMonthlyPositionTimeline(transactions, throughMonthKey);
   const recorded = recordedHistoryByInstrumentId.get(instrumentId);
   const recordedQuantity = recordedQuantityByInstrumentId.get(instrumentId);
   const earliestMonth = timeline[0]?.monthKey;

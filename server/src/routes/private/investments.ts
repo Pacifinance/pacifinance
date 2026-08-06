@@ -502,6 +502,10 @@ investmentsRouter.post("/community-prices/submit", async (req, res) => {
         res.status(403).send()
         return
     }
+    if (result.status === "provider_available") {
+        res.status(403).json({error: "provider_price_already_available"})
+        return
+    }
     if (result.status === "unknown_currency") {
         res.status(400).send()
         return

@@ -1199,7 +1199,10 @@ export default function InvestmentHoldingsPanel({
                     const communityEligible = holding.instrument !== null && COMMUNITY_PRICE_KINDS.has(holding.instrument.kind);
                     const now = new Date();
                     const currentMonthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-                    const communityContributionAvailable = monthKey < currentMonthKey;
+                    // Provider values (CoinGecko for crypto) are already
+                    // authoritative: community input is only a fallback for a
+                    // month the provider could not price.
+                    const communityContributionAvailable = monthKey < currentMonthKey && entry.priceSource !== 'provider';
 
                     return (
                       <React.Fragment key={entry.userDate}>

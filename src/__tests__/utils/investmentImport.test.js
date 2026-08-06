@@ -543,6 +543,15 @@ describe('buildMonthlyPositionTimeline', () => {
     expect(timeline[1].positions[0].quantity).toBe(6);
   });
 
+  it('carries an open position through months with no further transactions', () => {
+    const timeline = buildMonthlyPositionTimeline(
+      [tx({ date: '2024-01-10', quantity: 0.1, total: null })],
+      '2024-04',
+    );
+    expect(timeline.map((month) => month.monthKey)).toEqual(['2024-01', '2024-02', '2024-03', '2024-04']);
+    expect(timeline.map((month) => month.positions[0].quantity)).toEqual([0.1, 0.1, 0.1, 0.1]);
+  });
+
   it('returns an empty timeline when no transaction has a date', () => {
     expect(buildMonthlyPositionTimeline([tx({ date: null })])).toEqual([]);
   });

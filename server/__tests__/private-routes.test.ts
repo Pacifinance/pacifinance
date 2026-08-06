@@ -1204,6 +1204,22 @@ describe("private backend routes", () => {
         expect(response.json).toEqual({existing})
     })
 
+    it("rejects a community price when a provider price already exists", async () => {
+        mockDb.investments.getInstrumentById.mockResolvedValue({id: 1, kind: "crypto", symbol: "BTC", name: "Bitcoin", currency: null})
+        mockCache.valueExpired.mockResolvedValueOnce(false)
+        mockCache.get.mockResolvedValueOnce({EUR: 1})
+        mockDb.investments.submitCommunityPrice.mockResolvedValue({status: "provider_available"})
+
+        const response = await request(app, "/api/investments/community-prices/submit", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {instrument_id: 1, month_key: "2020-01", raw_price: 8000, raw_currency: "EUR"}
+        })
+
+        expect(response.status).toBe(403)
+        expect(response.json).toEqual({error: "provider_price_already_available"})
+    })
+
     it("returns the current user's own community price submissions", async () => {
         mockDb.investments.getMyCommunityPriceSubmissions.mockResolvedValue([
             {id: 1, instrumentId: 1, monthKey: "2020-01", priceEur: 100, rawPrice: 110, rawCurrency: "USD", status: "pending", submittedBy: "user-uuid", submittedAt: "2026-01-01T00:00:00Z", verifiedBy: null, verifiedAt: null, rejectionNote: null, instrument: null},

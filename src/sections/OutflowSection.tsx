@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import styled from 'styled-components';
 import { Select, MenuItem } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -57,7 +58,7 @@ const SectionWrapper = styled.div`
   gap: 1.5rem;
 `;
 
-const SharedExpenseIndicator = styled.button`
+const SharedExpenseIndicator = styled.span`
   position: relative;
   display: inline-flex;
   align-items: center;
@@ -70,7 +71,7 @@ const SharedExpenseIndicator = styled.button`
   border: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(16,185,129,.4)' : 'rgba(5,150,105,.3)'};
   background: ${p => p.theme.mode === 'dark' ? 'rgba(16,185,129,.13)' : 'rgba(5,150,105,.09)'};
   color: ${p => p.theme.buttonBackgroundColor};
-  cursor: pointer;
+  cursor: help;
 
   .verified {
     position: absolute;
@@ -87,38 +88,87 @@ const SharedExpenseIndicator = styled.button`
     border: 2px solid ${p => p.theme.backgroundColor};
   }
 
-  .details {
-    position: absolute;
-    z-index: 20;
-    left: 50%;
-    bottom: calc(100% + 9px);
-    width: max-content;
-    max-width: 260px;
-    transform: translate(-50%, 4px);
-    padding: 0.55rem 0.7rem;
-    border-radius: 10px;
-    border: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,.13)' : '#dbe3ee'};
-    background: ${p => p.theme.mode === 'dark' ? '#17212f' : '#fff'};
-    color: ${p => p.theme.textColor};
-    box-shadow: 0 10px 26px rgba(0,0,0,.22);
-    font-size: 0.72rem;
-    font-weight: 600;
-    line-height: 1.55;
-    text-align: left;
-    white-space: normal;
-    pointer-events: none;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity .16s ease, transform .16s ease;
-  }
-
-  &:hover .details,
-  &:focus-visible .details {
-    opacity: 1;
-    visibility: visible;
-    transform: translate(-50%, 0);
-  }
 `;
+
+const SharedExpenseTooltip = styled.span`
+  position: fixed;
+  z-index: 10000;
+  left: ${p => p.$left}px;
+  top: ${p => p.$top}px;
+  width: max-content;
+  max-width: min(280px, calc(100vw - 24px));
+  transform: translateX(-50%);
+  padding: 0.55rem 0.7rem;
+  border-radius: 10px;
+  border: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,.13)' : '#dbe3ee'};
+  background: ${p => p.theme.mode === 'dark' ? '#17212f' : '#fff'};
+  color: ${p => p.theme.textColor};
+  box-shadow: 0 10px 26px rgba(0,0,0,.28);
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1.55;
+  text-align: left;
+  white-space: normal;
+  pointer-events: none;
+`;
+
+const SharedEditPanel = styled.div`
+  display: grid;
+  gap: 0.45rem;
+  margin-top: 0.45rem;
+  padding: 0.55rem;
+  border: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(16,185,129,.28)' : 'rgba(5,150,105,.22)'};
+  border-radius: 10px;
+  background: ${p => p.theme.mode === 'dark' ? 'rgba(16,185,129,.08)' : 'rgba(5,150,105,.06)'};
+  .shared-toggle { display:flex; align-items:center; gap:.45rem; color:${p => p.theme.textColor}; font-size:.75rem; font-weight:700; cursor:pointer; }
+  .shared-fields { display:grid; grid-template-columns:minmax(120px,1fr) minmax(90px,.8fr); gap:.4rem; }
+  small { color:${p => p.theme.textColor}; opacity:.65; line-height:1.35; }
+  @media (max-width:620px) { .shared-fields { grid-template-columns:1fr; } }
+`;
+
+const SharedExpenseButton = ({ theme, details, ariaLabel }) => {
+  const [tooltipPosition, setTooltipPosition] = React.useState(null);
+
+  const showTooltip = (event) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    const safeHalfWidth = Math.min(140, Math.max(80, window.innerWidth / 2 - 12));
+    setTooltipPosition({
+      left: Math.min(window.innerWidth - safeHalfWidth, Math.max(safeHalfWidth, rect.left + rect.width / 2)),
+      top: rect.bottom + 8,
+    });
+  };
+
+  return (
+    <>
+      <SharedExpenseIndicator
+        theme={theme}
+        onMouseEnter={showTooltip}
+        onMouseLeave={() => setTooltipPosition(null)}
+        onFocus={showTooltip}
+        onBlur={() => setTooltipPosition(null)}
+        aria-label={ariaLabel}
+        role="img"
+        tabIndex={0}
+        aria-describedby={tooltipPosition ? 'shared-expense-details' : undefined}
+      >
+        <FontAwesomeIcon icon={faUsers} />
+        <span className="verified"><FontAwesomeIcon icon={faCheck} /></span>
+      </SharedExpenseIndicator>
+      {tooltipPosition && typeof document !== 'undefined' && createPortal(
+        <SharedExpenseTooltip
+          id="shared-expense-details"
+          role="tooltip"
+          theme={theme}
+          $left={tooltipPosition.left}
+          $top={tooltipPosition.top}
+        >
+          {details}
+        </SharedExpenseTooltip>,
+        document.body,
+      )}
+    </>
+  );
+};
 
 const FormCard = styled.div`
   display: grid;
@@ -710,7 +760,6 @@ export default function OutflowSection({
   onAddOutflow,
   onDeleteOutflow,
   onSaveEdit,
-  onMarkSharedExpense,
   sharedReceivables = [],
   onOpenMultiInsert,
   // New props for balance selection
@@ -773,17 +822,11 @@ export default function OutflowSection({
     if (!shared || isHidden) return null;
     const details = sharedDetails(shared);
     return (
-      <SharedExpenseIndicator
-        type="button"
+      <SharedExpenseButton
         theme={theme}
-        onClick={() => onMarkSharedExpense?.(add)}
-        title={details}
-        aria-label={`${translations.insert.sharedTransactionLink.editOutflowAction}. ${details}`}
-      >
-        <FontAwesomeIcon icon={faUsers} />
-        <span className="verified"><FontAwesomeIcon icon={faCheck} /></span>
-        <span className="details" role="tooltip">{details}</span>
-      </SharedExpenseIndicator>
+        details={details}
+        ariaLabel={details}
+      />
     );
   };
 
@@ -815,7 +858,14 @@ export default function OutflowSection({
   };
 
   const startEditing = (add) => {
-    const displayAmount = fromEUR(add.amount ?? 0);
+    const linkedShared = getSharedReceivable(add.id);
+    const hasStoredSplit = Number(add.cashAmount) > Number(add.amount) + 0.005;
+    const shared = linkedShared ?? (hasStoredSplit
+      ? {totalAmount: Number(add.cashAmount), ownShare: Number(add.amount)}
+      : null);
+    const displayAmount = fromEUR(shared?.totalAmount ?? add.cashAmount ?? add.amount ?? 0);
+    const ratio = shared?.ownShare > 0 ? shared.totalAmount / shared.ownShare : 0;
+    const inferredPeople = Number.isInteger(ratio) && ratio >= 2 ? ratio : 2;
     setEditingAdd(add);
     setEditValues({
       categoryKey: add.categoryTag?.index ?? "",
@@ -826,13 +876,24 @@ export default function OutflowSection({
       typologyKey: add.paymentType?.index ?? "",
       amount: String(parseFloat(displayAmount.toFixed(2))),
       note: add.notes || "",
-      date: add.date ? new Date(add.date).toISOString().split('T')[0] : "",
+      date: add.date ? String(add.date).slice(0, 10) : "",
+      sharedEnabled: Boolean(shared),
+      sharedMethod: shared && Number.isInteger(ratio) && ratio >= 2 ? 'people' : 'share',
+      sharedPeopleCount: inferredPeople,
+      sharedOwnShare: String(parseFloat(fromEUR(shared?.ownShare ?? (add.amount ?? 0) / 2).toFixed(2))),
     });
   };
 
   const handleSaveInline = async () => {
     if (!editValues.categoryKey && editValues.categoryKey !== 0) return;
     if (!editValues.amount || Number(editValues.amount) === 0) return;
+    if (editValues.sharedEnabled) {
+      const total = Number(editValues.amount);
+      const people = Number(editValues.sharedPeopleCount);
+      const ownShare = editValues.sharedMethod === 'people' ? total / people : Number(editValues.sharedOwnShare);
+      if (!Number.isFinite(ownShare) || ownShare < 0 || ownShare >= total
+        || (editValues.sharedMethod === 'people' && (!Number.isInteger(people) || people < 2))) return;
+    }
     setIsSaving(true);
     try {
       const success = await onSaveEdit(editingAdd, editValues);
@@ -859,6 +920,38 @@ export default function OutflowSection({
     if (cleaned.startsWith('.')) cleaned = '0' + cleaned;
     setEditValues(prev => ({ ...prev, amount: cleaned }));
   };
+
+  const renderSharedEditControls = () => (
+    <SharedEditPanel theme={theme}>
+      <label className="shared-toggle">
+        <input type="checkbox" checked={Boolean(editValues.sharedEnabled)}
+          onChange={(e) => setEditValues(prev => ({...prev, sharedEnabled: e.target.checked}))} disabled={isSaving} />
+        <FontAwesomeIcon icon={faUsers} />
+        {translations.insert.outflowSection.sharedExpense.activeLabel}
+      </label>
+      {editValues.sharedEnabled && (
+        <>
+          <div className="shared-fields">
+            <InlineSelect theme={theme} value={editValues.sharedMethod}
+              onChange={(e) => setEditValues(prev => ({...prev, sharedMethod: e.target.value}))}>
+              <option value="people">{translations.insert.sharedTransactionLink.splitByPeople}</option>
+              <option value="share">{translations.insert.sharedTransactionLink.specifyShare}</option>
+            </InlineSelect>
+            {editValues.sharedMethod === 'people' ? (
+              <InlineInput type="number" theme={theme} min="2" step="1" value={editValues.sharedPeopleCount}
+                onChange={(e) => setEditValues(prev => ({...prev, sharedPeopleCount: e.target.value}))}
+                aria-label={translations.insert.outflowSection.sharedExpense?.peopleLabel} />
+            ) : (
+              <InlineInput type="number" theme={theme} min="0" step="0.01" value={editValues.sharedOwnShare}
+                onChange={(e) => setEditValues(prev => ({...prev, sharedOwnShare: e.target.value}))}
+                aria-label={translations.insert.sharedTransactionLink.ownShare} />
+            )}
+          </div>
+          <small>{translations.insert.outflowSection.sharedExpense?.editAmountHelp}</small>
+        </>
+      )}
+    </SharedEditPanel>
+  );
 
   const handleSort = (column) => {
     if (sortColumn === column) {
@@ -1236,6 +1329,7 @@ export default function OutflowSection({
                   onChange={(e) => setEditValues(prev => ({ ...prev, note: e.target.value }))}
                   maxLength={64}
                 />
+                {renderSharedEditControls()}
               </td>
               <td>
                 <InlineInput
@@ -1305,11 +1399,6 @@ export default function OutflowSection({
                 >
                   <FontAwesomeIcon icon={faPen} />
                 </ActionBtn>
-                {!getSharedReceivable(add.id) && <ActionBtn
-                  className="edit"
-                  onClick={() => onMarkSharedExpense?.(add)}
-                  title={translations.insert.sharedTransactionLink.outflowAction}
-                ><FontAwesomeIcon icon={faUsers} /></ActionBtn>}
                 <ActionBtn
                   className="delete"
                   data-umami-event="deleteOutflow"
@@ -1436,6 +1525,7 @@ export default function OutflowSection({
                     onChange={(e) => setEditValues(prev => ({ ...prev, date: e.target.value }))}
                     max={currentDate}
                   />
+                  {renderSharedEditControls()}
                 </CardEditGrid>
                 <CardActionsRow>
                   <ActionBtn
@@ -1493,11 +1583,6 @@ export default function OutflowSection({
                 >
                   <FontAwesomeIcon icon={faPen} />
                 </ActionBtn>
-                {!getSharedReceivable(add.id) && <ActionBtn
-                  className="edit"
-                  onClick={() => onMarkSharedExpense?.(add)}
-                  title={translations.insert.sharedTransactionLink.outflowAction}
-                ><FontAwesomeIcon icon={faUsers} /></ActionBtn>}
                 <ActionBtn
                   className="delete"
                   data-umami-event="deleteOutflow"

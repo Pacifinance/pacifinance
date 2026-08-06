@@ -10,6 +10,7 @@ import type {
   BalanceAddRequest,
   BalancesGetResponse,
   ExpenseAddRequest,
+  ExpenseUpdateRequest,
   ExpenseBatchAddRequest,
   ExpenseBatchAddResponse,
   ExpenseDeleteRequest,
@@ -38,6 +39,8 @@ export interface FinanceService {
   getMonthDetail(year: number, month: number): Promise<MonthDetailResponse>;
   /** POST /expenses/add. */
   addExpenseOrIncome(data: ExpenseAddRequest): Promise<AxiosResponse>;
+  /** POST /expenses/update — preserves the transaction id and updates an optional shared split atomically. */
+  updateExpenseOrIncome(data: ExpenseUpdateRequest): Promise<AxiosResponse>;
   /** POST /expenses/batch-add — one HTTP request and one database insert for CSV imports. */
   addExpensesAndIncomesBatch(data: ExpenseBatchAddRequest): Promise<ExpenseBatchAddResponse>;
   /** POST /expenses/delete. */
@@ -88,6 +91,10 @@ export const createFinanceService = (apiClient: AxiosInstance): FinanceService =
   async addExpenseOrIncome(data) {
     const res = await apiClient.post('/api/expenses/add', data);
     return res;
+  },
+
+  async updateExpenseOrIncome(data) {
+    return apiClient.post('/api/expenses/update', data);
   },
 
   async addExpensesAndIncomesBatch(data) {

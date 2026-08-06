@@ -136,6 +136,16 @@ export interface ExpenseDto {
 }
 
 export interface ExpenseAddRequest { expense: ExpenseDto; }
+export interface ExpenseUpdateRequest {
+  expense: Omit<ExpenseDto, 'shared_expense'> & {
+    id: number;
+    shared_expense?: {
+      enabled: boolean;
+      total_amount?: number;
+      own_share?: number;
+    };
+  };
+}
 export interface ExpenseBatchAddRequest { expenses: ExpenseDto[]; }
 export interface ExpenseBatchAddResponse {
   inserted: number;

@@ -1811,9 +1811,8 @@ export default function InsertValue({
     setShowConfirmationDeleteOutflow(true);
   };
 
-  // Inline edit save handlers — delete original + insert new, then apply a
-  // balance delta if the amount and/or month changed (one source, applied to
-  // both old and new month as needed).
+  // Inline edit save handlers preserve the original transaction id. The
+  // backend updates the transaction and optional shared split atomically.
   const handleSaveEditOutflow = async (originalAdd, editedValues) => {
     return saveEditTransaction(originalAdd, editedValues, true);
   };
@@ -1824,14 +1823,13 @@ export default function InsertValue({
 
   /**
    * Shared edit flow for both outflow and income. Detects whether the edit
-   * changed the amount or the transaction's month and, if so, asks the user
-   * to pick a balance source before performing delete+insert and applying the
-   * corresponding deltas to the affected months.
+   * changed the cash amount or the transaction's month and, if so, asks the
+   * user to pick a balance source before applying the corresponding deltas.
    */
   const saveEditTransaction = async (originalAdd, editedValues, isOutflow) => {
-    const oldDate = originalAdd.date ? new Date(originalAdd.date).toISOString().split('T')[0] : '';
+    const oldDate = originalAdd.date ? String(originalAdd.date).slice(0, 10) : '';
     const newDate = editedValues.date;
-    const oldAmountEUR = Number(originalAdd.amount) || 0;
+    const oldAmountEUR = Number(originalAdd.cashAmount ?? originalAdd.amount) || 0;
     const newAmountEUR = toEUR(Number(editedValues.amount) || 0);
     const amountChanged = Math.abs(oldAmountEUR - newAmountEUR) > 0.005;
     const sameMonth = (() => {
@@ -1859,21 +1857,7 @@ export default function InsertValue({
 
     const sectionKey = isOutflow ? 'outflowSection' : 'incomeSection';
     try {
-      // 2. Delete original.
-      const deleteResult = await financeService.deleteExpenseOrIncome({
-        expense: {
-          id: originalAdd.id ?? undefined,
-          date: originalAdd.date,
-          amount: oldAmountEUR,
-          is_expense: isOutflow,
-        },
-      });
-      if (deleteResult.status !== 200) {
-        showError(translations.insert[sectionKey].editFailed);
-        return false;
-      }
-
-      // 3. Insert edited. Keep the source chosen in the edit modal, or carry
+      // 2. Build the updated transaction. Keep the source chosen in the edit modal, or carry
       // over the source stored with the original transaction when the edit
       // didn't ask for one (no balance impact).
       const inExJson = createInExJson(
@@ -1893,8 +1877,29 @@ export default function InsertValue({
           detail_id: originalAdd.balanceDetailId ?? null,
         };
       }
-      const insertResult = await financeService.addExpenseOrIncome(inExJson);
-      if (insertResult.status !== 200) {
+      let sharedExpenseUpdate;
+      if (isOutflow && typeof editedValues.sharedEnabled === 'boolean') {
+        const ownShareDisplay = editedValues.sharedEnabled
+          ? (editedValues.sharedMethod === 'people'
+              ? Number(editedValues.amount) / Math.max(2, Number(editedValues.sharedPeopleCount) || 2)
+              : Number(editedValues.sharedOwnShare))
+          : null;
+        sharedExpenseUpdate = editedValues.sharedEnabled
+          ? {
+              enabled: true,
+              total_amount: newAmountEUR,
+              own_share: toEUR(ownShareDisplay),
+            }
+          : {enabled: false};
+      }
+      const updateResult = await financeService.updateExpenseOrIncome({
+        expense: {
+          ...inExJson.expense,
+          id: originalAdd.id,
+          ...(sharedExpenseUpdate ? {shared_expense: sharedExpenseUpdate} : {}),
+        },
+      });
+      if (updateResult.status !== 200) {
         showError(translations.insert[sectionKey].editFailed);
         return false;
       }
@@ -1905,7 +1910,7 @@ export default function InsertValue({
         learnFromTransaction(inExJson.expense.notes, inExJson.expense.category_tag, isOutflow, inExJson.expense.user_category_id ?? null);
       }
 
-      // 4. Apply balance deltas if needed.
+      // 3. Apply balance deltas if needed.
       if (needsBalanceUpdate && balanceSource) {
         // Reversing the old transaction on the OLD month:
         //   outflow → +oldAmount   income → -oldAmount
@@ -2438,7 +2443,6 @@ export default function InsertValue({
             onAddOutflow={handleAddOutflow}
             onDeleteOutflow={handleDeleteOutflow}
             onSaveEdit={handleSaveEditOutflow}
-            onMarkSharedExpense={(row) => openSharedLinkModal('outflow', row)}
             sharedReceivables={sharedReceivables}
             onOpenMultiInsert={() => setShowMultiInsert(true)}
             selectedOption={selectedOption}

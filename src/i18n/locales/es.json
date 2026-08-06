@@ -964,6 +964,7 @@
             "sharedExpense": {
                 "toggleLabel": "Dividir con el grupo",
                 "activeLabel": "Gasto compartido",
+                "editAmountHelp": "Con la división activada, el importe editado es el total pagado.",
                 "peopleLabel": "Personas en total (incluyéndote)",
                 "previewShare": "Tu parte",
                 "previewReceivable": "Adeudado por otros"
@@ -1056,7 +1057,7 @@
             "confirm": "Save anyway",
             "cancel": "Cancel"
         },
-        "sharedTransactionLink": { "outflowAction": "Dividir gasto", "editOutflowAction": "Editar división", "outflowTitle": "Dividir un gasto existente", "editOutflowTitle": "Editar gasto compartido", "incomeAction": "Vincular reembolso", "incomeTitle": "Vincular el ingreso como reembolso", "splitByPeople": "Dividir por personas", "specifyShare": "Indicar mi parte", "people": "Personas totales, incluyéndote", "peopleCountShort": "{count} personas", "sharedStatus": "Gasto compartido", "ownShare": "Mi parte", "owed": "Adeudado por otros", "chooseExpense": "Gasto compartido que reembolsar", "cancel": "Cancelar", "confirm": "Confirmar", "update": "Actualizar", "noReceivables": "No hay créditos abiertos", "reimbursementHelp": "El ingreso permanece en el historial y actualiza el crédito, pero no se cuenta como ingreso ganado.", "saved": "Vínculo guardado.", "error": "No se pudo guardar el vínculo. Comprueba los importes y el crédito pendiente." },
+        "sharedTransactionLink": { "outflowTitle": "Dividir un gasto existente", "editOutflowTitle": "Editar gasto compartido", "incomeAction": "Vincular reembolso", "incomeTitle": "Vincular el ingreso como reembolso", "splitByPeople": "Dividir por personas", "specifyShare": "Indicar mi parte", "people": "Personas totales, incluyéndote", "peopleCountShort": "{count} personas", "sharedStatus": "Gasto compartido", "ownShare": "Mi parte", "owed": "Adeudado por otros", "chooseExpense": "Gasto compartido que reembolsar", "cancel": "Cancelar", "confirm": "Confirmar", "update": "Actualizar", "noReceivables": "No hay créditos abiertos", "reimbursementHelp": "El ingreso permanece en el historial y actualiza el crédito, pero no se cuenta como ingreso ganado.", "saved": "Vínculo guardado.", "error": "No se pudo guardar el vínculo. Comprueba los importes y el crédito pendiente." },
         "sharedExpensesPanel": {
             "navLabel": "Gastos compartidos",
             "title": "Gastos compartidos",

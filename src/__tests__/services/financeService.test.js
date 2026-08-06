@@ -113,6 +113,18 @@ describe('financeService', () => {
     });
   });
 
+  describe('updateExpenseOrIncome', () => {
+    it('updates the transaction and optional split in one request', async () => {
+      const txData = { expense: { id: 42, amount: 12, shared_expense: { enabled: false } } };
+      mockClient.post.mockResolvedValue({ status: 200, data: { id: 42 } });
+
+      const result = await service.updateExpenseOrIncome(txData);
+
+      expect(mockClient.post).toHaveBeenCalledWith('/api/expenses/update', txData);
+      expect(result.status).toBe(200);
+    });
+  });
+
   describe('addExpensesAndIncomesBatch', () => {
     it('sends all imported transactions in one request', async () => {
       const payload = { expenses: [{ amount: 10 }, { amount: 20 }] };

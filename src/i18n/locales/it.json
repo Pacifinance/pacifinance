@@ -1030,6 +1030,7 @@
             "sharedExpense": {
                 "toggleLabel": "Dividi con il gruppo",
                 "activeLabel": "Spesa condivisa",
+                "editAmountHelp": "Con la divisione attiva, l’importo modificato è il totale pagato.",
                 "peopleLabel": "Persone totali (incluso te)",
                 "previewShare": "La tua quota",
                 "previewReceivable": "Credito verso gli altri"
@@ -1122,7 +1123,7 @@
             "confirm": "Salva comunque",
             "cancel": "Annulla"
         },
-        "sharedTransactionLink": { "outflowAction": "Dividi spesa", "editOutflowAction": "Modifica divisione", "outflowTitle": "Dividi una spesa già registrata", "editOutflowTitle": "Modifica la spesa condivisa", "incomeAction": "Collega rimborso", "incomeTitle": "Collega l'entrata a un rimborso", "splitByPeople": "Dividi per persone", "specifyShare": "Indica la mia quota", "people": "Persone totali, inclusa la tua quota", "peopleCountShort": "{count} persone", "sharedStatus": "Spesa condivisa", "ownShare": "La mia quota", "owed": "Credito verso gli altri", "chooseExpense": "Spesa condivisa da rimborsare", "cancel": "Annulla", "confirm": "Conferma", "update": "Aggiorna", "noReceivables": "Nessun credito aperto", "reimbursementHelp": "L'entrata resta nello storico e aggiorna il credito, ma non viene conteggiata come reddito.", "saved": "Collegamento salvato.", "error": "Impossibile salvare il collegamento. Controlla importi e credito residuo." },
+        "sharedTransactionLink": { "outflowTitle": "Dividi una spesa già registrata", "editOutflowTitle": "Modifica la spesa condivisa", "incomeAction": "Collega rimborso", "incomeTitle": "Collega l'entrata a un rimborso", "splitByPeople": "Dividi per persone", "specifyShare": "Indica la mia quota", "people": "Persone totali, inclusa la tua quota", "peopleCountShort": "{count} persone", "sharedStatus": "Spesa condivisa", "ownShare": "La mia quota", "owed": "Credito verso gli altri", "chooseExpense": "Spesa condivisa da rimborsare", "cancel": "Annulla", "confirm": "Conferma", "update": "Aggiorna", "noReceivables": "Nessun credito aperto", "reimbursementHelp": "L'entrata resta nello storico e aggiorna il credito, ma non viene conteggiata come reddito.", "saved": "Collegamento salvato.", "error": "Impossibile salvare il collegamento. Controlla importi e credito residuo." },
         "sharedExpensesPanel": {
             "navLabel": "Spese condivise",
             "title": "Spese condivise",

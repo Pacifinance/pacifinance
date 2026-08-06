@@ -113,6 +113,46 @@ expensesRouter.post("/add", async (req, res) => {
     res.status(200).json(doc);
 });
 
+expensesRouter.post("/update", async (req, res) => {
+    const expense = req.body?.expense
+    const id = Number(expense?.id)
+    if (!Number.isFinite(id) || !expense) return res.status(400).send()
+
+    const sharedEnabled = expense.shared_expense?.enabled === true
+    const sharedRemove = expense.shared_expense?.enabled === false
+    const validationExpense = {...expense}
+    if (sharedEnabled) validationExpense.cash_amount = expense.shared_expense.total_amount
+    else delete validationExpense.shared_expense
+    if (!isExpenseValid(validationExpense)) return res.status(400).send()
+
+    const sharedTotal = sharedEnabled ? common.roundCurrency(Number(expense.shared_expense.total_amount)) : null
+    const sharedOwnShare = sharedEnabled ? common.roundCurrency(Number(expense.shared_expense.own_share)) : null
+    if (sharedEnabled && (!Number.isFinite(sharedTotal) || !Number.isFinite(sharedOwnShare)
+        || sharedTotal <= 0 || sharedOwnShare < 0 || sharedOwnShare >= sharedTotal)) {
+        return res.status(400).send()
+    }
+
+    const rawUserCategoryId = expense.user_category_id
+    const userCategoryId = rawUserCategoryId !== null && rawUserCategoryId !== undefined
+        && Number.isFinite(Number(rawUserCategoryId)) ? Number(rawUserCategoryId) : null
+    const updated = await db.expenses.updateExisting(req.userId as string, {
+        id,
+        date: validationExpense.date,
+        amount: validationExpense.amount,
+        isExpense: validationExpense.is_expense,
+        notes: validationExpense.notes,
+        paymentType: validationExpense.payment_type,
+        categoryTag: validationExpense.category_tag,
+        userCategoryId,
+        balanceSource: sanitizeBalanceSource(expense.balance_source),
+        sharedMode: sharedEnabled ? "set" : sharedRemove ? "remove" : "unchanged",
+        sharedTotal,
+        sharedOwnShare,
+    })
+    if (!updated) return res.status(409).send()
+    res.status(200).json(updated)
+})
+
 const MAX_EXPENSE_IMPORT_BATCH = 500
 
 expensesRouter.post("/batch-add", async (req, res) => {

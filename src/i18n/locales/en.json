@@ -1030,6 +1030,7 @@
             "sharedExpense": {
                 "toggleLabel": "Split with the group",
                 "activeLabel": "Shared expense",
+                "editAmountHelp": "When splitting is enabled, the edited amount is the total paid.",
                 "peopleLabel": "Total people (including you)",
                 "previewShare": "Your share",
                 "previewReceivable": "Owed by others"
@@ -1122,7 +1123,7 @@
             "confirm": "Save anyway",
             "cancel": "Cancel"
         },
-        "sharedTransactionLink": { "outflowAction": "Split expense", "editOutflowAction": "Edit split", "outflowTitle": "Split an existing expense", "editOutflowTitle": "Edit shared expense", "incomeAction": "Link reimbursement", "incomeTitle": "Link income as a reimbursement", "splitByPeople": "Split by people", "specifyShare": "Enter my share", "people": "Total people, including you", "peopleCountShort": "{count} people", "sharedStatus": "Shared expense", "ownShare": "My share", "owed": "Owed by others", "chooseExpense": "Shared expense to reimburse", "cancel": "Cancel", "confirm": "Confirm", "update": "Update", "noReceivables": "No open receivables", "reimbursementHelp": "The income remains in history and updates the receivable, but is not counted as earned income.", "saved": "Link saved.", "error": "Couldn't save the link. Check the amounts and outstanding credit." },
+        "sharedTransactionLink": { "outflowTitle": "Split an existing expense", "editOutflowTitle": "Edit shared expense", "incomeAction": "Link reimbursement", "incomeTitle": "Link income as a reimbursement", "splitByPeople": "Split by people", "specifyShare": "Enter my share", "people": "Total people, including you", "peopleCountShort": "{count} people", "sharedStatus": "Shared expense", "ownShare": "My share", "owed": "Owed by others", "chooseExpense": "Shared expense to reimburse", "cancel": "Cancel", "confirm": "Confirm", "update": "Update", "noReceivables": "No open receivables", "reimbursementHelp": "The income remains in history and updates the receivable, but is not counted as earned income.", "saved": "Link saved.", "error": "Couldn't save the link. Check the amounts and outstanding credit." },
         "sharedExpensesPanel": {
             "navLabel": "Shared expenses",
             "title": "Shared expenses",

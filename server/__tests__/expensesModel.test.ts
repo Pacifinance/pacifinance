@@ -3,11 +3,12 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 const mocks = vi.hoisted(() => ({
     insert: vi.fn(),
     select: vi.fn(),
+    rpc: vi.fn(),
     getReference: vi.fn(),
 }))
 
 vi.mock("../src/db/supabase", () => ({
-    default: {from: vi.fn(() => ({insert: mocks.insert}))}
+    default: {from: vi.fn(() => ({insert: mocks.insert})), rpc: mocks.rpc}
 }))
 vi.mock("../src/db/crypto", () => ({
     encryptField: (value: string) => value ? `encrypted:${value}` : null,
@@ -65,5 +66,41 @@ describe("expenses batch insert", () => {
         ])
         expect(result).toBeNull()
         expect(mocks.insert).not.toHaveBeenCalled()
+    })
+})
+
+describe("expenses atomic update", () => {
+    beforeEach(() => {
+        vi.clearAllMocks()
+        mocks.getReference.mockImplementation(async (index: number, type: number) => ({id: type * 1000 + index}))
+    })
+
+    it("does not call the RPC when a tag cannot be resolved", async () => {
+        mocks.getReference.mockResolvedValueOnce(null)
+        const result = await expensesModel.updateExisting("user-1", {
+            id: 42, date: new Date("2026-08-01"), amount: 12, isExpense: true, notes: "Lunch",
+            paymentType: 1, categoryTag: 4, userCategoryId: null, balanceSource: null,
+            sharedMode: "remove", sharedTotal: null, sharedOwnShare: null,
+        })
+
+        expect(result).toBeNull()
+        expect(mocks.rpc).not.toHaveBeenCalled()
+    })
+
+    it("updates the transaction and shared split with one RPC", async () => {
+        mocks.rpc.mockResolvedValue({data: 42, error: null})
+        const result = await expensesModel.updateExisting("user-1", {
+            id: 42, date: new Date("2026-08-01"), amount: 6, isExpense: true, notes: "Lunch",
+            paymentType: 1, categoryTag: 4, userCategoryId: 9,
+            balanceSource: {asset_key: "bank", detail_type: null, detail_id: null},
+            sharedMode: "set", sharedTotal: 24, sharedOwnShare: 6,
+        })
+
+        expect(result).toEqual({id: 42})
+        expect(mocks.rpc).toHaveBeenCalledOnce()
+        expect(mocks.rpc).toHaveBeenCalledWith("update_expense_with_shared", expect.objectContaining({
+            p_user_id: "user-1", p_expense_id: 42, p_notes: "encrypted:Lunch",
+            p_shared_mode: "set", p_shared_total: 24, p_shared_own_share: 6,
+        }))
     })
 })

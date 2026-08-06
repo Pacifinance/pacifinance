@@ -54,12 +54,14 @@ const mocks = vi.hoisted(() => {
         },
         expenses: {
             insertNew: vi.fn(),
+            updateExisting: vi.fn(),
             insertBatch: vi.fn(),
             getMonthlyExpensesByUserId: vi.fn(),
             getRecentMonthlyExpensesByUserId: vi.fn(),
             getMonthlyTotalsByUserId: vi.fn(),
             getAllByUserId: vi.fn(),
             deleteExpenseByData: vi.fn(),
+            deleteExpenseById: vi.fn(),
             getExpenseRankingPool: vi.fn()
         },
         tags: {

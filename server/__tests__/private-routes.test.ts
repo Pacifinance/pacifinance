@@ -183,6 +183,49 @@ describe("private backend routes", () => {
         )
     })
 
+    it("updates an expense and its shared split through one backend operation", async () => {
+        mockDb.expenses.updateExisting.mockResolvedValue({id: 42})
+
+        const response = await request(app, "/api/expenses/update", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {expense: {
+                id: 42,
+                date: "2026-07-18",
+                amount: 24.96,
+                is_expense: true,
+                payment_type: 2,
+                category_tag: 3,
+                notes: "Uber",
+                shared_expense: {enabled: true, total_amount: 24.96, own_share: 6.24},
+            }}
+        })
+
+        expect(response.status).toBe(200)
+        expect(mockDb.expenses.updateExisting).toHaveBeenCalledWith("user-uuid", expect.objectContaining({
+            id: 42,
+            amount: 6.24,
+            sharedMode: "set",
+            sharedTotal: 24.96,
+            sharedOwnShare: 6.24,
+        }))
+    })
+
+    it("rejects an invalid shared split before updating the transaction", async () => {
+        const response = await request(app, "/api/expenses/update", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {expense: {
+                id: 42, date: "2026-07-18", amount: 20, is_expense: true,
+                payment_type: 2, category_tag: 3, notes: "Uber",
+                shared_expense: {enabled: true, total_amount: 20, own_share: 20},
+            }}
+        })
+
+        expect(response.status).toBe(400)
+        expect(mockDb.expenses.updateExisting).not.toHaveBeenCalled()
+    })
+
     it("validates and inserts an expense import as one batch", async () => {
         mockDb.expenses.insertBatch.mockResolvedValue([{id: 1}, {id: 2}])
         mockDb.sharedExpenses.insertImportedReceivables.mockResolvedValue([])

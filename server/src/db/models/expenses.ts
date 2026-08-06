@@ -134,6 +134,53 @@ async function insertNew(user_id: string, date: Date, amount: number, is_expense
     return toExpense(data)
 }
 
+export type ExpenseUpdateInput = {
+    id: number
+    date: Date
+    amount: number
+    isExpense: boolean
+    notes: string
+    paymentType: number
+    categoryTag: number
+    userCategoryId: number | null
+    balanceSource: ExpenseBalanceSource | null
+    sharedMode: "unchanged" | "set" | "remove"
+    sharedTotal: number | null
+    sharedOwnShare: number | null
+}
+
+/** Updates a transaction and its optional shared receivable atomically. */
+async function updateExisting(user_id: string, input: ExpenseUpdateInput) {
+    const paymentIndex = input.isExpense ? input.paymentType : 0
+    const categoryType = input.isExpense ? tags.TagType.expense.value : tags.TagType.income.value
+    const [paymentRef, categoryRef] = await Promise.all([
+        tags.getReferenceByIndexAndType(paymentIndex, tags.TagType.payment.value),
+        tags.getReferenceByIndexAndType(input.categoryTag, categoryType),
+    ])
+    if (!paymentRef || !categoryRef) return null
+
+    const {data, error} = await supabase.rpc("update_expense_with_shared", {
+        p_user_id: user_id,
+        p_expense_id: input.id,
+        p_occurred_at: input.date,
+        p_amount: input.amount,
+        p_is_expense: input.isExpense,
+        p_notes: encryptField(input.notes),
+        p_payment_type_tag_id: paymentRef.id,
+        p_category_tag_id: categoryRef.id,
+        p_user_category_id: input.userCategoryId,
+        p_balance_asset_key: input.balanceSource?.asset_key ?? null,
+        p_balance_detail_type: input.balanceSource?.detail_type ?? null,
+        p_balance_detail_id: input.balanceSource?.detail_id ?? null,
+        p_shared_mode: input.sharedMode,
+        p_shared_total: input.sharedTotal,
+        p_shared_own_share: input.sharedOwnShare,
+    })
+    if (error) console.error("expenses.updateExisting: failed to update expense", error)
+    if (error || data === null) return null
+    return {id: Number(data)}
+}
+
 export type ExpenseBatchInput = {
     date: Date
     amount: number
@@ -420,6 +467,7 @@ async function getExpenseRankingPool(user_ids: string[] | undefined, is_expense_
 
 export default {
     insertNew,
+    updateExisting,
     insertBatch,
     getAllByUserId,
     getLastActivityDateByUserId,

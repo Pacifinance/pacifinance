@@ -1089,7 +1089,7 @@ const PopupOverlay = styled.div`
 function Comparison({ theme, userData, isHidden}) {
     const { language, translations } = useContext(LanguageContext);
     const { formatAmount } = useContext(CurrencyContext);
-    const { rankingService, userService } = useServices();
+    const { rankingService, userService, statsService } = useServices();
     const [activeTab, setActiveTab] = useState('insights');
     const [expandedCards, setExpandedCards] = useState({});
     const [showMotivationalPopup, setShowMotivationalPopup] = useState(false);
@@ -1102,7 +1102,14 @@ function Comparison({ theme, userData, isHidden}) {
     const [isBenchmarkExpanded, setIsBenchmarkExpanded] = useState(false);
     const [hasBenchmarkConsent, setHasBenchmarkConsent] = useState(userData?.benchmarkConsent === true);
     const [isSavingBenchmarkConsent, setIsSavingBenchmarkConsent] = useState(false);
+    const [behaviourBenchmark, setBehaviourBenchmark] = useState(null);
     const navigate = useLocalizedNavigate();
+
+    useEffect(() => {
+        let cancelled = false;
+        statsService?.getBehaviourBenchmark?.().then((result) => { if (!cancelled) setBehaviourBenchmark(result); }).catch(() => {});
+        return () => { cancelled = true; };
+    }, [statsService]);
 
     const toggleFactorGroup = (group) => {
         setCustomBenchmarkError('');
@@ -2236,10 +2243,10 @@ function Comparison({ theme, userData, isHidden}) {
     const renderRankingsTab = () => {
         const t = translations.comparison.rankingsAccessory;
         const cards = [
-            {title: t.savingConsistency, description: t.savingConsistencyDescription},
-            {title: t.investmentRegularity, description: t.investmentRegularityDescription},
-            {title: t.contributionFrequency, description: t.contributionFrequencyDescription},
-            {title: t.goalProgress, description: t.goalProgressDescription},
+            {key: 'savingConsistency', title: t.savingConsistency, description: t.savingConsistencyDescription, suffix: '%'},
+            {key: 'investmentRegularity', title: t.investmentRegularity, description: t.investmentRegularityDescription, suffix: '%'},
+            {key: 'contributionFrequency', title: t.contributionFrequency, description: t.contributionFrequencyDescription, suffix: ''},
+            {key: 'goalProgress', title: t.goalProgress, description: t.goalProgressDescription, suffix: '%'},
         ];
         return <RankingsContainer>
             <RankingsHeader theme={theme}>
@@ -2253,10 +2260,13 @@ function Comparison({ theme, userData, isHidden}) {
                         <div className="icon-container"><QueryStatsIcon style={{ fontSize: '1.5rem', color: 'white' }} /></div>
                         <div><h3>{card.title}</h3><p style={{color: theme.textColor, opacity: .68, margin: 0, fontSize: '.86rem'}}>{card.description}</p></div>
                     </div>
-                    <div className="benchmark-unavailable" role="status">
+                    {behaviourBenchmark?.available && behaviourBenchmark.personal && behaviourBenchmark.rankings ? <div className="benchmark-unavailable" role="status">
+                        <strong>{behaviourBenchmark.personal[card.key] == null ? '—' : `${behaviourBenchmark.personal[card.key]!.toFixed(1)}${card.suffix}`} · {behaviourBenchmark.rankings[card.key] == null ? '—' : `Top ${Math.max(1, 100 - behaviourBenchmark.rankings[card.key]!)}%`}</strong>
+                        <p>{t.waitingForMetricDescription}</p>
+                    </div> : <div className="benchmark-unavailable" role="status">
                         <strong>{similarComparisonAvailable ? t.waitingForMetric : t.waitingForGroup}</strong>
                         <p>{similarComparisonAvailable ? t.waitingForMetricDescription : t.waitingForGroupDescription.replace('{minimum}', String(minimumBenchmarkSize))}</p>
-                    </div>
+                    </div>}
                 </RankingGroup>)}
             </RankingsGrid>
         </RankingsContainer>;

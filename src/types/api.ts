@@ -524,6 +524,15 @@ export interface InvestmentBenchmarkResponse {
   };
 }
 
+export interface BehaviourBenchmarkResponse {
+  available: boolean;
+  reason?: 'consent_required' | 'minimum_cohort';
+  minimumCohortSize: number;
+  cohortSize?: number;
+  personal?: Record<'savingConsistency' | 'investmentRegularity' | 'contributionFrequency' | 'goalProgress', number | null>;
+  rankings?: Record<'savingConsistency' | 'investmentRegularity' | 'contributionFrequency' | 'goalProgress', number | null>;
+}
+
 /* ═══════════════════════════════════════════════════════════════════════════
  * /prices
  * ═══════════════════════════════════════════════════════════════════════════*/

@@ -4,7 +4,7 @@
  * @module services/statsService
  */
 import type { AxiosInstance } from 'axios';
-import type { InvestmentBenchmarkResponse, StatsAverageBucket, StatsAveragesResponse } from '../types/api';
+import type { BehaviourBenchmarkResponse, InvestmentBenchmarkResponse, StatsAverageBucket, StatsAveragesResponse } from '../types/api';
 
 export interface AveragesSnapshot {
   all: StatsAverageBucket;
@@ -14,6 +14,7 @@ export interface AveragesSnapshot {
 export interface StatsService {
   getAverages(): Promise<AveragesSnapshot>;
   getInvestmentBenchmark(): Promise<InvestmentBenchmarkResponse>;
+  getBehaviourBenchmark(): Promise<BehaviourBenchmarkResponse>;
 }
 
 const emptyBucket = (): StatsAverageBucket => ({
@@ -62,6 +63,10 @@ export const createStatsService = (apiClient: AxiosInstance): StatsService => ({
   },
   async getInvestmentBenchmark() {
     const response = await apiClient.post<InvestmentBenchmarkResponse>('/api/stats/investment-benchmark', {});
+    return response.data;
+  },
+  async getBehaviourBenchmark() {
+    const response = await apiClient.post<BehaviourBenchmarkResponse>('/api/stats/behaviour-benchmark', {});
     return response.data;
   },
 });

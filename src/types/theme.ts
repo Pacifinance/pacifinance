@@ -21,4 +21,7 @@ export interface PacifinanceTheme {
   buttonBackgroundColor: string;
   iconBackgroundColor: string;
   rankingInfoBackgroundColor: string;
+  dangerColor: string;
+  successColor: string;
+  warningColor: string;
 }

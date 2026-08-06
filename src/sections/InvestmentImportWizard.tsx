@@ -25,9 +25,11 @@ import { getAssetKeyForInstrument, KIND_TO_ASSET_KEY } from '../constants/invest
 import ImportPlatformGuide from '../components/ImportPlatformGuide';
 import InstrumentSearchAutocomplete from './InstrumentSearchAutocomplete';
 import type {
-  InvestmentInstrumentDto, InvestmentKind, InvestmentHoldingDto, InvestmentTransactionSummaryDto,
+  InvestmentInstrumentDto, InvestmentKind, InvestmentAssetKey, InvestmentHoldingDto, InvestmentTransactionSummaryDto,
   InvestmentHoldingHistorySaveRequest, InvestmentDividendSaveRequest, InvestmentTransactionSaveRequest,
 } from '../types/api';
+import type { PacifinanceTheme } from '../types/theme';
+import type enTranslations from '../i18n/locales/en.json';
 import { countBucket, trackAnalyticsEvent } from '../services/analyticsService';
 
 const INVESTMENT_IMPORT_PLATFORMS = ['trading212', 'degiro', 'directa', 'ledger', 'binance', 'cryptocom'];
@@ -476,9 +478,16 @@ const OverrideFields = styled.div`
 `;
 
 export default function InvestmentImportWizard({ onClose, onImported }: InvestmentImportWizardProps) {
-  const { theme } = useContext(ThemeContext);
-  const { translations, language } = useContext(LanguageContext);
-  const { formatNumber, convertAmountToEUR, currencySymbol } = useContext(CurrencyContext);
+  const { theme } = useContext(ThemeContext) as { theme: PacifinanceTheme };
+  const { translations, language } = useContext(LanguageContext) as {
+    translations: typeof enTranslations;
+    language: string;
+  };
+  const { formatNumber, convertAmountToEUR, currencySymbol } = useContext(CurrencyContext) as {
+    formatNumber: (value: number, options?: Intl.NumberFormatOptions) => string;
+    convertAmountToEUR: (value: number, currency: string | null | undefined) => number;
+    currencySymbol: string;
+  };
   const { investmentService } = useDemoServices();
   const t = translations.investments.importWizard;
 
@@ -617,13 +626,13 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
     const existingKeys = new Set<string>();
     for (const holding of holdingMap.values()) {
       if (!holding.instrument) continue;
-      const key = positionKeyFor({isin: holding.instrument.isin, ticker: holding.instrument.symbol, name: holding.instrument.name});
+      const key = positionKeyFor({isin: holding.instrument.isin ?? null, ticker: holding.instrument.symbol ?? null, name: holding.instrument.name ?? null});
       if (key) existingKeys.add(key);
     }
     const candidates: ClosedHoldingCandidate[] = [];
     for (const holding of holdingMap.values()) {
       if (!holding.instrument || (holding.quantity ?? 0) <= 0) continue;
-      const key = positionKeyFor({isin: holding.instrument.isin, ticker: holding.instrument.symbol, name: holding.instrument.name});
+      const key = positionKeyFor({isin: holding.instrument.isin ?? null, ticker: holding.instrument.symbol ?? null, name: holding.instrument.name ?? null});
       const match = key ? closed.find((p) => p.key === key) : undefined;
       if (match) candidates.push({holding, lastTransactionDate: match.lastTransactionDate, status: 'pending', transactions: key ? (transactionsByKey.get(key) ?? []) : []});
     }
@@ -1337,7 +1346,7 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
                       </select>
                     </ManualAddRow>
                     <InstrumentSearchAutocomplete
-                      assetKey={KIND_TO_ASSET_KEY[row.manualKind]}
+                      assetKey={KIND_TO_ASSET_KEY[row.manualKind] as InvestmentAssetKey}
                       onSelect={(instrument) => handleManualResolve(index, instrument)}
                     />
                   </ManualResolveBlock>

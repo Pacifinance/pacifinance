@@ -812,7 +812,7 @@
                 "currentMonth": "Current Month"
             }
         },
-        "investmentBenchmark": {"title":"Anonymous investment comparison","description":"Compare your behavior and returns with the median of an anonymous cohort.","consentRequired":"Enable benchmark consent to access the comparison and contribute in aggregate form.","minimumCohort":"The comparison will appear when at least {minimum} eligible participants are available.","legend":"You / cohort median ({count} participants)","highReliability":"high reliability","mediumReliability":"medium reliability","consistency":"Monthly consistency","monthlyContribution":"Average monthly contribution","moneyWeighted":"Money-weighted return (XIRR)","timeWeighted":"Time-weighted return (TWR)","notEnoughHistory":"insufficient history","methodNote":"XIRR accounts for cash-flow dates and amounts; TWR approximately isolates performance from contributions using monthly valuations. We avoid simple gain percentages because they can be misleading."},
+        "investmentBenchmark": {"title":"Anonymous investment comparison","description":"Compare your behavior and returns with the median of an anonymous comparison group.","consentRequired":"Enable benchmark consent to access the comparison and contribute in aggregate form.","minimumCohort":"The comparison will appear when at least {minimum} eligible participants are available.","legend":"You / comparison-group median ({count} participants)","highReliability":"high reliability","mediumReliability":"medium reliability","consistency":"Monthly consistency","monthlyContribution":"Average monthly contribution","moneyWeighted":"Money-weighted return (XIRR)","timeWeighted":"Time-weighted return (TWR)","notEnoughHistory":"insufficient history","methodNote":"XIRR accounts for cash-flow dates and amounts; TWR approximately isolates performance from contributions using monthly valuations. We avoid simple gain percentages because they can be misleading."},
         "statsHoldings": {
             "title": "Investment Portfolio",
             "description": "Analyze the composition and performance of your investments in detail",
@@ -1188,7 +1188,7 @@
         }
     },
     "comparison": {
-        "guide": {"title": "Useful comparisons without exposing your data", "description": "When you participate, your values are used only in anonymous, aggregated statistics.", "youTitle": "You", "youDescription": "Your data, visible only to you.", "similarTitle": "Similar users", "similarDescription": "An anonymous group built from the profile factors you choose.", "allTitle": "All users", "allDescription": "The broader community reference, with less personalization."},
+        "guide": {"title": "Useful comparisons without exposing your data", "description": "When you participate, your values are used only in anonymous, aggregated statistics.", "youTitle": "You", "youDescription": "Your data, visible only to you.", "similarTitle": "Comparison group", "similarDescription": "An anonymous group built from the profile factors you choose.", "allTitle": "General reference", "allDescription": "The broader community reference, with less personalization."},
         "title": "Anonymous Comparison",
         "subtitle": "Compare your financial performance with similar users anonymously",
         "benchmarkOverview": {
@@ -1211,7 +1211,7 @@
             "applyFactors": "Update comparison",
             "resetFactors": "Use recommended comparison",
             "calculating": "Calculating...",
-            "noCohort": "There are not enough comparable profiles for this selection yet.",
+            "noCohort": "There are not enough comparable profiles for this group yet.", "comparisonUnavailable": "Comparison group not available yet", "comparisonUnavailableDescription": "We will show the comparison when the group reaches the minimum privacy threshold of {minimum} participants. Until then, we do not show other users' statistics as a substitute.",
             "customError": "Unable to update the comparison. Try again.",
             "factorUnavailable": "Complete this part of your profile to use it in the comparison.",
             "preview": "Preview: {count} comparable profiles (minimum {minimum}).",
@@ -1309,12 +1309,12 @@
         },
         "actionableInsights": {
             "percentileTitle": "Net worth: top {rank}% among similar profiles",
-            "percentileDescription": "This percentile uses the net-worth-specific cohort, rather than an undifferentiated average of all users.",
+            "percentileDescription": "This percentile uses the comparison group specific to net worth, rather than an undifferentiated average of all users.",
             "categoryTitle": "Review: {category}",
-            "categoryDescription": "Over the last 12 months you spent {difference} more than your cohort average in this parent category: this accounts for {contribution}% of the detected gaps.",
+            "categoryDescription": "Over the last 12 months you spent {difference} more than your comparison-group average in this parent category: this accounts for {contribution}% of the detected gaps.",
             "savingsTitle": "Savings-rate opportunity",
-            "savingsDescription": "Your cohort saves {gap} percentage points more on average. Categories above the benchmark may show where to start.",
-            "balancedTitle": "In line with your cohort",
+            "savingsDescription": "Your comparison group saves {gap} percentage points more on average. Categories above the benchmark may show where to start.",
+            "balancedTitle": "In line with your comparison group",
             "balancedDescription": "No material gaps stand out. Keep watching the trend, which is more useful than a single month."
         },
         "profileBanner": {

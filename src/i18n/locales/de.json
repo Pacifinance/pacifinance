@@ -1120,7 +1120,7 @@
         }
     },
     "comparison": {
-        "guide": {"title": "Nützliche Vergleiche, ohne deine Daten offenzulegen", "description": "Deine Werte fließen nur in anonyme, zusammengefasste Statistiken ein.", "youTitle": "Du", "youDescription": "Deine Daten, nur für dich sichtbar.", "similarTitle": "Ähnliche Nutzer", "similarDescription": "Eine anonyme Gruppe anhand der von dir gewählten Profilmerkmale.", "allTitle": "Alle Nutzer", "allDescription": "Der allgemeine Community-Vergleich mit weniger Personalisierung."},
+        "guide": {"title": "Nützliche Vergleiche, ohne deine Daten offenzulegen", "description": "Deine Werte fließen nur in anonyme, zusammengefasste Statistiken ein.", "youTitle": "Du", "youDescription": "Deine Daten, nur für dich sichtbar.", "similarTitle": "Vergleichsgruppe", "similarDescription": "Eine anonyme Gruppe anhand der von dir gewählten Profilmerkmale.", "allTitle": "Allgemeine Referenz", "allDescription": "Der allgemeine Community-Vergleich mit weniger Personalisierung."},
         "title": "Anonymer Vergleich",
         "subtitle": "Vergleiche deine finanzielle Leistung anonym mit ähnlichen Nutzern",
         "benchmarkOverview": {
@@ -1139,7 +1139,7 @@
             "applyFactors": "Vergleich aktualisieren",
             "resetFactors": "Empfohlenen Vergleich verwenden",
             "calculating": "Wird berechnet...",
-            "noCohort": "Für diese Auswahl gibt es noch nicht genügend vergleichbare Profile.",
+            "noCohort": "Für diese Gruppe gibt es noch nicht genügend vergleichbare Profile.", "comparisonUnavailable": "Vergleichsgruppe noch nicht verfügbar", "comparisonUnavailableDescription": "Der Vergleich wird angezeigt, sobald die Gruppe die Datenschutzschwelle von {minimum} Teilnehmern erreicht. Bis dahin zeigen wir keine Statistiken anderer Nutzer als Ersatz.",
             "customError": "Der Vergleich konnte nicht aktualisiert werden. Bitte versuche es erneut.",
             "factorUnavailable": "Vervollständige diesen Teil deines Profils, um ihn im Vergleich zu verwenden.",
             "preview": "Vorschau: {count} vergleichbare Profile (mindestens {minimum}).",

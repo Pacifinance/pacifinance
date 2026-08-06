@@ -1233,6 +1233,15 @@ function Comparison({ theme, userData, isHidden}) {
             savingsRates: customBenchmark.cohort.size
         }
     } : userAverages.similar?.benchmark;
+    // A comparison is meaningful only when the user opted in and the
+    // selected comparison group meets the privacy floor. Never fall back to
+    // displaying the global aggregate as if it described this user.
+    const minimumBenchmarkSize = benchmarkMetadata?.minimumCohortSize ?? 20;
+    const similarComparisonAvailable = hasBenchmarkConsent
+        && Boolean(benchmarkMetadata)
+        && Object.values(benchmarkMetadata?.cohortSizes ?? {}).some((size) => size >= minimumBenchmarkSize);
+    const allComparisonAvailable = hasBenchmarkConsent
+        && (userAverages.all?.benchmark?.populationSize ?? 0) >= minimumBenchmarkSize;
 
     const hasProfileValue = (field) => field && field.index !== -1 && Boolean(field.label);
     const profileFactorGroups = [
@@ -1263,9 +1272,9 @@ function Comparison({ theme, userData, isHidden}) {
         : profileFactorGroups.filter(group => group.available);
 
     const similarRanks = {
-        balance: customBenchmark?.available ? customBenchmark.rankings.balance : getPercentageRankOnBalanceSimilar(userData),
-        incomes: customBenchmark?.available ? customBenchmark.rankings.incomes : getPercentageRankOnIncomesSimilar(userData),
-        outflows: customBenchmark?.available ? customBenchmark.rankings.outflows : getPercentageRankOnOutflowsSimilar(userData)
+        balance: similarComparisonAvailable ? (customBenchmark?.available ? customBenchmark.rankings.balance : getPercentageRankOnBalanceSimilar(userData)) : 0,
+        incomes: similarComparisonAvailable ? (customBenchmark?.available ? customBenchmark.rankings.incomes : getPercentageRankOnIncomesSimilar(userData)) : 0,
+        outflows: similarComparisonAvailable ? (customBenchmark?.available ? customBenchmark.rankings.outflows : getPercentageRankOnOutflowsSimilar(userData)) : 0
     };
     
     const comparisonData = {
@@ -1275,23 +1284,23 @@ function Comparison({ theme, userData, isHidden}) {
                 growth12Months: getBalanceGrowth12Months(userData)
             },
             similarUsers: {
-                current: customBenchmark?.available ? customBenchmark.averages.balances : userAverages.similar?.balances ?? null,
+                current: similarComparisonAvailable ? (customBenchmark?.available ? customBenchmark.averages.balances : userAverages.similar?.balances ?? null) : null,
                 growth12Months: null // Will be added when API provides this data
             },
             allUsers: {
-                current: userAverages.all?.balances ?? 0,
+                current: allComparisonAvailable ? userAverages.all?.balances ?? null : null,
                 growth12Months: null // Will be added when API provides this data
             }
         },
         avgIncome: {
             user: getLastCompleteMonth(userIncomesArray),
-            similarUsers: customBenchmark?.available ? customBenchmark.averages.incomes : userAverages.similar?.incomes ?? null,
-            allUsers: userAverages.all?.incomes ?? 0
+            similarUsers: similarComparisonAvailable ? (customBenchmark?.available ? customBenchmark.averages.incomes : userAverages.similar?.incomes ?? null) : null,
+            allUsers: allComparisonAvailable ? userAverages.all?.incomes ?? null : null
         },
         avgOutflows: {
             user: getLastCompleteMonth(userOutflowsArray),
-            similarUsers: customBenchmark?.available ? customBenchmark.averages.expenses : userAverages.similar?.expenses ?? null,
-            allUsers: userAverages.all?.expenses ?? 0
+            similarUsers: similarComparisonAvailable ? (customBenchmark?.available ? customBenchmark.averages.expenses : userAverages.similar?.expenses ?? null) : null,
+            allUsers: allComparisonAvailable ? userAverages.all?.expenses ?? null : null
         }
     };
 
@@ -1307,12 +1316,12 @@ function Comparison({ theme, userData, isHidden}) {
     const userSavingsRate = calculateSavingsRate();
 
     // Get averages savings rates from API
-    const allUsersSavingsRate = getAveragesAllSavingsRates(userData);
-    const similarUsersSavingsRate = getAveragesSimilarSavingsRates(userData);
+    const allUsersSavingsRate = allComparisonAvailable ? getAveragesAllSavingsRates(userData) : null;
+    const similarUsersSavingsRate = similarComparisonAvailable ? getAveragesSimilarSavingsRates(userData) : null;
 
     // Get averages expenses by category from API
-    const allUsersExpensesByCategory = getAveragesAllExpensesByCategory(userData);
-    const similarUsersExpensesByCategory = getAveragesSimilarExpensesByCategory(userData);
+    const allUsersExpensesByCategory = allComparisonAvailable ? getAveragesAllExpensesByCategory(userData) : null;
+    const similarUsersExpensesByCategory = similarComparisonAvailable ? getAveragesSimilarExpensesByCategory(userData) : null;
 
     // Calculate Asset Allocation
     const calculateAssetAllocation = () => {
@@ -1326,10 +1335,10 @@ function Comparison({ theme, userData, isHidden}) {
         const investments = (currentBalance.stocks || 0) + (currentBalance.etf || 0) + (currentBalance.bonds || 0) + (currentBalance.funds || 0) + (currentBalance.commodities || 0);
         const crypto = (currentBalance.bitcoin || 0) + (currentBalance.crypto || 0);
         
-        const similarAllocation = customBenchmark?.available
+        const similarAllocation = similarComparisonAvailable && customBenchmark?.available
             ? customBenchmark.averages.assetAllocation
-            : userAverages.similar?.assetAllocation;
-        const allAllocation = userAverages.all?.assetAllocation;
+            : similarComparisonAvailable ? userAverages.similar?.assetAllocation : null;
+        const allAllocation = allComparisonAvailable ? userAverages.all?.assetAllocation : null;
         const allocations = [
             { key: 'liquid', name: translations.comparison.cards.assetAllocation.liquid || 'Liquidity', value: liquid, percentage: (liquid / totalValue) * 100, color: '#3498db' },
             { key: 'investments', name: translations.comparison.cards.assetAllocation.investments || 'Investments', value: investments, percentage: (investments / totalValue) * 100, color: '#27ae60' },
@@ -1536,7 +1545,7 @@ function Comparison({ theme, userData, isHidden}) {
                     </BenchmarkOptInCard>
                 )}
 
-                {isBenchmarkExpanded && <>
+                {isBenchmarkExpanded && hasBenchmarkConsent && similarComparisonAvailable && <>
                 <BenchmarkRankGrid>
                     {rankCards.map(card => (
                         <BenchmarkRank key={card.label} theme={theme}>
@@ -1635,6 +1644,13 @@ function Comparison({ theme, userData, isHidden}) {
                     </div>
                 </CohortCustomizer>
                 </>}
+                {isBenchmarkExpanded && hasBenchmarkConsent && !similarComparisonAvailable && (
+                    <div className="benchmark-unavailable" role="status">
+                        <strong>{translations.comparison.benchmarkOverview?.comparisonUnavailable || 'Comparison group not available yet'}</strong>
+                        <p>{(translations.comparison.benchmarkOverview?.comparisonUnavailableDescription || 'We will show the comparison when the group reaches the minimum privacy threshold of {minimum} participants. Until then, no other users’ statistics are shown as a substitute.')
+                            .replace('{minimum}', String(minimumBenchmarkSize))}</p>
+                    </div>
+                )}
             </BenchmarkOverview>
         );
     };
@@ -2027,12 +2043,22 @@ function Comparison({ theme, userData, isHidden}) {
     );
 
     const renderRankingsTab = () => {
-        const balanceRank = getPercentageRankOnBalance(userData);
-        const incomeRank = getPercentageRankOnIncomes(userData);
-        const expenseRank = getPercentageRankOnOutflows(userData);
-        const balanceSimilarRank = customBenchmark?.available ? customBenchmark.rankings.balance : getPercentageRankOnBalanceSimilar(userData);
-        const incomeSimilarRank = customBenchmark?.available ? customBenchmark.rankings.incomes : getPercentageRankOnIncomesSimilar(userData);
-        const expenseSimilarRank = customBenchmark?.available ? customBenchmark.rankings.outflows : getPercentageRankOnOutflowsSimilar(userData);
+        const balanceRank = allComparisonAvailable ? getPercentageRankOnBalance(userData) : 0;
+        const incomeRank = allComparisonAvailable ? getPercentageRankOnIncomes(userData) : 0;
+        const expenseRank = allComparisonAvailable ? getPercentageRankOnOutflows(userData) : 0;
+        const balanceSimilarRank = similarComparisonAvailable ? (customBenchmark?.available ? customBenchmark.rankings.balance : getPercentageRankOnBalanceSimilar(userData)) : 0;
+        const incomeSimilarRank = similarComparisonAvailable ? (customBenchmark?.available ? customBenchmark.rankings.incomes : getPercentageRankOnIncomesSimilar(userData)) : 0;
+        const expenseSimilarRank = similarComparisonAvailable ? (customBenchmark?.available ? customBenchmark.rankings.outflows : getPercentageRankOnOutflowsSimilar(userData)) : 0;
+
+        if (!allComparisonAvailable && !similarComparisonAvailable) {
+            return <RankingsContainer>
+                <RankingsHeader theme={theme}><h2><EmojiEventsIcon style={{ fontSize: '1.8rem', color: theme.buttonBackgroundColor }} />{translations.leaderboard.rankings.title}</h2></RankingsHeader>
+                <div className="benchmark-unavailable" role="status">
+                    <strong>{translations.comparison.benchmarkOverview?.comparisonUnavailable || 'Comparison group not available yet'}</strong>
+                    <p>{(translations.comparison.benchmarkOverview?.comparisonUnavailableDescription || 'We will show rankings when the privacy threshold is met: {minimum}.').replace('{minimum}', String(minimumBenchmarkSize))}</p>
+                </div>
+            </RankingsContainer>;
+        }
 
         const RankCard = ({ title, rank, icon, isExpense = false, category }) => (
             <RankingCard 

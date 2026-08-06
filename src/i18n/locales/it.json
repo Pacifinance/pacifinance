@@ -812,7 +812,7 @@
                 "currentMonth": "Mese Corrente"
             }
         },
-        "investmentBenchmark": {"title":"Confronto anonimo investimenti","description":"Confronta il tuo comportamento e i rendimenti con la mediana di una coorte anonima.","consentRequired":"Attiva il consenso ai benchmark per accedere al confronto e contribuire in forma aggregata.","minimumCohort":"Il confronto apparirà quando saranno disponibili almeno {minimum} partecipanti idonei.","legend":"Tu / mediana della coorte ({count} partecipanti)","highReliability":"affidabilità alta","mediumReliability":"affidabilità media","consistency":"Costanza mensile","monthlyContribution":"Versamento medio mensile","moneyWeighted":"Rendimento money-weighted (XIRR)","timeWeighted":"Rendimento time-weighted (TWR)","notEnoughHistory":"storico insufficiente","methodNote":"XIRR considera date e importi dei flussi; TWR isola approssimativamente la performance dai versamenti usando rilevazioni mensili. Non confrontiamo il semplice guadagno percentuale, che sarebbe fuorviante."},
+        "investmentBenchmark": {"title":"Confronto anonimo investimenti","description":"Confronta il tuo comportamento e i rendimenti con la mediana di un gruppo anonimo.","consentRequired":"Attiva il consenso ai benchmark per accedere al confronto e contribuire in forma aggregata.","minimumCohort":"Il confronto apparirà quando saranno disponibili almeno {minimum} partecipanti idonei.","legend":"Tu / mediana del gruppo ({count} partecipanti)","highReliability":"affidabilità alta","mediumReliability":"affidabilità media","consistency":"Costanza mensile","monthlyContribution":"Versamento medio mensile","moneyWeighted":"Rendimento money-weighted (XIRR)","timeWeighted":"Rendimento time-weighted (TWR)","notEnoughHistory":"storico insufficiente","methodNote":"XIRR considera date e importi dei flussi; TWR isola approssimativamente la performance dai versamenti usando rilevazioni mensili. Non confrontiamo il semplice guadagno percentuale, che sarebbe fuorviante."},
         "statsHoldings": {
             "title": "Portafoglio Investimenti",
             "description": "Analizza la composizione e l'andamento dei tuoi investimenti nel dettaglio",
@@ -1188,7 +1188,7 @@
         }
     },
     "comparison": {
-        "guide": {"title": "Un confronto utile, senza esporre i tuoi dati", "description": "Partecipando, i tuoi valori confluiscono solo in statistiche aggregate e anonime.", "youTitle": "Tu", "youDescription": "I tuoi dati, visibili soltanto a te.", "similarTitle": "Utenti simili", "similarDescription": "Un gruppo anonimo costruito con i fattori del profilo che scegli.", "allTitle": "Tutti gli utenti", "allDescription": "Il riferimento generale della community, meno personalizzato."},
+        "guide": {"title": "Un confronto utile, senza esporre i tuoi dati", "description": "Partecipando, i tuoi valori confluiscono solo in statistiche aggregate e anonime.", "youTitle": "Tu", "youDescription": "I tuoi dati, visibili soltanto a te.", "similarTitle": "Gruppo di confronto", "similarDescription": "Un gruppo anonimo costruito con i fattori del profilo che scegli.", "allTitle": "Riferimento generale", "allDescription": "La statistica generale della community, meno personalizzata."},
         "title": "Confronto Anonimo",
         "subtitle": "Confronta le tue performance finanziarie con utenti simili in modo anonimo",
         "benchmarkOverview": {
@@ -1211,7 +1211,7 @@
             "applyFactors": "Aggiorna confronto",
             "resetFactors": "Usa confronto consigliato",
             "calculating": "Calcolo in corso...",
-            "noCohort": "Non ci sono ancora abbastanza profili comparabili per questa selezione.",
+            "noCohort": "Non ci sono ancora abbastanza profili comparabili per questo gruppo.", "comparisonUnavailable": "Gruppo di confronto non ancora disponibile", "comparisonUnavailableDescription": "Mostreremo il confronto quando il gruppo raggiungerà la soglia minima di privacy di {minimum} partecipanti. Nel frattempo non mostriamo statistiche di altri utenti come sostituto.",
             "customError": "Non è stato possibile aggiornare il confronto. Riprova.",
             "factorUnavailable": "Completa questa parte del profilo per usarla nel confronto.",
             "preview": "Anteprima: {count} profili comparabili (minimo {minimum}).",
@@ -1309,12 +1309,12 @@
         },
         "actionableInsights": {
             "percentileTitle": "Patrimonio: top {rank}% tra profili simili",
-            "percentileDescription": "Il percentile usa la coorte specifica per il patrimonio, non la media indistinta di tutti gli utenti.",
+            "percentileDescription": "Il percentile usa il gruppo di confronto specifico per il patrimonio, non la media indistinta di tutti gli utenti.",
             "categoryTitle": "Approfondisci: {category}",
-            "categoryDescription": "Negli ultimi 12 mesi hai speso {difference} in più della media della tua coorte in questa categoria madre: rappresenta il {contribution}% degli scostamenti rilevati.",
+            "categoryDescription": "Negli ultimi 12 mesi hai speso {difference} in più della media del tuo gruppo di confronto in questa categoria madre: rappresenta il {contribution}% degli scostamenti rilevati.",
             "savingsTitle": "Margine sul tasso di risparmio",
-            "savingsDescription": "La coorte risparmia in media {gap} punti percentuali in più. Le categorie sopra media possono indicare da dove iniziare.",
-            "balancedTitle": "Profilo in equilibrio con la coorte",
+            "savingsDescription": "Il gruppo di confronto risparmia in media {gap} punti percentuali in più. Le categorie sopra media possono indicare da dove iniziare.",
+            "balancedTitle": "Profilo in equilibrio con il gruppo di confronto",
             "balancedDescription": "Non emergono scostamenti rilevanti. Continua a monitorare il trend, che è più utile del singolo mese."
         },
         "profileBanner": {

@@ -52,6 +52,9 @@ The intended model is:
 
 See [docs/PRIVACY_ANONYMITY.md](docs/PRIVACY_ANONYMITY.md), [docs/COMMUNITY_STATS_PROTOCOL.md](docs/COMMUNITY_STATS_PROTOCOL.md), and [docs/COMMUNITY_BENCHMARK_STRATEGY.md](docs/COMMUNITY_BENCHMARK_STRATEGY.md) for the product and technical boundaries.
 
+The product and open-source decisions are recorded in
+[docs/OPEN_SOURCE_PRODUCT_CHARTER.md](docs/OPEN_SOURCE_PRODUCT_CHARTER.md).
+
 ## Stack
 
 - Frontend: React, Vite, TypeScript, styled-components, Recharts
@@ -82,6 +85,8 @@ cp .env.example .env
 ```
 
 Fill the variables you need. For UI-only work, demo mode can run without Supabase or Redis. For backend work, apply `supabase/schema.sql` or the migrations in `supabase/migrations`.
+
+For local demo defaults, copy `.env.development.example` to `.env.local`.
 
 Start the app:
 

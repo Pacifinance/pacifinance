@@ -2751,6 +2751,7 @@
         "noResults": "No Results",
         "noResultsDescription": "No assets match your search.",
         "searchPlaceholder": "Search by name or symbol...",
+        "searching": "Searching the market...",
         "assetsFound": "assets found",
         "updatedAutomatically": "Updated automatically every hour",
         "topByMarketCap": "Showing the top {count} assets by market cap",

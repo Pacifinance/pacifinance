@@ -1,7 +1,9 @@
 import { ExtDate } from "../../libs/datelib"
 import { logger } from "../../libs/logger"
+import { checkAndConsumeRateLimit } from "../../libs/rateLimiter"
 
 import cache from "../cache"
+import redis from "../redisClient"
 
 /**
  * Contains all crypto metadata and prices fetched from CoinGecko
@@ -76,6 +78,17 @@ const options: any = {
  * data yet still show price/24h/7d normally.
  */
 const TOP_N_COINS = 50
+const SEARCH_RESULTS_LIMIT = 8
+const SEARCH_CACHE_TTL_SEC = 15 * 60
+
+type CoinGeckoSearchResponse = {
+    coins?: Array<{
+        id: string,
+        symbol: string,
+        name: string,
+        market_cap_rank?: number | null
+    }>
+}
 
 // Sparkline parameters
 
@@ -180,4 +193,71 @@ async function fetchCryptoPrices(): Promise<CoinCachedData | null> {
     return data
 }
 
-export default { fetchCryptoPrices }
+/**
+ * Searches CoinGecko beyond the overview cache and returns the same shape used
+ * by the market-prices page. Results are short-lived and shared across users.
+ */
+async function searchCryptoPrices(query: string): Promise<CoinCachedData> {
+    const normalizedQuery = query.trim().toLowerCase()
+    if (normalizedQuery.length < 2) return {}
+
+    const searchCacheKey = `crypto:market-search:${encodeURIComponent(normalizedQuery)}`
+    try {
+        const cachedResult = await redis.get<CoinCachedData>(searchCacheKey)
+        if (cachedResult) return cachedResult
+    } catch (error) {
+        logger.info(`Unable to read crypto market search cache: ${String(error)}`)
+    }
+
+    const allowed = await checkAndConsumeRateLimit("coingecko-market-search", 12)
+    if (!allowed) return {}
+
+    const searchResponse = await fetch(
+        `${cgApiUrl}/search?query=${encodeURIComponent(normalizedQuery)}`,
+        options,
+    )
+    if (searchResponse.status !== 200) return {}
+
+    const searchData = await searchResponse.json() as CoinGeckoSearchResponse
+    const ids = (searchData.coins ?? [])
+        .slice(0, SEARCH_RESULTS_LIMIT)
+        .map((coin) => coin.id)
+    if (ids.length === 0) return {}
+
+    const marketResponse = await fetch(
+        `${cgApiUrl}/coins/markets?vs_currency=eur&ids=${encodeURIComponent(ids.join(","))}&sparkline=true`,
+        options,
+    )
+    if (marketResponse.status !== 200) return {}
+
+    const coins = await marketResponse.json() as CoinsFetchedSimpleData[]
+    const result: CoinCachedData = {}
+    for (const coin of coins) {
+        result[coin.id] = {
+            name: coin.name,
+            image: coin.image,
+            current: coin.current_price,
+            totalVolume: coin.total_volume,
+            marketCap: coin.market_cap,
+            change24h: coin.price_change_24h,
+            circulatingSupply: coin.circulating_supply,
+            marketCapRank: coin.market_cap_rank,
+            ath: coin.ath,
+            athDate: coin.ath_date,
+            atl: coin.atl,
+            atlDate: coin.atl_date,
+            sparkline7D: coin.sparkline_in_7d?.price ?? [],
+            sparklineHistoric: [],
+            lastUpdated: coin.last_updated,
+        }
+    }
+
+    try {
+        await redis.set(searchCacheKey, result, { ex: SEARCH_CACHE_TTL_SEC })
+    } catch (error) {
+        logger.info(`Unable to write crypto market search cache: ${String(error)}`)
+    }
+    return result
+}
+
+export default { fetchCryptoPrices, searchCryptoPrices }

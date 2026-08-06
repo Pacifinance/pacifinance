@@ -1,10 +1,26 @@
 import express from "express"
 
 import cache from "../../cache/cache"
+import prices from "../../cache/items/prices"
 
 /* === /prices/* === */
 
 const pricesRouter = express.Router()
+
+pricesRouter.get("/crypto/search", async (req, res) => {
+    const query = typeof req.query.q === "string" ? req.query.q.trim() : ""
+    if (query.length < 2 || query.length > 100) {
+        res.status(400).json({ error: "Search query must contain between 2 and 100 characters" })
+        return
+    }
+
+    try {
+        res.status(200).json(await prices.searchCryptoPrices(query))
+    } catch (error) {
+        console.error("Crypto market search failed", error)
+        res.status(502).json({ error: "Market search is temporarily unavailable" })
+    }
+})
 
 pricesRouter.get("/:key", async (req, res) => {
     // Check if the price key is valid is valid. Send status 404

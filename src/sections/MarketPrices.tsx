@@ -1610,6 +1610,8 @@ export default function MarketPrices() {
 
   const [activeCategory, setActiveCategory] = useState('crypto');
   const [cryptoData, setCryptoData] = useState(null);
+  const [cryptoSearchData, setCryptoSearchData] = useState(null);
+  const [cryptoSearchLoading, setCryptoSearchLoading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -1683,17 +1685,59 @@ export default function MarketPrices() {
     fetchCrypto();
   }, [fetchCrypto]);
 
+  useEffect(() => {
+    const query = searchQuery.trim();
+    setCryptoSearchData(null);
+    if (query.length < 2 || isDemoMode || !cryptoData) return undefined;
+
+    const normalizedQuery = query.toLowerCase();
+    const hasLocalMatch = Object.entries(cryptoData).some(([id, coin]) =>
+      id.toLowerCase().includes(normalizedQuery) ||
+      coin.name?.toLowerCase().includes(normalizedQuery) ||
+      coin.symbol?.toLowerCase().includes(normalizedQuery)
+    );
+    if (hasLocalMatch) return undefined;
+
+    const controller = new AbortController();
+    const timeout = window.setTimeout(async () => {
+      setCryptoSearchLoading(true);
+      try {
+        const response = await apiClient.get('/api/prices/crypto/search', {
+          params: { q: query },
+          signal: controller.signal,
+        });
+        if (response.data && typeof response.data === 'object' && !Array.isArray(response.data)) {
+          setCryptoSearchData(response.data);
+        }
+      } catch (searchError) {
+        if (searchError?.name !== 'CanceledError') {
+          console.error('Failed to search crypto prices:', searchError);
+          setCryptoSearchData({});
+        }
+      } finally {
+        if (!controller.signal.aborted) setCryptoSearchLoading(false);
+      }
+    }, 400);
+
+    return () => {
+      window.clearTimeout(timeout);
+      controller.abort();
+      setCryptoSearchLoading(false);
+    };
+  }, [cryptoData, isDemoMode, searchQuery]);
+
   /* ─── Process crypto data into sorted, filterable list ─── */
   // CoinGecko returns all values in USD — convert to EUR (system base currency)
   // so that formatAmount/fromEUR pipeline works correctly.
   const usdToEur = exchangeRates?.USD ? (1 / exchangeRates.USD) : (1 / 1.08);
 
-  const processedCryptoList = useMemo(() => {
+  const allCryptoList = useMemo(() => {
     if (!cryptoData) return [];
 
     const toEurVal = (v) => (v != null ? v * usdToEur : null);
 
-    const list = Object.entries(cryptoData).map(([id, coin]) => {
+    const sourceData = { ...cryptoData, ...(cryptoSearchData || {}) };
+    return Object.entries(sourceData).map(([id, coin]) => {
       // sparkline_in_7d.price = CoinGecko direct; sparkline7D = backend cache shape (see server prices.ts)
       const rawSparkline = coin.sparkline_in_7d?.price ?? coin.sparkline7D ?? coin.sparkline ?? [];
       // Convert sparkline from USD to EUR (CoinGecko sparkline is always in USD)
@@ -1780,15 +1824,17 @@ export default function MarketPrices() {
       };
     });
 
-    // Filter by search (name, id, or symbol)
+  }, [cryptoData, cryptoSearchData, usdToEur]);
+
+  const processedCryptoList = useMemo(() => {
     const filtered = searchQuery
-      ? list.filter(c => {
+      ? allCryptoList.filter(c => {
           const q = searchQuery.toLowerCase();
           return c.name.toLowerCase().includes(q) ||
             c.id.toLowerCase().includes(q) ||
             (c.symbol && c.symbol.toLowerCase().includes(q));
         })
-      : list;
+      : [...allCryptoList];
 
     // Sort
     switch (sortBy) {
@@ -1817,20 +1863,20 @@ export default function MarketPrices() {
     }
 
     return filtered;
-  }, [cryptoData, searchQuery, sortBy, usdToEur]);
+  }, [allCryptoList, searchQuery, sortBy]);
 
   /* ─── Summary stats for crypto ─── */
   const cryptoSummary = useMemo(() => {
-    if (!processedCryptoList.length) return null;
+    if (!allCryptoList.length) return null;
 
-    const avgChange = processedCryptoList.reduce((s, c) => s + c.change7d, 0) / processedCryptoList.length;
-    const gainers = processedCryptoList.filter(c => c.change7d > 0).length;
-    const losers = processedCryptoList.filter(c => c.change7d < 0).length;
-    const best = [...processedCryptoList].sort((a, b) => b.change7d - a.change7d)[0];
-    const worst = [...processedCryptoList].sort((a, b) => a.change7d - b.change7d)[0];
+    const avgChange = allCryptoList.reduce((s, c) => s + c.change7d, 0) / allCryptoList.length;
+    const gainers = allCryptoList.filter(c => c.change7d > 0).length;
+    const losers = allCryptoList.filter(c => c.change7d < 0).length;
+    const best = [...allCryptoList].sort((a, b) => b.change7d - a.change7d)[0];
+    const worst = [...allCryptoList].sort((a, b) => a.change7d - b.change7d)[0];
 
-    return { avgChange, gainers, losers, best, worst, total: processedCryptoList.length };
-  }, [processedCryptoList]);
+    return { avgChange, gainers, losers, best, worst, total: allCryptoList.length };
+  }, [allCryptoList]);
 
   /* ─── Format helpers ─── */
   const fmtPrice = (val) => {
@@ -1987,15 +2033,6 @@ export default function MarketPrices() {
       );
     }
 
-    if (!processedCryptoList.length) {
-      return (
-        <ErrorContainer theme={theme}>
-          <h3>{t.noResults || 'No results'}</h3>
-          <p>{t.noResultsDescription || 'No assets match your search.'}</p>
-        </ErrorContainer>
-      );
-    }
-
     return (
       <>
         {/* Summary Cards */}
@@ -2038,7 +2075,9 @@ export default function MarketPrices() {
 
         <SortRow>
           <ResultsCount theme={theme}>
-            {processedCryptoList.length} {t.assetsFound || 'assets'}
+            {cryptoSearchLoading
+              ? (t.searching || 'Searching the market...')
+              : `${processedCryptoList.length} ${t.assetsFound || 'assets'}`}
           </ResultsCount>
           <SortSelect theme={theme} value={sortBy} onChange={e => setSortBy(e.target.value)}>
             <option value="marketCap">{t.sort?.marketCap || 'Market Cap'}</option>
@@ -2050,7 +2089,17 @@ export default function MarketPrices() {
         </SortRow>
 
         {/* Asset Grid */}
-        <AssetsGrid>
+        {cryptoSearchLoading ? (
+          <LoadingContainer theme={theme}>
+            <p>{t.searching || 'Searching the market...'}</p>
+          </LoadingContainer>
+        ) : !processedCryptoList.length ? (
+          <ErrorContainer theme={theme}>
+            <h3>{t.noResults || 'No results'}</h3>
+            <p>{t.noResultsDescription || 'No assets match your search.'}</p>
+          </ErrorContainer>
+        ) : (
+          <AssetsGrid>
           {processedCryptoList.map(coin => {
             // Prefer change24h for color/display; fall back to change7d
             const displayChange = coin.change24h != null ? coin.change24h : coin.change7d;
@@ -2110,7 +2159,8 @@ export default function MarketPrices() {
               </AssetCard>
             );
           })}
-        </AssetsGrid>
+          </AssetsGrid>
+        )}
       </>
     );
   };

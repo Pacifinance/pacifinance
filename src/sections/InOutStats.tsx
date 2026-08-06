@@ -447,9 +447,20 @@ function InOutStats({ theme, userData, isHidden }) {
                       ))}
                       <LabelList
                         dataKey="value"
-                        position="top"
-                        formatter={(v) => (isHidden ? '••' : compactNumber(v))}
-                        style={{ fontSize: 9, fill: theme.textColor, opacity: 0.75 }}
+                        content={({ x, y, width, value }) => {
+                          const labelX = Number(x) + Number(width) / 2;
+                          const labelY = Number(y) - 4;
+                          return (
+                            <text
+                              x={labelX}
+                              y={labelY}
+                              textAnchor="middle"
+                              style={{ fontSize: 9, fill: theme.textColor, opacity: 0.75 }}
+                            >
+                              {isHidden ? '••' : compactNumber(Number(value))}
+                            </text>
+                          );
+                        }}
                       />
                     </Bar>
                   </BarChart>

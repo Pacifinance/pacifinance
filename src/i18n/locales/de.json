@@ -2655,6 +2655,7 @@
         "noResults": "Keine Ergebnisse",
         "noResultsDescription": "Keine Vermögenswerte entsprechen deiner Suche.",
         "searchPlaceholder": "Nach Name oder Symbol suchen...",
+        "searching": "Markt wird durchsucht...",
         "assetsFound": "Vermögenswerte gefunden",
         "updatedAutomatically": "Automatisch jede Stunde aktualisiert",
         "topByMarketCap": "Wir zeigen die Top {count} Assets nach Marktkapitalisierung",

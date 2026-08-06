@@ -57,17 +57,67 @@ const SectionWrapper = styled.div`
   gap: 1.5rem;
 `;
 
-const SharedExpenseBadge = styled.div`
-  width: fit-content;
-  margin-top: 0.25rem;
-  padding: 0.2rem 0.45rem;
-  border-radius: 999px;
+const SharedExpenseIndicator = styled.button`
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  margin: 0.25rem 0 0 0.35rem;
+  padding: 0;
+  border-radius: 9px;
   border: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(16,185,129,.4)' : 'rgba(5,150,105,.3)'};
   background: ${p => p.theme.mode === 'dark' ? 'rgba(16,185,129,.13)' : 'rgba(5,150,105,.09)'};
-  color: ${p => p.theme.textColor};
-  font-size: 0.7rem;
-  font-weight: 650;
-  white-space: normal;
+  color: ${p => p.theme.buttonBackgroundColor};
+  cursor: pointer;
+
+  .verified {
+    position: absolute;
+    right: -4px;
+    bottom: -4px;
+    display: grid;
+    place-items: center;
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    background: ${p => p.theme.buttonBackgroundColor};
+    color: #fff;
+    font-size: 7px;
+    border: 2px solid ${p => p.theme.backgroundColor};
+  }
+
+  .details {
+    position: absolute;
+    z-index: 20;
+    left: 50%;
+    bottom: calc(100% + 9px);
+    width: max-content;
+    max-width: 260px;
+    transform: translate(-50%, 4px);
+    padding: 0.55rem 0.7rem;
+    border-radius: 10px;
+    border: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,.13)' : '#dbe3ee'};
+    background: ${p => p.theme.mode === 'dark' ? '#17212f' : '#fff'};
+    color: ${p => p.theme.textColor};
+    box-shadow: 0 10px 26px rgba(0,0,0,.22);
+    font-size: 0.72rem;
+    font-weight: 600;
+    line-height: 1.55;
+    text-align: left;
+    white-space: normal;
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .16s ease, transform .16s ease;
+  }
+
+  &:hover .details,
+  &:focus-visible .details {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, 0);
+  }
 `;
 
 const FormCard = styled.div`
@@ -708,14 +758,33 @@ export default function OutflowSection({
   const getSharedReceivable = (expenseId: number) => sharedReceivables.find(
     (item) => Number(item.expenseId) === Number(expenseId),
   );
-  const sharedSummary = (item) => {
+  const sharedDetails = (item) => {
     if (!item) return null;
     const ratio = item.ownShare > 0 ? item.totalAmount / item.ownShare : 0;
     const people = Number.isInteger(ratio) && ratio >= 2 ? ratio : null;
     const peopleText = people
-      ? ` · ${translations.insert.sharedTransactionLink.peopleCountShort.replace('{count}', String(people))}`
-      : '';
-    return `${translations.insert.sharedTransactionLink.sharedStatus}${peopleText} · ${translations.insert.sharedTransactionLink.ownShare}: ${formatNumber(fromEUR(item.ownShare))} ${currencySymbol}`;
+      ? translations.insert.sharedTransactionLink.peopleCountShort.replace('{count}', String(people))
+      : '—';
+    return `${translations.insert.sharedTransactionLink.sharedStatus} · ${translations.general.total}: ${formatNumber(fromEUR(item.totalAmount))} ${currencySymbol} · ${peopleText} · ${translations.insert.sharedTransactionLink.ownShare}: ${formatNumber(fromEUR(item.ownShare))} ${currencySymbol}`;
+  };
+
+  const renderSharedIndicator = (add) => {
+    const shared = getSharedReceivable(add.id);
+    if (!shared || isHidden) return null;
+    const details = sharedDetails(shared);
+    return (
+      <SharedExpenseIndicator
+        type="button"
+        theme={theme}
+        onClick={() => onMarkSharedExpense?.(add)}
+        title={details}
+        aria-label={`${translations.insert.sharedTransactionLink.editOutflowAction}. ${details}`}
+      >
+        <FontAwesomeIcon icon={faUsers} />
+        <span className="verified"><FontAwesomeIcon icon={faCheck} /></span>
+        <span className="details" role="tooltip">{details}</span>
+      </SharedExpenseIndicator>
+    );
   };
 
   const [sortColumn, setSortColumn] = React.useState(null);
@@ -1216,7 +1285,7 @@ export default function OutflowSection({
             </td>
             <td>
               {isHidden ? '****' : add.notes}
-              {!isHidden && getSharedReceivable(add.id) && <SharedExpenseBadge theme={theme}>{sharedSummary(getSharedReceivable(add.id))}</SharedExpenseBadge>}
+              {renderSharedIndicator(add)}
             </td>
             <td>
               {isHidden
@@ -1236,13 +1305,11 @@ export default function OutflowSection({
                 >
                   <FontAwesomeIcon icon={faPen} />
                 </ActionBtn>
-                <ActionBtn
+                {!getSharedReceivable(add.id) && <ActionBtn
                   className="edit"
                   onClick={() => onMarkSharedExpense?.(add)}
-                  title={getSharedReceivable(add.id) ? translations.insert.sharedTransactionLink.editOutflowAction : translations.insert.sharedTransactionLink.outflowAction}
-                >
-                  <FontAwesomeIcon icon={faUsers} />
-                </ActionBtn>
+                  title={translations.insert.sharedTransactionLink.outflowAction}
+                ><FontAwesomeIcon icon={faUsers} /></ActionBtn>}
                 <ActionBtn
                   className="delete"
                   data-umami-event="deleteOutflow"
@@ -1416,9 +1483,7 @@ export default function OutflowSection({
               {!isHidden && add.notes && (
                 <CardNote theme={theme}>{add.notes}</CardNote>
               )}
-              {!isHidden && getSharedReceivable(add.id) && (
-                <SharedExpenseBadge theme={theme}>{sharedSummary(getSharedReceivable(add.id))}</SharedExpenseBadge>
-              )}
+              {renderSharedIndicator(add)}
               <CardActionsRow>
                 <ActionBtn
                   className="edit"
@@ -1428,13 +1493,11 @@ export default function OutflowSection({
                 >
                   <FontAwesomeIcon icon={faPen} />
                 </ActionBtn>
-                <ActionBtn
+                {!getSharedReceivable(add.id) && <ActionBtn
                   className="edit"
                   onClick={() => onMarkSharedExpense?.(add)}
-                  title={getSharedReceivable(add.id) ? translations.insert.sharedTransactionLink.editOutflowAction : translations.insert.sharedTransactionLink.outflowAction}
-                >
-                  <FontAwesomeIcon icon={faUsers} />
-                </ActionBtn>
+                  title={translations.insert.sharedTransactionLink.outflowAction}
+                ><FontAwesomeIcon icon={faUsers} /></ActionBtn>}
                 <ActionBtn
                   className="delete"
                   data-umami-event="deleteOutflow"

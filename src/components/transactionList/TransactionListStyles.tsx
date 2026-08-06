@@ -72,10 +72,11 @@ export const FilterToggleRow = styled.button`
   align-items: center;
   justify-content: space-between;
   width: auto;
+  margin: 0.8rem 0 0 0.5rem;
   border: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : '#e2e8f0'};
   background: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.045)' : '#f8fafc'};
-  padding: 0.75rem 0.9rem;
-  border-radius: 10px;
+  padding: 0.58rem 0.8rem;
+  border-radius: 12px;
   font-size: 0.82rem;
   font-weight: 700;
   color: ${p => p.theme.textColor};
@@ -99,7 +100,7 @@ export const FilterToggleRow = styled.button`
   }
 
   @media (max-width: 768px) {
-    width: 100%;
+    width: calc(100% - 1rem);
   }
 `;
 
@@ -114,21 +115,21 @@ export const FilterBadge = styled.span`
 `;
 
 export const FilterPanel = styled.div`
-  display: ${p => p.$open ? 'flex' : 'none'};
-  flex-flow: row wrap;
-  gap: 0.65rem;
-  padding: 0.85rem 1rem;
-  margin-top: 0.45rem;
-  width: min(680px, 100%);
+  display: ${p => p.$open ? 'grid' : 'none'};
+  grid-template-columns: repeat(3, minmax(150px, 1fr));
+  gap: 0.8rem;
+  padding: 1rem;
+  margin: 0.55rem 0 0.35rem 0.5rem;
+  width: min(760px, calc(100% - 1rem));
   box-sizing: border-box;
   border: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : '#e2e8f0'};
-  border-radius: 10px;
-  background: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.02)' : '#f8fafc'};
+  border-radius: 14px;
+  background: ${p => p.theme.mode === 'dark' ? 'rgba(15,23,42,0.34)' : '#f8fafc'};
   box-shadow: ${p => p.theme.mode === 'dark' ? '0 12px 30px rgba(0,0,0,0.2)' : '0 12px 30px rgba(15,23,42,0.08)'};
 
   @media (max-width: 768px) {
-    flex-direction: column;
-    width: 100%;
+    grid-template-columns: 1fr;
+    width: calc(100% - 1rem);
   }
 `;
 
@@ -136,12 +137,36 @@ export const FilterRow = styled.div`
   display: flex;
   flex-direction: column;
   gap: 4px;
-  flex: 1 1 190px;
   min-width: 0;
 
   input, select {
-    min-height: 36px;
-    border-radius: 8px;
+    width: 100%;
+    min-width: 0;
+    min-height: 38px;
+    box-sizing: border-box;
+    border: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.12)' : '#dbe3ee'};
+    border-radius: 11px;
+    padding: 0.45rem 0.7rem;
+    background: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.055)' : '#fff'};
+    color: ${p => p.theme.textColor};
+    color-scheme: ${p => p.theme.mode === 'dark' ? 'dark' : 'light'};
+    font: inherit;
+    font-size: 0.82rem;
+
+    &:focus {
+      outline: none;
+      border-color: ${p => p.theme.buttonBackgroundColor};
+      box-shadow: 0 0 0 3px ${p => p.theme.buttonBackgroundColor}20;
+    }
+  }
+
+  &:last-of-type {
+    grid-column: 1 / -1;
+    max-width: 440px;
+  }
+
+  @media (max-width: 768px) {
+    &:last-of-type { grid-column: auto; max-width: none; }
   }
 `;
 
@@ -158,7 +183,16 @@ export const FilterInlineRow = styled.div`
   display: flex;
   gap: 0.5rem;
   align-items: center;
-  > input { flex: 1; min-width: 0; }
+  > input {
+    flex: 1;
+    min-width: 0;
+    max-width: 205px;
+    text-align: center;
+  }
+
+  @media (max-width: 520px) {
+    > input { max-width: none; }
+  }
 `;
 
 export const ClearFiltersBtn = styled.button`

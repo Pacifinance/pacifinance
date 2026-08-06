@@ -2751,6 +2751,7 @@
         "noResults": "Nessun risultato",
         "noResultsDescription": "Nessun asset corrisponde alla tua ricerca.",
         "searchPlaceholder": "Cerca per nome o simbolo...",
+        "searching": "Ricerca nel mercato...",
         "assetsFound": "asset trovati",
         "updatedAutomatically": "Aggiornato automaticamente ogni ora",
         "topByMarketCap": "Mostriamo i primi {count} asset per capitalizzazione di mercato",

@@ -2657,6 +2657,7 @@
         "noResults": "Sin resultados",
         "noResultsDescription": "Ningún activo coincide con tu búsqueda.",
         "searchPlaceholder": "Buscar por nombre o símbolo...",
+        "searching": "Buscando en el mercado...",
         "assetsFound": "activos encontrados",
         "updatedAutomatically": "Actualizado automáticamente cada hora",
         "topByMarketCap": "Mostramos los primeros {count} activos por capitalización de mercado",

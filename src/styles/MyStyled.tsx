@@ -927,6 +927,11 @@ export const StyledTable = styled.table`
 
   &.outflow-table {
     min-width: 700px;
+    /* Width of the trailing actions column (2 × 26px ActionBtn + 4px gap,
+       plus the cell's own horizontal padding) — kept as a variable so the
+       date column below can dock sticky right next to it instead of being
+       covered by it. */
+    --actions-col-width: calc(56px + 1.3rem);
   }
 
   /* ── Header ── */
@@ -1042,10 +1047,27 @@ export const StyledTable = styled.table`
     background: ${(props) => props.theme.mode === 'dark' ? '#20252d' : '#fff'};
   }
 
+  /* ── Date column (outflow table) — docks next to the sticky actions
+     column instead of being covered by it. When the shared-expense edit
+     controls widen the note cell, the row overflows horizontally and the
+     date cell — being the second-to-last, non-sticky column — would
+     otherwise end up rendered underneath the opaque sticky actions cell. */
+  &.outflow-table th:nth-last-child(2),
+  &.outflow-table td:nth-last-child(2) {
+    position: sticky;
+    right: var(--actions-col-width);
+    z-index: 1;
+    box-shadow: -7px 0 12px -12px rgba(0,0,0,0.7);
+  }
+  &.outflow-table th:nth-last-child(2) { z-index: 3; }
+  &.outflow-table tbody td:nth-last-child(2) {
+    background: ${(props) => props.theme.mode === 'dark' ? '#20252d' : '#fff'};
+  }
+
   /* ── Responsive ── */
   @media (max-width: 768px) {
     min-width: 680px;
-    &.outflow-table { min-width: 820px; }
+    &.outflow-table { min-width: 820px; --actions-col-width: calc(56px + 1.1rem); }
     th, td { padding: 0.65rem 0.55rem; font-size: 0.8rem; }
     th { font-size: 0.7rem; }
 
@@ -1064,7 +1086,7 @@ export const StyledTable = styled.table`
 
   @media (max-width: 600px) {
     min-width: 680px !important;
-    &.outflow-table { min-width: 820px !important; }
+    &.outflow-table { min-width: 820px !important; --actions-col-width: calc(56px + 1rem); }
     th, td {
       font-size: 0.78rem !important;
       padding: 0.62rem 0.5rem !important;

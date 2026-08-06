@@ -586,7 +586,7 @@ const ProfileSettings = ({ theme }) => {
   useEffect(() => {
     refreshGoals();
     recurringTransactionService.getRecurring()
-      .then((items) => setMonthlyFixedExpenses(items.filter((item) => item.active && item.isExpense).reduce((sum, item) => sum + item.amount, 0)))
+      .then((items) => setMonthlyFixedExpenses(items.filter((item) => item.active && item.direction === 'outflow').reduce((sum, item) => sum + item.amount, 0)))
       .catch((error) => console.error('GoalsAndLimits: failed to load recurring expenses', error));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

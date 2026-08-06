@@ -284,8 +284,8 @@ const OnboardingWelcome = ({ userData, theme }) => {
   const profileComplete = getProfileCompletionPercentage(userData) > 30;
   const hasBalance = (userData?.balances?.length > 0) && 
     Object.values(userData?.balances?.[0]?.balance || {}).some(v => typeof v === 'number' && v > 0 && v !== userData?.balances?.[0]?.balance?.totalValue);
-  const hasOutflows = (userData?.expenses?.allOutflows?.length > 0) && 
-    userData.expenses.allOutflows.some(month => Array.isArray(month) && month.length > 0);
+  const hasOutflows = (userData?.outflows?.allOutflows?.length > 0) &&
+    userData.outflows.allOutflows.some(month => Array.isArray(month) && month.length > 0);
   const hasIncomes = (userData?.incomes?.allIncomes?.length > 0) && 
     userData.incomes.allIncomes.some(month => Array.isArray(month) && month.length > 0);
   

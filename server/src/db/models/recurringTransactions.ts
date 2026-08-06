@@ -32,14 +32,14 @@ function mapTagJoin(row: TagJoin) {
     return {label: row.label, index: row.client_index, type: row.type}
 }
 
-// See the matching comment in expenses.ts's toExpense: Supabase's untyped
+// See the matching comment in transactions.ts's toExpense: Supabase's untyped
 // client infers embedded *-to-one FK joins as arrays, but PostgREST actually
 // returns a single object here at runtime.
 function toRecurring(rawRow: unknown) {
     const row = rawRow as RecurringRow
     return {
         id: row.id,
-        isExpense: row.is_expense,
+        direction: row.is_expense ? "outflow" as const : "income" as const,
         amount: row.amount,
         notes: decryptField(row.notes),
         paymentType: mapTagJoin(row.payment_type),
@@ -62,7 +62,7 @@ export type RecurringInput = {
 }
 
 /**
- * Resolves the client-index tag values (same convention as expenses.insertNew)
+ * Resolves the client-index tag values (same convention as transactions.insertNew)
  * to the tag row ids actually stored on recurring_transactions.
  */
 async function resolveTagIds(input: RecurringInput) {
@@ -229,12 +229,12 @@ async function getDueRecurring(now: Date) {
 
 /**
  * Inserts the expenses row for one due template (ids already resolved, so
- * this skips expenses.insertNew's client-index tag lookup) and advances the
+ * this skips transactions.insertNew's client-index tag lookup) and advances the
  * template to next month. Best-effort per template: a failure on one template
  * must not stop the others in the same cron run.
  */
 async function runDueTemplate(row: DueRow, runDate: Date) {
-    const {error: insertError} = await supabase.from("expenses").insert({
+    const {error: insertError} = await supabase.from("transactions").insert({
         user_id: row.user_id,
         occurred_at: runDate.toISOString(),
         amount: row.amount,

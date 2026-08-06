@@ -23,7 +23,7 @@ const emptyUser = () => ({
     balance: { cash: 0, bank: 0, digitalServices: 0, emergencyFund: 0, stocks: 0, etf: 0, bitcoin: 0, crypto: 0, bonds: 0, funds: 0, commodities: 0, totalValue: 0 },
   })),
   incomes: { incomesArray: Array(13).fill(0), allIncomes: [] },
-  expenses: { outflowsArray: Array(13).fill(0), allOutflows: [], totalOutflowsPerCategoryPerMonth: {} },
+  outflows: { outflowsArray: Array(13).fill(0), allOutflows: [], totalOutflowsPerCategoryPerMonth: {} },
   goals: [],
   limits: { monthlySpendingLimit: 2000, savingsGoalPercentage: 20, emergencyFundTarget: 10000 },
   rankings: { balance: 50, incomes: 50, outflows: 50 },
@@ -53,7 +53,7 @@ const activeUser = (months = 6) => {
   return {
     balances,
     incomes: { incomesArray, allIncomes: [] },
-    expenses: {
+    outflows: {
       outflowsArray,
       allOutflows: [],
       totalOutflowsPerCategoryPerMonth: {
@@ -226,7 +226,7 @@ describe('Savings Badges', () => {
   it('firstSave — locked when outflows > income', () => {
     const data = activeUser(1);
     data.incomes.incomesArray[0] = 1000;
-    data.expenses.outflowsArray[0] = 2000;
+    data.outflows.outflowsArray[0] = 2000;
     expect(BADGE_DEFINITIONS.firstSave.check(data)).toBe(false);
   });
 
@@ -238,7 +238,7 @@ describe('Savings Badges', () => {
   it('savingsStreak3 — locked when 2nd month has no income', () => {
     const data = activeUser(3);
     data.incomes.incomesArray[1] = 0;
-    data.expenses.outflowsArray[1] = 0;
+    data.outflows.outflowsArray[1] = 0;
     expect(BADGE_DEFINITIONS.savingsStreak3.check(data)).toBe(false);
   });
 
@@ -255,42 +255,42 @@ describe('Savings Badges', () => {
   it('bigSaver — unlocks when savings >= 30% of income in any month', () => {
     const data = activeUser(1);
     data.incomes.incomesArray[0] = 3000;
-    data.expenses.outflowsArray[0] = 2000; // saved 1000/3000 = 33%
+    data.outflows.outflowsArray[0] = 2000; // saved 1000/3000 = 33%
     expect(BADGE_DEFINITIONS.bigSaver.check(data)).toBe(true);
   });
 
   it('bigSaver — locked when savings < 30%', () => {
     const data = activeUser(1);
     data.incomes.incomesArray[0] = 3000;
-    data.expenses.outflowsArray[0] = 2200; // saved 800/3000 = 26.7%
+    data.outflows.outflowsArray[0] = 2200; // saved 800/3000 = 26.7%
     expect(BADGE_DEFINITIONS.bigSaver.check(data)).toBe(false);
   });
 
   it('bigSaver — locked when outflows = 0 (no real spending data)', () => {
     const data = activeUser(1);
     data.incomes.incomesArray[0] = 3000;
-    data.expenses.outflowsArray[0] = 0;
+    data.outflows.outflowsArray[0] = 0;
     expect(BADGE_DEFINITIONS.bigSaver.check(data)).toBe(false);
   });
 
   it('superSaver — unlocks when savings >= 50%', () => {
     const data = activeUser(1);
     data.incomes.incomesArray[0] = 4000;
-    data.expenses.outflowsArray[0] = 1800; // saved 2200/4000 = 55%
+    data.outflows.outflowsArray[0] = 1800; // saved 2200/4000 = 55%
     expect(BADGE_DEFINITIONS.superSaver.check(data)).toBe(true);
   });
 
   it('superSaver — locked when savings < 50%', () => {
     const data = activeUser(1);
     data.incomes.incomesArray[0] = 4000;
-    data.expenses.outflowsArray[0] = 2100; // saved 1900/4000 = 47.5%
+    data.outflows.outflowsArray[0] = 2100; // saved 1900/4000 = 47.5%
     expect(BADGE_DEFINITIONS.superSaver.check(data)).toBe(false);
   });
 
   it('superSaver — locked when outflows = 0', () => {
     const data = activeUser(1);
     data.incomes.incomesArray[0] = 4000;
-    data.expenses.outflowsArray[0] = 0;
+    data.outflows.outflowsArray[0] = 0;
     expect(BADGE_DEFINITIONS.superSaver.check(data)).toBe(false);
   });
 });
@@ -498,21 +498,21 @@ describe('Outflow Management Badges', () => {
   it('budgetMaster — unlocks with user-set limit and outflows within it', () => {
     const data = activeUser(1);
     data.limits.monthlySpendingLimit = 2500; // custom limit, not default 2000
-    data.expenses.outflowsArray[0] = 2200;
+    data.outflows.outflowsArray[0] = 2200;
     expect(BADGE_DEFINITIONS.budgetMaster.check(data)).toBe(true);
   });
 
   it('budgetMaster — locked with default limit 2000 (fallback)', () => {
     const data = activeUser(1);
     data.limits.monthlySpendingLimit = 2000; // default fallback
-    data.expenses.outflowsArray[0] = 1500;
+    data.outflows.outflowsArray[0] = 1500;
     expect(BADGE_DEFINITIONS.budgetMaster.check(data)).toBe(false);
   });
 
   it('budgetMaster — locked when outflows exceed limit', () => {
     const data = activeUser(1);
     data.limits.monthlySpendingLimit = 1500;
-    data.expenses.outflowsArray[0] = 2000;
+    data.outflows.outflowsArray[0] = 2000;
     expect(BADGE_DEFINITIONS.budgetMaster.check(data)).toBe(false);
   });
 
@@ -524,52 +524,52 @@ describe('Outflow Management Badges', () => {
 
   it('frugalMonth — unlocks when current month outflows < previous (both > 0)', () => {
     const data = activeUser(2);
-    data.expenses.outflowsArray[0] = 1500;
-    data.expenses.outflowsArray[1] = 2000;
+    data.outflows.outflowsArray[0] = 1500;
+    data.outflows.outflowsArray[1] = 2000;
     expect(BADGE_DEFINITIONS.frugalMonth.check(data)).toBe(true);
   });
 
   it('frugalMonth — locked when previous month has no outflows', () => {
     const data = activeUser(1);
-    data.expenses.outflowsArray[0] = 1500;
-    data.expenses.outflowsArray[1] = 0;
+    data.outflows.outflowsArray[0] = 1500;
+    data.outflows.outflowsArray[1] = 0;
     expect(BADGE_DEFINITIONS.frugalMonth.check(data)).toBe(false);
   });
 
   it('frugalMonth — locked when current >= previous', () => {
     const data = activeUser(2);
-    data.expenses.outflowsArray[0] = 2200;
-    data.expenses.outflowsArray[1] = 2000;
+    data.outflows.outflowsArray[0] = 2200;
+    data.outflows.outflowsArray[1] = 2000;
     expect(BADGE_DEFINITIONS.frugalMonth.check(data)).toBe(false);
   });
 
   it('spendingDown — unlocks with 3 decreasing months (all > 0)', () => {
     const data = activeUser(3);
-    data.expenses.outflowsArray[0] = 1500;
-    data.expenses.outflowsArray[1] = 1800;
-    data.expenses.outflowsArray[2] = 2100;
+    data.outflows.outflowsArray[0] = 1500;
+    data.outflows.outflowsArray[1] = 1800;
+    data.outflows.outflowsArray[2] = 2100;
     expect(BADGE_DEFINITIONS.spendingDown.check(data)).toBe(true);
   });
 
   it('spendingDown — locked when any month has 0 outflows', () => {
     const data = activeUser(3);
-    data.expenses.outflowsArray[0] = 1500;
-    data.expenses.outflowsArray[1] = 0;
-    data.expenses.outflowsArray[2] = 2100;
+    data.outflows.outflowsArray[0] = 1500;
+    data.outflows.outflowsArray[1] = 0;
+    data.outflows.outflowsArray[2] = 2100;
     expect(BADGE_DEFINITIONS.spendingDown.check(data)).toBe(false);
   });
 
   it('spendingDown — locked when not strictly decreasing', () => {
     const data = activeUser(3);
-    data.expenses.outflowsArray[0] = 1500;
-    data.expenses.outflowsArray[1] = 1800;
-    data.expenses.outflowsArray[2] = 1700; // not decreasing: 1800 > 1700 but we need [2] > [1]
+    data.outflows.outflowsArray[0] = 1500;
+    data.outflows.outflowsArray[1] = 1800;
+    data.outflows.outflowsArray[2] = 1700; // not decreasing: 1800 > 1700 but we need [2] > [1]
     expect(BADGE_DEFINITIONS.spendingDown.check(data)).toBe(false);
   });
 
   it('categoryTracker — unlocks with 5+ categories', () => {
     const data = activeUser(1);
-    data.expenses.totalOutflowsPerCategoryPerMonth = {
+    data.outflows.totalOutflowsPerCategoryPerMonth = {
       0: { House: 800, Food: 600, Transport: 400, Entertainment: 200, Health: 100 },
     };
     expect(BADGE_DEFINITIONS.categoryTracker.check(data)).toBe(true);
@@ -577,7 +577,7 @@ describe('Outflow Management Badges', () => {
 
   it('categoryTracker — locked with < 5 categories', () => {
     const data = activeUser(1);
-    data.expenses.totalOutflowsPerCategoryPerMonth = {
+    data.outflows.totalOutflowsPerCategoryPerMonth = {
       0: { House: 800, Food: 600, Transport: 400 },
     };
     expect(BADGE_DEFINITIONS.categoryTracker.check(data)).toBe(false);
@@ -738,7 +738,7 @@ describe('Recent feature badges', () => {
 
   it('unlocks expense tracking milestones from real transactions', () => {
     const data = emptyUser();
-    data.expenses.allOutflows = Array.from({ length: 20 }, (_, id) => ({ id }));
+    data.outflows.allOutflows = Array.from({ length: 20 }, (_, id) => ({ id }));
     data.incomes.allIncomes = Array.from({ length: 5 }, (_, id) => ({ id }));
     expect(BADGE_DEFINITIONS.firstOutflow.check(data)).toBe(true);
     expect(BADGE_DEFINITIONS.transactionTracker.check(data)).toBe(true);
@@ -820,7 +820,7 @@ describe('Edge Cases', () => {
     const minimal = {
       balances: [{ balance: { totalValue: 0 } }],
       incomes: { incomesArray: [0] },
-      expenses: { outflowsArray: [0], totalOutflowsPerCategoryPerMonth: {} },
+      outflows: { outflowsArray: [0], totalOutflowsPerCategoryPerMonth: {} },
       goals: [],
       limits: {},
       rankings: {},
@@ -832,7 +832,7 @@ describe('Edge Cases', () => {
   });
 
   it('handles missing subfields gracefully', () => {
-    const minimalData = { balances: [], incomes: {}, expenses: {}, goals: [], limits: {}, rankings: {}, profile: {} };
+    const minimalData = { balances: [], incomes: {}, outflows: {}, goals: [], limits: {}, rankings: {}, profile: {} };
     Object.entries(BADGE_DEFINITIONS).forEach(([_key, def]) => {
       expect(() => def.check(minimalData)).not.toThrow();
     });

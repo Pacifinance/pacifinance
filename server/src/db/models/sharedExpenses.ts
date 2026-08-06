@@ -64,7 +64,7 @@ async function getReceivablesByUserId(user_id: string) {
 
 /**
  * Records a new receivable. own_share is informational only here (the real
- * outflow with amount = ownShare is inserted separately via expenses.insertNew);
+ * outflow with amount = ownShare is inserted separately via transactions.insertNew);
  * receivable_amount = totalAmount - ownShare is what's actually owed back.
  */
 async function insertReceivable(user_id: string, input: ReceivableInput) {
@@ -173,7 +173,7 @@ async function settleReceivable(user_id: string, receivable_id: number, amount: 
 
 /** Converts an already-recorded outflow into a shared expense. */
 async function linkExistingExpense(user_id: string, expense_id: number, own_share: number, explicit_total?: number) {
-    const {data: expense, error: expenseError} = await supabase.from("expenses")
+    const {data: expense, error: expenseError} = await supabase.from("transactions")
         .select("id, occurred_at, notes, amount, cash_amount, is_expense")
         .eq("user_id", user_id).eq("id", expense_id).maybeSingle()
     if (expenseError || !expense || expense.is_expense !== true) return null
@@ -197,7 +197,7 @@ async function linkExistingExpense(user_id: string, expense_id: number, own_shar
             receivable_amount: receivableAmount,
         }).eq("user_id", user_id).eq("id", previous.id).select(RECEIVABLE_SELECT).single()
         if (updateReceivableError || !updated) return null
-        const {error: updateExpenseError} = await supabase.from("expenses").update({
+        const {error: updateExpenseError} = await supabase.from("transactions").update({
             amount: ownShare,
             cash_amount: totalAmount,
         }).eq("user_id", user_id).eq("id", expense_id)
@@ -220,7 +220,7 @@ async function linkExistingExpense(user_id: string, expense_id: number, own_shar
         expenseId: expense_id,
     })
     if (!receivable) return null
-    const {error: updateError} = await supabase.from("expenses").update({
+    const {error: updateError} = await supabase.from("transactions").update({
         amount: ownShare,
         cash_amount: totalAmount,
     }).eq("user_id", user_id).eq("id", expense_id)
@@ -233,7 +233,7 @@ async function linkExistingExpense(user_id: string, expense_id: number, own_shar
 
 /** Links an existing income movement to a receivable and excludes it from income statistics. */
 async function linkExistingReimbursement(user_id: string, expense_id: number, receivable_id: number) {
-    const {data: income, error: incomeError} = await supabase.from("expenses")
+    const {data: income, error: incomeError} = await supabase.from("transactions")
         .select("id, amount, is_expense").eq("user_id", user_id).eq("id", expense_id).maybeSingle()
     if (incomeError || !income || income.is_expense === true || Number(income.amount) <= 0) return null
     const {data: receivable, error: receivableError} = await supabase.from("shared_expense_receivables")
@@ -243,12 +243,12 @@ async function linkExistingReimbursement(user_id: string, expense_id: number, re
     const outstanding = roundCurrency(Number(receivable.receivable_amount) - Number(receivable.settled_amount))
     if (amount > outstanding + 0.005) return null
 
-    const {error: updateError} = await supabase.from("expenses").update({exclude_from_statistics: true})
+    const {error: updateError} = await supabase.from("transactions").update({exclude_from_statistics: true})
         .eq("user_id", user_id).eq("id", expense_id)
     if (updateError) return null
     const links = await insertImportedReimbursements(user_id, [{expenseId: expense_id, receivableId: receivable_id, amount}])
     if (!links) {
-        await supabase.from("expenses").update({exclude_from_statistics: false}).eq("user_id", user_id).eq("id", expense_id)
+        await supabase.from("transactions").update({exclude_from_statistics: false}).eq("user_id", user_id).eq("id", expense_id)
         return null
     }
     return getReceivablesByUserId(user_id)
@@ -269,7 +269,7 @@ async function deleteReceivable(user_id: string, receivable_id: number) {
     if (error) return null
     const reimbursementExpenseIds = (reimbursements || []).map((row) => Number(row.expense_id)).filter(Number.isFinite)
     if (reimbursementExpenseIds.length > 0) {
-        const {error: restoreError} = await supabase.from("expenses").update({exclude_from_statistics: false})
+        const {error: restoreError} = await supabase.from("transactions").update({exclude_from_statistics: false})
             .eq("user_id", user_id).in("id", reimbursementExpenseIds)
         if (restoreError) return null
     }

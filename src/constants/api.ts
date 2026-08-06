@@ -30,15 +30,15 @@ export const ENDPOINTS = {
   BALANCES_GET:       '/balances/get',
   BALANCES_ADD:       '/balances/add',
 
-  // Expenses / Incomes
-  EXPENSES_GET:       '/expenses/get',
-  EXPENSES_ADD:       '/expenses/add',
-  EXPENSES_DELETE:    '/expenses/delete',
-  EXPENSES_EDIT:      '/expenses/edit',
+  // Transactions
+  TRANSACTIONS_GET:    '/transactions/get',
+  TRANSACTIONS_ADD:    '/transactions/add',
+  TRANSACTIONS_DELETE: '/transactions/delete',
+  TRANSACTIONS_UPDATE: '/transactions/update',
 
   // Rankings
   RANK_BALANCES:      '/rank/balances',
-  RANK_EXPENSES:      '/rank/expenses',
+  RANK_OUTFLOWS:      '/rank/outflows',
   RANK_INCOMES:       '/rank/incomes',
 
   // Stats

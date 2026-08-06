@@ -61,23 +61,23 @@ describe('financeService', () => {
     });
   });
 
-  describe('getExpensesAndIncomes', () => {
-    it('should call /expenses/get and return array data', async () => {
+  describe('getTransactions', () => {
+    it('should call /transactions/get and return array data', async () => {
       const mockData = [
         [{ amount: 100, isExpense: true }],
         [{ amount: 2800, isExpense: false }],
       ];
       mockClient.post.mockResolvedValue({ data: mockData });
 
-      const result = await service.getExpensesAndIncomes();
+      const result = await service.getTransactions();
 
-      expect(mockClient.post).toHaveBeenCalledWith('/api/expenses/get', {});
+      expect(mockClient.post).toHaveBeenCalledWith('/api/transactions/get', {});
       expect(result).toEqual(mockData);
     });
 
     it('should return empty array when data is not array', async () => {
       mockClient.post.mockResolvedValue({ data: undefined });
-      const result = await service.getExpensesAndIncomes();
+      const result = await service.getTransactions();
       expect(result).toEqual([]);
     });
 
@@ -87,7 +87,7 @@ describe('financeService', () => {
         .mockRejectedValueOnce({ response: { status: 500 } })
         .mockResolvedValueOnce({ data: mockData });
 
-      const result = await service.getExpensesAndIncomes();
+      const result = await service.getTransactions();
 
       expect(mockClient.post).toHaveBeenCalledTimes(2);
       expect(result).toEqual(mockData);
@@ -96,56 +96,56 @@ describe('financeService', () => {
     it('does not retry a 401 — an expired/invalid session will not fix itself', async () => {
       mockClient.post.mockRejectedValue({ response: { status: 401 } });
 
-      await expect(service.getExpensesAndIncomes()).rejects.toEqual({ response: { status: 401 } });
+      await expect(service.getTransactions()).rejects.toEqual({ response: { status: 401 } });
       expect(mockClient.post).toHaveBeenCalledTimes(1);
     });
   });
 
-  describe('addExpenseOrIncome', () => {
-    it('should call /expenses/add with transaction data and return full response', async () => {
+  describe('addTransaction', () => {
+    it('should call /transactions/add with transaction data and return full response', async () => {
       const txData = { amount: 50, categoryTag: { index: 4 }, isExpense: true };
       mockClient.post.mockResolvedValue({ status: 200, data: { id: 'tx1' } });
 
-      const result = await service.addExpenseOrIncome(txData);
+      const result = await service.addTransaction(txData);
 
-      expect(mockClient.post).toHaveBeenCalledWith('/api/expenses/add', txData);
+      expect(mockClient.post).toHaveBeenCalledWith('/api/transactions/add', txData);
       expect(result.status).toBe(200);
     });
   });
 
-  describe('updateExpenseOrIncome', () => {
+  describe('updateTransaction', () => {
     it('updates the transaction and optional split in one request', async () => {
-      const txData = { expense: { id: 42, amount: 12, shared_expense: { enabled: false } } };
+      const txData = { transaction: { id: 42, amount: 12, shared_expense: { enabled: false } } };
       mockClient.post.mockResolvedValue({ status: 200, data: { id: 42 } });
 
-      const result = await service.updateExpenseOrIncome(txData);
+      const result = await service.updateTransaction(txData);
 
-      expect(mockClient.post).toHaveBeenCalledWith('/api/expenses/update', txData);
+      expect(mockClient.post).toHaveBeenCalledWith('/api/transactions/update', txData);
       expect(result.status).toBe(200);
     });
   });
 
-  describe('addExpensesAndIncomesBatch', () => {
+  describe('addTransactionsBatch', () => {
     it('sends all imported transactions in one request', async () => {
-      const payload = { expenses: [{ amount: 10 }, { amount: 20 }] };
+      const payload = { transactions: [{ amount: 10 }, { amount: 20 }] };
       mockClient.post.mockResolvedValue({ data: { inserted: 2 } });
 
-      const result = await service.addExpensesAndIncomesBatch(payload);
+      const result = await service.addTransactionsBatch(payload);
 
       expect(mockClient.post).toHaveBeenCalledOnce();
-      expect(mockClient.post).toHaveBeenCalledWith('/api/expenses/batch-add', payload);
+      expect(mockClient.post).toHaveBeenCalledWith('/api/transactions/batch-add', payload);
       expect(result).toEqual({ inserted: 2 });
     });
   });
 
-  describe('deleteExpenseOrIncome', () => {
-    it('should call /expenses/delete with data and return full response', async () => {
+  describe('deleteTransaction', () => {
+    it('should call /transactions/delete with data and return full response', async () => {
       const deleteData = { id: 'tx1' };
       mockClient.post.mockResolvedValue({ status: 200, data: { deleted: true } });
 
-      const result = await service.deleteExpenseOrIncome(deleteData);
+      const result = await service.deleteTransaction(deleteData);
 
-      expect(mockClient.post).toHaveBeenCalledWith('/api/expenses/delete', deleteData);
+      expect(mockClient.post).toHaveBeenCalledWith('/api/transactions/delete', deleteData);
       expect(result.status).toBe(200);
     });
   });

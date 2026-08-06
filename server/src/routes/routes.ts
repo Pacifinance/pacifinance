@@ -4,7 +4,7 @@ import publicRouter from "./public/public"
 import cronRouter from "./cron/cron"
 import userRouter from "./private/user"
 import balancesRouter from "./private/balances"
-import expensesRouter from "./private/expenses"
+import transactionsRouter from "./private/transactions"
 import tagsRouter from "./private/tags"
 import categoriesRouter from "./private/categories"
 import rankRouter from "./private/rank"
@@ -76,7 +76,9 @@ rootRouter.use(async (req, res, next) => {
 
 rootRouter.use("/user", userRouter)
 rootRouter.use("/balances", balancesRouter)
-rootRouter.use("/expenses", expensesRouter)
+rootRouter.use("/transactions", transactionsRouter)
+// Compatibility alias for released clients. New code must use /transactions.
+rootRouter.use("/expenses", transactionsRouter)
 rootRouter.use("/tags", tagsRouter)
 rootRouter.use("/categories", categoriesRouter)
 rootRouter.use("/rank", rankRouter)

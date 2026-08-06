@@ -1250,8 +1250,8 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
     for (let i = 0; i < total; i += API_BATCH_SIZE) {
       const batch = finalTx.slice(i, i + API_BATCH_SIZE);
       try {
-        const result = await financeService.addExpensesAndIncomesBatch({
-          expenses: batch.map(tx => {
+        const result = await financeService.addTransactionsBatch({
+          transactions: batch.map(tx => {
             const effectiveNote = getEffectiveNote(tx);
             const inferredLabel = tx.isOutflow
               ? inferPaymentTypeLabel(effectiveNote, getAllOutflows(userData).flat().filter(Boolean))
@@ -1260,7 +1260,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
             const paymentType = tx.isOutflow && inferredType
               ? inferredType.index
               : defaultPaymentType;
-            const expense = toAPIFormat({ ...tx, notes: effectiveNote, amount: toEUR(tx.amount) }, paymentType).expense;
+            const expense = toAPIFormat({ ...tx, notes: effectiveNote, amount: toEUR(tx.amount) }, paymentType).transaction;
             const rowAccount = liquidityAccounts.find((item) => String(item.id) === String(rowAccountIds[tx.rowIndex])) || account;
             if (rowAccount) {
               expense.balance_source = {
@@ -1370,7 +1370,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
     for (let i = 0; i < importedTx.length; i += BATCH_SIZE) {
       const batch = importedTx.slice(i, i + BATCH_SIZE);
       const promises = batch.map(tx =>
-        financeService.deleteExpenseOrIncome({ expense: tx })
+        financeService.deleteTransaction({ transaction: tx })
           .then(() => { success++; })
           .catch(() => { failed++; })
       );

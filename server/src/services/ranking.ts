@@ -32,15 +32,15 @@ export function rankFromBalancePool(pool: Array<{userId: string, total: number}>
     return computeRankOfUser(balances, target_user).position
 }
 
-export function rankFromExpensePool(pool: Array<{userId: string, total: number}>, target_user: string, is_expense_filter: boolean) {
+export function rankFromTransactionPool(pool: Array<{userId: string, total: number}>, target_user: string, isOutflow: boolean) {
     if (pool.length === 0) return 0
-    const expenses = pool.map((p) => ({user: p.userId, amount: p.total}));
-    expenses.sort((a, b) => a.amount - b.amount);
-    const rank = computeRankOfUser(expenses, target_user).position
+    const transactions = pool.map((p) => ({user: p.userId, amount: p.total}));
+    transactions.sort((a, b) => a.amount - b.amount);
+    const rank = computeRankOfUser(transactions, target_user).position
     if (rank === 0) return 0
     // Lower outflows are better. Keep the percentile in [1,100], as 0 means
     // "no data" to API consumers.
-    return is_expense_filter ? 101 - rank : rank
+    return isOutflow ? 101 - rank : rank
 }
 
-export default { computeRankOfUser, rankFromBalancePool, rankFromExpensePool }
+export default { computeRankOfUser, rankFromBalancePool, rankFromTransactionPool }

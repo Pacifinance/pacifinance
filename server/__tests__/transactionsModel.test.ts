@@ -21,9 +21,9 @@ vi.mock("../src/db/models/tags", () => ({
     }
 }))
 
-import expensesModel, { buildRecentMonthReferences } from "../src/db/models/expenses"
+import transactionsModel, { buildRecentMonthReferences } from "../src/db/models/transactions"
 
-describe("expenses monthly buckets", () => {
+describe("transaction monthly buckets", () => {
     it("does not duplicate or skip short months when today is month-end", () => {
         const refs = buildRecentMonthReferences(new Date("2026-07-31T12:00:00.000Z"), 6)
         const keys = refs.map((date) => date.toISOString().slice(0, 7))
@@ -33,7 +33,7 @@ describe("expenses monthly buckets", () => {
     })
 })
 
-describe("expenses batch insert", () => {
+describe("transaction batch insert", () => {
     beforeEach(() => {
         vi.clearAllMocks()
         mocks.insert.mockReturnValue({select: mocks.select})
@@ -45,7 +45,7 @@ describe("expenses batch insert", () => {
     })
 
     it("resolves distinct tags once and performs one database insert", async () => {
-        const result = await expensesModel.insertBatch("user-1", [
+        const result = await transactionsModel.insertBatch("user-1", [
             {date: new Date("2026-08-01"), amount: 10, isExpense: true, notes: "Lunch", paymentType: 1, categoryTag: 4, userCategoryId: null, balanceSource: null},
             {date: new Date("2026-08-02"), amount: 20, isExpense: false, notes: "Refund", paymentType: 0, categoryTag: 0, userCategoryId: null, balanceSource: null},
         ])
@@ -61,7 +61,7 @@ describe("expenses batch insert", () => {
 
     it("aborts before writing if a tag reference cannot be resolved", async () => {
         mocks.getReference.mockResolvedValueOnce(null)
-        const result = await expensesModel.insertBatch("user-1", [
+        const result = await transactionsModel.insertBatch("user-1", [
             {date: new Date("2026-08-01"), amount: 10, isExpense: true, notes: "", paymentType: 1, categoryTag: 4, userCategoryId: null, balanceSource: null},
         ])
         expect(result).toBeNull()
@@ -69,7 +69,7 @@ describe("expenses batch insert", () => {
     })
 })
 
-describe("expenses atomic update", () => {
+describe("transaction atomic update", () => {
     beforeEach(() => {
         vi.clearAllMocks()
         mocks.getReference.mockImplementation(async (index: number, type: number) => ({id: type * 1000 + index}))
@@ -77,7 +77,7 @@ describe("expenses atomic update", () => {
 
     it("does not call the RPC when a tag cannot be resolved", async () => {
         mocks.getReference.mockResolvedValueOnce(null)
-        const result = await expensesModel.updateExisting("user-1", {
+        const result = await transactionsModel.updateExisting("user-1", {
             id: 42, date: new Date("2026-08-01"), amount: 12, isExpense: true, notes: "Lunch",
             paymentType: 1, categoryTag: 4, userCategoryId: null, balanceSource: null,
             sharedMode: "remove", sharedTotal: null, sharedOwnShare: null,
@@ -89,7 +89,7 @@ describe("expenses atomic update", () => {
 
     it("updates the transaction and shared split with one RPC", async () => {
         mocks.rpc.mockResolvedValue({data: 42, error: null})
-        const result = await expensesModel.updateExisting("user-1", {
+        const result = await transactionsModel.updateExisting("user-1", {
             id: 42, date: new Date("2026-08-01"), amount: 6, isExpense: true, notes: "Lunch",
             paymentType: 1, categoryTag: 4, userCategoryId: 9,
             balanceSource: {asset_key: "bank", detail_type: null, detail_id: null},
@@ -98,8 +98,8 @@ describe("expenses atomic update", () => {
 
         expect(result).toEqual({id: 42})
         expect(mocks.rpc).toHaveBeenCalledOnce()
-        expect(mocks.rpc).toHaveBeenCalledWith("update_expense_with_shared", expect.objectContaining({
-            p_user_id: "user-1", p_expense_id: 42, p_notes: "encrypted:Lunch",
+        expect(mocks.rpc).toHaveBeenCalledWith("update_transaction_with_shared", expect.objectContaining({
+            p_user_id: "user-1", p_transaction_id: 42, p_notes: "encrypted:Lunch",
             p_shared_mode: "set", p_shared_total: 24, p_shared_own_share: 6,
         }))
     })

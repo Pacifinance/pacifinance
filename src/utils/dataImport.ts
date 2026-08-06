@@ -703,15 +703,15 @@ const processRowDual = (row, mapping, rowIndex) => {
 };
 
 /**
- * Convert a parsed transaction to the API format for /expenses/add
+ * Convert a parsed transaction to the API format for /transactions/add
  * @param {ParsedTransaction} tx
- * @returns {{ expense: Object }}
+ * @returns {{ transaction: Object }}
  */
 export const toAPIFormat = (tx, paymentType) => ({
-  expense: {
+  transaction: {
     date: tx.date,
     amount: tx.amount,
-    is_expense: tx.isOutflow,
+    direction: tx.isOutflow ? 'outflow' : 'income',
     payment_type: tx.isOutflow ? (paymentType ?? 1) : 0,
     category_tag: tx.categoryIndex,
     notes: tx.notes,

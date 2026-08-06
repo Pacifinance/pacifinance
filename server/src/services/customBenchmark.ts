@@ -2,7 +2,7 @@ import db from "../db/db"
 import redis from "../cache/redisClient"
 import { ExtDate } from "../libs/datelib"
 import type { AssetAllocation } from "../db/models/benchmarks"
-import { rankFromBalancePool, rankFromExpensePool } from "./ranking"
+import { rankFromBalancePool, rankFromTransactionPool } from "./ranking"
 import similarUsers, {
     MIN_COHORT,
     normalizeComparisonFactorGroups,
@@ -150,10 +150,10 @@ async function getCustomBenchmark(userId: string, rawFactors: unknown): Promise<
     const referenceDate = ExtDate.fromNow()
     referenceDate.moveByMonths(-1)
     const currentMonth = ExtDate.fromReferenceMonthStart(ExtDate.fromNow())
-    const [balancePool, incomePool, expensePool, metricRows] = await Promise.all([
+    const [balancePool, incomePool, outflowPool, metricRows] = await Promise.all([
         db.balances.getRankingPool(rankPoolIds, true),
-        db.expenses.getExpenseRankingPool(rankPoolIds, false, referenceDate),
-        db.expenses.getExpenseRankingPool(rankPoolIds, true, referenceDate),
+        db.transactions.getTransactionRankingPool(rankPoolIds, false, referenceDate),
+        db.transactions.getTransactionRankingPool(rankPoolIds, true, referenceDate),
         db.benchmarks.getMetricRows(cohort.userIds, currentMonth)
     ])
 
@@ -163,13 +163,13 @@ async function getCustomBenchmark(userId: string, rawFactors: unknown): Promise<
         averages: {
             balances: averagePool(balancePool, userId),
             incomes: averagePool(incomePool, userId),
-            expenses: averagePool(expensePool, userId),
+            expenses: averagePool(outflowPool, userId),
             assetAllocation: averageAssetAllocation(metricRows)
         },
         rankings: {
             balance: rankFromBalancePool(balancePool, userId),
-            incomes: rankFromExpensePool(incomePool, userId, false),
-            outflows: rankFromExpensePool(expensePool, userId, true)
+            incomes: rankFromTransactionPool(incomePool, userId, false),
+            outflows: rankFromTransactionPool(outflowPool, userId, true)
         }
     }
 

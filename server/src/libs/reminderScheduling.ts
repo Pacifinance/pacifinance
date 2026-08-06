@@ -60,7 +60,7 @@ export async function evaluateUser(
     if (pref.monthlySummary && day === pref.reminderDay && lastSent.monthlySummary !== monthKey) {
         const previousMonthStart = new Date(Date.UTC(year, month - 2, 1))
         const previousMonthKey = previousMonthStart.toISOString().slice(0, 7)
-        const totals = await db.expenses.getMonthlyTotalsByUserId(pref.userId, 2)
+        const totals = await db.transactions.getMonthlyTotalsByUserId(pref.userId, 2)
         const match = (totals || []).find((t) => t.monthStart.slice(0, 7) === previousMonthKey)
         if (match && (match.totalOutflows > 0 || match.totalIncomes > 0)) {
             const {title, body} = buildContent("monthlySummary", pref.language, {
@@ -75,7 +75,7 @@ export async function evaluateUser(
 
     if (pref.dataUpdateReminder && lastSent.dataUpdateReminder !== todayKey) {
         const [lastExpense, lastBalance] = await Promise.all([
-            db.expenses.getLastActivityDateByUserId(pref.userId),
+            db.transactions.getLastActivityDateByUserId(pref.userId),
             db.balances.getLatestByUserId(pref.userId),
         ])
         const timestamps = [lastExpense, lastBalance?.date].filter(Boolean).map((d) => new Date(d as string).getTime())

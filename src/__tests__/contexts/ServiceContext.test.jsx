@@ -132,9 +132,9 @@ describe('ServiceContext', () => {
       // financeService
       expect(typeof services.financeService.getBalances).toBe('function');
       expect(typeof services.financeService.addBalance).toBe('function');
-      expect(typeof services.financeService.getExpensesAndIncomes).toBe('function');
-      expect(typeof services.financeService.addExpenseOrIncome).toBe('function');
-      expect(typeof services.financeService.deleteExpenseOrIncome).toBe('function');
+      expect(typeof services.financeService.getTransactions).toBe('function');
+      expect(typeof services.financeService.addTransaction).toBe('function');
+      expect(typeof services.financeService.deleteTransaction).toBe('function');
 
       // rankingService
       expect(typeof services.rankingService.getAllRankings).toBe('function');

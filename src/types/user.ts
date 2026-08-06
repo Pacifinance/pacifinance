@@ -52,7 +52,7 @@ export interface BalanceSnapshot {
 /** A `{date, balance}` entry. Alias for the API DTO for now. */
 export type BalanceEntry = BalanceMonthDto;
 
-export interface Expenses {
+export interface Outflows {
   allOutflows: TransactionDto[][];
   outflowsArray: number[];
   totalOutflowsPerCategoryPerMonth: Record<string, Record<string, number>>;
@@ -134,7 +134,7 @@ export interface UserData {
   profile: UserProfile;
   profileCompletionPercentage: number;
   balances: BalanceEntry[];
-  expenses: Expenses;
+  outflows: Outflows;
   incomes: Incomes;
   tags: UserTags;
   rankings: Rankings;

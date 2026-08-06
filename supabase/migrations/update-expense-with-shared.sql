@@ -2,9 +2,9 @@
 -- optional shared-expense receivable in the same database transaction.
 -- `p_shared_mode`: unchanged | set | remove.
 
-create or replace function public.update_expense_with_shared(
+create or replace function public.update_transaction_with_shared(
   p_user_id uuid,
-  p_expense_id bigint,
+  p_transaction_id bigint,
   p_occurred_at date,
   p_amount numeric,
   p_is_expense boolean,
@@ -42,7 +42,7 @@ begin
   elsif p_shared_mode = 'unchanged' then
     select * into v_receivable
     from public.shared_expense_receivables
-    where user_id = p_user_id and expense_id = p_expense_id
+    where user_id = p_user_id and expense_id = p_transaction_id
     for update;
     if found then
       v_cash_amount := v_receivable.total_amount;
@@ -62,14 +62,14 @@ begin
     balance_asset_key = p_balance_asset_key,
     balance_detail_type = p_balance_detail_type,
     balance_detail_id = p_balance_detail_id
-  where id = p_expense_id and user_id = p_user_id;
+  where id = p_transaction_id and user_id = p_user_id;
 
   if not found then raise exception 'transaction not found'; end if;
 
   if p_shared_mode = 'set' then
     select * into v_receivable
     from public.shared_expense_receivables
-    where user_id = p_user_id and expense_id = p_expense_id
+    where user_id = p_user_id and expense_id = p_transaction_id
     for update;
 
     if found and round(p_shared_total - p_shared_own_share, 2) < v_receivable.settled_amount then
@@ -80,7 +80,7 @@ begin
       user_id, expense_id, occurred_at, notes, total_amount, own_share,
       receivable_amount, settled_amount
     ) values (
-      p_user_id, p_expense_id, p_occurred_at, p_notes,
+      p_user_id, p_transaction_id, p_occurred_at, p_notes,
       round(p_shared_total, 2), round(p_shared_own_share, 2),
       round(p_shared_total - p_shared_own_share, 2), 0
     )
@@ -93,7 +93,7 @@ begin
   elsif p_shared_mode = 'remove' then
     select * into v_receivable
     from public.shared_expense_receivables
-    where user_id = p_user_id and expense_id = p_expense_id
+    where user_id = p_user_id and expense_id = p_transaction_id
     for update;
 
     if found and (
@@ -106,9 +106,9 @@ begin
     end if;
 
     delete from public.shared_expense_receivables
-    where user_id = p_user_id and expense_id = p_expense_id;
+    where user_id = p_user_id and expense_id = p_transaction_id;
   end if;
 
-  return p_expense_id;
+  return p_transaction_id;
 end;
 $$;

@@ -590,11 +590,11 @@ export default function QuickAddTransaction({ theme, showFab = true, menuOpen: c
     setSubmitting(true);
     try {
       const source = sourceMeta[sourceLabel] || null;
-      const response = await financeService.addExpenseOrIncome({
-        expense: {
+      const response = await financeService.addTransaction({
+        transaction: {
           date: todayLocalISO(),
           amount: toEUR(amountNumber),
-          is_expense: isOutflow,
+          direction: isOutflow ? 'outflow' : 'income',
           payment_type: isOutflow ? singlePaymentIndex : 0,
           category_tag: categoryIndex,
           user_category_id: userCategoryId,

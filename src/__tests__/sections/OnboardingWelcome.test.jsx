@@ -88,7 +88,7 @@ const emptyUserData = {
     age: { key: -1, value: '' },
   },
   balances: [{ date: '2026-02-01', balance: { totalValue: 0, bank: 0, cash: 0 } }],
-  expenses: { allOutflows: [], outflowsArray: [] },
+  outflows: { allOutflows: [], outflowsArray: [] },
   incomes: { allIncomes: [], incomesArray: [] },
   tags: {},
   rankings: {},
@@ -118,7 +118,7 @@ const userWithBalance = {
 // User with outflows
 const userWithOutflows = {
   ...emptyUserData,
-  expenses: {
+  outflows: {
     allOutflows: [[{ amount: 100, isExpense: true }]],
     outflowsArray: [100],
   },
@@ -144,7 +144,7 @@ const completeUser = {
     completionPercentage: 85,
   },
   balances: [{ date: '2026-02-01', balance: { totalValue: 10000, bank: 8000, cash: 2000 } }],
-  expenses: {
+  outflows: {
     allOutflows: [[{ amount: 500, isExpense: true }]],
     outflowsArray: [500],
   },

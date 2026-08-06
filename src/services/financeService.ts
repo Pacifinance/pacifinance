@@ -1,5 +1,5 @@
 /**
- * Finance Service — encapsulates balance, expense, and income API calls.
+ * Finance Service — encapsulates balance and transaction API calls.
  *
  * Injected with an API client for testability (Dependency Injection pattern).
  *
@@ -9,12 +9,12 @@ import type { AxiosInstance, AxiosResponse } from 'axios';
 import type {
   BalanceAddRequest,
   BalancesGetResponse,
-  ExpenseAddRequest,
-  ExpenseUpdateRequest,
-  ExpenseBatchAddRequest,
-  ExpenseBatchAddResponse,
-  ExpenseDeleteRequest,
-  ExpensesGetResponse,
+  TransactionAddRequest,
+  TransactionUpdateRequest,
+  TransactionBatchAddRequest,
+  TransactionBatchAddResponse,
+  TransactionDeleteRequest,
+  TransactionsGetResponse,
   MonthlyTotalsResponse,
   MonthDetailResponse,
   CategoriesGetResponse,
@@ -31,20 +31,20 @@ export interface FinanceService {
   getBalances(months?: number | 'all'): Promise<BalancesGetResponse>;
   /** POST /balances/add. Returns the full axios response so callers can check status. */
   addBalance(balanceData: BalanceAddRequest): Promise<AxiosResponse>;
-  /** GET-style POST to /expenses/get. */
-  getExpensesAndIncomes(): Promise<ExpensesGetResponse>;
-  /** GET-style POST to /expenses/monthly-totals — aggregated sums only, for multi-year charts. */
+  /** GET-style POST to /transactions/get. */
+  getTransactions(): Promise<TransactionsGetResponse>;
+  /** GET-style POST to /transactions/monthly-totals — aggregated sums only, for multi-year charts. */
   getMonthlyTotals(months?: number | 'all'): Promise<MonthlyTotalsResponse>;
-  /** POST /expenses/month — one arbitrary month's tagged transactions, on demand. */
+  /** POST /transactions/month — one arbitrary month's tagged transactions, on demand. */
   getMonthDetail(year: number, month: number): Promise<MonthDetailResponse>;
-  /** POST /expenses/add. */
-  addExpenseOrIncome(data: ExpenseAddRequest): Promise<AxiosResponse>;
-  /** POST /expenses/update — preserves the transaction id and updates an optional shared split atomically. */
-  updateExpenseOrIncome(data: ExpenseUpdateRequest): Promise<AxiosResponse>;
-  /** POST /expenses/batch-add — one HTTP request and one database insert for CSV imports. */
-  addExpensesAndIncomesBatch(data: ExpenseBatchAddRequest): Promise<ExpenseBatchAddResponse>;
-  /** POST /expenses/delete. */
-  deleteExpenseOrIncome(data: ExpenseDeleteRequest): Promise<AxiosResponse>;
+  /** POST /transactions/add. */
+  addTransaction(data: TransactionAddRequest): Promise<AxiosResponse>;
+  /** POST /transactions/update — preserves the transaction id and updates an optional shared split atomically. */
+  updateTransaction(data: TransactionUpdateRequest): Promise<AxiosResponse>;
+  /** POST /transactions/batch-add — one HTTP request and one database insert for CSV imports. */
+  addTransactionsBatch(data: TransactionBatchAddRequest): Promise<TransactionBatchAddResponse>;
+  /** POST /transactions/delete. */
+  deleteTransaction(data: TransactionDeleteRequest): Promise<AxiosResponse>;
   /** GET-style POST to /categories/get — the user's custom sub-categories. */
   getCustomCategories(): Promise<CategoriesGetResponse>;
   /** POST /categories/add. */
@@ -73,37 +73,37 @@ export const createFinanceService = (apiClient: AxiosInstance): FinanceService =
     return res;
   },
 
-  async getExpensesAndIncomes() {
-    const res = await withRetry(() => apiClient.post<ExpensesGetResponse>('/api/expenses/get', {}));
+  async getTransactions() {
+    const res = await withRetry(() => apiClient.post<TransactionsGetResponse>('/api/transactions/get', {}));
     return Array.isArray(res.data) ? res.data : [];
   },
 
   async getMonthlyTotals(months) {
-    const res = await apiClient.post<MonthlyTotalsResponse>('/api/expenses/monthly-totals', months !== undefined ? { months } : {});
+    const res = await apiClient.post<MonthlyTotalsResponse>('/api/transactions/monthly-totals', months !== undefined ? { months } : {});
     return Array.isArray(res.data) ? res.data : [];
   },
 
   async getMonthDetail(year, month) {
-    const res = await apiClient.post<MonthDetailResponse>('/api/expenses/month', { year, month });
+    const res = await apiClient.post<MonthDetailResponse>('/api/transactions/month', { year, month });
     return Array.isArray(res.data) ? res.data : [];
   },
 
-  async addExpenseOrIncome(data) {
-    const res = await apiClient.post('/api/expenses/add', data);
+  async addTransaction(data) {
+    const res = await apiClient.post('/api/transactions/add', data);
     return res;
   },
 
-  async updateExpenseOrIncome(data) {
-    return apiClient.post('/api/expenses/update', data);
+  async updateTransaction(data) {
+    return apiClient.post('/api/transactions/update', data);
   },
 
-  async addExpensesAndIncomesBatch(data) {
-    const res = await apiClient.post<ExpenseBatchAddResponse>('/api/expenses/batch-add', data);
+  async addTransactionsBatch(data) {
+    const res = await apiClient.post<TransactionBatchAddResponse>('/api/transactions/batch-add', data);
     return res.data;
   },
 
-  async deleteExpenseOrIncome(data) {
-    const res = await apiClient.post('/api/expenses/delete', data);
+  async deleteTransaction(data) {
+    const res = await apiClient.post('/api/transactions/delete', data);
     return res;
   },
 

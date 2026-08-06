@@ -1499,7 +1499,7 @@ export default function InsertValue({
           row.userCategoryId,
           row.balanceSource,
         );
-        return financeService.addExpenseOrIncome(inExJson)
+        return financeService.addTransaction(inExJson)
           .then(async (res) => {
             if (res.status !== 200) { failed++; return; }
             success++;
@@ -1511,11 +1511,11 @@ export default function InsertValue({
               try {
                 await recurringTransactionService.saveRecurring({
                   is_expense: true,
-                  amount: inExJson.expense.amount,
-                  notes: inExJson.expense.notes,
-                  payment_type: inExJson.expense.payment_type,
-                  category_tag: inExJson.expense.category_tag,
-                  user_category_id: inExJson.expense.user_category_id,
+                  amount: inExJson.transaction.amount,
+                  notes: inExJson.transaction.notes,
+                  payment_type: inExJson.transaction.payment_type,
+                  category_tag: inExJson.transaction.category_tag,
+                  user_category_id: inExJson.transaction.user_category_id,
                   day_of_month: dayOfMonth,
                 });
               } catch (recurringError) {
@@ -1625,7 +1625,7 @@ export default function InsertValue({
           row.userCategoryId,
           row.balanceSource,
         );
-        return financeService.addExpenseOrIncome(inExJson)
+        return financeService.addTransaction(inExJson)
           .then((res) => {
             if (res.status === 200) {
               success++;
@@ -1870,8 +1870,8 @@ export default function InsertValue({
         editedValues.userCategoryId ?? null,
         balanceSource,
       );
-      if (!inExJson.expense.balance_source && originalAdd?.balanceAssetKey) {
-        inExJson.expense.balance_source = {
+      if (!inExJson.transaction.balance_source && originalAdd?.balanceAssetKey) {
+        inExJson.transaction.balance_source = {
           asset_key: originalAdd.balanceAssetKey,
           detail_type: originalAdd.balanceDetailType ?? null,
           detail_id: originalAdd.balanceDetailId ?? null,
@@ -1892,9 +1892,9 @@ export default function InsertValue({
             }
           : {enabled: false};
       }
-      const updateResult = await financeService.updateExpenseOrIncome({
-        expense: {
-          ...inExJson.expense,
+      const updateResult = await financeService.updateTransaction({
+        transaction: {
+          ...inExJson.transaction,
           id: originalAdd.id,
           ...(sharedExpenseUpdate ? {shared_expense: sharedExpenseUpdate} : {}),
         },
@@ -1906,8 +1906,8 @@ export default function InsertValue({
       // An edit that changes the category for a given note is often a
       // correction — at least as strong a training signal as an initial
       // categorization (see utils/categoryPatterns.ts).
-      if (inExJson.expense.notes) {
-        learnFromTransaction(inExJson.expense.notes, inExJson.expense.category_tag, isOutflow, inExJson.expense.user_category_id ?? null);
+      if (inExJson.transaction.notes) {
+        learnFromTransaction(inExJson.transaction.notes, inExJson.transaction.category_tag, isOutflow, inExJson.transaction.user_category_id ?? null);
       }
 
       // 3. Apply balance deltas if needed.
@@ -1984,10 +1984,10 @@ export default function InsertValue({
   const createInExJson = (isOutflow, date, amount, notes, payment_type, category_tag, user_category_id = null, balanceSourceLabel = null) => {
     const numericAmount = Number(amount) || 0;
     return {
-      expense: {
+      transaction: {
         date: date,
         amount: toEUR(numericAmount),
-        is_expense: isOutflow,
+        direction: isOutflow ? 'outflow' : 'income',
         payment_type: payment_type,
         category_tag: category_tag,
         user_category_id: user_category_id,
@@ -2037,14 +2037,14 @@ export default function InsertValue({
       setIncome("");
     }
     try {
-      const inExAdd = await financeService.addExpenseOrIncome(inExJson);
+      const inExAdd = await financeService.addTransaction(inExJson);
       if (inExAdd.status === 200) {
         createdExpense = inExAdd.data;
         // Feed the local per-user category-suggestion engine (see
         // utils/categoryPatterns.ts) — manual entry is the main signal it
         // should learn from, not just CSV imports.
-        if (inExJson.expense.notes) {
-          learnFromTransaction(inExJson.expense.notes, inExJson.expense.category_tag, isOutflow, inExJson.expense.user_category_id ?? null);
+        if (inExJson.transaction.notes) {
+          learnFromTransaction(inExJson.transaction.notes, inExJson.transaction.category_tag, isOutflow, inExJson.transaction.user_category_id ?? null);
         }
         // If the user checked "make recurring" (see OutflowSection's
         // subscription/periodic-payment auto-flag), also create a template so
@@ -2056,11 +2056,11 @@ export default function InsertValue({
           try {
             await recurringTransactionService.saveRecurring({
               is_expense: true,
-              amount: inExJson.expense.amount,
-              notes: inExJson.expense.notes,
-              payment_type: inExJson.expense.payment_type,
-              category_tag: inExJson.expense.category_tag,
-              user_category_id: inExJson.expense.user_category_id,
+              amount: inExJson.transaction.amount,
+              notes: inExJson.transaction.notes,
+              payment_type: inExJson.transaction.payment_type,
+              category_tag: inExJson.transaction.category_tag,
+              user_category_id: inExJson.transaction.user_category_id,
               day_of_month: dayOfMonth,
             });
           } catch (recurringError) {
@@ -2171,16 +2171,16 @@ export default function InsertValue({
 
   const handleIncomesDelete = async () => {
     const data = {
-      expense: {
+      transaction: {
         id: deleteIncomeId ?? undefined,
         date: deleteIncomeDate,
         amount: Number(deleteIncomeAmount) || 0,
-        is_expense: false,
+        direction: 'income',
       },
     };
 
     try {
-      const incomesDelete = await financeService.deleteExpenseOrIncome(data);
+      const incomesDelete = await financeService.deleteTransaction(data);
 
       // If user selected a balance to adjust, subtract the deleted income from that balance
       if (incomesDelete.status === 200) {
@@ -2229,16 +2229,16 @@ export default function InsertValue({
 
   const handleOutflowsDelete = async () => {
     const data = {
-      expense: {
+      transaction: {
         id: deleteOutflowId ?? undefined,
         date: deleteOutflowDate,
         amount: Number(deleteOutflowAmount) || 0,
-        is_expense: true,
+        direction: 'outflow',
       },
     };
 
     try {
-      const outflowsDelete = await financeService.deleteExpenseOrIncome(data);
+      const outflowsDelete = await financeService.deleteTransaction(data);
 
       // If user selected a balance to adjust, add the deleted outflow back to that balance
       if (outflowsDelete.status === 200) {

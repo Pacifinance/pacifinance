@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { computeRankOfUser, rankFromExpensePool } from "../src/services/ranking"
+import { computeRankOfUser, rankFromTransactionPool } from "../src/services/ranking"
 
 describe("ranking percentiles", () => {
     it("reserves zero for a user that is not present in the pool", () => {
@@ -20,8 +20,8 @@ describe("ranking percentiles", () => {
             {userId: "high", total: 300}
         ]
 
-        expect(rankFromExpensePool(pool, "low", true)).toBe(1)
-        expect(rankFromExpensePool(pool, "high", true)).toBe(100)
-        expect(rankFromExpensePool(pool, "missing", true)).toBe(0)
+        expect(rankFromTransactionPool(pool, "low", true)).toBe(1)
+        expect(rankFromTransactionPool(pool, "high", true)).toBe(100)
+        expect(rankFromTransactionPool(pool, "missing", true)).toBe(0)
     })
 })

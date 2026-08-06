@@ -175,7 +175,7 @@ export const UserProvider = ({ children }) => {
               financeService.getCustomCategories(),
               initialUserInfo ? Promise.resolve(initialUserInfo) : userService.getUserInfo(),
               financeService.getBalances(),
-              financeService.getExpensesAndIncomes(),
+              financeService.getTransactions(),
             ]);
 
             const tags = transformTags(tagsData);
@@ -213,7 +213,7 @@ export const UserProvider = ({ children }) => {
               profile: userProfile.profile,
               balances: balancesData,
               last12MonthsData,
-              expenses: { allOutflows, outflowsArray, totalOutflowsPerCategoryPerMonth },
+              outflows: { allOutflows, outflowsArray, totalOutflowsPerCategoryPerMonth },
               incomes: { allIncomes, incomesArray },
               tags,
               customCategories,

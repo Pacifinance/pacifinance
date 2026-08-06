@@ -1062,13 +1062,13 @@ describe('API Format Conversion', () => {
         notes: 'Grocery',
       };
       const result = toAPIFormat(tx);
-      expect(result).toHaveProperty('expense');
-      expect(result.expense.date).toBe('2024-03-15');
-      expect(result.expense.amount).toBe(50);
-      expect(result.expense.is_expense).toBe(true);
-      expect(result.expense.payment_type).toBe(1);
-      expect(result.expense.category_tag).toBe(4);
-      expect(result.expense.notes).toBe('Grocery');
+      expect(result).toHaveProperty('transaction');
+      expect(result.transaction.date).toBe('2024-03-15');
+      expect(result.transaction.amount).toBe(50);
+      expect(result.transaction.direction).toBe('outflow');
+      expect(result.transaction.payment_type).toBe(1);
+      expect(result.transaction.category_tag).toBe(4);
+      expect(result.transaction.notes).toBe('Grocery');
     });
 
     it('should produce correct structure for income', () => {
@@ -1080,38 +1080,38 @@ describe('API Format Conversion', () => {
         notes: 'Salary',
       };
       const result = toAPIFormat(tx);
-      expect(result.expense.is_expense).toBe(false);
-      expect(result.expense.amount).toBe(2800);
-      expect(result.expense.category_tag).toBe(0);
+      expect(result.transaction.direction).toBe('income');
+      expect(result.transaction.amount).toBe(2800);
+      expect(result.transaction.category_tag).toBe(0);
     });
 
     it('should default payment_type to 1 for outflows and 0 for incomes', () => {
       const outflow = { date: '2024-01-01', amount: 100, isOutflow: true, categoryIndex: 9999, notes: '' };
-      expect(toAPIFormat(outflow).expense.payment_type).toBe(1);
+      expect(toAPIFormat(outflow).transaction.payment_type).toBe(1);
       const income = { date: '2024-01-01', amount: 100, isOutflow: false, categoryIndex: 0, notes: '' };
-      expect(toAPIFormat(income).expense.payment_type).toBe(0);
+      expect(toAPIFormat(income).transaction.payment_type).toBe(0);
     });
 
     it('should use provided paymentType parameter for outflows', () => {
       const tx = { date: '2024-01-01', amount: 100, isOutflow: true, categoryIndex: 9999, notes: '' };
-      expect(toAPIFormat(tx, 3).expense.payment_type).toBe(3);
+      expect(toAPIFormat(tx, 3).transaction.payment_type).toBe(3);
     });
 
     it('should handle empty notes', () => {
       const tx = { date: '2024-01-01', amount: 100, isOutflow: true, categoryIndex: 9999, notes: '' };
-      expect(toAPIFormat(tx).expense.notes).toBe('');
+      expect(toAPIFormat(tx).transaction.notes).toBe('');
     });
 
     it('should handle undefined notes', () => {
       const tx = { date: '2024-01-01', amount: 100, isOutflow: true, categoryIndex: 9999 };
-      expect(toAPIFormat(tx).expense.notes).toBeUndefined();
+      expect(toAPIFormat(tx).transaction.notes).toBeUndefined();
     });
 
     it('should pass through userCategoryId when present, and default to null otherwise', () => {
       const tagged = { date: '2024-01-01', amount: 100, isOutflow: true, categoryIndex: 4, notes: '', userCategoryId: 7 };
-      expect(toAPIFormat(tagged).expense.user_category_id).toBe(7);
+      expect(toAPIFormat(tagged).transaction.user_category_id).toBe(7);
       const untagged = { date: '2024-01-01', amount: 100, isOutflow: true, categoryIndex: 4, notes: '' };
-      expect(toAPIFormat(untagged).expense.user_category_id).toBeNull();
+      expect(toAPIFormat(untagged).transaction.user_category_id).toBeNull();
     });
   });
 });
@@ -1411,12 +1411,12 @@ describe('Integration Scenarios', () => {
       const { valid } = processRows(rows, mapping);
       const apiData = toAPIFormat(valid[0]);
 
-      expect(apiData.expense.date).toBe('2024-03-15');
-      expect(apiData.expense.amount).toBe(50);
-      expect(apiData.expense.is_expense).toBe(true);
-      expect(apiData.expense.payment_type).toBe(1);
-      expect(apiData.expense.category_tag).toBe(4); // Food
-      expect(apiData.expense.notes).toBe('pranzo');
+      expect(apiData.transaction.date).toBe('2024-03-15');
+      expect(apiData.transaction.amount).toBe(50);
+      expect(apiData.transaction.direction).toBe('outflow');
+      expect(apiData.transaction.payment_type).toBe(1);
+      expect(apiData.transaction.category_tag).toBe(4); // Food
+      expect(apiData.transaction.notes).toBe('pranzo');
     });
   });
 

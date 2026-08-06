@@ -104,28 +104,28 @@ export interface BalanceAddRequest {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
- * /expenses
+ * /transactions
  * ═══════════════════════════════════════════════════════════════════════════*/
 
 /** Optional balance source attached to a transaction at insert time: the
  * balance field (and optionally the specific sub-account) the money was taken
  * from / added to. Lets delete/edit flows propose the exact field to restore. */
-export interface ExpenseBalanceSourceDto {
+export interface TransactionBalanceSourceDto {
   asset_key: AssetKey;
   detail_type: 'liquidity' | 'investment' | null;
   detail_id: number | null;
 }
 
-export interface ExpenseDto {
+export interface TransactionWriteDto {
   date: string;         // ISO
   amount: number;       // in EUR, already rounded server-side
-  is_expense: boolean;  // true = outflow, false = income
+  direction: 'income' | 'outflow';
   notes: string;
   payment_type: number; // index into tags.paymentTags (0 for income)
   category_tag: number; // index into tags.outflowsTags / tags.incomesTags
   /** Optional custom sub-category id (from /categories/get), display-only — stats stay on category_tag. */
   user_category_id?: number | null;
-  balance_source?: ExpenseBalanceSourceDto | null;
+  balance_source?: TransactionBalanceSourceDto | null;
   /** Real movement on the selected account when `amount` is only the user's share. */
   cash_amount?: number | null;
   /** Keeps an auditable movement out of income/outflow statistics. */
@@ -135,9 +135,9 @@ export interface ExpenseDto {
   reimbursement_shared_expense_ref?: string;
 }
 
-export interface ExpenseAddRequest { expense: ExpenseDto; }
-export interface ExpenseUpdateRequest {
-  expense: Omit<ExpenseDto, 'shared_expense'> & {
+export interface TransactionAddRequest { transaction: TransactionWriteDto; }
+export interface TransactionUpdateRequest {
+  transaction: Omit<TransactionWriteDto, 'shared_expense'> & {
     id: number;
     shared_expense?: {
       enabled: boolean;
@@ -146,19 +146,19 @@ export interface ExpenseUpdateRequest {
     };
   };
 }
-export interface ExpenseBatchAddRequest { expenses: ExpenseDto[]; }
-export interface ExpenseBatchAddResponse {
+export interface TransactionBatchAddRequest { transactions: TransactionWriteDto[]; }
+export interface TransactionBatchAddResponse {
   inserted: number;
   transaction_ids: number[];
   link_failures?: number;
 }
 
-/** Body of POST /expenses/monthly-totals. Omitted `months` -> full history. */
+/** Body of POST /transactions/monthly-totals. Omitted `months` -> full history. */
 export interface MonthlyTotalsRequest {
   months?: number | 'all';
 }
 
-/** One element of the POST /expenses/monthly-totals response — aggregated
+/** One element of the POST /transactions/monthly-totals response — aggregated
  * server-side (SQL SUM/GROUP BY), no per-transaction detail. */
 export interface MonthlyTotalDto {
   monthStart: string; // "YYYY-MM-DD"
@@ -168,19 +168,13 @@ export interface MonthlyTotalDto {
 
 export type MonthlyTotalsResponse = MonthlyTotalDto[];
 
-/** Single month bucket returned by POST /expenses/get (13-element array). */
-export interface ExpensesMonthDto {
-  date: string;
-  expenses: ExpenseDto[];
-}
-
-export type ExpensesGetResponse = ExpensesMonthDto[];
-
-/** One transaction as returned by the server's toExpense() shape (/expenses/get, /expenses/month). */
+/** One transaction returned by /transactions/get and /transactions/month. */
 export interface TransactionDto {
   id: number;
   date: string;
   amount: number;
+  direction: 'income' | 'outflow';
+  /** @deprecated Compatibility field; use direction. */
   isExpense: boolean;
   notes: string;
   paymentType: { label: string; index: number; type: number } | null;
@@ -193,22 +187,25 @@ export interface TransactionDto {
   excludeFromStatistics: boolean;
 }
 
-/** Body of POST /expenses/month. `month` is 1-12. */
+/** Newest-first monthly buckets returned by POST /transactions/get. */
+export type TransactionsGetResponse = TransactionDto[][];
+
+/** Body of POST /transactions/month. `month` is 1-12. */
 export interface MonthDetailRequest {
   year: number;
   month: number;
 }
 
-/** Response of POST /expenses/month — one arbitrary month's tagged transactions
+/** Response of POST /transactions/month — one arbitrary month's tagged transactions
  * (mixed incomes+outflows), for on-demand history beyond the 13-month window
- * loaded by /expenses/get. */
+ * loaded by /transactions/get. */
 export type MonthDetailResponse = TransactionDto[];
 
-export interface ExpenseDeleteRequest {
+export interface TransactionDeleteRequest {
   // Prefer { id }: exact, can't match a sibling transaction with the same
   // date/amount/direction. The date/amount/is_expense shape is a legacy
   // fallback for callers that don't have the row id (e.g. import-undo).
-  expense: { id: number } | Pick<ExpenseDto, 'date' | 'amount' | 'is_expense'>;
+  transaction: { id: number } | Pick<TransactionWriteDto, 'date' | 'amount' | 'direction'>;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -216,10 +213,10 @@ export interface ExpenseDeleteRequest {
  * ═══════════════════════════════════════════════════════════════════════════*/
 
 /** A recurring outflow/income template (subscription, rent, salary...). A daily
- * cron turns each due template into a real expenses row — see server/src/db/models/recurringTransactions.ts. */
+ * cron turns each due template into a real transaction row — see server/src/db/models/recurringTransactions.ts. */
 export interface RecurringTransactionDto {
   id: number;
-  isExpense: boolean;
+  direction: 'income' | 'outflow';
   amount: number;
   notes: string;
   paymentType: { label: string; index: number; type: number } | null;
@@ -234,7 +231,7 @@ export type RecurringTransactionsGetResponse = RecurringTransactionDto[];
 
 export interface RecurringTransactionSaveRequest {
   id?: number;
-  is_expense: boolean;
+  direction: 'income' | 'outflow';
   amount: number;
   notes?: string;
   payment_type: number; // client index, ignored for incomes
@@ -376,7 +373,7 @@ export interface RecoveryResetPasswordRequest {
  * ═══════════════════════════════════════════════════════════════════════════*/
 
 export interface TagDto {
-  /** Numeric index used to reference the tag in expenses/balances. */
+  /** Numeric index used to reference the tag in transactions/balances. */
   tag: number;
   /** Short key used as i18n lookup (matches `translations.outflowsTags[key]`). */
   name: string;
@@ -423,13 +420,9 @@ export interface CategoryRenameRequest {
  * ═══════════════════════════════════════════════════════════════════════════*/
 
 export interface RankBalancesRequest { similar?: boolean; }
-export interface RankExpensesRequest {
-  /** true → expenses ranking (low is good); false → incomes ranking. */
-  expenses: boolean;
-  similar?: boolean;
-}
+export interface RankTransactionsRequest { similar?: boolean; }
 
-/** Both /rank/balances and /rank/expenses return `{ position: number }`. */
+/** /rank/balances, /rank/outflows and /rank/incomes return `{ position: number }`. */
 export interface RankResponse { position: number; }
 
 /* ═══════════════════════════════════════════════════════════════════════════

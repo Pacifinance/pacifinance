@@ -12,7 +12,8 @@ const MIN_DAY = 1
 const MAX_DAY = 28
 
 function parseRecurringPayload(body: Record<string, unknown>) {
-    const isExpense = Boolean(body.is_expense)
+    if (body.direction !== undefined && body.direction !== "income" && body.direction !== "outflow") return null
+    const isExpense = body.direction !== undefined ? body.direction === "outflow" : Boolean(body.is_expense)
     const amount = common.roundCurrency(Number(body.amount))
     const paymentType = Number(body.payment_type ?? 0)
     const categoryTag = Number(body.category_tag)

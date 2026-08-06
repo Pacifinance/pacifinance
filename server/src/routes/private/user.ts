@@ -343,8 +343,8 @@ userRouter.post("/alldata", async (req, res) => {
     // of the query fails
     const user = await db.users.getPublicInfoByUserId(userId)
     const balances = await db.balances.getAllByUserId(userId)
-    const expenses = await db.expenses.getAllByUserId(userId)
-    if (user === null || balances === null || expenses === null)
+    const transactions = await db.transactions.getAllByUserId(userId)
+    if (user === null || balances === null || transactions === null)
     {
         res.status(500).send()
         return
@@ -381,14 +381,14 @@ userRouter.post("/alldata", async (req, res) => {
             }
         }),
 
-        expenses: expenses.map((expense) => {
+        transactions: transactions.map((transaction) => {
             return {
-                date: expense.date,
-                amount: expense.amount,
-                isExpense: expense.isExpense,
-                notes: expense.notes,
-                paymentType: (expense.paymentType as any)?.label,
-                categoryTag: (expense.categoryTag as any)?.label
+                date: transaction.date,
+                amount: transaction.amount,
+                direction: transaction.direction,
+                notes: transaction.notes,
+                paymentType: (transaction.paymentType as any)?.label,
+                categoryTag: (transaction.categoryTag as any)?.label
             }
         })
     }

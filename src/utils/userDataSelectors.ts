@@ -208,9 +208,9 @@ export const isNewUser = (userData: UserDataLike): boolean => {
 };
 
 // Expense and income selectors
-export const getAllOutflows = (userData: UserDataLike): TransactionDto[][] => userData?.expenses?.allOutflows || [];
-export const getOutflowsArray = (userData: UserDataLike): number[] => userData?.expenses?.outflowsArray || [];
-export const getTotalOutflowsPerCategoryPerMonth = (userData: UserDataLike): Record<string, Record<string, number>> => userData?.expenses?.totalOutflowsPerCategoryPerMonth || {};
+export const getAllOutflows = (userData: UserDataLike): TransactionDto[][] => userData?.outflows?.allOutflows || [];
+export const getOutflowsArray = (userData: UserDataLike): number[] => userData?.outflows?.outflowsArray || [];
+export const getTotalOutflowsPerCategoryPerMonth = (userData: UserDataLike): Record<string, Record<string, number>> => userData?.outflows?.totalOutflowsPerCategoryPerMonth || {};
 
 export type CategoryBreakdown = Record<string, {
   amount: number;
@@ -372,11 +372,11 @@ export const getCategoryBreakdownForEntries = (entries: TransactionDto[], type: 
 
 // Total expenses/income/saved for the current month
 export const getTotalOutflowsCurrentMonth = (userData: UserDataLike): number => {
-  if (typeof userData?.expenses?.totalOutflowsMonth === 'number') {
-    return userData.expenses.totalOutflowsMonth;
+  if (typeof userData?.outflows?.totalOutflowsMonth === 'number') {
+    return userData.outflows.totalOutflowsMonth;
   }
-  if (Array.isArray(userData?.expenses?.outflowsArray)) {
-    return userData.expenses.outflowsArray[0] || 0;
+  if (Array.isArray(userData?.outflows?.outflowsArray)) {
+    return userData.outflows.outflowsArray[0] || 0;
   }
   return 0;
 };

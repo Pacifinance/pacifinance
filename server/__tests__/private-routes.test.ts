@@ -139,14 +139,14 @@ describe("private backend routes", () => {
         )
     })
 
-    it("returns 400 for missing balance and expense payloads", async () => {
+    it("returns 400 for missing balance and transaction payloads", async () => {
         await expect(request(app, "/api/balances/add", {
             method: "POST",
             headers: {cookie: authCookie},
             body: {}
         })).resolves.toMatchObject({status: 400})
 
-        await expect(request(app, "/api/expenses/add", {
+        await expect(request(app, "/api/transactions/add", {
             method: "POST",
             headers: {cookie: authCookie},
             body: {}
@@ -154,14 +154,14 @@ describe("private backend routes", () => {
     })
 
     it("forces income payment type to none before insertion", async () => {
-        const response = await request(app, "/api/expenses/add", {
+        const response = await request(app, "/api/transactions/add", {
             method: "POST",
             headers: {cookie: authCookie},
             body: {
-                expense: {
+                transaction: {
                     date: "2024-05-20T00:00:00.000Z",
                     amount: "25.999",
-                    is_expense: false,
+                    direction: "income",
                     payment_type: 2,
                     category_tag: 3,
                     notes: "monthly salary"
@@ -170,7 +170,7 @@ describe("private backend routes", () => {
         })
 
         expect(response.status).toBe(200)
-        expect(mockDb.expenses.insertNew).toHaveBeenCalledWith(
+        expect(mockDb.transactions.insertNew).toHaveBeenCalledWith(
             "user-uuid",
             expect.any(Date),
             25.99,
@@ -183,17 +183,37 @@ describe("private backend routes", () => {
         )
     })
 
-    it("updates an expense and its shared split through one backend operation", async () => {
-        mockDb.expenses.updateExisting.mockResolvedValue({id: 42})
-
-        const response = await request(app, "/api/expenses/update", {
+    it("keeps the legacy expenses route as a compatibility alias", async () => {
+        const response = await request(app, "/api/expenses/add", {
             method: "POST",
             headers: {cookie: authCookie},
             body: {expense: {
+                date: "2024-05-20T00:00:00.000Z",
+                amount: 10,
+                is_expense: true,
+                payment_type: 1,
+                category_tag: 3,
+                notes: "legacy client",
+            }},
+        })
+
+        expect(response.status).toBe(200)
+        expect(mockDb.transactions.insertNew).toHaveBeenCalledWith(
+            "user-uuid", expect.any(Date), 10, true, "legacy client", 1, 3, null, null,
+        )
+    })
+
+    it("updates a transaction and its shared split through one backend operation", async () => {
+        mockDb.transactions.updateExisting.mockResolvedValue({id: 42})
+
+        const response = await request(app, "/api/transactions/update", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {transaction: {
                 id: 42,
                 date: "2026-07-18",
                 amount: 24.96,
-                is_expense: true,
+                direction: "outflow",
                 payment_type: 2,
                 category_tag: 3,
                 notes: "Uber",
@@ -202,7 +222,7 @@ describe("private backend routes", () => {
         })
 
         expect(response.status).toBe(200)
-        expect(mockDb.expenses.updateExisting).toHaveBeenCalledWith("user-uuid", expect.objectContaining({
+        expect(mockDb.transactions.updateExisting).toHaveBeenCalledWith("user-uuid", expect.objectContaining({
             id: 42,
             amount: 6.24,
             sharedMode: "set",
@@ -212,59 +232,59 @@ describe("private backend routes", () => {
     })
 
     it("rejects an invalid shared split before updating the transaction", async () => {
-        const response = await request(app, "/api/expenses/update", {
+        const response = await request(app, "/api/transactions/update", {
             method: "POST",
             headers: {cookie: authCookie},
-            body: {expense: {
-                id: 42, date: "2026-07-18", amount: 20, is_expense: true,
+            body: {transaction: {
+                id: 42, date: "2026-07-18", amount: 20, direction: "outflow",
                 payment_type: 2, category_tag: 3, notes: "Uber",
                 shared_expense: {enabled: true, total_amount: 20, own_share: 20},
             }}
         })
 
         expect(response.status).toBe(400)
-        expect(mockDb.expenses.updateExisting).not.toHaveBeenCalled()
+        expect(mockDb.transactions.updateExisting).not.toHaveBeenCalled()
     })
 
-    it("validates and inserts an expense import as one batch", async () => {
-        mockDb.expenses.insertBatch.mockResolvedValue([{id: 1}, {id: 2}])
+    it("validates and inserts a transaction import as one batch", async () => {
+        mockDb.transactions.insertBatch.mockResolvedValue([{id: 1}, {id: 2}])
         mockDb.sharedExpenses.insertImportedReceivables.mockResolvedValue([])
         mockDb.sharedExpenses.insertImportedReimbursements.mockResolvedValue([])
-        const response = await request(app, "/api/expenses/batch-add", {
+        const response = await request(app, "/api/transactions/batch-add", {
             method: "POST",
             headers: {cookie: authCookie},
-            body: {expenses: [
-                {date: "2026-08-01", amount: "12.345", is_expense: true, payment_type: 1, category_tag: 4, notes: "Lunch"},
-                {date: "2026-08-02", amount: "20", is_expense: false, payment_type: 3, category_tag: 0, notes: "Refund"},
+            body: {transactions: [
+                {date: "2026-08-01", amount: "12.345", direction: "outflow", payment_type: 1, category_tag: 4, notes: "Lunch"},
+                {date: "2026-08-02", amount: "20", direction: "income", payment_type: 3, category_tag: 0, notes: "Refund"},
             ]}
         })
 
         expect(response.status).toBe(200)
         expect(response.json).toEqual({inserted: 2, transaction_ids: [1, 2], link_failures: 0})
-        expect(mockDb.expenses.insertBatch).toHaveBeenCalledTimes(1)
-        expect(mockDb.expenses.insertBatch).toHaveBeenCalledWith("user-uuid", [
+        expect(mockDb.transactions.insertBatch).toHaveBeenCalledTimes(1)
+        expect(mockDb.transactions.insertBatch).toHaveBeenCalledWith("user-uuid", [
             expect.objectContaining({amount: 12.34, isExpense: true, paymentType: 1, categoryTag: 4}),
             expect.objectContaining({amount: 20, isExpense: false, paymentType: 0, categoryTag: 0}),
         ])
     })
 
     it("persists shared-expense and reimbursement links in the same import request", async () => {
-        mockDb.expenses.insertBatch.mockResolvedValue([{id: 10}, {id: 11}])
+        mockDb.transactions.insertBatch.mockResolvedValue([{id: 10}, {id: 11}])
         mockDb.sharedExpenses.insertImportedReceivables.mockResolvedValue([{id: 4}])
         mockDb.sharedExpenses.insertImportedReimbursements.mockResolvedValue([{id: 5}])
-        const response = await request(app, "/api/expenses/batch-add", {
+        const response = await request(app, "/api/transactions/batch-add", {
             method: "POST",
             headers: {cookie: authCookie},
-            body: {expenses: [
-                {date: "2026-08-01", amount: 40, cash_amount: 100, is_expense: true, payment_type: 1,
+            body: {transactions: [
+                {date: "2026-08-01", amount: 40, cash_amount: 100, direction: "outflow", payment_type: 1,
                     category_tag: 4, notes: "Dinner", shared_expense: {own_share: 40}},
-                {date: "2026-08-02", amount: 30, is_expense: false, payment_type: 0,
+                {date: "2026-08-02", amount: 30, direction: "income", payment_type: 0,
                     category_tag: 0, notes: "Refund", reimbursement_receivable_id: 7},
             ]},
         })
 
         expect(response.status).toBe(200)
-        expect(mockDb.expenses.insertBatch).toHaveBeenCalledWith("user-uuid", [
+        expect(mockDb.transactions.insertBatch).toHaveBeenCalledWith("user-uuid", [
             expect.objectContaining({amount: 40, cashAmount: 100, excludeFromStatistics: false}),
             expect.objectContaining({amount: 30, excludeFromStatistics: true}),
         ])
@@ -277,16 +297,16 @@ describe("private backend routes", () => {
     })
 
     it("links a reimbursement to a shared expense created by the same batch", async () => {
-        mockDb.expenses.insertBatch.mockResolvedValue([{id: 20}, {id: 21}])
+        mockDb.transactions.insertBatch.mockResolvedValue([{id: 20}, {id: 21}])
         mockDb.sharedExpenses.insertImportedReceivables.mockResolvedValue([{id: 9}])
         mockDb.sharedExpenses.insertImportedReimbursements.mockResolvedValue([{id: 10}])
-        const response = await request(app, "/api/expenses/batch-add", {
+        const response = await request(app, "/api/transactions/batch-add", {
             method: "POST",
             headers: {cookie: authCookie},
-            body: {expenses: [
-                {date: "2026-08-01", amount: 40, cash_amount: 100, is_expense: true, payment_type: 1,
+            body: {transactions: [
+                {date: "2026-08-01", amount: 40, cash_amount: 100, direction: "outflow", payment_type: 1,
                     category_tag: 4, notes: "Dinner", shared_expense: {own_share: 40, client_ref: "shared:3"}},
-                {date: "2026-08-02", amount: 30, is_expense: false, payment_type: 0,
+                {date: "2026-08-02", amount: 30, direction: "income", payment_type: 0,
                     category_tag: 0, notes: "Refund", reimbursement_shared_expense_ref: "shared:3"},
             ]},
         })
@@ -297,28 +317,28 @@ describe("private backend routes", () => {
         ])
     })
 
-    it("rejects empty, oversized, or partially invalid expense batches", async () => {
-        const callBatch = (expenses: unknown[]) => request(app, "/api/expenses/batch-add", {
-            method: "POST", headers: {cookie: authCookie}, body: {expenses}
+    it("rejects empty, oversized, or partially invalid transaction batches", async () => {
+        const callBatch = (transactions: unknown[]) => request(app, "/api/transactions/batch-add", {
+            method: "POST", headers: {cookie: authCookie}, body: {transactions}
         })
         await expect(callBatch([])).resolves.toMatchObject({status: 400})
         await expect(callBatch(Array.from({length: 501}, () => ({})))).resolves.toMatchObject({status: 400})
         await expect(callBatch([
-            {date: "2026-08-01", amount: 10, is_expense: true, payment_type: 1, category_tag: 4},
-            {date: "2026-08-01", amount: "invalid", is_expense: true, payment_type: 1, category_tag: 4},
+            {date: "2026-08-01", amount: 10, direction: "outflow", payment_type: 1, category_tag: 4},
+            {date: "2026-08-01", amount: "invalid", direction: "outflow", payment_type: 1, category_tag: 4},
         ])).resolves.toMatchObject({status: 400})
-        expect(mockDb.expenses.insertBatch).not.toHaveBeenCalled()
+        expect(mockDb.transactions.insertBatch).not.toHaveBeenCalled()
     })
 
     it("persists a valid balance source and drops an invalid one", async () => {
-        const addExpense = (balance_source: any) => request(app, "/api/expenses/add", {
+        const addTransaction = (balance_source: any) => request(app, "/api/transactions/add", {
             method: "POST",
             headers: {cookie: authCookie},
             body: {
-                expense: {
+                transaction: {
                     date: "2024-05-20T00:00:00.000Z",
                     amount: "10",
-                    is_expense: true,
+                    direction: "outflow",
                     payment_type: 1,
                     category_tag: 3,
                     notes: "",
@@ -328,33 +348,33 @@ describe("private backend routes", () => {
         })
 
         // Valid: parent asset + liquidity sub-account
-        let response = await addExpense({asset_key: "bank", detail_type: "liquidity", detail_id: 7})
+        let response = await addTransaction({asset_key: "bank", detail_type: "liquidity", detail_id: 7})
         expect(response.status).toBe(200)
-        expect(mockDb.expenses.insertNew).toHaveBeenLastCalledWith(
+        expect(mockDb.transactions.insertNew).toHaveBeenLastCalledWith(
             "user-uuid", expect.any(Date), 10, true, "", 1, 3, null,
             {asset_key: "bank", detail_type: "liquidity", detail_id: 7}
         )
 
         // Invalid asset key: the source is dropped, the transaction still inserts
-        response = await addExpense({asset_key: "not-an-asset", detail_type: "liquidity", detail_id: 7})
+        response = await addTransaction({asset_key: "not-an-asset", detail_type: "liquidity", detail_id: 7})
         expect(response.status).toBe(200)
-        expect(mockDb.expenses.insertNew).toHaveBeenLastCalledWith(
+        expect(mockDb.transactions.insertNew).toHaveBeenLastCalledWith(
             "user-uuid", expect.any(Date), 10, true, "", 1, 3, null, null
         )
 
         // Detail type without id: only the parent key survives
-        response = await addExpense({asset_key: "cash", detail_type: "liquidity", detail_id: "abc"})
+        response = await addTransaction({asset_key: "cash", detail_type: "liquidity", detail_id: "abc"})
         expect(response.status).toBe(200)
-        expect(mockDb.expenses.insertNew).toHaveBeenLastCalledWith(
+        expect(mockDb.transactions.insertNew).toHaveBeenLastCalledWith(
             "user-uuid", expect.any(Date), 10, true, "", 1, 3, null,
             {asset_key: "cash", detail_type: null, detail_id: null}
         )
     })
 
-    it("loads dashboard expenses with one batched monthly query", async () => {
-        mockDb.expenses.getRecentMonthlyExpensesByUserId.mockResolvedValue([[{amount: 10}]])
+    it("loads dashboard transactions with one batched monthly query", async () => {
+        mockDb.transactions.getRecentMonthlyTransactionsByUserId.mockResolvedValue([[{amount: 10}]])
 
-        const response = await request(app, "/api/expenses/get", {
+        const response = await request(app, "/api/transactions/get", {
             method: "POST",
             headers: {cookie: authCookie},
             body: {}
@@ -362,17 +382,17 @@ describe("private backend routes", () => {
 
         expect(response.status).toBe(200)
         expect(response.json).toEqual([[{amount: 10}]])
-        expect(mockDb.expenses.getRecentMonthlyExpensesByUserId).toHaveBeenCalledWith("user-uuid", 13)
-        expect(mockDb.expenses.getMonthlyExpensesByUserId).not.toHaveBeenCalled()
+        expect(mockDb.transactions.getRecentMonthlyTransactionsByUserId).toHaveBeenCalledWith("user-uuid", 13)
+        expect(mockDb.transactions.getMonthlyTransactionsByUserId).not.toHaveBeenCalled()
     })
 
     it("reports a server error instead of empty months when the batched monthly query fails", async () => {
         // A genuine DB read failure must surface as an error, not silently look
         // like "the user has no transactions this month" (which would zero out
         // the whole dashboard instead of prompting a retry).
-        mockDb.expenses.getRecentMonthlyExpensesByUserId.mockResolvedValue(null)
+        mockDb.transactions.getRecentMonthlyTransactionsByUserId.mockResolvedValue(null)
 
-        const response = await request(app, "/api/expenses/get", {
+        const response = await request(app, "/api/transactions/get", {
             method: "POST",
             headers: {cookie: authCookie},
             body: {}
@@ -450,7 +470,7 @@ describe("private backend routes", () => {
         expect(mockDb.users.getTypeOfUserId).toHaveBeenCalledTimes(1)
         expect(mockCache.get).toHaveBeenCalledWith("userRankings")
         expect(mockDb.balances.getRankingPool).not.toHaveBeenCalled()
-        expect(mockDb.expenses.getExpenseRankingPool).not.toHaveBeenCalled()
+        expect(mockDb.transactions.getTransactionRankingPool).not.toHaveBeenCalled()
     })
 
     it("returns 503 from the rankings route before the cache has been populated", async () => {

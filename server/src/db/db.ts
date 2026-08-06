@@ -1,6 +1,6 @@
 import users from "./models/users"
 import balances from "./models/balances"
-import expenses from "./models/expenses"
+import transactions from "./models/transactions"
 import tags from "./models/tags"
 import categories from "./models/categories"
 import investments from "./models/investments"
@@ -13,4 +13,4 @@ import benchmarkSnapshots from "./models/benchmarkSnapshots"
 import sharedExpenses from "./models/sharedExpenses"
 import notifications from "./models/notifications"
 
-export default {users, balances, expenses, tags, categories, investments, liquidityAccounts, recurringTransactions, goals, delqueue, benchmarks, benchmarkSnapshots, sharedExpenses, notifications}
+export default {users, balances, transactions, tags, categories, investments, liquidityAccounts, recurringTransactions, goals, delqueue, benchmarks, benchmarkSnapshots, sharedExpenses, notifications}

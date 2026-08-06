@@ -3,7 +3,7 @@ import { beforeEach, vi } from "vitest"
 type MockDb = {
     users: Record<string, any>
     balances: Record<string, any>
-    expenses: Record<string, any>
+    transactions: Record<string, any>
     tags: Record<string, any>
     categories: Record<string, any>
     investments: Record<string, any>
@@ -52,17 +52,17 @@ const mocks = vi.hoisted(() => {
             getAllByUserId: vi.fn(),
             getRankingPool: vi.fn()
         },
-        expenses: {
+        transactions: {
             insertNew: vi.fn(),
             updateExisting: vi.fn(),
             insertBatch: vi.fn(),
-            getMonthlyExpensesByUserId: vi.fn(),
-            getRecentMonthlyExpensesByUserId: vi.fn(),
+            getMonthlyTransactionsByUserId: vi.fn(),
+            getRecentMonthlyTransactionsByUserId: vi.fn(),
             getMonthlyTotalsByUserId: vi.fn(),
             getAllByUserId: vi.fn(),
-            deleteExpenseByData: vi.fn(),
-            deleteExpenseById: vi.fn(),
-            getExpenseRankingPool: vi.fn()
+            deleteTransactionByData: vi.fn(),
+            deleteTransactionById: vi.fn(),
+            getTransactionRankingPool: vi.fn()
         },
         tags: {
             TagType: {
@@ -283,14 +283,14 @@ export function resetServerMocks() {
     mockDb.balances.getAllByUserId.mockResolvedValue([])
     mockDb.balances.getRankingPool.mockResolvedValue([])
 
-    mockDb.expenses.insertNew.mockResolvedValue({id: 1})
-    mockDb.expenses.insertBatch.mockResolvedValue([])
-    mockDb.expenses.getMonthlyExpensesByUserId.mockResolvedValue([])
-    mockDb.expenses.getRecentMonthlyExpensesByUserId.mockResolvedValue([])
-    mockDb.expenses.getMonthlyTotalsByUserId.mockResolvedValue([])
-    mockDb.expenses.getAllByUserId.mockResolvedValue([])
-    mockDb.expenses.deleteExpenseByData.mockResolvedValue({deletedCount: 1})
-    mockDb.expenses.getExpenseRankingPool.mockResolvedValue([])
+    mockDb.transactions.insertNew.mockResolvedValue({id: 1})
+    mockDb.transactions.insertBatch.mockResolvedValue([])
+    mockDb.transactions.getMonthlyTransactionsByUserId.mockResolvedValue([])
+    mockDb.transactions.getRecentMonthlyTransactionsByUserId.mockResolvedValue([])
+    mockDb.transactions.getMonthlyTotalsByUserId.mockResolvedValue([])
+    mockDb.transactions.getAllByUserId.mockResolvedValue([])
+    mockDb.transactions.deleteTransactionByData.mockResolvedValue({deletedCount: 1})
+    mockDb.transactions.getTransactionRankingPool.mockResolvedValue([])
 
     mockSimilarUsers.getSimilarUserIds.mockResolvedValue({userIds: [], insufficientData: true})
 

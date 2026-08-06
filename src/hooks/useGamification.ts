@@ -117,7 +117,7 @@ export const BADGE_DEFINITIONS = {
     category: BADGE_CATEGORIES.savings,
     check: (data) => {
       const incomes = data.incomes?.incomesArray || [];
-      const outflows = data.expenses?.outflowsArray || [];
+      const outflows = data.outflows?.outflowsArray || [];
       return incomes.some((inc, i) => inc > 0 && inc > (outflows[i] || 0));
     },
   },
@@ -145,7 +145,7 @@ export const BADGE_DEFINITIONS = {
     category: BADGE_CATEGORIES.savings,
     check: (data) => {
       const incomes = data.incomes?.incomesArray || [];
-      const outflows = data.expenses?.outflowsArray || [];
+      const outflows = data.outflows?.outflowsArray || [];
       return incomes.some((inc, i) => {
         if (inc <= 0) return false;
         const spent = outflows[i] || 0;
@@ -161,7 +161,7 @@ export const BADGE_DEFINITIONS = {
     category: BADGE_CATEGORIES.savings,
     check: (data) => {
       const incomes = data.incomes?.incomesArray || [];
-      const outflows = data.expenses?.outflowsArray || [];
+      const outflows = data.outflows?.outflowsArray || [];
       return incomes.some((inc, i) => {
         if (inc <= 0) return false;
         const spent = outflows[i] || 0;
@@ -325,7 +325,7 @@ export const BADGE_DEFINITIONS = {
     category: BADGE_CATEGORIES.outflowManagement,
     check: (data) => {
       const limit = data.limits?.monthlySpendingLimit;
-      const outflows = data.expenses?.outflowsArray?.[0];
+      const outflows = data.outflows?.outflowsArray?.[0];
       // Require outflows > 0 (actual data) and a real user-set limit
       // Default fallback — check that limit was explicitly set via goalsAndLimits
       const hasUserSetLimit = data.limits?.monthlySpendingLimit && 
@@ -338,7 +338,7 @@ export const BADGE_DEFINITIONS = {
     icon: '✂️',
     category: BADGE_CATEGORIES.outflowManagement,
     check: (data) => {
-      const outflows = data.expenses?.outflowsArray || [];
+      const outflows = data.outflows?.outflowsArray || [];
       // Both months must have actual outflow data
       return outflows.length >= 2 && outflows[0] > 0 && outflows[1] > 0 && outflows[0] < outflows[1];
     },
@@ -348,7 +348,7 @@ export const BADGE_DEFINITIONS = {
     icon: '📉',
     category: BADGE_CATEGORIES.outflowManagement,
     check: (data) => {
-      const outflows = data.expenses?.outflowsArray || [];
+      const outflows = data.outflows?.outflowsArray || [];
       // All 3 months must have actual outflow data and be decreasing
       return outflows.length >= 3 && 
              outflows[0] > 0 && outflows[1] > 0 && outflows[2] > 0 &&
@@ -365,13 +365,13 @@ export const BADGE_DEFINITIONS = {
     id: 'firstOutflow',
     icon: '🧾',
     category: BADGE_CATEGORIES.outflowManagement,
-    check: (data) => (data.expenses?.allOutflows?.length || 0) >= 1,
+    check: (data) => (data.outflows?.allOutflows?.length || 0) >= 1,
   },
   transactionTracker: {
     id: 'transactionTracker',
     icon: '🗂️',
     category: BADGE_CATEGORIES.outflowManagement,
-    check: (data) => ((data.expenses?.allOutflows?.length || 0) + (data.incomes?.allIncomes?.length || 0)) >= 25,
+    check: (data) => ((data.outflows?.allOutflows?.length || 0) + (data.incomes?.allIncomes?.length || 0)) >= 25,
   },
 
   // ─────────────────────────────────────────
@@ -539,7 +539,7 @@ function countActiveAssetTypes(data) {
 // Requires BOTH income > 0 AND income > outflows (can't "save" with zero income)
 function calculateSavingsStreak(data) {
   const incomes = data.incomes?.incomesArray || [];
-  const outflows = data.expenses?.outflowsArray || [];
+  const outflows = data.outflows?.outflowsArray || [];
   let streak = 0;
   for (let i = 0; i < Math.min(incomes.length, outflows.length); i++) {
     // Must have actual income data to count as a savings month
@@ -591,7 +591,7 @@ function calculateDataStreak(data) {
 
 // Count unique outflow categories with spending > 0 in the current month
 function countActiveCategories(data) {
-  const categories = data.expenses?.totalOutflowsPerCategoryPerMonth;
+  const categories = data.outflows?.totalOutflowsPerCategoryPerMonth;
   if (!categories) return 0;
   const currentMonth = categories[0] || {};
   return Object.keys(currentMonth).filter(key => currentMonth[key] > 0).length;

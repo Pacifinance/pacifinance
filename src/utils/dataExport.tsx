@@ -146,7 +146,8 @@ export function prepareUserDataForExport(userData, _language = 'en', filterOptio
 
 
   // Handles data from the /user/alldata API
-  if (userData?.user && userData?.balances && userData?.expenses) {
+  const apiTransactions = userData?.transactions ?? userData?.expenses;
+  if (userData?.user && userData?.balances && apiTransactions) {
     // Data from the API - process directly, no recursion
 
     const userInfo = {
@@ -183,30 +184,29 @@ export function prepareUserDataForExport(userData, _language = 'en', filterOptio
       };
     }) : [];
 
-    // Process expenses/incomes
-    const expenses = Array.isArray(userData.expenses) ? userData.expenses.map((expense, index) => ({
+    // Process transactions. `isExpense` remains a read-only fallback for old exports.
+    const transactions = Array.isArray(apiTransactions) ? apiTransactions.map((transaction, index) => ({
       id: index + 1,
-      date: new Date(expense.date).toLocaleDateString(),
-      amount: Number(expense.amount || 0).toFixed(2),
-      type: expense.isExpense ? 'Expense' : 'Income',
-      isExpense: expense.isExpense ? 'Yes' : 'No',
-      notes: expense.notes || '',
-      paymentType: expense.paymentType || 'N/A',
-      category: expense.categoryTag || 'N/A'
+      date: new Date(transaction.date).toLocaleDateString(),
+      amount: Number(transaction.amount || 0).toFixed(2),
+      type: (transaction.direction ?? (transaction.isExpense ? 'outflow' : 'income')) === 'outflow' ? 'Expense' : 'Income',
+      notes: transaction.notes || '',
+      paymentType: transaction.paymentType || 'N/A',
+      category: transaction.categoryTag || 'N/A'
     })) : [];
 
     // Calculate monthly statistics
     const currentYear = new Date().getFullYear();
     const monthlyStats = Array(12).fill(0).map((_, monthIndex) => {
-      const monthExpenses = userData.expenses.filter(expense => {
-        const expenseDate = new Date(expense.date);
-        return expenseDate.getFullYear() === currentYear && 
-               expenseDate.getMonth() === monthIndex;
+      const monthTransactions = apiTransactions.filter(transaction => {
+        const transactionDate = new Date(transaction.date);
+        return transactionDate.getFullYear() === currentYear &&
+               transactionDate.getMonth() === monthIndex;
       });
 
-      const income = addCurrency(...monthExpenses.filter(e => !e.isExpense).map(e => e.amount || 0));
+      const income = addCurrency(...monthTransactions.filter(transaction => transaction.direction === 'income' || (transaction.direction === undefined && !transaction.isExpense)).map(transaction => transaction.amount || 0));
 
-      const outflow = addCurrency(...monthExpenses.filter(e => e.isExpense).map(e => e.amount || 0));
+      const outflow = addCurrency(...monthTransactions.filter(transaction => transaction.direction === 'outflow' || transaction.isExpense).map(transaction => transaction.amount || 0));
 
       return {
         month: new Date(currentYear, monthIndex).toLocaleDateString('en', { month: 'long' }),
@@ -214,18 +214,18 @@ export function prepareUserDataForExport(userData, _language = 'en', filterOptio
         income: Number(income).toFixed(2),
         expenses: Number(outflow).toFixed(2),
         net: Number(addCurrency(income, -outflow)).toFixed(2),
-        transactionCount: monthExpenses.length
+        transactionCount: monthTransactions.length
       };
     });
 
     // Group expenses by category
     const categoryStats = {};
-    userData.expenses.filter(e => e.isExpense).forEach(expense => {
-      const category = expense.categoryTag || 'Other';
+    apiTransactions.filter(transaction => transaction.direction === 'outflow' || transaction.isExpense).forEach(transaction => {
+      const category = transaction.categoryTag || 'Other';
       if (!categoryStats[category]) {
         categoryStats[category] = { total: 0, count: 0 };
       }
-      categoryStats[category].total = addCurrency(categoryStats[category].total, expense.amount || 0);
+      categoryStats[category].total = addCurrency(categoryStats[category].total, transaction.amount || 0);
       categoryStats[category].count += 1;
     });
 
@@ -240,9 +240,9 @@ export function prepareUserDataForExport(userData, _language = 'en', filterOptio
     const totalBalance = balances.length > 0 ? 
       parseFloat(balances[balances.length - 1]?.total || 0) : 0;
     
-    const totalIncome = addCurrency(...userData.expenses.filter(e => !e.isExpense).map(e => e.amount || 0));
+    const totalIncome = addCurrency(...apiTransactions.filter(transaction => transaction.direction === 'income' || (transaction.direction === undefined && !transaction.isExpense)).map(transaction => transaction.amount || 0));
 
-    const totalExpenses = addCurrency(...userData.expenses.filter(e => e.isExpense).map(e => e.amount || 0));
+    const totalExpenses = addCurrency(...apiTransactions.filter(transaction => transaction.direction === 'outflow' || transaction.isExpense).map(transaction => transaction.amount || 0));
 
     const monthCount = Math.max(1, userData.balances.length || 1);
     const demographics = {
@@ -251,7 +251,7 @@ export function prepareUserDataForExport(userData, _language = 'en', filterOptio
       totalIncome: Number(totalIncome || 0).toFixed(2),
       totalExpenses: Number(totalExpenses || 0).toFixed(2),
       netWorth: Number(addCurrency(totalIncome || 0, -(totalExpenses || 0))).toFixed(2),
-      totalTransactions: userData.expenses?.length || 0,
+      totalTransactions: apiTransactions.length || 0,
       balanceEntries: userData.balances?.length || 0,
       avgMonthlyIncome: Number((totalIncome || 0) / monthCount).toFixed(2),
       avgMonthlyExpenses: Number((totalExpenses || 0) / monthCount).toFixed(2),
@@ -267,8 +267,8 @@ export function prepareUserDataForExport(userData, _language = 'en', filterOptio
         outflowsByCategory: categoryStats
       },
       detailedBalances: balances,
-      detailedIncomes: expenses.filter(e => e.type === 'Income'),
-      detailedOutflows: expenses.filter(e => e.type === 'Expense'),
+      detailedIncomes: transactions.filter(transaction => transaction.type === 'Income'),
+      detailedOutflows: transactions.filter(transaction => transaction.type === 'Expense'),
       categoryExpenses,
       monthlyStats,
       demographics
@@ -395,7 +395,7 @@ export function prepareUserDataForExport(userData, _language = 'en', filterOptio
            (balance.bonds || 0) + (balance.funds || 0) + (balance.commodities || 0)
   })) : [];
 
-  const expenses = Array.isArray(userData.expenses) ? userData.expenses : [];
+  const transactions = Array.isArray(userData.transactions) ? userData.transactions : [];
   const last12MonthsData = Array.isArray(userData.last12MonthsData) ? userData.last12MonthsData : [];
   const incomesArray = Array.isArray(getIncomesArray(userData)) ? getIncomesArray(userData) : [];
   const outflowsArray = Array.isArray(getOutflowsArray(userData)) ? getOutflowsArray(userData) : [];
@@ -426,7 +426,7 @@ export function prepareUserDataForExport(userData, _language = 'en', filterOptio
     categoryExpenses: totalOutflowsPerCategoryPerMonth,
     demographics: {
       totalBalance: balances.length > 0 ? balances[balances.length - 1].total : 0,
-      totalTransactions: expenses.length,
+      totalTransactions: transactions.length,
       avgMonthlyIncome: monthlyData.incomes.length > 0 ? 
         (monthlyData.incomes.reduce((a, b) => a + (parseFloat(b) || 0), 0) / monthlyData.incomes.length).toFixed(2) : 
         0,

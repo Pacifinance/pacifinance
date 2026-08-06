@@ -67,9 +67,9 @@ describe('MockAuthContext', () => {
     });
 
     it('should have expenses object', () => {
-      expect(mockUserData.expenses).toBeDefined();
-      expect(mockUserData.expenses.allOutflows).toBeDefined();
-      expect(mockUserData.expenses.outflowsArray).toBeDefined();
+      expect(mockUserData.outflows).toBeDefined();
+      expect(mockUserData.outflows.allOutflows).toBeDefined();
+      expect(mockUserData.outflows.outflowsArray).toBeDefined();
     });
 
     it('should have incomes object', () => {
@@ -183,7 +183,7 @@ describe('MockAuthContext', () => {
 
   describe('mockUserData data integrity', () => {
     it('outflowsArray should have 13 elements', () => {
-      expect(mockUserData.expenses.outflowsArray.length).toBe(13);
+      expect(mockUserData.outflows.outflowsArray.length).toBe(13);
       expect(mockUserData.outflowsArray.length).toBe(13);
     });
 

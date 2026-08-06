@@ -176,7 +176,7 @@ const mockUserData = {
     }
   ],
   
-  expenses: {
+  outflows: {
     allOutflows: [
       [
         { amount: 50, categoryTag: { label: 'Food' }, isExpense: true },
@@ -635,7 +635,7 @@ describe('userDataSelectors', () => {
     it('should return true for a user with no balances, no outflows, no incomes', () => {
       const emptyUser = {
         balances: [{ date: '2026-01-01', balance: { totalValue: 0, bank: 0, cash: 0 } }],
-        expenses: { allOutflows: [], outflowsArray: [] },
+        outflows: { allOutflows: [], outflowsArray: [] },
         incomes: { allIncomes: [], incomesArray: [] },
       };
       expect(isNewUser(emptyUser)).toBe(true);
@@ -644,7 +644,7 @@ describe('userDataSelectors', () => {
     it('should return true for a user with empty balances array', () => {
       const emptyUser = {
         balances: [],
-        expenses: { allOutflows: [] },
+        outflows: { allOutflows: [] },
         incomes: { allIncomes: [] },
       };
       expect(isNewUser(emptyUser)).toBe(true);
@@ -654,7 +654,7 @@ describe('userDataSelectors', () => {
       // This is the actual structure returned by the API for a brand-new user
       const realNewUser = {
         balances: [],
-        expenses: { allOutflows: [[], [], [], [], [], [], [], [], [], [], [], [], []], outflowsArray: [] },
+        outflows: { allOutflows: [[], [], [], [], [], [], [], [], [], [], [], [], []], outflowsArray: [] },
         incomes: { allIncomes: [[], [], [], [], [], [], [], [], [], [], [], [], []], incomesArray: [] },
       };
       expect(isNewUser(realNewUser)).toBe(true);
@@ -663,7 +663,7 @@ describe('userDataSelectors', () => {
     it('should return false when user has balance > 0', () => {
       const userWithBalance = {
         balances: [{ date: '2026-01-01', balance: { totalValue: 5000, bank: 5000 } }],
-        expenses: { allOutflows: [] },
+        outflows: { allOutflows: [] },
         incomes: { allIncomes: [] },
       };
       expect(isNewUser(userWithBalance)).toBe(false);
@@ -672,7 +672,7 @@ describe('userDataSelectors', () => {
     it('should return false when user has outflows (nested month arrays)', () => {
       const userWithOutflows = {
         balances: [{ date: '2026-01-01', balance: { totalValue: 0 } }],
-        expenses: { allOutflows: [[], [{ amount: 100, isExpense: true }], [], [], [], [], [], [], [], [], [], [], []] },
+        outflows: { allOutflows: [[], [{ amount: 100, isExpense: true }], [], [], [], [], [], [], [], [], [], [], []] },
         incomes: { allIncomes: [[], [], [], [], [], [], [], [], [], [], [], [], []] },
       };
       expect(isNewUser(userWithOutflows)).toBe(false);
@@ -681,7 +681,7 @@ describe('userDataSelectors', () => {
     it('should return false when user has incomes (nested month arrays)', () => {
       const userWithIncomes = {
         balances: [{ date: '2026-01-01', balance: { totalValue: 0 } }],
-        expenses: { allOutflows: [[], [], [], [], [], [], [], [], [], [], [], [], []] },
+        outflows: { allOutflows: [[], [], [], [], [], [], [], [], [], [], [], [], []] },
         incomes: { allIncomes: [[], [{ amount: 2000, isExpense: false }], [], [], [], [], [], [], [], [], [], [], []] },
       };
       expect(isNewUser(userWithIncomes)).toBe(false);
@@ -701,7 +701,7 @@ describe('userDataSelectors', () => {
             bonds: 0, funds: 0, commodities: 0, totalValue: 0
           }
         }],
-        expenses: { allOutflows: [[], [], []], outflowsArray: [0, 0, 0] },
+        outflows: { allOutflows: [[], [], []], outflowsArray: [0, 0, 0] },
         incomes: { allIncomes: [[], [], []], incomesArray: [0, 0, 0] },
       };
       expect(isNewUser(zeroUser)).toBe(true);

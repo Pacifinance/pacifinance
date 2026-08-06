@@ -344,7 +344,7 @@ export const generateDemoData = () => {
     // Financial data
     balances,
     last12MonthsData,
-    expenses: { allOutflows, outflowsArray, totalOutflowsPerCategoryPerMonth },
+    outflows: { allOutflows, outflowsArray, totalOutflowsPerCategoryPerMonth },
     incomes: { allIncomes, incomesArray },
     rankings,
     goals,

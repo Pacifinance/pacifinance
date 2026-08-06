@@ -104,12 +104,12 @@ const createMockServices = (overrides = {}) => {
     },
     financeService: {
       getBalances: vi.fn().mockResolvedValue(MOCK_BALANCES),
-      getExpensesAndIncomes: vi.fn().mockResolvedValue(MOCK_EXPENSES),
+      getTransactions: vi.fn().mockResolvedValue(MOCK_EXPENSES),
       getCustomCategories: vi.fn().mockResolvedValue([]),
       getMonthlyTotals: vi.fn().mockResolvedValue([]),
       addBalance: vi.fn(),
-      addExpenseOrIncome: vi.fn(), addExpensesAndIncomesBatch: vi.fn(),
-      deleteExpenseOrIncome: vi.fn(),
+      addTransaction: vi.fn(), addTransactionsBatch: vi.fn(),
+      deleteTransaction: vi.fn(),
       addCustomCategory: vi.fn(),
       renameCustomCategory: vi.fn(),
       deleteCustomCategory: vi.fn(),
@@ -243,7 +243,7 @@ describe('UserContext — Critical State Transitions', () => {
     expect(services.userService.getTags).toHaveBeenCalled();
     expect(services.userService.getUserInfo).not.toHaveBeenCalled();
     expect(services.financeService.getBalances).toHaveBeenCalled();
-    expect(services.financeService.getExpensesAndIncomes).toHaveBeenCalled();
+    expect(services.financeService.getTransactions).toHaveBeenCalled();
 
     await waitFor(() => {
       expect(services.rankingService.getAllRankings).toHaveBeenCalled();
@@ -374,7 +374,7 @@ describe('UserContext — Critical State Transitions', () => {
     const services = createMockServices({
       financeService: {
         getBalances: vi.fn().mockResolvedValue([]),
-        getExpensesAndIncomes: vi.fn().mockResolvedValue([]),
+        getTransactions: vi.fn().mockResolvedValue([]),
       },
     });
 

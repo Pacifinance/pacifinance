@@ -53,10 +53,10 @@ export const useDemoServices = () => {
       financeService: {
         ...services.financeService,
         addBalance: async () => FAKE_SUCCESS,
-        addExpenseOrIncome: async () => FAKE_SUCCESS,
-        updateExpenseOrIncome: async () => FAKE_SUCCESS,
-        addExpensesAndIncomesBatch: async (data) => ({inserted: data?.expenses?.length ?? 0}),
-        deleteExpenseOrIncome: async () => FAKE_SUCCESS,
+        addTransaction: async () => FAKE_SUCCESS,
+        updateTransaction: async () => FAKE_SUCCESS,
+        addTransactionsBatch: async (data) => ({inserted: data?.transactions?.length ?? 0}),
+        deleteTransaction: async () => FAKE_SUCCESS,
       },
       userService: {
         ...services.userService,
@@ -256,7 +256,7 @@ export const useDemoServices = () => {
         getRecurring: async (): Promise<RecurringTransactionDto[]> => [],
         saveRecurring: async (data): Promise<RecurringTransactionDto> => ({
           id: data.id ?? -Date.now(),
-          isExpense: data.is_expense,
+          direction: data.direction,
           amount: data.amount,
           notes: data.notes ?? '',
           paymentType: null,
@@ -268,7 +268,7 @@ export const useDemoServices = () => {
         }),
         setRecurringActive: async (data): Promise<RecurringTransactionDto> => ({
           id: data.id,
-          isExpense: true,
+          direction: 'outflow',
           amount: 0,
           notes: '',
           paymentType: null,

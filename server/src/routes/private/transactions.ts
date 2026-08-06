@@ -3,7 +3,7 @@ import express from "express"
 import { ExtDate } from "../../libs/datelib"
 
 import db from "../../db/db"
-import { EXPENSE_BALANCE_ASSET_KEYS, EXPENSE_BALANCE_DETAIL_TYPES, ExpenseBalanceSource } from "../../db/models/expenses"
+import { EXPENSE_BALANCE_ASSET_KEYS, EXPENSE_BALANCE_DETAIL_TYPES, ExpenseBalanceSource } from "../../db/models/transactions"
 import type { ImportedReimbursementLink, ImportedSharedExpenseLink } from "../../db/models/sharedExpenses"
 import common from "../common"
 
@@ -26,18 +26,19 @@ function sanitizeBalanceSource(raw: any): ExpenseBalanceSource | null {
 }
 
 /**
- * Checks if an expense is valid
+ * Checks if an transaction is valid
  * @param data Expense to check (sanitized and modified by this function)
- * @returns true if the expense is valid, false otherwise
+ * @returns true if the transaction is valid, false otherwise
  */
-function isExpenseValid(data: any) {
+function isTransactionValid(data: any) {
     const NOTES_MAX_LENGTH = 64;
     const PAYMENT_NONE = 0; // database index of the 'none' payment type (hardcoded = bad, but it will never change...probably...)
     // Cast the amount to Number and the is_expense flag to Boolean for type integrity
     const rawAmount = Number(data.amount)
     const amount_valid = Number.isFinite(rawAmount) && rawAmount > 0
     data.amount = common.roundCurrency(rawAmount);
-    data.is_expense = Boolean(data.is_expense);
+    if (data.direction !== undefined && !["income", "outflow"].includes(data.direction)) return false
+    data.is_expense = data.direction !== undefined ? data.direction === "outflow" : Boolean(data.is_expense);
     if (data.shared_expense !== undefined) {
         const ownShare = Number(data.shared_expense?.own_share)
         const cashAmount = Number(data.cash_amount)
@@ -61,45 +62,45 @@ function isExpenseValid(data: any) {
     if (data.date === undefined || isNaN(data.date.getTime()) || data.date > now) data.date = now;
     // If it's an income, the payment type is forced to 'none'
     if (!data.is_expense) data.payment_type = PAYMENT_NONE;
-    // If there are no notes associated to the expense, set the notes to an empty string. Also, cast it to String for type integrity
+    // If there are no notes associated to the transaction, set the notes to an empty string. Also, cast it to String for type integrity
     if (!data.notes) data.notes = "";
     data.notes = String(data.notes).substring(0, NOTES_MAX_LENGTH);
     /**
      * Return true if:
-     * 1. it's an expense and all fields are valid
+     * 1. it's an transaction and all fields are valid
      * 2. it's an income and all fields but payment_type are valid
      */
     const is_expense = data.is_expense;
     const category_valid = (data.category_tag !== undefined);
-    const payment_type_valid = (data.payment_type !== undefined && data.payment_type !== PAYMENT_NONE); // for expenses only
+    const payment_type_valid = (data.payment_type !== undefined && data.payment_type !== PAYMENT_NONE); // for transactions only
     return (
         (!is_expense && amount_valid && category_valid) ||          // condition for incomes
-        (amount_valid && category_valid && payment_type_valid)      // condition for expenses
+        (amount_valid && category_valid && payment_type_valid)      // condition for transactions
     );
 }
 
-/* === /expenses/* === */
+/* === /transactions/* === */
 
-const expensesRouter = express.Router()
+const transactionsRouter = express.Router()
 
-expensesRouter.post("/add", async (req, res) => {
+transactionsRouter.post("/add", async (req, res) => {
     // Sanitize user input. Send status code 400 (Bad Request)
     // in case of invalid data (not numbers)
-    const expense = req.body?.expense;
-    if (!expense || !isExpenseValid(expense))
+    const transaction = req.body?.transaction ?? req.body?.expense;
+    if (!transaction || !isTransactionValid(transaction))
     {
         res.status(400);
         res.send();
         return;
     }
-    // Add the expense to the database
-    const raw_user_category_id = expense.user_category_id
+    // Add the transaction to the database
+    const raw_user_category_id = transaction.user_category_id
     const user_category_id = (raw_user_category_id !== null && raw_user_category_id !== undefined && Number.isFinite(Number(raw_user_category_id)))
         ? Number(raw_user_category_id) : null
-    const doc = await db.expenses.insertNew(
-        req.userId as string, expense.date, expense.amount, expense.is_expense,
-        expense.notes, expense.payment_type, expense.category_tag, user_category_id,
-        sanitizeBalanceSource(expense.balance_source)
+    const doc = await db.transactions.insertNew(
+        req.userId as string, transaction.date, transaction.amount, transaction.is_expense,
+        transaction.notes, transaction.payment_type, transaction.category_tag, user_category_id,
+        sanitizeBalanceSource(transaction.balance_source)
     );
     // Check if the document was inserted successfully. Send
     // status code 500 (Internal Server Error) if it failed
@@ -113,29 +114,30 @@ expensesRouter.post("/add", async (req, res) => {
     res.status(200).json(doc);
 });
 
-expensesRouter.post("/update", async (req, res) => {
-    const expense = req.body?.expense
-    const id = Number(expense?.id)
-    if (!Number.isFinite(id) || !expense) return res.status(400).send()
+transactionsRouter.post("/update", async (req, res) => {
+    const transaction = req.body?.transaction ?? req.body?.expense
+    const id = Number(transaction?.id)
+    if (!Number.isFinite(id) || !transaction) return res.status(400).send()
 
-    const sharedEnabled = expense.shared_expense?.enabled === true
-    const sharedRemove = expense.shared_expense?.enabled === false
-    const validationExpense = {...expense}
-    if (sharedEnabled) validationExpense.cash_amount = expense.shared_expense.total_amount
+    const sharedEnabled = transaction.shared_expense?.enabled === true
+    const sharedRemove = transaction.shared_expense?.enabled === false
+    const validationExpense = {...transaction}
+    if (sharedEnabled) validationExpense.cash_amount = transaction.shared_expense.total_amount
     else delete validationExpense.shared_expense
-    if (!isExpenseValid(validationExpense)) return res.status(400).send()
+    if (!isTransactionValid(validationExpense)) return res.status(400).send()
 
-    const sharedTotal = sharedEnabled ? common.roundCurrency(Number(expense.shared_expense.total_amount)) : null
-    const sharedOwnShare = sharedEnabled ? common.roundCurrency(Number(expense.shared_expense.own_share)) : null
-    if (sharedEnabled && (!Number.isFinite(sharedTotal) || !Number.isFinite(sharedOwnShare)
+    const sharedTotal = sharedEnabled ? common.roundCurrency(Number(transaction.shared_expense.total_amount)) : null
+    const sharedOwnShare = sharedEnabled ? common.roundCurrency(Number(transaction.shared_expense.own_share)) : null
+    if (sharedEnabled && (sharedTotal === null || sharedOwnShare === null
+        || !Number.isFinite(sharedTotal) || !Number.isFinite(sharedOwnShare)
         || sharedTotal <= 0 || sharedOwnShare < 0 || sharedOwnShare >= sharedTotal)) {
         return res.status(400).send()
     }
 
-    const rawUserCategoryId = expense.user_category_id
+    const rawUserCategoryId = transaction.user_category_id
     const userCategoryId = rawUserCategoryId !== null && rawUserCategoryId !== undefined
         && Number.isFinite(Number(rawUserCategoryId)) ? Number(rawUserCategoryId) : null
-    const updated = await db.expenses.updateExisting(req.userId as string, {
+    const updated = await db.transactions.updateExisting(req.userId as string, {
         id,
         date: validationExpense.date,
         amount: validationExpense.amount,
@@ -144,7 +146,7 @@ expensesRouter.post("/update", async (req, res) => {
         paymentType: validationExpense.payment_type,
         categoryTag: validationExpense.category_tag,
         userCategoryId,
-        balanceSource: sanitizeBalanceSource(expense.balance_source),
+        balanceSource: sanitizeBalanceSource(transaction.balance_source),
         sharedMode: sharedEnabled ? "set" : sharedRemove ? "remove" : "unchanged",
         sharedTotal,
         sharedOwnShare,
@@ -155,34 +157,34 @@ expensesRouter.post("/update", async (req, res) => {
 
 const MAX_EXPENSE_IMPORT_BATCH = 500
 
-expensesRouter.post("/batch-add", async (req, res) => {
-    const expenses = req.body?.expenses
-    if (!Array.isArray(expenses) || expenses.length === 0 || expenses.length > MAX_EXPENSE_IMPORT_BATCH) {
+transactionsRouter.post("/batch-add", async (req, res) => {
+    const transactions = req.body?.transactions ?? req.body?.expenses
+    if (!Array.isArray(transactions) || transactions.length === 0 || transactions.length > MAX_EXPENSE_IMPORT_BATCH) {
         res.status(400).send()
         return
     }
 
     const inputs = []
-    for (const expense of expenses) {
-        if (!expense || typeof expense !== "object" || !isExpenseValid(expense)) {
+    for (const transaction of transactions) {
+        if (!transaction || typeof transaction !== "object" || !isTransactionValid(transaction)) {
             res.status(400).send()
             return
         }
-        const rawUserCategoryId = expense.user_category_id
+        const rawUserCategoryId = transaction.user_category_id
         const userCategoryId = rawUserCategoryId !== null && rawUserCategoryId !== undefined
             && Number.isFinite(Number(rawUserCategoryId)) ? Number(rawUserCategoryId) : null
         inputs.push({
-            date: expense.date as Date,
-            amount: expense.amount as number,
-            isExpense: expense.is_expense as boolean,
-            notes: expense.notes as string,
-            paymentType: expense.payment_type as number,
-            categoryTag: expense.category_tag as number,
+            date: transaction.date as Date,
+            amount: transaction.amount as number,
+            isExpense: transaction.is_expense as boolean,
+            notes: transaction.notes as string,
+            paymentType: transaction.payment_type as number,
+            categoryTag: transaction.category_tag as number,
             userCategoryId,
-            balanceSource: sanitizeBalanceSource(expense.balance_source),
-            cashAmount: expense.cash_amount === null || expense.cash_amount === undefined
-                ? null : common.roundCurrency(Number(expense.cash_amount)),
-            excludeFromStatistics: expense.exclude_from_statistics === true,
+            balanceSource: sanitizeBalanceSource(transaction.balance_source),
+            cashAmount: transaction.cash_amount === null || transaction.cash_amount === undefined
+                ? null : common.roundCurrency(Number(transaction.cash_amount)),
+            excludeFromStatistics: transaction.exclude_from_statistics === true,
         })
         const last = inputs[inputs.length - 1]
         if (last.cashAmount !== null && (!Number.isFinite(last.cashAmount) || last.cashAmount <= 0)) {
@@ -191,7 +193,7 @@ expensesRouter.post("/batch-add", async (req, res) => {
         }
     }
 
-    const inserted = await db.expenses.insertBatch(req.userId as string, inputs)
+    const inserted = await db.transactions.insertBatch(req.userId as string, inputs)
     if (inserted === null) {
         res.status(500).send()
         return
@@ -201,7 +203,7 @@ expensesRouter.post("/batch-add", async (req, res) => {
     const pendingReimbursementLinks: Array<{expenseId: number; sharedRef: string; amount: number}> = []
     const sharedRefs: string[] = []
     for (let index = 0; index < inserted.length; index++) {
-        const requestExpense = expenses[index]
+        const requestExpense = transactions[index]
         const insertedExpense = inserted[index]
         const ownShare = Number(requestExpense.shared_expense?.own_share)
         if (requestExpense.shared_expense && requestExpense.is_expense
@@ -254,9 +256,9 @@ expensesRouter.post("/batch-add", async (req, res) => {
     })
 })
 
-expensesRouter.post("/get", async (req, res) => {
+transactionsRouter.post("/get", async (req, res) => {
     const months = 13
-    const year = await db.expenses.getRecentMonthlyExpensesByUserId(req.userId as string, months)
+    const year = await db.transactions.getRecentMonthlyTransactionsByUserId(req.userId as string, months)
     if (year === null) {
         res.status(500).send()
         return
@@ -266,7 +268,7 @@ expensesRouter.post("/get", async (req, res) => {
 
 const MAX_MONTHS = 600 // 50 years, safety cap against abuse
 
-expensesRouter.post("/monthly-totals", async (req, res) => {
+transactionsRouter.post("/monthly-totals", async (req, res) => {
     // Aggregated outflow/income totals per month (no per-transaction detail),
     // for the multi-year chart history. `months` (number, capped) or "all";
     // omitted -> full history, since this endpoint is only called on demand.
@@ -276,7 +278,7 @@ expensesRouter.post("/monthly-totals", async (req, res) => {
         if (Number.isFinite(requested) && requested > 0)
             months = Math.min(requested, MAX_MONTHS)
     }
-    const totals = await db.expenses.getMonthlyTotalsByUserId(req.userId as string, months)
+    const totals = await db.transactions.getMonthlyTotalsByUserId(req.userId as string, months)
     if (totals === null)
     {
         res.status(500).send()
@@ -285,9 +287,9 @@ expensesRouter.post("/monthly-totals", async (req, res) => {
     res.status(200).json(totals)
 })
 
-expensesRouter.post("/month", async (req, res) => {
+transactionsRouter.post("/month", async (req, res) => {
     // On-demand fetch of a single arbitrary month's tagged transactions (both
-    // incomes and expenses), so the stats UI can view/compare history beyond
+    // incomes and transactions), so the stats UI can view/compare history beyond
     // the 13-month window loaded by /get without fetching years of
     // transactions up front. Bounded to exactly one month per call.
     const year = Number(req.body?.year)
@@ -301,20 +303,21 @@ expensesRouter.post("/month", async (req, res) => {
         res.status(400).send()
         return
     }
-    const transactions = await db.expenses.getMonthlyExpensesByUserId(req.userId as string, reference_date)
+    const transactions = await db.transactions.getMonthlyTransactionsByUserId(req.userId as string, reference_date)
     res.status(200).json(transactions)
 })
 
-expensesRouter.post("/delete", async (req, res) => {
-    // Delete the requested expense. Prefer the row id (exact, can't accidentally
+transactionsRouter.post("/delete", async (req, res) => {
+    // Delete the requested transaction. Prefer the row id (exact, can't accidentally
     // match a sibling transaction with the same date/amount/direction) — fall
     // back to the old value-match only for callers that don't have it yet
     // (e.g. import-undo, right after a batch insert).
-    const expense = req.body.expense;
-    const id = Number(expense?.id)
+    const transaction = req.body?.transaction ?? req.body?.expense;
+    if (!transaction) return res.status(400).send()
+    const id = Number(transaction?.id)
     const del_res = Number.isFinite(id)
-        ? await db.expenses.deleteExpenseById(req.userId as string, id)
-        : await db.expenses.deleteExpenseByData(req.userId as string, expense.date, expense.amount, expense.is_expense);
+        ? await db.transactions.deleteTransactionById(req.userId as string, id)
+        : await db.transactions.deleteTransactionByData(req.userId as string, transaction.date, transaction.amount, transaction.is_expense);
     // Check if the document was deleted successfully. Send
     // status code 500 (Internal Server Error) if it failed
     if (del_res === null || del_res.deletedCount !== 1)
@@ -328,4 +331,4 @@ expensesRouter.post("/delete", async (req, res) => {
     res.send();
 });
 
-export default expensesRouter
+export default transactionsRouter

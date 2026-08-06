@@ -3,9 +3,9 @@ import { logger } from "../../libs/logger"
 
 import users from "../../db/models/users"
 import balances from "../../db/models/balances"
-import expenses from "../../db/models/expenses"
+import transactions from "../../db/models/transactions"
 import similarUsers from "../../services/similarUsers"
-import { rankFromBalancePool, rankFromExpensePool } from "../../services/ranking"
+import { rankFromBalancePool, rankFromTransactionPool } from "../../services/ranking"
 
 /**
  * Rank percentiles for a single user, both among all users and among their
@@ -53,8 +53,8 @@ async function fetchUserRankings(): Promise<RankingsCachedData> {
 
     const [balancePool, incomePool, expensePool] = await Promise.all([
         balances.getRankingPool(allUserIds, true),
-        expenses.getExpenseRankingPool(allUserIds, false, reference_date),
-        expenses.getExpenseRankingPool(allUserIds, true, reference_date),
+        transactions.getTransactionRankingPool(allUserIds, false, reference_date),
+        transactions.getTransactionRankingPool(allUserIds, true, reference_date),
     ])
     logger.info(`[rankings] population-wide pools fetched (+${Date.now() - t0}ms)`)
 
@@ -81,11 +81,11 @@ async function fetchUserRankings(): Promise<RankingsCachedData> {
 
         rankingsCachedData[userRef] = {
             balance: rankFromBalancePool(balancePool, userRef),
-            incomes: rankFromExpensePool(incomePool, userRef, false),
-            outflows: rankFromExpensePool(expensePool, userRef, true),
+            incomes: rankFromTransactionPool(incomePool, userRef, false),
+            outflows: rankFromTransactionPool(expensePool, userRef, true),
             balanceSimilar: rankFromBalancePool(balanceSimilarPool, userRef),
-            incomesSimilar: rankFromExpensePool(incomeSimilarPool, userRef, false),
-            outflowsSimilar: rankFromExpensePool(expenseSimilarPool, userRef, true),
+            incomesSimilar: rankFromTransactionPool(incomeSimilarPool, userRef, false),
+            outflowsSimilar: rankFromTransactionPool(expenseSimilarPool, userRef, true),
         }
     }
 

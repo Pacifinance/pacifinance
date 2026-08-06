@@ -215,7 +215,7 @@ export default function RecurringTransactionsPanel({
   const startEdit = (item) => {
     setEditingId(item.id);
     setForm({
-      isExpense: item.isExpense,
+      isExpense: item.direction === 'outflow',
       categoryKey: item.categoryTag?.index ?? '',
       userCategoryId: item.userCategory?.id ?? null,
       paymentTypeKey: item.paymentType?.index ?? defaultPaymentTypeKey,
@@ -242,7 +242,7 @@ export default function RecurringTransactionsPanel({
     try {
       await recurringTransactionService.saveRecurring({
         id: editingId ?? undefined,
-        is_expense: form.isExpense,
+        direction: form.isExpense ? 'outflow' : 'income',
         amount: toEUR(Number(form.amount)),
         notes: form.notes,
         payment_type: form.isExpense ? Number(form.paymentTypeKey) : 0,
@@ -296,7 +296,7 @@ export default function RecurringTransactionsPanel({
             <Row key={item.id} theme={theme} $paused={!item.active}>
               <RowInfo theme={theme}>
                 <strong>
-                  {translateTag(item.categoryTag?.label, language, item.isExpense ? 'expense' : 'income')}
+                  {translateTag(item.categoryTag?.label, language, item.direction === 'outflow' ? 'expense' : 'income')}
                   {item.userCategory?.label ? ` · ${item.userCategory.label}` : ''}
                 </strong>
                 <span>
@@ -307,8 +307,8 @@ export default function RecurringTransactionsPanel({
                     : (t.paused || 'In pausa')}
                 </span>
               </RowInfo>
-              <RowAmount $isExpense={item.isExpense}>
-                {item.isExpense ? '-' : '+'}{formatAmount(item.amount)}
+              <RowAmount $isExpense={item.direction === 'outflow'}>
+                {item.direction === 'outflow' ? '-' : '+'}{formatAmount(item.amount)}
               </RowAmount>
               <RowActions theme={theme}>
                 <button type="button" onClick={() => handleToggleActive(item)} aria-label={item.active ? (t.pause || 'Pausa') : (t.resume || 'Riprendi')}>

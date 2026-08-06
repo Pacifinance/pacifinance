@@ -6,7 +6,7 @@ import db from "../../db/db"
 import cache from "../../cache/cache"
 import similarUsers from "../../services/similarUsers"
 import customBenchmark from "../../services/customBenchmark"
-import { computeRankOfUser, rankFromBalancePool, rankFromExpensePool } from "../../services/ranking"
+import { computeRankOfUser, rankFromBalancePool, rankFromTransactionPool } from "../../services/ranking"
 import type { RankingsCachedData } from "../../cache/items/rankings"
 
 /* === /rank/* === */
@@ -100,34 +100,40 @@ rankRouter.post("/balances", async (req, res) => {
     res.json(rank);
 });
 
-rankRouter.post("/expenses", async (req, res) => {
+const rankTransactions = (directionFromRoute?: "income" | "outflow") => async (req: express.Request, res: express.Response) => {
     // If the user is of test/demo type, assign some random values
     const target_user = req.userId as string;
     const user_type = await db.users.getTypeOfUserId(target_user);
     if (user_type === null || user_type.type >= db.users.UserType.test.value)
     {
-        const fake_expenses = [
+        const fakeTransactions = [
             {user: "0"}, {user: target_user}, {user: "1"}, {user: "2"}
         ];
-        const fake_rank = computeRankOfUser(fake_expenses, target_user);
+        const fake_rank = computeRankOfUser(fakeTransactions, target_user);
         res.status(200);
         res.json(fake_rank);
         return;
     }
-    // Get the expenses/incomes-of-last-month pool in a single aggregate query
+    // Get the outflows/incomes-of-last-month pool in a single aggregate query
     // (RPC) instead of one query per user
     const reference_date = ExtDate.fromNow(); reference_date.moveByMonths(-1)
-    const is_expense_filter = Boolean(req.body.expenses);
+    // `expenses` is accepted only by the deprecated /expenses compatibility route.
+    const direction = directionFromRoute ?? (req.body.expenses ? "outflow" : "income")
+    const isOutflow = direction === "outflow"
     // Check if the ranking is requested among all users or only similar users
     let user_ids = undefined;
     if (req.body && req.body.similar)
-        user_ids = (await similarUsers.getSimilarUserIds(target_user, is_expense_filter ? "outflows" : "incomes")).userIds;
+        user_ids = (await similarUsers.getSimilarUserIds(target_user, isOutflow ? "outflows" : "incomes")).userIds;
     if (user_ids) user_ids = [...user_ids, target_user]
-    const pool = await db.expenses.getExpenseRankingPool(user_ids, is_expense_filter, reference_date);
-    const rank = {position: rankFromExpensePool(pool, target_user, is_expense_filter)};
+    const pool = await db.transactions.getTransactionRankingPool(user_ids, isOutflow, reference_date);
+    const rank = {position: rankFromTransactionPool(pool, target_user, isOutflow)};
     // Send the data to the client with status code 200 (OK)
     res.status(200);
     res.json(rank);
-});
+}
+
+rankRouter.post("/outflows", rankTransactions("outflow"));
+rankRouter.post("/incomes", rankTransactions("income"));
+rankRouter.post("/expenses", rankTransactions());
 
 export default rankRouter

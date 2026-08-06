@@ -155,7 +155,7 @@ export const mockUserData = {
     ],
     
     // Expense and income data (same as UserContext)
-    expenses: {
+    outflows: {
         allOutflows: (() => {
             // Generate 12 months of outflow transactions with recurring patterns
             // Tags are derived from i18n files (see top of file)

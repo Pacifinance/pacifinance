@@ -53,10 +53,10 @@ const createMockServices = (overrides = {}) => {
     },
     financeService: {
       getBalances: vi.fn().mockResolvedValue([]),
-      getExpensesAndIncomes: vi.fn().mockResolvedValue([]),
+      getTransactions: vi.fn().mockResolvedValue([]),
       getCustomCategories: vi.fn().mockResolvedValue([]),
       getMonthlyTotals: vi.fn().mockResolvedValue([]),
-      addBalance: vi.fn(), addExpenseOrIncome: vi.fn(), addExpensesAndIncomesBatch: vi.fn(), deleteExpenseOrIncome: vi.fn(),
+      addBalance: vi.fn(), addTransaction: vi.fn(), addTransactionsBatch: vi.fn(), deleteTransaction: vi.fn(),
       addCustomCategory: vi.fn(), deleteCustomCategory: vi.fn(),
       ...overrides.financeService,
     },
@@ -284,7 +284,7 @@ describe('Integration — Auth Flow Critical Paths', () => {
       },
       financeService: {
         getBalances: vi.fn().mockResolvedValue([]),
-        getExpensesAndIncomes: vi.fn().mockResolvedValue([]),
+        getTransactions: vi.fn().mockResolvedValue([]),
       },
       rankingService: {
         getAllRankings: vi.fn().mockResolvedValue({

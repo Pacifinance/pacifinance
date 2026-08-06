@@ -1356,7 +1356,7 @@ export default function OutflowSection({
                   <span style={{ position: 'absolute', right: '0.55rem', top: '50%', transform: 'translateY(-50%)', fontSize: '0.8em', opacity: 0.6, pointerEvents: 'none' }}>{currencySymbol}</span>
                 </div>
               </td>
-              <td>
+              <td style={{ minWidth: 360, width: '34%' }}>
                 <InlineInput
                   type="text"
                   theme={theme}

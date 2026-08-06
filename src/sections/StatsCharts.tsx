@@ -22,6 +22,7 @@ import type { InvestmentDividendSummaryDto } from '../types/api';
 import { useCryptoGroupingPref, type CryptoGroupingMode } from '../hooks/useCryptoGroupingPref';
 import { groupBitcoinWithCrypto } from '../utils/cryptoGrouping';
 import CryptoGroupingToggle from '../components/CryptoGroupingToggle';
+import InvestmentBenchmarkCard from '../components/InvestmentBenchmarkCard';
 
 /** Every investment-holdings asset key that can appear in the category selector (excludes liquidity/bank/cash). */
 const HOLDING_ASSET_KEYS = ['stocks', 'etf', 'bitcoin', 'crypto', 'bonds', 'funds', 'commodities'];
@@ -518,7 +519,7 @@ export default function StatsCharts() {
     const { theme } = useContext(ThemeContext);
     const { language, translations } = useContext(LanguageContext);
     const { isHidden } = useContext(PrivacyContext);
-    const { investmentService, goalService } = useDemoServices();
+    const { investmentService, goalService, statsService } = useDemoServices();
     const [activePage, setActivePage] = useState("statsBilancio");
     const [isLoading, setIsLoading] = useState(true);
     const [investmentHoldings, setInvestmentHoldings] = useState([]);
@@ -886,7 +887,10 @@ export default function StatsCharts() {
                         currentMonthlyIncome={getTotalIncomesCurrentMonth(userData)}
                         annualPassiveIncome={annualPassiveIncome}
                         annualPassiveIncomeTarget={userData?.limits?.annualPassiveIncomeGoal ?? null}
+                        positionConcentrationLimit={userData?.limits?.positionConcentrationLimit ?? null}
+                        assetCategoryConcentrationLimit={userData?.limits?.assetCategoryConcentrationLimit ?? null}
                     />
+                    <InvestmentBenchmarkCard theme={theme} service={statsService} hidden={isHidden}/>
                 </SectionContainer>
             </>
         );

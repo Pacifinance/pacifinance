@@ -11,7 +11,8 @@ import {
   getSavingsGoalPercentage,
   getEmergencyFundTarget,
   getTotalIncomesCurrentMonth,
-  getTotalOutflowsCurrentMonth,
+  getTotalExpensesCurrentMonth,
+  getAllOutflows,
   getEmergencyFund,
   getTotalValue,
   getOutflowsTags,
@@ -586,7 +587,9 @@ const ProfileSettings = ({ theme }) => {
   useEffect(() => {
     refreshGoals();
     recurringTransactionService.getRecurring()
-      .then((items) => setMonthlyFixedExpenses(items.filter((item) => item.active && item.direction === 'outflow').reduce((sum, item) => sum + item.amount, 0)))
+      .then((items) => setMonthlyFixedExpenses(items
+        .filter((item) => item.active && item.direction === 'outflow' && item.purpose === 'expense')
+        .reduce((sum, item) => sum + item.amount, 0)))
       .catch((error) => console.error('GoalsAndLimits: failed to load recurring expenses', error));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -762,7 +765,12 @@ const ProfileSettings = ({ theme }) => {
 
   const controlsT = translations.goals.financialControls;
   const currentIncome = getTotalIncomesCurrentMonth(userData);
-  const currentSpending = getTotalOutflowsCurrentMonth(userData);
+  // Spending controls intentionally exclude investments, transfers and debt:
+  // these are cash outflows, but not consumption expenses.
+  const currentSpending = getTotalExpensesCurrentMonth(userData);
+  const currentDebtReduction = (getAllOutflows(userData)[0] || [])
+    .filter((entry) => entry.purpose === 'debt')
+    .reduce((sum, entry) => sum + (Number(entry.amount) || 0), 0);
   const currentSavings = currentIncome - currentSpending;
   const emergencyFundValue = getEmergencyFund(userData);
   const netWorth = getTotalValue(userData);
@@ -857,6 +865,7 @@ const ProfileSettings = ({ theme }) => {
               <FormGroup theme={theme}><label>{controlsT.passiveIncome}</label><InputWithIcon theme={theme}><span className="input-icon">{currencySymbol}</span><input type="number" min="0" value={settings.annualPassiveIncomeGoal} onChange={(e) => handleSettingChange('annualPassiveIncomeGoal', e.target.value)} /></InputWithIcon></FormGroup>
             </ThresholdGrid>
             {settings.fixedExpensesPercent !== '' && <StatusLine $ok={currentIncome > 0 && monthlyFixedExpenses / currentIncome * 100 <= Number(settings.fixedExpensesPercent)}>{controlsT.currentFixedExpenses.replace('{percent}', currentIncome > 0 ? `${(monthlyFixedExpenses / currentIncome * 100).toFixed(1)}%` : '—')}</StatusLine>}
+            {settings.debtReductionGoal !== '' && <StatusLine $ok={currentDebtReduction >= toEUR(Number(settings.debtReductionGoal))}>{controlsT.currentDebtReduction.replace('{amount}', `${currencySymbol}${fromEUR(currentDebtReduction).toFixed(0)}`)}</StatusLine>}
             <FormGroup theme={theme}>
               <label>{controlsT.categorySpending}</label>
               {Object.entries(settings.categorySpendingLimits).map(([name, value]) => {

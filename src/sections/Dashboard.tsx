@@ -38,7 +38,7 @@ import { assetColors } from '../data/assetColors.js';
 import {
     getCashValue, getBankValue, getDigitalServicesValue, getEmergencyFund,
     getStocksValue, getEtfValue, getBitcoinValue, getCryptoValue, getBondsValue,
-    getFundsValue, getCommoditiesValue, getTotalValue, getOutflowsArray, getIncomesArray,
+    getFundsValue, getCommoditiesValue, getTotalValue, getExpensesArray, getIncomesArray,
     getCashValuePreMonth, getBankValuePreMonth, getDigitalServicesValuePreMonth,
     getEmergencyFundPreMonth, getStocksValuePreMonth, getEtfValuePreMonth,
     getBitcoinValuePreMonth, getCryptoValuePreMonth, getBondsValuePreMonth,
@@ -206,12 +206,12 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                     setCommoditiesValue(getCommoditiesValue(userData));
                     setTotalValue(getTotalValue(userData));
                     
-                    const outflowsArray = getOutflowsArray(userData);
+                    const expensesArray = getExpensesArray(userData);
                     const incomesArray = getIncomesArray(userData);
                     
-                    setExpensesMonth(outflowsArray[0] || 0);
+                    setExpensesMonth(expensesArray[0] || 0);
                     setIncomesMonth(incomesArray[0] || 0);
-                    setSavedMonth((incomesArray[0] || 0) - (outflowsArray[0] || 0));
+                    setSavedMonth((incomesArray[0] || 0) - (expensesArray[0] || 0));
                     
                     setIsLoading(false);
                 } catch (error) {

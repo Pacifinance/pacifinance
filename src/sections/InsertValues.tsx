@@ -35,7 +35,7 @@ import {
     getCashValue, getBankValue, getDigitalServicesValue, getEmergencyFund,
     getStocksValue, getEtfValue, getBitcoinValue, getCryptoValue, getBondsValue,
     getFundsValue, getCommoditiesValue, getOutflowsTags, getIncomesTags, getPaymentTags,
-    getAllOutflows, getAllIncomes, getOutflowsArray, getBalanceForMonth, getCustomCategories,
+    getAllOutflows, getAllIncomes, getExpensesArray, getBalanceForMonth, getCustomCategories,
     getEntriesForMonthKey,
 } from '../utils/userDataSelectors';
 import { isPastMonthDate as isPastMonthDateUtil, getBalanceUserDateForMonth } from '../utils/balanceDeltaLogic';
@@ -2075,11 +2075,11 @@ export default function InsertValue({
         }
 
         // Check the monthly spending limit AFTER a successful insert (outflows only)
-        if (isOutflow && userData?.limits?.notificationsEnabled && userData?.limits?.monthlySpendingLimit) {
+        if (isOutflow && inExJson.transaction.purpose === 'expense' && userData?.limits?.notificationsEnabled && userData?.limits?.monthlySpendingLimit) {
           // Index 0 corresponds to the current month in the outflowsArray.
           // In shared-expense mode, only the own-share (categoryAmountOverride)
           // counts toward the limit — the rest was never really "spent".
-          const currentOutflowsThisMonth = getOutflowsArray(userData)?.[0] || 0;
+          const currentOutflowsThisMonth = getExpensesArray(userData)?.[0] || 0;
           const limitCheckAmount = categoryAmountOverride !== null
             ? categoryAmountOverride
             : parseFloat(originalOutflowAmount.replace(',', '.'));

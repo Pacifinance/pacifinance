@@ -748,6 +748,7 @@
                 "currentMonth": "Mes actual"
             }
         },
+        "investmentBenchmark": {"title":"Anonymous investment comparison","description":"Compare your behavior and returns with the median of an anonymous cohort.","consentRequired":"Enable benchmark consent to access the comparison and contribute in aggregate form.","minimumCohort":"The comparison will appear when at least {minimum} eligible participants are available.","legend":"You / cohort median ({count} participants)","highReliability":"high reliability","mediumReliability":"medium reliability","consistency":"Monthly consistency","monthlyContribution":"Average monthly contribution","moneyWeighted":"Money-weighted return (XIRR)","timeWeighted":"Time-weighted return (TWR)","notEnoughHistory":"insufficient history","methodNote":"XIRR accounts for cash-flow dates and amounts; TWR approximately isolates performance from contributions using monthly valuations. We avoid simple gain percentages because they can be misleading."},
         "statsHoldings": {
             "title": "Cartera de inversiones",
             "description": "Analiza en detalle la composición y evolución de tus inversiones",
@@ -797,7 +798,7 @@
                 "monthlyTargetManageLink": "Gestionar objetivo mensual →",
                 "monthlyTargetSavedLabel": "Objetivo mensual guardado",
                 "monthlyTargetSuccessRate": "Alcanzado en {success} de los últimos {total} meses",
-                "monthlyTargetRecentAverage": "Media de los últimos meses: {amount}",
+                "monthlyTargetRecentAverage": "Media de los últimos meses: {amount}", "concentrationLimitsTitle": "Concentration limits", "positionConcentrationStatus": "Largest position: {current} (limit {limit})", "categoryConcentrationStatus": "Largest category: {current} (limit {limit})",
                 "goalTitle": "Objetivo: {name}",
                 "goalReached": "¡Objetivo alcanzado! 🎉",
                 "goalETA": "Tiempo estimado para alcanzarlo: {time}",
@@ -2993,7 +2994,7 @@
             "spendingPercent": "Spending limit as income (%)",
             "savingsAmount": "Minimum monthly savings",
             "emergencyMonths": "Minimum coverage (months of spending)",
-            "currentSpending": "This month: {amount}, {percent} of income", "currentSavings": "Monthly savings: {amount}, {percent} of income", "currentEmergency": "Current fund: {amount}, {months} months covered", "currentFixedExpenses": "Recurring fixed expenses: {percent} of income",
+            "currentSpending": "This month: {amount}, {percent} of income", "currentSavings": "Monthly savings: {amount}, {percent} of income", "currentEmergency": "Current fund: {amount}, {months} months covered", "currentFixedExpenses": "Recurring fixed expenses: {percent} of income", "currentDebtReduction": "Debt repaid this month: {amount}",
             "advancedTitle": "Advanced controls",
             "advancedHint": "Leave a control empty to disable it.",
             "fixedExpensesPercent": "Maximum fixed expenses as income (%)",

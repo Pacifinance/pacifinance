@@ -213,7 +213,7 @@ export const getAllExpenses = (userData: UserDataLike): TransactionDto[][] => us
 export const getAllInvestments = (userData: UserDataLike): TransactionDto[][] => userData?.outflows?.allInvestments || [];
 export const getAllTransfers = (userData: UserDataLike): TransactionDto[][] => userData?.outflows?.allTransfers || [];
 export const getOutflowsArray = (userData: UserDataLike): number[] => userData?.outflows?.outflowsArray || [];
-export const getExpensesArray = (userData: UserDataLike): number[] => userData?.outflows?.expensesArray || [];
+export const getExpensesArray = (userData: UserDataLike): number[] => userData?.outflows?.expensesArray || userData?.outflows?.outflowsArray || [];
 export const getInvestmentsArray = (userData: UserDataLike): number[] => userData?.outflows?.investmentsArray || [];
 export const getTransfersArray = (userData: UserDataLike): number[] => userData?.outflows?.transfersArray || [];
 export const getTotalOutflowsPerCategoryPerMonth = (userData: UserDataLike): Record<string, Record<string, number>> => userData?.outflows?.totalOutflowsPerCategoryPerMonth || {};
@@ -407,7 +407,7 @@ export const getTotalIncomesCurrentMonth = (userData: UserDataLike): number => {
 };
 
 export const getTotalSavedCurrentMonth = (userData: UserDataLike): number => {
-  return getTotalIncomesCurrentMonth(userData) - getTotalOutflowsCurrentMonth(userData);
+  return getTotalIncomesCurrentMonth(userData) - getTotalExpensesCurrentMonth(userData);
 };
 
 // Tags selectors

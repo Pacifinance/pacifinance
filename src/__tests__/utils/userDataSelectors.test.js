@@ -500,7 +500,7 @@ describe('userDataSelectors', () => {
       expect(getTotalIncomesCurrentMonth(mockUserData)).toBe(2800);
     });
 
-    it('getTotalSavedCurrentMonth should return incomes minus outflows', () => {
+    it('getTotalSavedCurrentMonth should return incomes minus consumption expenses', () => {
       const expected = 2800 - 2100;
       expect(getTotalSavedCurrentMonth(mockUserData)).toBe(expected);
     });

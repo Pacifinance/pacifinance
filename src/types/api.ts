@@ -501,6 +501,29 @@ export interface StatsAveragesResponse {
   similar?: StatsAverageBucket;
 }
 
+export interface InvestmentBenchmarkMetricDto {
+  userId?: string;
+  observedMonths: number;
+  activeMonths: number;
+  consistencyPercent: number;
+  averageMonthlyContribution: number;
+  averageTransactionsPerActiveMonth: number;
+  moneyWeightedReturn: number | null;
+  timeWeightedReturn: number | null;
+}
+
+export interface InvestmentBenchmarkResponse {
+  personal: InvestmentBenchmarkMetricDto | null;
+  comparison: {
+    available: boolean;
+    reason?: 'consent_required' | 'minimum_cohort';
+    minimumCohortSize: number;
+    cohortSize: number;
+    reliability?: 'medium' | 'high';
+    metrics?: Record<Exclude<keyof InvestmentBenchmarkMetricDto, 'userId' | 'observedMonths' | 'activeMonths'>, {median: number | null; contributorCount: number}>;
+  };
+}
+
 /* ═══════════════════════════════════════════════════════════════════════════
  * /prices
  * ═══════════════════════════════════════════════════════════════════════════*/

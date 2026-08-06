@@ -18,7 +18,7 @@ import {
     BsInfoCircle
 } from 'react-icons/bs';
 import { MdInsights, MdTrendingUp } from 'react-icons/md';
-import { getOutflowsArray, getIncomesArray } from '../utils/userDataSelectors';
+import { getExpensesArray, getIncomesArray } from '../utils/userDataSelectors';
 import { addCurrency } from '../utils/money';
 
 // Styled Components
@@ -169,7 +169,7 @@ const generateInsights = (userData, language, isHidden, translations, currencySy
   const totalAssets = addCurrency(...userData.assets.map(asset => asset.value || 0));
 
   // Use the dashboard data (index 0 = current month)
-  const totalExpenses = getOutflowsArray(userData) && getOutflowsArray(userData)[0] ? getOutflowsArray(userData)[0] : 0;
+  const totalExpenses = getExpensesArray(userData)[0] || 0;
   const totalIncome = getIncomesArray(userData) && getIncomesArray(userData)[0] ? getIncomesArray(userData)[0] : 0;
 
   // Insight 1: Monthly spending analysis

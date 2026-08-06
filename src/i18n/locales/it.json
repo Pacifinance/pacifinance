@@ -812,6 +812,7 @@
                 "currentMonth": "Mese Corrente"
             }
         },
+        "investmentBenchmark": {"title":"Confronto anonimo investimenti","description":"Confronta il tuo comportamento e i rendimenti con la mediana di una coorte anonima.","consentRequired":"Attiva il consenso ai benchmark per accedere al confronto e contribuire in forma aggregata.","minimumCohort":"Il confronto apparirà quando saranno disponibili almeno {minimum} partecipanti idonei.","legend":"Tu / mediana della coorte ({count} partecipanti)","highReliability":"affidabilità alta","mediumReliability":"affidabilità media","consistency":"Costanza mensile","monthlyContribution":"Versamento medio mensile","moneyWeighted":"Rendimento money-weighted (XIRR)","timeWeighted":"Rendimento time-weighted (TWR)","notEnoughHistory":"storico insufficiente","methodNote":"XIRR considera date e importi dei flussi; TWR isola approssimativamente la performance dai versamenti usando rilevazioni mensili. Non confrontiamo il semplice guadagno percentuale, che sarebbe fuorviante."},
         "statsHoldings": {
             "title": "Portafoglio Investimenti",
             "description": "Analizza la composizione e l'andamento dei tuoi investimenti nel dettaglio",
@@ -863,7 +864,7 @@
                 "monthlyTargetManageLink": "Gestisci l’obiettivo mensile →",
                 "monthlyTargetSavedLabel": "Obiettivo mensile salvato",
                 "monthlyTargetSuccessRate": "Raggiunto in {success} degli ultimi {total} mesi",
-                "monthlyTargetRecentAverage": "Media degli ultimi mesi: {amount}",
+                "monthlyTargetRecentAverage": "Media degli ultimi mesi: {amount}", "concentrationLimitsTitle": "Limiti di concentrazione", "positionConcentrationStatus": "Posizione maggiore: {current} (limite {limit})", "categoryConcentrationStatus": "Categoria maggiore: {current} (limite {limit})",
                 "goalTitle": "Obiettivo: {name}",
                 "goalReached": "Obiettivo raggiunto! 🎉",
                 "goalETA": "Tempo stimato per raggiungerlo: {time}",
@@ -3087,7 +3088,7 @@
             "spendingPercent": "Limite spesa sulle entrate (%)",
             "savingsAmount": "Risparmio mensile minimo",
             "emergencyMonths": "Copertura minima (mesi di spesa)",
-            "currentSpending": "Questo mese: {amount}, {percent} delle entrate", "currentSavings": "Risparmio del mese: {amount}, {percent} delle entrate", "currentEmergency": "Fondo attuale: {amount}, copertura {months} mesi", "currentFixedExpenses": "Spese fisse ricorrenti: {percent} delle entrate",
+            "currentSpending": "Questo mese: {amount}, {percent} delle entrate", "currentSavings": "Risparmio del mese: {amount}, {percent} delle entrate", "currentEmergency": "Fondo attuale: {amount}, copertura {months} mesi", "currentFixedExpenses": "Spese fisse ricorrenti: {percent} delle entrate", "currentDebtReduction": "Debito rimborsato questo mese: {amount}",
             "advancedTitle": "Controlli avanzati",
             "advancedHint": "Lascia vuoto un controllo per disattivarlo.",
             "fixedExpensesPercent": "Spese fisse massime sulle entrate (%)",

@@ -4,7 +4,7 @@
  * @module services/statsService
  */
 import type { AxiosInstance } from 'axios';
-import type { StatsAverageBucket, StatsAveragesResponse } from '../types/api';
+import type { InvestmentBenchmarkResponse, StatsAverageBucket, StatsAveragesResponse } from '../types/api';
 
 export interface AveragesSnapshot {
   all: StatsAverageBucket;
@@ -13,6 +13,7 @@ export interface AveragesSnapshot {
 
 export interface StatsService {
   getAverages(): Promise<AveragesSnapshot>;
+  getInvestmentBenchmark(): Promise<InvestmentBenchmarkResponse>;
 }
 
 const emptyBucket = (): StatsAverageBucket => ({
@@ -58,6 +59,10 @@ export const createStatsService = (apiClient: AxiosInstance): StatsService => ({
       console.warn('/api/stats/averages endpoint not available, using defaults');
       return defaults;
     }
+  },
+  async getInvestmentBenchmark() {
+    const response = await apiClient.post<InvestmentBenchmarkResponse>('/api/stats/investment-benchmark', {});
+    return response.data;
   },
 });
 

@@ -35,6 +35,8 @@ interface PortfolioInsightsProps {
   currentMonthlyIncome: number;
   annualPassiveIncome: number;
   annualPassiveIncomeTarget: number | null;
+  positionConcentrationLimit: number | null;
+  assetCategoryConcentrationLimit: number | null;
   /** Portfolio-wide (not per-category) "how much I'd like to invest each month" € target, or null if unset. */
 }
 
@@ -231,7 +233,7 @@ function formatMonthsHuman(months: number, t: Record<string, string>): string {
 }
 
 export default function PortfolioInsights({
-  theme, holdings, history, goals, assetKey, isHidden, monthlyTarget, monthlyTargetPercent, currentMonthlyIncome, annualPassiveIncome, annualPassiveIncomeTarget,
+  theme, holdings, history, goals, assetKey, isHidden, monthlyTarget, monthlyTargetPercent, currentMonthlyIncome, annualPassiveIncome, annualPassiveIncomeTarget, positionConcentrationLimit, assetCategoryConcentrationLimit,
 }: PortfolioInsightsProps) {
   const { translations, language } = useContext(LanguageContext);
   const { formatAmount } = useContext(CurrencyContext);
@@ -241,6 +243,17 @@ export default function PortfolioInsights({
   const contribution = useMemo(() => estimateMonthlyContribution(history, assetKey), [history, assetKey]);
   const growth = useMemo(() => estimateMonthlyGrowthRate(history, assetKey), [history, assetKey]);
   const contributionSeries = useMemo(() => computeMonthlyContributionSeries(history, null), [history]);
+  const concentration = useMemo(() => {
+    const active = holdings.filter((holding) => holding.quantity !== 0);
+    const values = active.map((holding) => ({assetKey: holding.assetKey, value: holding.currentValue ?? holding.investedAmount ?? 0}));
+    const total = values.reduce((sum, item) => sum + item.value, 0);
+    const byCategory = new Map<string, number>();
+    values.forEach((item) => byCategory.set(item.assetKey, (byCategory.get(item.assetKey) ?? 0) + item.value));
+    return {
+      position: total > 0 ? Math.max(0, ...values.map((item) => item.value / total * 100)) : null,
+      category: total > 0 ? Math.max(0, ...byCategory.values()) / total * 100 : null,
+    };
+  }, [holdings]);
 
   const linkedGoal = assetKey ? goals.find((g) => g.linkedAssetKey === assetKey) : undefined;
   const goalProjection = linkedGoal
@@ -382,6 +395,13 @@ export default function PortfolioInsights({
           <h5>{t.passiveIncomeTitle || 'Annual passive-income goal'}</h5>
           <ProgressLabel theme={theme}><span>{isHidden ? '****' : formatAmount(annualPassiveIncome)}</span><strong>{isHidden ? '****' : formatAmount(annualPassiveIncomeTarget)}</strong></ProgressLabel>
           <ProgressTrack theme={theme}><ProgressFill theme={theme} $pct={annualPassiveIncomeTarget > 0 ? annualPassiveIncome / annualPassiveIncomeTarget * 100 : 0} /></ProgressTrack>
+        </TargetSection>
+      )}
+      {assetKey === null && (positionConcentrationLimit != null || assetCategoryConcentrationLimit != null) && (
+        <TargetSection theme={theme}>
+          <h5>{t.concentrationLimitsTitle}</h5>
+          {positionConcentrationLimit != null && <Hint theme={theme}>{t.positionConcentrationStatus.replace('{current}', concentration.position == null ? '—' : `${concentration.position.toFixed(1)}%`).replace('{limit}', `${positionConcentrationLimit}%`)}</Hint>}
+          {assetCategoryConcentrationLimit != null && <Hint theme={theme}>{t.categoryConcentrationStatus.replace('{current}', concentration.category == null ? '—' : `${concentration.category.toFixed(1)}%`).replace('{limit}', `${assetCategoryConcentrationLimit}%`)}</Hint>}
         </TargetSection>
       )}
 

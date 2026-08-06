@@ -80,6 +80,7 @@
 - [x] Prezzi di mercato live per azioni/ETF via Finnhub: pulsante "Aggiorna prezzi" nei grafici investimenti, converte la quotazione nella valuta di scambio in EUR, aggiorna il valore corrente e ne registra uno storico mensile <!-- roadmap:live-stock-prices -->
 - [x] Analisi adattiva del portafoglio investimenti: guadagno/perdita, migliore/peggiore posizione, media investita al mese e stima del tempo per raggiungere un obiettivo collegato — ogni dato si sblocca in base allo storico realmente inserito, con suggerimenti su cosa aggiungere per un'analisi più precisa <!-- roadmap:portfolio-insights -->
 - [x] Obiettivo di investimento mensile: imposta quanto vorresti investire ogni mese e verifica automaticamente, mese per mese, se lo hai raggiunto, ricostruito dallo storico degli investimenti già registrato <!-- roadmap:investment-monthly-target -->
+- [x] Riconciliazione bilancio e holding: totale mensile dichiarato distinto dal dettaglio, copertura, scostamento e peso percentuale di ogni posizione <!-- roadmap:investment-balance-reconciliation -->
 - [x] Prezzi storici verificati dalla community: proponi il prezzo di un tuo asset per un mese passato, un amministratore lo verifica confrontandolo con un provider reale e, una volta approvato, diventa il prezzo condiviso da tutti — alternativa gratuita ai prezzi storici a pagamento <!-- roadmap:community-historical-prices -->
 ---
 

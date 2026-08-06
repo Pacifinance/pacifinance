@@ -502,5 +502,17 @@
     "category": "feature",
     "icon": "📊",
     "completedDate": "2026-08"
+  },
+  {
+    "id": "investment-balance-reconciliation",
+    "todoMatch": "Riconciliazione bilancio e holding",
+    "title": { "it": "Riconciliazione Bilancio e Holding", "en": "Balance and Holdings Reconciliation" },
+    "description": {
+      "it": "Mantieni il totale mensile dichiarato distinto dalla somma delle holding: Pacifinance mostra copertura, valore non dettagliato o dettaglio in eccesso e il peso percentuale di ogni posizione.",
+      "en": "Keep the declared monthly total separate from the holdings sum: Pacifinance shows coverage, unallocated or excess detail, and each position's percentage weight."
+    },
+    "category": "feature",
+    "icon": "⚖️",
+    "completedDate": "2026-08"
   }
 ]

@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
 import { Select, MenuItem } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -15,6 +14,7 @@ import InvestmentHoldingsPanel from './InvestmentHoldingsPanel';
 import LiquidityAccountsPanel from './LiquidityAccountsPanel';
 import { isVerifiableAssetKey } from '../constants/investmentSchema';
 import { LIQUIDITY_KEYS } from '../constants/balanceSchema';
+import { reconcileInvestmentBalance } from '../utils/investmentBalanceReconciliation';
 
 /* ─── Helpers ─── */
 const handleInputChange = (e, setterFunction) => {
@@ -53,6 +53,16 @@ const handleInputBlur = (e, setterFunction) => {
   if (!isNaN(num) && rawValue !== '') {
     setterFunction(num.toLocaleString('it-IT', { minimumFractionDigits: 2 }));
   }
+};
+
+const parseBalanceInput = (value) => {
+  if (typeof value === 'number') return value;
+  const raw = String(value || '').trim();
+  if (!raw) return 0;
+  const normalized = raw.includes(',') && raw.includes('.')
+    ? raw.replace(/\./g, '').replace(',', '.')
+    : raw.replace(',', '.');
+  return Number(normalized.replace(/[^\d.-]/g, '')) || 0;
 };
 
 /* ─── Styled Components ─── */
@@ -285,17 +295,29 @@ const CalculatedBadge = styled.span`
   opacity: 0.5;
 `;
 
-const ReadOnlyValue = styled.div`
-  width: 100%;
-  padding: 0.55rem 0.7rem;
-  border-radius: 8px;
-  border: 1px dashed ${(p) => (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.15)' : '#cbd5e1')};
+const ReconciliationHint = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
   color: ${(p) => p.theme.textColor};
-  font-size: 0.9rem;
-  font-weight: 500;
-  text-align: right;
-  box-sizing: border-box;
-  opacity: 0.85;
+  font-size: 0.64rem;
+  line-height: 1.35;
+
+  .summary { opacity: 0.62; }
+  .difference {
+    color: ${(p) => p.$status === 'over-allocated' ? '#f59e0b' : p.theme.buttonBackgroundColor};
+    font-weight: 600;
+  }
+  button {
+    align-self: flex-start;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    color: ${(p) => p.theme.buttonBackgroundColor};
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+  }
 `;
 
 /* ─── Component ─── */
@@ -338,7 +360,7 @@ export default function BalanceSection({
   investmentHoldingHistory = [],
   liquidityAccountHistory = [],
 }) {
-  const { currencySymbol, fromEUR } = React.useContext(CurrencyContext);
+  const { currencySymbol, fromEUR, toEUR, formatAmount } = React.useContext(CurrencyContext);
   const [openSubAccountsAssetKey, setOpenSubAccountsAssetKey] = useState(null);
 
   const holdingsByAssetKey = useMemo(() => {
@@ -434,14 +456,7 @@ export default function BalanceSection({
   // manual input, exactly like before this feature existed.
   useEffect(() => {
     if (!onAssetBaseValueChange) return;
-    const holdingsSource = isCurrentMonth ? holdingsByAssetKey : holdingHistoryByAssetKey;
     const accountsSource = isCurrentMonth ? liquidityAccountsByAssetKey : liquidityAccountHistoryByAssetKey;
-    for (const assetKey of Object.keys(holdingsSource)) {
-      const assetHoldings = holdingsSource[assetKey];
-      if (!assetHoldings || assetHoldings.length === 0) continue;
-      const sumEur = assetHoldings.reduce((sum, h) => sum + (h.currentValue ?? h.investedAmount ?? 0), 0);
-      onAssetBaseValueChange(assetKey, sumEur);
-    }
     for (const assetKey of Object.keys(accountsSource)) {
       const assetAccounts = accountsSource[assetKey];
       if (!assetAccounts || assetAccounts.length === 0) continue;
@@ -449,7 +464,7 @@ export default function BalanceSection({
       onAssetBaseValueChange(assetKey, sumEur);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [holdingsByAssetKey, liquidityAccountsByAssetKey, holdingHistoryByAssetKey, liquidityAccountHistoryByAssetKey, isCurrentMonth]);
+  }, [liquidityAccountsByAssetKey, liquidityAccountHistoryByAssetKey, isCurrentMonth]);
 
   const monthNames = {
     1: translations.months.january,
@@ -517,6 +532,12 @@ export default function BalanceSection({
         : [];
     const hasHoldings = subEntries.length > 0;
     const t = isLiquidityKey ? translations.liquidityAccounts : translations.investments?.holdings;
+    const declaredTotalEur = asset.value !== ''
+      ? toEUR(parseBalanceInput(asset.value))
+      : Number(placeholderAmount) || 0;
+    const reconciliation = isInvestmentKey && hasHoldings
+      ? reconcileInvestmentBalance(declaredTotalEur, subEntries)
+      : null;
 
     return (
       <AssetItem key={asset.key} theme={theme} $color={color}>
@@ -526,29 +547,46 @@ export default function BalanceSection({
           </AssetIconWrapper>
           {asset.label}
         </AssetLabel>
-        {hasHoldings ? (
-          <ReadOnlyValue theme={theme}>
-            {isHidden ? '****' : `${currencySymbol} ${placeholderValue}`}
-          </ReadOnlyValue>
-        ) : (
-          <CurrencyInputWrapper>
-            <CurrencySymbol theme={theme}>{currencySymbol}</CurrencySymbol>
-            <CurrencyInput
-              type="text"
-              theme={theme}
-              $color={color}
-              value={isHidden ? '' : asset.value}
-              onChange={(e) => handleInputChange(e, asset.setter)}
-              onBlur={(e) => handleInputBlur(e, asset.setter)}
-              placeholder={isHidden ? '****' : placeholderValue}
-            />
-          </CurrencyInputWrapper>
+        <CurrencyInputWrapper>
+          <CurrencySymbol theme={theme}>{currencySymbol}</CurrencySymbol>
+          <CurrencyInput
+            type="text"
+            theme={theme}
+            $color={color}
+            value={isHidden ? '' : asset.value}
+            onChange={(e) => handleInputChange(e, asset.setter)}
+            onBlur={(e) => handleInputBlur(e, asset.setter)}
+            placeholder={isHidden ? '****' : placeholderValue}
+          />
+        </CurrencyInputWrapper>
+        {!isHidden && reconciliation && (
+          <ReconciliationHint theme={theme} $status={reconciliation.status}>
+            <span className="summary">
+              {t.detailedTotal
+                .replace('{amount}', formatAmount(reconciliation.detailedTotal))
+                .replace('{coverage}', reconciliation.coveragePercent == null ? '—' : reconciliation.coveragePercent.toFixed(1))}
+            </span>
+            {reconciliation.status !== 'exact' && (
+              <span className="difference">
+                {(reconciliation.status === 'unallocated' ? t.unallocatedValue : t.overAllocatedValue)
+                  .replace('{amount}', formatAmount(Math.abs(reconciliation.unallocatedValue)))}
+              </span>
+            )}
+            {reconciliation.status !== 'exact' && (
+              <button
+                type="button"
+                onClick={() => asset.setter(fromEUR(reconciliation.detailedTotal).toLocaleString('it-IT', { minimumFractionDigits: 2 }))}
+              >
+                {t.useDetailedTotal}
+              </button>
+            )}
+          </ReconciliationHint>
         )}
         {(isLiquidityKey || isInvestmentKey) && t && (
           <HoldingsLinkRow>
             {hasHoldings && (
               <CalculatedBadge theme={theme}>
-                {t.calculatedFromN.replace('{count}', subEntries.length)}
+                {(isInvestmentKey ? t.reconciledWithN : t.calculatedFromN).replace('{count}', subEntries.length)}
               </CalculatedBadge>
             )}
             <HoldingsLinkButton
@@ -683,6 +721,13 @@ export default function BalanceSection({
           isCurrentMonth={isCurrentMonth}
           userDate={viewedUserDate}
           historyByEntityId={holdingHistoryByHoldingId}
+          categoryTotal={(() => {
+            const asset = investmentAssets.find((item) => item.key === openSubAccountsAssetKey);
+            if (!asset) return 0;
+            return asset.value !== ''
+              ? toEUR(parseBalanceInput(asset.value))
+              : Number(balancePlaceholders?.[asset.key]) || 0;
+          })()}
         />
       )}
     </SectionWrapper>

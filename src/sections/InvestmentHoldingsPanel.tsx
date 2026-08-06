@@ -20,6 +20,7 @@ import {
 import { ModernActionButton } from '../styles/MyStyled';
 import { ASSET_KEY_TO_KIND, KIND_TO_SEARCH_SOURCE, DEFAULT_INSTRUMENT_HINTS } from '../constants/investmentSchema';
 import { formatInstrumentDetails } from '../utils/instrumentDisplay';
+import { reconcileInvestmentBalance } from '../utils/investmentBalanceReconciliation';
 import type {
   CommunityPriceDto, InvestmentAssetKey, InvestmentDividendSummaryDto, InvestmentHoldingDto, InvestmentHoldingHistoryDto,
   InvestmentInstrumentDto, InvestmentTransactionSummaryDto,
@@ -40,6 +41,8 @@ interface InvestmentHoldingsPanelProps {
   userDate?: string;
   /** Backfilled history rows for the viewed month, keyed by holding id. */
   historyByEntityId?: Record<number, InvestmentHoldingHistoryDto | undefined>;
+  /** Aggregate balance declared by the user for this category and viewed month, in EUR. */
+  categoryTotal?: number;
 }
 
 interface FormState {
@@ -79,6 +82,31 @@ const DividendsSummary = styled.p`
   font-weight: 600;
   color: ${(p) => p.theme.textColor};
   opacity: 0.75;
+`;
+
+const BalanceReconciliationSummary = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.55rem;
+  margin-bottom: 0.85rem;
+  padding: 0.75rem;
+  border-radius: 10px;
+  border: 1px solid ${(p) => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.09)' : 'rgba(0,0,0,0.08)'};
+  background: ${(p) => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.025)' : 'rgba(0,0,0,0.02)'};
+  color: ${(p) => p.theme.textColor};
+
+  div { display: flex; flex-direction: column; gap: 0.15rem; min-width: 0; }
+  span { font-size: 0.65rem; opacity: 0.58; }
+  strong { font-size: 0.82rem; overflow-wrap: anywhere; }
+  .difference { color: ${(p) => p.$status === 'over-allocated' ? '#f59e0b' : p.theme.buttonBackgroundColor}; }
+
+  @media (max-width: 480px) { grid-template-columns: 1fr 1fr; }
+`;
+
+const HoldingShare = styled.span`
+  font-size: 0.68rem;
+  color: ${(p) => p.theme.textColor};
+  opacity: 0.58;
 `;
 
 const TabBar = styled.div`
@@ -613,7 +641,7 @@ const InlineEditActions = styled.div`
 `;
 
 export default function InvestmentHoldingsPanel({
-  assetKey, holdings, onClose, onChanged, isCurrentMonth = true, userDate, historyByEntityId = {},
+  assetKey, holdings, onClose, onChanged, isCurrentMonth = true, userDate, historyByEntityId = {}, categoryTotal = 0,
 }: InvestmentHoldingsPanelProps) {
   const { theme } = useContext(ThemeContext) as { theme: PacifinanceTheme };
   const { translations, language } = useContext(LanguageContext) as {
@@ -635,6 +663,16 @@ export default function InvestmentHoldingsPanel({
   // view (see the tabs below); past-month mode doesn't use these.
   const activeHoldings = holdings.filter((h) => (h.quantity ?? 0) > 0);
   const pastHoldings = holdings.filter((h) => (h.quantity ?? 0) <= 0);
+  const reconciliationRows = (isCurrentMonth ? activeHoldings : holdings)
+    .map((holding) => ({ holding, value: isCurrentMonth ? holding : historyByEntityId[holding.id] }))
+    .filter((row) => row.value != null);
+  const balanceReconciliation = reconcileInvestmentBalance(
+    categoryTotal,
+    reconciliationRows.map((row) => row.value as InvestmentHoldingDto | InvestmentHoldingHistoryDto),
+  );
+  const holdingShareById = new Map(
+    reconciliationRows.map((row, index) => [row.holding.id, balanceReconciliation.holdingShares[index]]),
+  );
 
   const [form, setForm] = useState<FormState>(emptyForm);
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -1068,6 +1106,11 @@ export default function InvestmentHoldingsPanel({
             ) : (
               <span className="no-value">{t.noValueForMonth}</span>
             )}
+            {holdingShareById.get(holding.id) != null && (
+              <HoldingShare theme={theme}>
+                {t.shareOfCategory.replace('{percentage}', (holdingShareById.get(holding.id) as number).toFixed(1))}
+              </HoldingShare>
+            )}
             {(() => {
               const source = isCurrentMonth ? holding : historicalEntry;
               if (!source || source.currentValue == null || source.investedAmount == null || source.investedAmount === 0) return null;
@@ -1347,6 +1390,16 @@ export default function InvestmentHoldingsPanel({
               )}
             </TabBar>
           )}
+
+          <BalanceReconciliationSummary theme={theme} $status={balanceReconciliation.status}>
+            <div><span>{t.declaredCategoryTotal}</span><strong>{formatAmount(balanceReconciliation.declaredTotal)}</strong></div>
+            <div><span>{t.detailedCategoryTotal}</span><strong>{formatAmount(balanceReconciliation.detailedTotal)}</strong></div>
+            <div><span>{t.coverageLabel}</span><strong>{balanceReconciliation.coveragePercent == null ? '—' : `${balanceReconciliation.coveragePercent.toFixed(1)}%`}</strong></div>
+            <div className="difference">
+              <span>{balanceReconciliation.status === 'over-allocated' ? t.excessDetailLabel : t.unallocatedLabel}</span>
+              <strong>{formatAmount(Math.abs(balanceReconciliation.unallocatedValue))}</strong>
+            </div>
+          </BalanceReconciliationSummary>
 
           {isCurrentMonth && totalDividendsForAssetKey > 0 && (
             <DividendsSummary theme={theme}>

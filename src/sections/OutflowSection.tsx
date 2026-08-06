@@ -1367,7 +1367,7 @@ export default function OutflowSection({
                 {renderSharedEditControls()}
                 {renderPurposeSelect()}
               </td>
-              <td>
+              <td style={{ minWidth: 132, width: 132 }}>
                 <InlineInput
                   type="date"
                   theme={theme}

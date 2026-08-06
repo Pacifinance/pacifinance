@@ -18,6 +18,8 @@
  * @module types/api
  */
 
+import type { TransactionPurpose } from './transaction';
+
 /* ═══════════════════════════════════════════════════════════════════════════
  * Assets
  * ═══════════════════════════════════════════════════════════════════════════*/
@@ -120,6 +122,7 @@ export interface TransactionWriteDto {
   date: string;         // ISO
   amount: number;       // in EUR, already rounded server-side
   direction: 'income' | 'outflow';
+  purpose?: TransactionPurpose;
   notes: string;
   payment_type: number; // index into tags.paymentTags (0 for income)
   category_tag: number; // index into tags.outflowsTags / tags.incomesTags
@@ -164,6 +167,9 @@ export interface MonthlyTotalDto {
   monthStart: string; // "YYYY-MM-DD"
   totalOutflows: number;
   totalIncomes: number;
+  totalExpenses: number;
+  totalInvestments: number;
+  totalTransfers: number;
 }
 
 export type MonthlyTotalsResponse = MonthlyTotalDto[];
@@ -174,6 +180,7 @@ export interface TransactionDto {
   date: string;
   amount: number;
   direction: 'income' | 'outflow';
+  purpose: TransactionPurpose;
   /** @deprecated Compatibility field; use direction. */
   isExpense: boolean;
   notes: string;
@@ -217,6 +224,7 @@ export interface TransactionDeleteRequest {
 export interface RecurringTransactionDto {
   id: number;
   direction: 'income' | 'outflow';
+  purpose: TransactionPurpose;
   amount: number;
   notes: string;
   paymentType: { label: string; index: number; type: number } | null;
@@ -232,6 +240,7 @@ export type RecurringTransactionsGetResponse = RecurringTransactionDto[];
 export interface RecurringTransactionSaveRequest {
   id?: number;
   direction: 'income' | 'outflow';
+  purpose?: TransactionPurpose;
   amount: number;
   notes?: string;
   payment_type: number; // client index, ignored for incomes

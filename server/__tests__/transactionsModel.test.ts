@@ -46,26 +46,48 @@ describe("transaction batch insert", () => {
 
     it("resolves distinct tags once and performs one database insert", async () => {
         const result = await transactionsModel.insertBatch("user-1", [
-            {date: new Date("2026-08-01"), amount: 10, isExpense: true, notes: "Lunch", paymentType: 1, categoryTag: 4, userCategoryId: null, balanceSource: null},
-            {date: new Date("2026-08-02"), amount: 20, isExpense: false, notes: "Refund", paymentType: 0, categoryTag: 0, userCategoryId: null, balanceSource: null},
+            {date: new Date("2026-08-01"), amount: 10, isExpense: true, purpose: "expense", notes: "Lunch", paymentType: 1, categoryTag: 4, userCategoryId: null, balanceSource: null},
+            {date: new Date("2026-08-02"), amount: 20, isExpense: false, purpose: "refund", notes: "Refund", paymentType: 0, categoryTag: 0, userCategoryId: null, balanceSource: null},
         ])
 
         expect(result).toHaveLength(2)
         expect(mocks.getReference).toHaveBeenCalledTimes(4)
         expect(mocks.insert).toHaveBeenCalledOnce()
         expect(mocks.insert).toHaveBeenCalledWith([
-            expect.objectContaining({user_id: "user-1", amount: 10, notes: "encrypted:Lunch", payment_type_tag_id: 2001, category_tag_id: 4}),
-            expect.objectContaining({user_id: "user-1", amount: 20, notes: "encrypted:Refund", payment_type_tag_id: 2000, category_tag_id: 1000}),
+            expect.objectContaining({user_id: "user-1", amount: 10, purpose: "expense", notes: "encrypted:Lunch", payment_type_tag_id: 2001, category_tag_id: 4}),
+            expect.objectContaining({user_id: "user-1", amount: 20, purpose: "refund", notes: "encrypted:Refund", payment_type_tag_id: 2000, category_tag_id: 1000}),
         ])
     })
 
     it("aborts before writing if a tag reference cannot be resolved", async () => {
         mocks.getReference.mockResolvedValueOnce(null)
         const result = await transactionsModel.insertBatch("user-1", [
-            {date: new Date("2026-08-01"), amount: 10, isExpense: true, notes: "", paymentType: 1, categoryTag: 4, userCategoryId: null, balanceSource: null},
+            {date: new Date("2026-08-01"), amount: 10, isExpense: true, purpose: "expense", notes: "", paymentType: 1, categoryTag: 4, userCategoryId: null, balanceSource: null},
         ])
         expect(result).toBeNull()
         expect(mocks.insert).not.toHaveBeenCalled()
+    })
+})
+
+describe("purpose-aware monthly totals", () => {
+    it("maps spending, investment, and transfer aggregates independently", async () => {
+        mocks.rpc.mockResolvedValue({data: [{
+            month_start: "2026-08-01",
+            total_outflows: 500,
+            total_incomes: 1000,
+            total_expenses: 180,
+            total_investments: 270,
+            total_transfers: 50,
+        }], error: null})
+
+        await expect(transactionsModel.getMonthlyTotalsByUserId("user-1", 12)).resolves.toEqual([{
+            monthStart: "2026-08-01",
+            totalOutflows: 500,
+            totalIncomes: 1000,
+            totalExpenses: 180,
+            totalInvestments: 270,
+            totalTransfers: 50,
+        }])
     })
 })
 
@@ -78,7 +100,7 @@ describe("transaction atomic update", () => {
     it("does not call the RPC when a tag cannot be resolved", async () => {
         mocks.getReference.mockResolvedValueOnce(null)
         const result = await transactionsModel.updateExisting("user-1", {
-            id: 42, date: new Date("2026-08-01"), amount: 12, isExpense: true, notes: "Lunch",
+            id: 42, date: new Date("2026-08-01"), amount: 12, isExpense: true, purpose: "expense", notes: "Lunch",
             paymentType: 1, categoryTag: 4, userCategoryId: null, balanceSource: null,
             sharedMode: "remove", sharedTotal: null, sharedOwnShare: null,
         })
@@ -90,7 +112,7 @@ describe("transaction atomic update", () => {
     it("updates the transaction and shared split with one RPC", async () => {
         mocks.rpc.mockResolvedValue({data: 42, error: null})
         const result = await transactionsModel.updateExisting("user-1", {
-            id: 42, date: new Date("2026-08-01"), amount: 6, isExpense: true, notes: "Lunch",
+            id: 42, date: new Date("2026-08-01"), amount: 6, isExpense: true, purpose: "expense", notes: "Lunch",
             paymentType: 1, categoryTag: 4, userCategoryId: 9,
             balanceSource: {asset_key: "bank", detail_type: null, detail_id: null},
             sharedMode: "set", sharedTotal: 24, sharedOwnShare: 6,
@@ -99,7 +121,7 @@ describe("transaction atomic update", () => {
         expect(result).toEqual({id: 42})
         expect(mocks.rpc).toHaveBeenCalledOnce()
         expect(mocks.rpc).toHaveBeenCalledWith("update_transaction_with_shared", expect.objectContaining({
-            p_user_id: "user-1", p_transaction_id: 42, p_notes: "encrypted:Lunch",
+            p_user_id: "user-1", p_transaction_id: 42, p_notes: "encrypted:Lunch", p_purpose: "expense",
             p_shared_mode: "set", p_shared_total: 24, p_shared_own_share: 6,
         }))
     })

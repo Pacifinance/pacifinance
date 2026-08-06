@@ -4,9 +4,10 @@ import { ExtDate } from "../../libs/datelib"
 
 import tags from "./tags"
 import { encryptField, decryptField } from "../crypto"
+import type { TransactionPurpose } from "../../domain/transactions"
 
 const TRANSACTION_SELECT = `
-    id, occurred_at, amount, cash_amount, exclude_from_statistics, is_expense, direction, notes,
+    id, occurred_at, amount, cash_amount, exclude_from_statistics, is_expense, direction, purpose, notes,
     balance_asset_key, balance_detail_type, balance_detail_id,
     payment_type:tags!expenses_payment_type_tag_id_fkey(label, client_index, type),
     category_tag:tags!expenses_category_tag_id_fkey(label, client_index, type),
@@ -14,20 +15,20 @@ const TRANSACTION_SELECT = `
 `
 
 /** Balance-source asset keys accepted by the expenses table CHECK constraint. */
-export const EXPENSE_BALANCE_ASSET_KEYS = [
+export const TRANSACTION_BALANCE_ASSET_KEYS = [
     "bank", "cash", "digitalServices", "emergencyFund",
     "stocks", "etf", "bitcoin", "crypto", "bonds", "funds", "commodities"
 ] as const
 
-export const EXPENSE_BALANCE_DETAIL_TYPES = ["liquidity", "investment"] as const
+export const TRANSACTION_BALANCE_DETAIL_TYPES = ["liquidity", "investment"] as const
 
 /**
  * Optional balance source recorded with a transaction: the balance field (and
  * optionally the specific sub-account) the money was taken from / added to.
  */
-export type ExpenseBalanceSource = {
-    asset_key: typeof EXPENSE_BALANCE_ASSET_KEYS[number],
-    detail_type: typeof EXPENSE_BALANCE_DETAIL_TYPES[number] | null,
+export type TransactionBalanceSource = {
+    asset_key: typeof TRANSACTION_BALANCE_ASSET_KEYS[number],
+    detail_type: typeof TRANSACTION_BALANCE_DETAIL_TYPES[number] | null,
     detail_id: number | null
 }
 
@@ -45,6 +46,7 @@ interface TransactionRow {
     exclude_from_statistics: boolean | null
     is_expense: boolean
     direction: "income" | "outflow"
+    purpose: TransactionPurpose
     notes: string
     balance_asset_key: string | null
     balance_detail_type: string | null
@@ -76,6 +78,7 @@ function toTransaction(rawRow: unknown) {
         excludeFromStatistics: Boolean(row.exclude_from_statistics),
         isExpense: row.is_expense as boolean,
         direction: row.direction ?? (row.is_expense ? "outflow" : "income"),
+        purpose: row.purpose ?? (row.is_expense ? "expense" : "income"),
         notes: decryptField(row.notes),
         paymentType: mapTagJoin(row.payment_type),
         categoryTag: mapTagJoin(row.category_tag),
@@ -103,7 +106,7 @@ function toTransaction(rawRow: unknown) {
  */
 async function insertNew(user_id: string, date: Date, amount: number, is_expense: boolean,
     notes: string, payment_type: number, category_tag: number, user_category_id: number | null = null,
-    balance_source: ExpenseBalanceSource | null = null) {
+    balance_source: TransactionBalanceSource | null = null, purpose: TransactionPurpose = is_expense ? "expense" : "income") {
     let payment_type_ref = null
     let category_tag_ref = null
     if (is_expense) {
@@ -123,6 +126,7 @@ async function insertNew(user_id: string, date: Date, amount: number, is_expense
         occurred_at: date,
         amount,
         is_expense,
+        purpose,
         notes: encryptField(notes),
         payment_type_tag_id: payment_type_ref.id,
         category_tag_id: category_tag_ref.id,
@@ -141,11 +145,12 @@ export type TransactionUpdateInput = {
     date: Date
     amount: number
     isExpense: boolean
+    purpose: TransactionPurpose
     notes: string
     paymentType: number
     categoryTag: number
     userCategoryId: number | null
-    balanceSource: ExpenseBalanceSource | null
+    balanceSource: TransactionBalanceSource | null
     sharedMode: "unchanged" | "set" | "remove"
     sharedTotal: number | null
     sharedOwnShare: number | null
@@ -167,6 +172,7 @@ async function updateExisting(user_id: string, input: TransactionUpdateInput) {
         p_occurred_at: input.date,
         p_amount: input.amount,
         p_is_expense: input.isExpense,
+        p_purpose: input.purpose,
         p_notes: encryptField(input.notes),
         p_payment_type_tag_id: paymentRef.id,
         p_category_tag_id: categoryRef.id,
@@ -187,11 +193,12 @@ export type TransactionBatchInput = {
     date: Date
     amount: number
     isExpense: boolean
+    purpose: TransactionPurpose
     notes: string
     paymentType: number
     categoryTag: number
     userCategoryId: number | null
-    balanceSource: ExpenseBalanceSource | null
+    balanceSource: TransactionBalanceSource | null
     cashAmount: number | null
     excludeFromStatistics: boolean
 }
@@ -229,6 +236,7 @@ async function insertBatch(user_id: string, inputs: TransactionBatchInput[]) {
             cash_amount: input.cashAmount,
             exclude_from_statistics: input.excludeFromStatistics,
             is_expense: input.isExpense,
+            purpose: input.purpose,
             notes: encryptField(input.notes),
             payment_type_tag_id: paymentRef.id,
             category_tag_id: categoryRef.id,
@@ -394,10 +402,20 @@ async function getMonthlyTotalsByUserId(user_id: string, months?: number) {
     })
     if (error) console.error("transactions.getMonthlyTotalsByUserId: get_monthly_totals RPC failed", error)
     if (error || !data) return null
-    return (data as {month_start: string, total_outflows: number, total_incomes: number}[]).map((row) => ({
+    return (data as Array<{
+        month_start: string
+        total_outflows: number
+        total_incomes: number
+        total_expenses: number
+        total_investments: number
+        total_transfers: number
+    }>).map((row) => ({
         monthStart: row.month_start,
         totalOutflows: Number(row.total_outflows),
-        totalIncomes: Number(row.total_incomes)
+        totalIncomes: Number(row.total_incomes),
+        totalExpenses: Number(row.total_expenses),
+        totalInvestments: Number(row.total_investments),
+        totalTransfers: Number(row.total_transfers),
     }))
 }
 

@@ -21,6 +21,7 @@ import {
 import { getMuiSelectMenuProps } from '../components/ThemedSelect';
 import CategoryPicker from '../components/CategoryPicker';
 import { ModernActionButton } from '../styles/MyStyled';
+import { inferTransactionPurpose } from '../utils/transactionPurpose';
 
 const EmptyState = styled.p`
   margin: 0.5rem 0 1rem;
@@ -180,7 +181,7 @@ const SecondaryButton = styled.button`
   cursor: pointer;
 `;
 
-const emptyForm = { isExpense: true, categoryKey: '', userCategoryId: null, paymentTypeKey: '', amount: '', dayOfMonth: '1', notes: '' };
+const emptyForm = { isExpense: true, purpose: 'expense', categoryKey: '', userCategoryId: null, paymentTypeKey: '', amount: '', dayOfMonth: '1', notes: '' };
 
 export default function RecurringTransactionsPanel({
   theme, items, outflowsTags, incomesTags, paymentTags, customCategories,
@@ -216,6 +217,7 @@ export default function RecurringTransactionsPanel({
     setEditingId(item.id);
     setForm({
       isExpense: item.direction === 'outflow',
+      purpose: item.purpose,
       categoryKey: item.categoryTag?.index ?? '',
       userCategoryId: item.userCategory?.id ?? null,
       paymentTypeKey: item.paymentType?.index ?? defaultPaymentTypeKey,
@@ -243,6 +245,7 @@ export default function RecurringTransactionsPanel({
       await recurringTransactionService.saveRecurring({
         id: editingId ?? undefined,
         direction: form.isExpense ? 'outflow' : 'income',
+        purpose: inferTransactionPurpose(form.isExpense ? 'outflow' : 'income', Number(form.categoryKey), form.purpose),
         amount: toEUR(Number(form.amount)),
         notes: form.notes,
         payment_type: form.isExpense ? Number(form.paymentTypeKey) : 0,
@@ -331,7 +334,7 @@ export default function RecurringTransactionsPanel({
                   type="button"
                   theme={theme}
                   $active={form.isExpense}
-                  onClick={() => setForm((f) => ({ ...f, isExpense: true, categoryKey: '', userCategoryId: null }))}
+                  onClick={() => setForm((f) => ({ ...f, isExpense: true, purpose: 'expense', categoryKey: '', userCategoryId: null }))}
                 >
                   {translations?.general?.outflows || 'Uscita'}
                 </ModeButton>
@@ -340,7 +343,7 @@ export default function RecurringTransactionsPanel({
                   theme={theme}
                   $active={!form.isExpense}
                   $income
-                  onClick={() => setForm((f) => ({ ...f, isExpense: false, categoryKey: '', userCategoryId: null }))}
+                  onClick={() => setForm((f) => ({ ...f, isExpense: false, purpose: 'income', categoryKey: '', userCategoryId: null }))}
                 >
                   {translations?.general?.incomes || 'Entrata'}
                 </ModeButton>
@@ -357,13 +360,35 @@ export default function RecurringTransactionsPanel({
                     categoryKey={form.categoryKey}
                     userCategoryId={form.userCategoryId}
                     onSelect={({ categoryKey, userCategoryId }) =>
-                      setForm((f) => ({ ...f, categoryKey, userCategoryId }))
+                      setForm((f) => ({
+                        ...f,
+                        categoryKey,
+                        userCategoryId,
+                        purpose: inferTransactionPurpose(f.isExpense ? 'outflow' : 'income', Number(categoryKey)),
+                      }))
                     }
                     onCreateCategory={(parentIndex, label) =>
                       onCreateCategory(parentIndex, label, form.isExpense)}
                     placeholder={translations?.general?.selectAnOption || '—'}
                   />
                 </label>
+
+                {form.isExpense && (
+                  <label>
+                    {translations.transactionPurpose.label}
+                    <Select
+                      value={form.purpose}
+                      onChange={(event) => setForm((current) => ({...current, purpose: event.target.value}))}
+                      size="small"
+                      sx={selectSx}
+                      MenuProps={menuProps}
+                    >
+                      {['expense', 'investment', 'transfer', 'debt', 'tax', 'other'].map((purpose) => (
+                        <MenuItem key={purpose} value={purpose}>{translations.transactionPurpose[purpose]}</MenuItem>
+                      ))}
+                    </Select>
+                  </label>
+                )}
 
                 {form.isExpense && (
                   <label>

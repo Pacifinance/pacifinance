@@ -12,6 +12,10 @@ frontend, API, backend and database code:
 - **Direction** is represented at application boundaries as `income` or
   `outflow`. The legacy database boolean `is_expense` remains a migration
   detail until existing deployments have moved to the canonical schema.
+- **Purpose** describes the economic meaning independently from direction:
+  `income`, `expense`, `investment`, `transfer`, `debt`, `tax`, `refund` or
+  `other`. Spending analytics include `expense` and `tax`; investments and
+  transfers remain visible as outflows but are not treated as consumption.
 
 New general-purpose code must use `transaction`, `income`, `outflow` and
 `direction`. The word `expense` is reserved for consumption analytics and

@@ -3048,5 +3048,6 @@
         "temporaryExplanation": "Comparaison temporaire pour cette analyse : elle ne modifie pas la vue par défaut enregistrée dans les paramètres.",
         "settingsTitle": "Vue Bitcoin et crypto par défaut",
         "settingsDescription": "Choisissez comment regrouper Bitcoin dans le tableau de bord. Les graphiques peuvent être modifiés temporairement lorsque vous détenez les deux catégories."
-    }
+    },
+    "transactionPurpose": {"label":"Type de mouvement","expense":"Dépense","investment":"Investissement","transfer":"Transfert","debt":"Dette","tax":"Impôt","other":"Autre"}
 }

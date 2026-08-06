@@ -3144,5 +3144,6 @@
         "temporaryExplanation": "Temporary comparison for this analysis: it does not change the default view saved in settings.",
         "settingsTitle": "Default Bitcoin and crypto view",
         "settingsDescription": "Choose how Bitcoin is grouped on the dashboard. Charts can be switched temporarily when you own both categories."
-    }
+    },
+    "transactionPurpose": {"label":"Movement type","expense":"Expense","investment":"Investment","transfer":"Transfer","debt":"Debt","tax":"Tax","other":"Other"}
 }

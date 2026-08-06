@@ -40,7 +40,13 @@ import {
   
   // Expense and income selectors
   getAllOutflows,
+  getAllExpenses,
+  getAllInvestments,
+  getAllTransfers,
   getOutflowsArray,
+  getExpensesArray,
+  getInvestmentsArray,
+  getTransfersArray,
   getTotalOutflowsPerCategoryPerMonth,
   getTotalOutflowsParentCategoryPerMonth,
   getTotalOutflowsCategoryBreakdownPerMonth,
@@ -48,6 +54,9 @@ import {
   getAllIncomes,
   getIncomesArray,
   getTotalOutflowsCurrentMonth,
+  getTotalExpensesCurrentMonth,
+  getTotalInvestmentsCurrentMonth,
+  getTotalTransfersCurrentMonth,
   getTotalIncomesCurrentMonth,
   getTotalSavedCurrentMonth,
   
@@ -419,6 +428,31 @@ describe('userDataSelectors', () => {
       const result = getOutflowsArray(mockUserData);
       expect(result[0]).toBe(2100);
       expect(result).toHaveLength(13);
+    });
+
+    it('returns safe purpose-specific collections and current-month totals', () => {
+      const purposeData = {
+        outflows: {
+          allExpenses: [[{id: 1}]],
+          allInvestments: [[{id: 2}]],
+          allTransfers: [[{id: 3}]],
+          expensesArray: [120],
+          investmentsArray: [250],
+          transfersArray: [50],
+        },
+      };
+
+      expect(getAllExpenses(purposeData)[0]).toHaveLength(1);
+      expect(getAllInvestments(purposeData)[0]).toHaveLength(1);
+      expect(getAllTransfers(purposeData)[0]).toHaveLength(1);
+      expect(getExpensesArray(purposeData)).toEqual([120]);
+      expect(getInvestmentsArray(purposeData)).toEqual([250]);
+      expect(getTransfersArray(purposeData)).toEqual([50]);
+      expect(getTotalExpensesCurrentMonth(purposeData)).toBe(120);
+      expect(getTotalInvestmentsCurrentMonth(purposeData)).toBe(250);
+      expect(getTotalTransfersCurrentMonth(purposeData)).toBe(50);
+      expect(getAllExpenses(null)).toEqual([]);
+      expect(getTotalExpensesCurrentMonth(null)).toBe(0);
     });
 
     it('getTotalOutflowsPerCategoryPerMonth should return category totals', () => {

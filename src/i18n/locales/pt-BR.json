@@ -3048,5 +3048,6 @@
         "temporaryExplanation": "Comparação temporária para esta análise: não altera a visualização padrão salva nas configurações.",
         "settingsTitle": "Visualização padrão de Bitcoin e cripto",
         "settingsDescription": "Escolha como agrupar o Bitcoin no painel. Os gráficos podem ser alterados temporariamente quando você possui ambas as categorias."
-    }
+    },
+    "transactionPurpose": {"label":"Tipo de movimento","expense":"Despesa","investment":"Investimento","transfer":"Transferência","debt":"Dívida","tax":"Imposto","other":"Outro"}
 }

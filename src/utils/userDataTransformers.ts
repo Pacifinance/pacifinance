@@ -337,6 +337,8 @@ export const transformBalances = (rawData: BalanceMonthDto[]): BalanceMonth[] =>
 /** Shape of a single transaction entry as stored in allOutflows / allIncomes arrays. */
 interface RawTransactionEntry {
   isExpense?: unknown;
+  direction?: unknown;
+  purpose?: unknown;
   amount?: unknown;
   categoryTag?: RawTagObject | null;
   userCategory?: { label?: string | null } | null;
@@ -374,9 +376,12 @@ export const aggregateOutflowsByCategory = (
 /** Build monthly income / outflow sum arrays (13 months). */
 export const buildMonthlyArrays = (
   allOutflowsIncomesArray: RawTransactionEntry[][],
-): { incomesArray: number[]; outflowsArray: number[] } => {
+): { incomesArray: number[]; outflowsArray: number[]; expensesArray: number[]; investmentsArray: number[]; transfersArray: number[] } => {
   const incomesArray = Array(13).fill(0);
   const outflowsArray = Array(13).fill(0);
+  const expensesArray = Array(13).fill(0);
+  const investmentsArray = Array(13).fill(0);
+  const transfersArray = Array(13).fill(0);
   allOutflowsIncomesArray.forEach((outerItem, index) => {
     if (!Array.isArray(outerItem)) return;
     outerItem.forEach(innerItem => {
@@ -385,12 +390,18 @@ export const buildMonthlyArrays = (
       const amount = Number(innerItem.amount) || 0;
       if (innerItem.isExpense) {
         outflowsArray[index] += amount;
+        const purpose = innerItem.purpose
+          ?? (innerItem.categoryTag?.index === 8 ? 'investment' : innerItem.categoryTag?.index === 10 ? 'tax' : 'expense');
+        if (purpose === 'expense' || purpose === 'tax') expensesArray[index] += amount;
+        if (purpose === 'investment') investmentsArray[index] += amount;
+        if (purpose === 'transfer') transfersArray[index] += amount;
       } else {
         incomesArray[index] += amount;
+        if (innerItem.purpose === 'transfer') transfersArray[index] += amount;
       }
     });
   });
-  return { incomesArray, outflowsArray };
+  return { incomesArray, outflowsArray, expensesArray, investmentsArray, transfersArray };
 };
 
 // ─── Chart Data ──────────────────────────────────────────────────────
@@ -454,7 +465,16 @@ export const buildAssetsFromBalance = (balance: BalanceSnapshot | null | undefin
 /** Split the raw expenses-and-incomes matrix into two separate arrays. */
 export const splitIncomesOutflows = (
   allOutflowsIncomesArray: Record<string, unknown>[][],
-): { allOutflows: Record<string, unknown>[][]; allIncomes: Record<string, unknown>[][] } => ({
+): {
+  allOutflows: Record<string, unknown>[][];
+  allIncomes: Record<string, unknown>[][];
+  allExpenses: Record<string, unknown>[][];
+  allInvestments: Record<string, unknown>[][];
+  allTransfers: Record<string, unknown>[][];
+} => ({
   allOutflows: allOutflowsIncomesArray.map(m => Array.isArray(m) ? m.filter(d => d?.isExpense) : []),
   allIncomes: allOutflowsIncomesArray.map(m => Array.isArray(m) ? m.filter(d => d && !d.isExpense) : []),
+  allExpenses: allOutflowsIncomesArray.map(m => Array.isArray(m) ? m.filter(d => d?.isExpense && (d?.purpose === 'expense' || d?.purpose === 'tax' || (!d?.purpose && (d?.categoryTag as {index?: number} | undefined)?.index !== 8))) : []),
+  allInvestments: allOutflowsIncomesArray.map(m => Array.isArray(m) ? m.filter(d => d?.purpose === 'investment' || (!d?.purpose && d?.isExpense && (d?.categoryTag as {index?: number} | undefined)?.index === 8)) : []),
+  allTransfers: allOutflowsIncomesArray.map(m => Array.isArray(m) ? m.filter(d => d?.purpose === 'transfer') : []),
 });

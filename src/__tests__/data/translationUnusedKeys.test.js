@@ -48,6 +48,7 @@ const DYNAMIC_NAMESPACES = [
     /^leaderboard\.rankings\.descriptions\./,
     /^leaderboard\.rankings\.motivational\./,
     /^dataImport\.bankNames\./,
+    /^transactionPurpose\./,
     // Whole subtree enumerated via Object.entries/keys/values elsewhere
     // (src/data/tagTranslations.ts, src/sections/Knowledge.tsx) rather than
     // read leaf-by-leaf — every key under these is "used" in bulk.

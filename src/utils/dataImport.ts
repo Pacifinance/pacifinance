@@ -9,6 +9,7 @@
 
 import Papa from 'papaparse';
 import { matchCategory, matchCategoryByMCC } from './categoryMatcher';
+import { inferTransactionPurpose } from './transactionPurpose';
 
 // ═══════════════════════════════════════════
 // File Parsing
@@ -712,6 +713,7 @@ export const toAPIFormat = (tx, paymentType) => ({
     date: tx.date,
     amount: tx.amount,
     direction: tx.isOutflow ? 'outflow' : 'income',
+    purpose: inferTransactionPurpose(tx.isOutflow ? 'outflow' : 'income', tx.categoryIndex, tx.purpose),
     payment_type: tx.isOutflow ? (paymentType ?? 1) : 0,
     category_tag: tx.categoryIndex,
     notes: tx.notes,

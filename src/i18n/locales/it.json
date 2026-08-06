@@ -3144,5 +3144,6 @@
         "temporaryExplanation": "Confronto temporaneo per questa analisi: non modifica la visualizzazione predefinita salvata nelle impostazioni.",
         "settingsTitle": "Visualizzazione predefinita Bitcoin e crypto",
         "settingsDescription": "Scegli come raggruppare Bitcoin nella dashboard. Nei grafici potrai cambiare vista temporaneamente quando possiedi entrambe le categorie."
-    }
+    },
+    "transactionPurpose": {"label":"Tipo di movimento","expense":"Spesa","investment":"Investimento","transfer":"Trasferimento","debt":"Debito","tax":"Tassa","other":"Altro"}
 }

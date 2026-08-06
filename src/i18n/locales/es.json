@@ -3050,5 +3050,6 @@
         "temporaryExplanation": "Comparación temporal para este análisis: no cambia la vista predeterminada guardada en los ajustes.",
         "settingsTitle": "Vista predeterminada de Bitcoin y cripto",
         "settingsDescription": "Elige cómo agrupar Bitcoin en el panel. Los gráficos pueden cambiarse temporalmente cuando posees ambas categorías."
-    }
+    },
+    "transactionPurpose": {"label":"Tipo de movimiento","expense":"Gasto","investment":"Inversión","transfer":"Transferencia","debt":"Deuda","tax":"Impuesto","other":"Otro"}
 }

@@ -2,6 +2,7 @@ import express from "express"
 
 import db from "../../db/db"
 import common from "../common"
+import { inferTransactionPurpose, isPurposeCompatible } from "../../domain/transactions"
 
 /* === /recurring-transactions/* === */
 
@@ -17,6 +18,7 @@ function parseRecurringPayload(body: Record<string, unknown>) {
     const amount = common.roundCurrency(Number(body.amount))
     const paymentType = Number(body.payment_type ?? 0)
     const categoryTag = Number(body.category_tag)
+    const purpose = inferTransactionPurpose(isExpense ? "outflow" : "income", categoryTag, body.purpose)
     const rawUserCategoryId = body.user_category_id
     const userCategoryId = (rawUserCategoryId !== null && rawUserCategoryId !== undefined && Number.isFinite(Number(rawUserCategoryId)))
         ? Number(rawUserCategoryId) : null
@@ -28,9 +30,10 @@ function parseRecurringPayload(body: Record<string, unknown>) {
     const paymentTypeValid = !isExpense || (Number.isFinite(paymentType) && paymentType !== 0)
     const dayValid = Number.isFinite(dayOfMonth) && dayOfMonth >= MIN_DAY && dayOfMonth <= MAX_DAY
 
-    if (!amountValid || !categoryValid || !paymentTypeValid || !dayValid) return null
+    if (!amountValid || !categoryValid || !paymentTypeValid || !dayValid || purpose === null
+        || !isPurposeCompatible(isExpense ? "outflow" : "income", purpose)) return null
 
-    return {isExpense, amount, notes, paymentType, categoryTag, userCategoryId, dayOfMonth}
+    return {isExpense, purpose, amount, notes, paymentType, categoryTag, userCategoryId, dayOfMonth}
 }
 
 recurringTransactionsRouter.post("/get", async (req, res) => {

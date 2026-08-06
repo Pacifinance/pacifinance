@@ -37,6 +37,7 @@ import CategoryPicker from '../components/CategoryPicker';
 import { renderBalanceSourceMenuItems } from '../components/multiInsert/balanceSourceMenu';
 import { useListViewMode } from '../hooks/useListViewMode';
 import { STORAGE_KEYS } from '../constants/storageKeys';
+import { inferTransactionPurpose } from '../utils/transactionPurpose';
 import {
   ViewSwitch, ViewButton, TableScroll, CardViewWrap,
   FilterToggleRow, FilterBadge, FilterPanel, FilterRow, FilterLabel, FilterInlineRow, ClearFiltersBtn,
@@ -839,6 +840,7 @@ export default function OutflowSection({
   const [listLayout, setListLayout] = useListViewMode(STORAGE_KEYS.OUTFLOW_LIST_VIEW_MODE);
   const [selectedChartCategory, setSelectedChartCategory] = React.useState(null);
   const [showMobileFilters, setShowMobileFilters] = React.useState(false);
+  const [purposeFilter, setPurposeFilter] = React.useState('');
 
   // Inline editing state
   const [editingAdd, setEditingAdd] = React.useState(null);
@@ -877,6 +879,7 @@ export default function OutflowSection({
       amount: String(parseFloat(displayAmount.toFixed(2))),
       note: add.notes || "",
       date: add.date ? String(add.date).slice(0, 10) : "",
+      purpose: inferTransactionPurpose('outflow', add.categoryTag?.index ?? 0, add.purpose),
       sharedEnabled: Boolean(shared),
       sharedMethod: shared && Number.isInteger(ratio) && ratio >= 2 ? 'people' : 'share',
       sharedPeopleCount: inferredPeople,
@@ -925,7 +928,11 @@ export default function OutflowSection({
     <SharedEditPanel theme={theme}>
       <label className="shared-toggle">
         <input type="checkbox" checked={Boolean(editValues.sharedEnabled)}
-          onChange={(e) => setEditValues(prev => ({...prev, sharedEnabled: e.target.checked}))} disabled={isSaving} />
+          onChange={(e) => setEditValues(prev => ({
+            ...prev,
+            sharedEnabled: e.target.checked,
+            purpose: e.target.checked ? 'expense' : prev.purpose,
+          }))} disabled={isSaving} />
         <FontAwesomeIcon icon={faUsers} />
         {translations.insert.outflowSection.sharedExpense.activeLabel}
       </label>
@@ -952,6 +959,24 @@ export default function OutflowSection({
       )}
     </SharedEditPanel>
   );
+
+  const renderPurposeSelect = () => {
+    const purposeTranslations = translations.transactionPurpose;
+    return (
+      <InlineSelect
+        theme={theme}
+        value={editValues.purpose || 'expense'}
+        onChange={(event) => setEditValues(prev => ({...prev, purpose: event.target.value}))}
+        disabled={isSaving || editValues.sharedEnabled}
+        aria-label={purposeTranslations.label}
+        title={purposeTranslations.label}
+      >
+        {['expense', 'investment', 'transfer', 'debt', 'tax', 'other'].map((purpose) => (
+          <option key={purpose} value={purpose}>{purposeTranslations[purpose]}</option>
+        ))}
+      </InlineSelect>
+    );
+  };
 
   const handleSort = (column) => {
     if (sortColumn === column) {
@@ -1047,6 +1072,7 @@ export default function OutflowSection({
           translateTag(add.categoryTag?.label, language, 'expense') === outflowCategoryFilter) &&
         (!outflowTypologyFilter ||
           translateTag(add.paymentType?.label, language, 'payment') === outflowTypologyFilter) &&
+        (!purposeFilter || inferTransactionPurpose('outflow', add.categoryTag?.index ?? 0, add.purpose) === purposeFilter) &&
         (!outflowNoteFilter ||
           (add.notes &&
             add.notes.toLowerCase().includes(outflowNoteFilter.toLowerCase()))) &&
@@ -1060,6 +1086,7 @@ export default function OutflowSection({
     outflowDateFilterStart,
     outflowNoteFilter,
     outflowTypologyFilter,
+    purposeFilter,
   ]);
 
   const sortOutflowRows = React.useCallback((rows) => {
@@ -1248,7 +1275,7 @@ export default function OutflowSection({
 
     const totals = getTotals(filtered, chosenOutflowsToShow);
     const filtersActive =
-      outflowCategoryFilter || outflowTypologyFilter || outflowNoteFilter ||
+      outflowCategoryFilter || outflowTypologyFilter || outflowNoteFilter || purposeFilter ||
       outflowDateFilterStart || outflowDateFilterEnd;
     const rows = [
       ...filtered.map((add, index) => {
@@ -1288,6 +1315,7 @@ export default function OutflowSection({
                         parentValue: categoryValue,
                         userCategoryId,
                         userCategoryLabel,
+                        purpose: inferTransactionPurpose('outflow', Number(categoryKey)),
                       }))
                     }
                     onCreateCategory={onCreateCategory}
@@ -1330,6 +1358,7 @@ export default function OutflowSection({
                   maxLength={64}
                 />
                 {renderSharedEditControls()}
+                {renderPurposeSelect()}
               </td>
               <td>
                 <InlineInput
@@ -1444,7 +1473,7 @@ export default function OutflowSection({
     const filtered = sortOutflowRows(applyTableFilters(chosenOutflowsToShow));
     const totals = getTotals(filtered, chosenOutflowsToShow);
     const filtersActive =
-      outflowCategoryFilter || outflowTypologyFilter || outflowNoteFilter ||
+      outflowCategoryFilter || outflowTypologyFilter || outflowNoteFilter || purposeFilter ||
       outflowDateFilterStart || outflowDateFilterEnd;
 
     return (
@@ -1484,6 +1513,7 @@ export default function OutflowSection({
                         parentValue: categoryValue,
                         userCategoryId,
                         userCategoryLabel,
+                        purpose: inferTransactionPurpose('outflow', Number(categoryKey)),
                       }))
                     }
                     onCreateCategory={onCreateCategory}
@@ -1526,6 +1556,7 @@ export default function OutflowSection({
                     max={currentDate}
                   />
                   {renderSharedEditControls()}
+                  {renderPurposeSelect()}
                 </CardEditGrid>
                 <CardActionsRow>
                   <ActionBtn
@@ -1665,12 +1696,13 @@ export default function OutflowSection({
   const topCategory = categoryBreakdown[0] || null;
   const averageOutflow = filteredOutflows.length > 0 ? totals.totalFiltered / filteredOutflows.length : 0;
   const filtersActive =
-    outflowCategoryFilter || outflowTypologyFilter || outflowNoteFilter ||
+    outflowCategoryFilter || outflowTypologyFilter || outflowNoteFilter || purposeFilter ||
     outflowDateFilterStart || outflowDateFilterEnd;
   const activeFilterCount = [
     outflowCategoryFilter,
     outflowTypologyFilter,
     outflowNoteFilter,
+    purposeFilter,
     outflowDateFilterStart || outflowDateFilterEnd,
   ].filter(Boolean).length;
   const mobileDateRange = { min: dateFilterMin, max: dateFilterMax };
@@ -1790,11 +1822,27 @@ export default function OutflowSection({
                 parentValue: categoryValue,
                 userCategoryId,
                 userCategoryLabel,
+                purpose: inferTransactionPurpose('outflow', Number(categoryKey)),
               })
             }
             onCreateCategory={onCreateCategory}
             placeholder={translations.insert.outflowSection.placeholderCategory}
           />
+        </FormField>
+
+        <FormField>
+          <FieldLabel theme={theme}>{translations.transactionPurpose.label}</FieldLabel>
+          <Select
+            value={categoryOutflow.purpose || inferTransactionPurpose('outflow', Number(categoryOutflow.key))}
+            onChange={(event) => setCategoryOutflow((current) => ({...current, purpose: event.target.value}))}
+            disabled={isSharedExpense}
+            sx={selectSx}
+            MenuProps={getMuiSelectMenuProps(theme)}
+          >
+            {['expense', 'investment', 'transfer', 'debt', 'tax', 'other'].map((purpose) => (
+              <MenuItem key={purpose} value={purpose}>{translations.transactionPurpose[purpose]}</MenuItem>
+            ))}
+          </Select>
         </FormField>
 
         {/* Payment Type */}
@@ -1854,7 +1902,11 @@ export default function OutflowSection({
             type="button"
             theme={theme}
             $active={isSharedExpense}
-            onClick={() => setIsSharedExpense?.(!isSharedExpense)}
+            onClick={() => {
+              const nextShared = !isSharedExpense;
+              setIsSharedExpense?.(nextShared);
+              if (nextShared) setCategoryOutflow((current) => ({...current, purpose: 'expense'}));
+            }}
           >
             <FontAwesomeIcon icon={isSharedExpense ? faTimes : faUsers} />
             {isSharedExpense
@@ -2021,6 +2073,16 @@ export default function OutflowSection({
           </HeaderMain>
           <HeaderActions>
             <ThemedSelect
+              value={purposeFilter}
+              onChange={(event) => setPurposeFilter(event.target.value)}
+              aria-label={translations.transactionPurpose.label}
+            >
+              <option value="">{translations.general.all}</option>
+              {['expense', 'investment', 'transfer', 'debt', 'tax', 'other'].map((purpose) => (
+                <option key={purpose} value={purpose}>{translations.transactionPurpose[purpose]}</option>
+              ))}
+            </ThemedSelect>
+            <ThemedSelect
               value={selectedOutflowsMonth}
               onChange={handleOutflowsMonthChange}
             >
@@ -2167,6 +2229,7 @@ export default function OutflowSection({
                       setOutflowCategoryFilter('');
                       setOutflowTypologyFilter('');
                       setOutflowNoteFilter('');
+                      setPurposeFilter('');
                       setOutflowDateFilterStart('');
                       setOutflowDateFilterEnd('');
                     }}

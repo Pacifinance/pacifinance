@@ -3,21 +3,22 @@ import express from "express"
 import { ExtDate } from "../../libs/datelib"
 
 import db from "../../db/db"
-import { EXPENSE_BALANCE_ASSET_KEYS, EXPENSE_BALANCE_DETAIL_TYPES, ExpenseBalanceSource } from "../../db/models/transactions"
+import { TRANSACTION_BALANCE_ASSET_KEYS, TRANSACTION_BALANCE_DETAIL_TYPES, TransactionBalanceSource } from "../../db/models/transactions"
 import type { ImportedReimbursementLink, ImportedSharedExpenseLink } from "../../db/models/sharedExpenses"
 import common from "../common"
+import { inferTransactionPurpose, isPurposeCompatible } from "../../domain/transactions"
 
 /**
  * Sanitizes the optional balance source attached to a transaction. Returns a
- * valid ExpenseBalanceSource or null (invalid/missing sources are dropped
+ * valid TransactionBalanceSource or null (invalid/missing sources are dropped
  * silently: the source is an optional enrichment, never a reason to reject
  * the transaction itself).
  */
-function sanitizeBalanceSource(raw: any): ExpenseBalanceSource | null {
+function sanitizeBalanceSource(raw: any): TransactionBalanceSource | null {
     if (!raw || typeof raw !== "object") return null
     const asset_key = raw.asset_key
-    if (!EXPENSE_BALANCE_ASSET_KEYS.includes(asset_key)) return null
-    const detail_type = EXPENSE_BALANCE_DETAIL_TYPES.includes(raw.detail_type) ? raw.detail_type : null
+    if (!TRANSACTION_BALANCE_ASSET_KEYS.includes(asset_key)) return null
+    const detail_type = TRANSACTION_BALANCE_DETAIL_TYPES.includes(raw.detail_type) ? raw.detail_type : null
     const detail_id_num = Number(raw.detail_id)
     const detail_id = (detail_type !== null && Number.isFinite(detail_id_num)) ? detail_id_num : null
     // A detail type without an id (or vice versa) is meaningless — keep only the parent key
@@ -39,10 +40,13 @@ function isTransactionValid(data: any) {
     data.amount = common.roundCurrency(rawAmount);
     if (data.direction !== undefined && !["income", "outflow"].includes(data.direction)) return false
     data.is_expense = data.direction !== undefined ? data.direction === "outflow" : Boolean(data.is_expense);
+    data.direction = data.is_expense ? "outflow" : "income"
+    data.purpose = inferTransactionPurpose(data.direction, Number(data.category_tag), data.purpose)
+    if (data.purpose === null || !isPurposeCompatible(data.direction, data.purpose)) return false
     if (data.shared_expense !== undefined) {
         const ownShare = Number(data.shared_expense?.own_share)
         const cashAmount = Number(data.cash_amount)
-        if (!data.is_expense || !Number.isFinite(ownShare) || ownShare < 0
+        if (!data.is_expense || data.purpose !== "expense" || !Number.isFinite(ownShare) || ownShare < 0
             || !Number.isFinite(cashAmount) || cashAmount <= ownShare) return false
         data.amount = common.roundCurrency(ownShare)
         data.cash_amount = common.roundCurrency(cashAmount)
@@ -50,11 +54,13 @@ function isTransactionValid(data: any) {
     if (data.reimbursement_receivable_id !== undefined && data.reimbursement_receivable_id !== null) {
         if (data.is_expense || !Number.isFinite(Number(data.reimbursement_receivable_id))) return false
         data.exclude_from_statistics = true
+        data.purpose = "refund"
     }
     if (data.reimbursement_shared_expense_ref !== undefined) {
         if (data.is_expense || typeof data.reimbursement_shared_expense_ref !== "string"
             || data.reimbursement_shared_expense_ref.length > 40) return false
         data.exclude_from_statistics = true
+        data.purpose = "refund"
     }
     // If the date field is not set or invalid, set it to now
     const now = ExtDate.fromNow()
@@ -100,7 +106,7 @@ transactionsRouter.post("/add", async (req, res) => {
     const doc = await db.transactions.insertNew(
         req.userId as string, transaction.date, transaction.amount, transaction.is_expense,
         transaction.notes, transaction.payment_type, transaction.category_tag, user_category_id,
-        sanitizeBalanceSource(transaction.balance_source)
+        sanitizeBalanceSource(transaction.balance_source), transaction.purpose
     );
     // Check if the document was inserted successfully. Send
     // status code 500 (Internal Server Error) if it failed
@@ -142,6 +148,7 @@ transactionsRouter.post("/update", async (req, res) => {
         date: validationExpense.date,
         amount: validationExpense.amount,
         isExpense: validationExpense.is_expense,
+        purpose: validationExpense.purpose,
         notes: validationExpense.notes,
         paymentType: validationExpense.payment_type,
         categoryTag: validationExpense.category_tag,
@@ -177,6 +184,7 @@ transactionsRouter.post("/batch-add", async (req, res) => {
             date: transaction.date as Date,
             amount: transaction.amount as number,
             isExpense: transaction.is_expense as boolean,
+            purpose: transaction.purpose,
             notes: transaction.notes as string,
             paymentType: transaction.payment_type as number,
             categoryTag: transaction.category_tag as number,

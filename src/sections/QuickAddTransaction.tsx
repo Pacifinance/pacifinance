@@ -38,6 +38,7 @@ import { detectPlatform } from '../utils/platformDetection';
 import { useLocalizedNavigate } from '../hooks/useLocalizedNavigate';
 import { ASSET_KEYS, buildSnapshotWithDeltas } from '../constants/balanceSchema';
 import CategoryPicker from '../components/CategoryPicker';
+import { inferTransactionPurpose } from '../utils/transactionPurpose';
 import {
   Overlay as ModalOverlay, ModalContainer, ModalHeader, ModalTitle, CloseButton, ModalBody,
 } from '../components/multiInsert/SharedStyles';
@@ -595,6 +596,7 @@ export default function QuickAddTransaction({ theme, showFab = true, menuOpen: c
           date: todayLocalISO(),
           amount: toEUR(amountNumber),
           direction: isOutflow ? 'outflow' : 'income',
+          purpose: inferTransactionPurpose(isOutflow ? 'outflow' : 'income', categoryIndex),
           payment_type: isOutflow ? singlePaymentIndex : 0,
           category_tag: categoryIndex,
           user_category_id: userCategoryId,

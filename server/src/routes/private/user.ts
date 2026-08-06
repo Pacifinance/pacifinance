@@ -386,6 +386,7 @@ userRouter.post("/alldata", async (req, res) => {
                 date: transaction.date,
                 amount: transaction.amount,
                 direction: transaction.direction,
+                purpose: transaction.purpose,
                 notes: transaction.notes,
                 paymentType: (transaction.paymentType as any)?.label,
                 categoryTag: (transaction.categoryTag as any)?.label

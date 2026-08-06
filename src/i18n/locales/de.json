@@ -3048,5 +3048,6 @@
         "temporaryExplanation": "Temporärer Vergleich für diese Analyse: Die in den Einstellungen gespeicherte Standardansicht bleibt unverändert.",
         "settingsTitle": "Standardansicht für Bitcoin und Krypto",
         "settingsDescription": "Lege fest, wie Bitcoin im Dashboard gruppiert wird. Diagramme lassen sich vorübergehend umschalten, wenn du beide Kategorien besitzt."
-    }
+    },
+    "transactionPurpose": {"label":"Bewegungsart","expense":"Ausgabe","investment":"Investition","transfer":"Übertragung","debt":"Schuld","tax":"Steuer","other":"Sonstiges"}
 }

@@ -54,7 +54,13 @@ export type BalanceEntry = BalanceMonthDto;
 
 export interface Outflows {
   allOutflows: TransactionDto[][];
+  allExpenses: TransactionDto[][];
+  allInvestments: TransactionDto[][];
+  allTransfers: TransactionDto[][];
   outflowsArray: number[];
+  expensesArray: number[];
+  investmentsArray: number[];
+  transfersArray: number[];
   totalOutflowsPerCategoryPerMonth: Record<string, Record<string, number>>;
   totalOutflowsMonth?: number;
 }

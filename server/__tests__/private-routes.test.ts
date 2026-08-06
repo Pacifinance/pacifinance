@@ -179,7 +179,8 @@ describe("private backend routes", () => {
             0,
             3,
             null,
-            null // balance_source: not provided in the payload
+            null, // balance_source: not provided in the payload
+            "income",
         )
     })
 
@@ -199,8 +200,37 @@ describe("private backend routes", () => {
 
         expect(response.status).toBe(200)
         expect(mockDb.transactions.insertNew).toHaveBeenCalledWith(
-            "user-uuid", expect.any(Date), 10, true, "legacy client", 1, 3, null, null,
+            "user-uuid", expect.any(Date), 10, true, "legacy client", 1, 3, null, null, "expense",
         )
+    })
+
+    it("infers investments and preserves an explicit transfer purpose", async () => {
+        const add = (category_tag: number, purpose?: string) => request(app, "/api/transactions/add", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {transaction: {
+                date: "2026-08-01",
+                amount: 100,
+                direction: "outflow",
+                payment_type: 1,
+                category_tag,
+                notes: "",
+                ...(purpose ? {purpose} : {}),
+            }},
+        })
+
+        await expect(add(8)).resolves.toMatchObject({status: 200})
+        expect(mockDb.transactions.insertNew).toHaveBeenLastCalledWith(
+            "user-uuid", expect.any(Date), 100, true, "", 1, 8, null, null, "investment",
+        )
+
+        await expect(add(3, "transfer")).resolves.toMatchObject({status: 200})
+        expect(mockDb.transactions.insertNew).toHaveBeenLastCalledWith(
+            "user-uuid", expect.any(Date), 100, true, "", 1, 3, null, null, "transfer",
+        )
+
+        await expect(add(3, "invalid-purpose")).resolves.toMatchObject({status: 400})
+        await expect(add(3, "income")).resolves.toMatchObject({status: 400})
     })
 
     it("updates a transaction and its shared split through one backend operation", async () => {
@@ -352,14 +382,14 @@ describe("private backend routes", () => {
         expect(response.status).toBe(200)
         expect(mockDb.transactions.insertNew).toHaveBeenLastCalledWith(
             "user-uuid", expect.any(Date), 10, true, "", 1, 3, null,
-            {asset_key: "bank", detail_type: "liquidity", detail_id: 7}
+            {asset_key: "bank", detail_type: "liquidity", detail_id: 7}, "expense",
         )
 
         // Invalid asset key: the source is dropped, the transaction still inserts
         response = await addTransaction({asset_key: "not-an-asset", detail_type: "liquidity", detail_id: 7})
         expect(response.status).toBe(200)
         expect(mockDb.transactions.insertNew).toHaveBeenLastCalledWith(
-            "user-uuid", expect.any(Date), 10, true, "", 1, 3, null, null
+            "user-uuid", expect.any(Date), 10, true, "", 1, 3, null, null, "expense",
         )
 
         // Detail type without id: only the parent key survives
@@ -367,7 +397,7 @@ describe("private backend routes", () => {
         expect(response.status).toBe(200)
         expect(mockDb.transactions.insertNew).toHaveBeenLastCalledWith(
             "user-uuid", expect.any(Date), 10, true, "", 1, 3, null,
-            {asset_key: "cash", detail_type: null, detail_id: null}
+            {asset_key: "cash", detail_type: null, detail_id: null}, "expense",
         )
     })
 

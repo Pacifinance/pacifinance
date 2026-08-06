@@ -257,6 +257,7 @@ export const useDemoServices = () => {
         saveRecurring: async (data): Promise<RecurringTransactionDto> => ({
           id: data.id ?? -Date.now(),
           direction: data.direction,
+          purpose: data.purpose ?? (data.direction === 'outflow' ? 'expense' : 'income'),
           amount: data.amount,
           notes: data.notes ?? '',
           paymentType: null,
@@ -269,6 +270,7 @@ export const useDemoServices = () => {
         setRecurringActive: async (data): Promise<RecurringTransactionDto> => ({
           id: data.id,
           direction: 'outflow',
+          purpose: 'expense',
           amount: 0,
           notes: '',
           paymentType: null,

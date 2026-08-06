@@ -209,7 +209,13 @@ export const isNewUser = (userData: UserDataLike): boolean => {
 
 // Expense and income selectors
 export const getAllOutflows = (userData: UserDataLike): TransactionDto[][] => userData?.outflows?.allOutflows || [];
+export const getAllExpenses = (userData: UserDataLike): TransactionDto[][] => userData?.outflows?.allExpenses || [];
+export const getAllInvestments = (userData: UserDataLike): TransactionDto[][] => userData?.outflows?.allInvestments || [];
+export const getAllTransfers = (userData: UserDataLike): TransactionDto[][] => userData?.outflows?.allTransfers || [];
 export const getOutflowsArray = (userData: UserDataLike): number[] => userData?.outflows?.outflowsArray || [];
+export const getExpensesArray = (userData: UserDataLike): number[] => userData?.outflows?.expensesArray || [];
+export const getInvestmentsArray = (userData: UserDataLike): number[] => userData?.outflows?.investmentsArray || [];
+export const getTransfersArray = (userData: UserDataLike): number[] => userData?.outflows?.transfersArray || [];
 export const getTotalOutflowsPerCategoryPerMonth = (userData: UserDataLike): Record<string, Record<string, number>> => userData?.outflows?.totalOutflowsPerCategoryPerMonth || {};
 
 export type CategoryBreakdown = Record<string, {
@@ -380,6 +386,15 @@ export const getTotalOutflowsCurrentMonth = (userData: UserDataLike): number => 
   }
   return 0;
 };
+
+export const getTotalExpensesCurrentMonth = (userData: UserDataLike): number =>
+  getExpensesArray(userData)[0] || 0;
+
+export const getTotalInvestmentsCurrentMonth = (userData: UserDataLike): number =>
+  getInvestmentsArray(userData)[0] || 0;
+
+export const getTotalTransfersCurrentMonth = (userData: UserDataLike): number =>
+  getTransfersArray(userData)[0] || 0;
 
 export const getTotalIncomesCurrentMonth = (userData: UserDataLike): number => {
   if (typeof userData?.incomes?.totalIncomesMonth === 'number') {

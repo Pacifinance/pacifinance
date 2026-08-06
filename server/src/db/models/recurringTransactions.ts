@@ -4,9 +4,10 @@ import { ExtDate, toDateOnly } from "../../libs/datelib"
 
 import tags from "./tags"
 import { encryptField, decryptField } from "../crypto"
+import type { TransactionPurpose } from "../../domain/transactions"
 
 const RECURRING_SELECT = `
-    id, is_expense, amount, notes, day_of_month, active, next_run_date,
+    id, is_expense, purpose, amount, notes, day_of_month, active, next_run_date,
     payment_type:tags!recurring_transactions_payment_type_tag_id_fkey(label, client_index, type),
     category_tag:tags!recurring_transactions_category_tag_id_fkey(label, client_index, type),
     user_category:user_categories(id, label)
@@ -17,6 +18,7 @@ type TagJoin = {label: string, client_index: number, type: number} | null
 interface RecurringRow {
     id: number
     is_expense: boolean
+    purpose: TransactionPurpose
     amount: number
     notes: string
     day_of_month: number
@@ -40,6 +42,7 @@ function toRecurring(rawRow: unknown) {
     return {
         id: row.id,
         direction: row.is_expense ? "outflow" as const : "income" as const,
+        purpose: row.purpose ?? (row.is_expense ? "expense" : "income"),
         amount: row.amount,
         notes: decryptField(row.notes),
         paymentType: mapTagJoin(row.payment_type),
@@ -53,6 +56,7 @@ function toRecurring(rawRow: unknown) {
 
 export type RecurringInput = {
     isExpense: boolean
+    purpose: TransactionPurpose
     amount: number
     notes: string
     paymentType: number // client index, ignored for incomes
@@ -115,6 +119,7 @@ async function insertRecurring(user_id: string, input: RecurringInput) {
     const {data, error} = await supabase.from("recurring_transactions").insert({
         user_id,
         is_expense: input.isExpense,
+        purpose: input.purpose,
         amount: input.amount,
         notes: encryptField(input.notes),
         payment_type_tag_id: resolved.paymentTypeId,
@@ -142,6 +147,7 @@ async function updateRecurring(user_id: string, id: number, input: RecurringInpu
     const {data, error} = await supabase.from("recurring_transactions")
         .update({
             is_expense: input.isExpense,
+            purpose: input.purpose,
             amount: input.amount,
             notes: encryptField(input.notes),
             payment_type_tag_id: resolved.paymentTypeId,
@@ -203,6 +209,7 @@ type DueRow = {
     id: number
     user_id: string
     is_expense: boolean
+    purpose: TransactionPurpose
     amount: number
     notes: string | null
     payment_type_tag_id: number | null
@@ -219,7 +226,7 @@ type DueRow = {
  */
 async function getDueRecurring(now: Date) {
     const {data, error} = await supabase.from("recurring_transactions")
-        .select("id, user_id, is_expense, amount, notes, payment_type_tag_id, category_tag_id, user_category_id, day_of_month")
+        .select("id, user_id, is_expense, purpose, amount, notes, payment_type_tag_id, category_tag_id, user_category_id, day_of_month")
         .eq("active", true)
         .lte("next_run_date", toDateOnly(now))
     if (error) console.error("recurringTransactions.getDueRecurring: failed to read due templates", error)
@@ -239,6 +246,7 @@ async function runDueTemplate(row: DueRow, runDate: Date) {
         occurred_at: runDate.toISOString(),
         amount: row.amount,
         is_expense: row.is_expense,
+        purpose: row.purpose,
         notes: row.notes, // already encrypted at rest, copied as-is
         payment_type_tag_id: row.payment_type_tag_id,
         category_tag_id: row.category_tag_id,

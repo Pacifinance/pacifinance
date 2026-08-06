@@ -427,6 +427,20 @@ describe('buildMonthlyArrays', () => {
     const result = buildMonthlyArrays(data);
     expect(result.incomesArray[0]).toBe(80);
   });
+
+  it('separates spending, investments, and transfers without changing total outflows', () => {
+    const result = buildMonthlyArrays([[
+      {isExpense: true, purpose: 'expense', amount: 100},
+      {isExpense: true, purpose: 'investment', amount: 250},
+      {isExpense: true, purpose: 'transfer', amount: 50},
+      {isExpense: true, purpose: 'tax', amount: 20},
+    ]]);
+
+    expect(result.outflowsArray[0]).toBe(420);
+    expect(result.expensesArray[0]).toBe(120);
+    expect(result.investmentsArray[0]).toBe(250);
+    expect(result.transfersArray[0]).toBe(50);
+  });
 });
 
 // ═══════════════════════════════════════════
@@ -548,5 +562,17 @@ describe('splitIncomesOutflows', () => {
     const result = splitIncomesOutflows(data);
     expect(result.allOutflows[0]).toHaveLength(1);
     expect(result.allIncomes[0]).toEqual([]);
+  });
+
+  it('builds purpose-specific transaction collections', () => {
+    const result = splitIncomesOutflows([[
+      {isExpense: true, purpose: 'expense'},
+      {isExpense: true, purpose: 'investment'},
+      {isExpense: true, purpose: 'transfer'},
+    ]]);
+
+    expect(result.allExpenses[0]).toHaveLength(1);
+    expect(result.allInvestments[0]).toHaveLength(1);
+    expect(result.allTransfers[0]).toHaveLength(1);
   });
 });

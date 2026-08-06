@@ -193,8 +193,8 @@ export const UserProvider = ({ children }) => {
 
             //************************************* EXPENSES AND INCOMES **********************************************/
             const totalOutflowsPerCategoryPerMonth = aggregateOutflowsByCategory(allOutflowsIncomesArray);
-            const { incomesArray, outflowsArray } = buildMonthlyArrays(allOutflowsIncomesArray);
-            const { allOutflows, allIncomes } = splitIncomesOutflows(allOutflowsIncomesArray);
+            const { incomesArray, outflowsArray, expensesArray, investmentsArray, transfersArray } = buildMonthlyArrays(allOutflowsIncomesArray);
+            const { allOutflows, allIncomes, allExpenses, allInvestments, allTransfers } = splitIncomesOutflows(allOutflowsIncomesArray);
 
             //************************************* PROCESSED DATA **********************************************/
             const last12MonthsData = buildChartData(balancesData, currentDate);
@@ -213,7 +213,11 @@ export const UserProvider = ({ children }) => {
               profile: userProfile.profile,
               balances: balancesData,
               last12MonthsData,
-              outflows: { allOutflows, outflowsArray, totalOutflowsPerCategoryPerMonth },
+              outflows: {
+                allOutflows, allExpenses, allInvestments, allTransfers,
+                outflowsArray, expensesArray, investmentsArray, transfersArray,
+                totalOutflowsPerCategoryPerMonth,
+              },
               incomes: { allIncomes, incomesArray },
               tags,
               customCategories,

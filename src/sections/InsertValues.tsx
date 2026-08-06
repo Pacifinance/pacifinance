@@ -44,6 +44,7 @@ import { addCurrency, roundCurrency } from '../utils/money';
 import { findLikelyDuplicates } from '../utils/duplicateDetection';
 import { inferPaymentTypeLabel, suggestNoteFromHistory } from '../utils/transactionNoteSuggestions';
 import { learnFromTransaction } from '../utils/categoryPatterns';
+import { inferTransactionPurpose } from '../utils/transactionPurpose';
 const PastDateBalanceChoiceModal = lazy(() => import('./PastDateBalanceChoiceModal'));
 const EditTransactionModal = lazy(() => import('./EditTransactionModal'));
 const DuplicateWarningModal = lazy(() => import('./DuplicateWarningModal'));
@@ -1869,6 +1870,7 @@ export default function InsertValue({
         editedValues.categoryKey,
         editedValues.userCategoryId ?? null,
         balanceSource,
+        editedValues.purpose ?? originalAdd?.purpose,
       );
       if (!inExJson.transaction.balance_source && originalAdd?.balanceAssetKey) {
         inExJson.transaction.balance_source = {
@@ -1981,13 +1983,15 @@ export default function InsertValue({
     };
   };
 
-  const createInExJson = (isOutflow, date, amount, notes, payment_type, category_tag, user_category_id = null, balanceSourceLabel = null) => {
+  const createInExJson = (isOutflow, date, amount, notes, payment_type, category_tag, user_category_id = null, balanceSourceLabel = null, purpose = undefined) => {
     const numericAmount = Number(amount) || 0;
+    const direction = isOutflow ? 'outflow' : 'income';
     return {
       transaction: {
         date: date,
         amount: toEUR(numericAmount),
-        direction: isOutflow ? 'outflow' : 'income',
+        direction,
+        purpose: inferTransactionPurpose(direction, Number(category_tag), purpose),
         payment_type: payment_type,
         category_tag: category_tag,
         user_category_id: user_category_id,
@@ -2017,6 +2021,7 @@ export default function InsertValue({
         categoryOutflow.key,
         categoryOutflow.userCategoryId ?? null,
         selectedOption,
+        categoryOutflow.purpose,
       );
       // Only reset note and value - keep category, typology, date and balance source for quick re-entry
       setNoteOutflowAreaValue("");

@@ -190,6 +190,7 @@ export function prepareUserDataForExport(userData, _language = 'en', filterOptio
       date: new Date(transaction.date).toLocaleDateString(),
       amount: Number(transaction.amount || 0).toFixed(2),
       type: (transaction.direction ?? (transaction.isExpense ? 'outflow' : 'income')) === 'outflow' ? 'Expense' : 'Income',
+      purpose: transaction.purpose ?? ((transaction.direction ?? (transaction.isExpense ? 'outflow' : 'income')) === 'outflow' ? 'expense' : 'income'),
       notes: transaction.notes || '',
       paymentType: transaction.paymentType || 'N/A',
       category: transaction.categoryTag || 'N/A'

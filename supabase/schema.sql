@@ -361,6 +361,10 @@ alter table public.user_investment_holding_history enable row level security;
 alter table public.user_liquidity_account_history enable row level security;
 alter table public.user_goals enable row level security;
 alter table public.deletions enable row level security;
+alter table public.benchmark_runs enable row level security;
+alter table public.benchmark_profile_snapshots enable row level security;
+alter table public.recurring_transactions enable row level security;
+alter table public.shared_expense_receivables enable row level security;
 
 create policy "tags_select_authenticated" on public.tags
   for select to authenticated using (true);
@@ -409,6 +413,15 @@ create policy "user_goals_own_rows" on public.user_goals
 
 create policy "deletions_own_row" on public.deletions
   for select to authenticated using (auth.uid() = user_id);
+
+create policy "benchmark_runs_no_client_access" on public.benchmark_runs
+  for all to anon, authenticated using (false) with check (false);
+create policy "benchmark_snapshots_no_client_access" on public.benchmark_profile_snapshots
+  for all to anon, authenticated using (false) with check (false);
+create policy "recurring_transactions_own_rows" on public.recurring_transactions
+  for all to authenticated using (auth.uid() = user_id) with check (auth.uid() = user_id);
+create policy "shared_receivables_own_rows" on public.shared_expense_receivables
+  for all to authenticated using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
 -- ============================================================
 -- Funzioni RPC — sostituiscono i loop N+1 lato applicativo con query

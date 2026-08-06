@@ -1345,15 +1345,15 @@ export default function OutflowSection({
                 </InlineSelect>
               </td>
               <td>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <div style={{ position: 'relative', width: '100%', minWidth: 0 }}>
                   <InlineInput
                     type="text"
                     theme={theme}
                     value={editValues.amount}
                     onChange={handleEditAmountChange}
-                    style={{ minWidth: 60 }}
+                    style={{ minWidth: 0, width: '100%', paddingRight: '1.8rem' }}
                   />
-                  <span style={{ fontSize: '0.8em', opacity: 0.6 }}>{currencySymbol}</span>
+                  <span style={{ position: 'absolute', right: '0.55rem', top: '50%', transform: 'translateY(-50%)', fontSize: '0.8em', opacity: 0.6, pointerEvents: 'none' }}>{currencySymbol}</span>
                 </div>
               </td>
               <td>
@@ -1374,6 +1374,7 @@ export default function OutflowSection({
                   value={editValues.date}
                   onChange={(e) => setEditValues(prev => ({ ...prev, date: e.target.value }))}
                   max={currentDate}
+                  style={{ colorScheme: theme.mode === 'dark' ? 'dark' : 'light' }}
                 />
               </td>
               <td>
@@ -1538,14 +1539,15 @@ export default function OutflowSection({
                       </option>
                     ))}
                   </InlineSelect>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <div style={{ position: 'relative', width: '100%', minWidth: 0 }}>
                     <InlineInput
                       type="text"
                       theme={theme}
                       value={editValues.amount}
                       onChange={handleEditAmountChange}
+                      style={{ width: '100%', minWidth: 0, paddingRight: '1.8rem' }}
                     />
-                    <span style={{ fontSize: '0.8em', opacity: 0.6 }}>{currencySymbol}</span>
+                    <span style={{ position: 'absolute', right: '0.55rem', top: '50%', transform: 'translateY(-50%)', fontSize: '0.8em', opacity: 0.6, pointerEvents: 'none' }}>{currencySymbol}</span>
                   </div>
                   <InlineInput
                     type="text"
@@ -1556,7 +1558,7 @@ export default function OutflowSection({
                     placeholder={translations.insert.outflowSection.tableColumns?.note || 'Note'}
                   />
                   <InlineInput
-                    type="date"
+                  type="date"
                     theme={theme}
                     value={editValues.date}
                     onChange={(e) => setEditValues(prev => ({ ...prev, date: e.target.value }))}
@@ -2060,6 +2062,7 @@ export default function OutflowSection({
                 <ViewButton
                   type="button"
                   theme={theme}
+                  style={{ colorScheme: theme.mode === 'dark' ? 'dark' : 'light' }}
                   $active={listLayout === 'cards'}
                   onClick={() => setListLayout('cards')}
                 >

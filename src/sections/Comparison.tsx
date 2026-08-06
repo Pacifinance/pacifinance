@@ -830,7 +830,7 @@ const RankingsContainer = styled.div`
   gap: 1.5rem;
   width: 100%;
   max-width: none;
-  .benchmark-unavailable { background: ${props => props.theme.mode === 'dark' ? 'rgba(251,191,36,.08)' : '#fffbeb'}; border: 1px solid ${props => props.theme.mode === 'dark' ? 'rgba(251,191,36,.24)' : '#fde68a'}; border-radius: 12px; padding: 1rem; }
+  .benchmark-unavailable { background: ${props => props.theme.mode === 'dark' ? 'rgba(148,163,184,.08)' : 'rgba(226,232,240,.55)'}; border: 1px solid ${props => props.theme.mode === 'dark' ? 'rgba(148,163,184,.2)' : 'rgba(148,163,184,.35)'}; border-radius: 12px; padding: 1rem; }
   .benchmark-unavailable strong { color: ${props => props.theme.textColor}; display: block; font-size: .9rem; margin-bottom: .25rem; }
   .benchmark-unavailable p { color: ${props => props.theme.textColor}; font-size: .8rem; margin: 0; opacity: .75; }
   
@@ -2297,7 +2297,7 @@ function Comparison({ theme, userData, isHidden}) {
                         data-umami-event="comparison-tab-rankings"
                     >
                         <CompareArrowsIcon />
-                        {translations.comparison.sections.rankings.title}
+                        {translations.comparison.rankingsAccessory.title}
                     </TabButton>
                 </SectionTabs>
 

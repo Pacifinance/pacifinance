@@ -117,13 +117,19 @@ const SharedEditPanel = styled.div`
   display: grid;
   gap: 0.45rem;
   margin-top: 0.45rem;
+  width: min(100%, 340px);
+  max-width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
   padding: 0.55rem;
   border: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(16,185,129,.28)' : 'rgba(5,150,105,.22)'};
   border-radius: 10px;
   background: ${p => p.theme.mode === 'dark' ? 'rgba(16,185,129,.08)' : 'rgba(5,150,105,.06)'};
-  .shared-toggle { display:flex; align-items:center; gap:.45rem; color:${p => p.theme.textColor}; font-size:.75rem; font-weight:700; cursor:pointer; }
-  .shared-fields { display:grid; grid-template-columns:minmax(120px,1fr) minmax(90px,.8fr); gap:.4rem; }
-  small { color:${p => p.theme.textColor}; opacity:.65; line-height:1.35; }
+  .shared-toggle { display:flex; align-items:center; gap:.45rem; color:${p => p.theme.textColor}; font-size:.75rem; font-weight:700; cursor:pointer; min-width:0; }
+  .shared-toggle span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .shared-fields { display:grid; grid-template-columns:minmax(0,1fr) minmax(76px,.62fr); gap:.4rem; min-width:0; }
+  .shared-fields > * { min-width:0; width:100%; box-sizing:border-box; }
+  small { color:${p => p.theme.textColor}; opacity:.65; line-height:1.35; overflow-wrap:anywhere; }
   @media (max-width:620px) { .shared-fields { grid-template-columns:1fr; } }
 `;
 
@@ -934,7 +940,7 @@ export default function OutflowSection({
             purpose: e.target.checked ? 'expense' : prev.purpose,
           }))} disabled={isSaving} />
         <FontAwesomeIcon icon={faUsers} />
-        {translations.insert.outflowSection.sharedExpense.activeLabel}
+        <span>{translations.insert.outflowSection.sharedExpense.activeLabel}</span>
       </label>
       {editValues.sharedEnabled && (
         <>

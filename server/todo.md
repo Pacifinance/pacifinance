@@ -1,5 +1,7 @@
 # Pacifinance Backend - TODO
 
+- [ ] Aggiungere un job/cache periodico per le classifiche comportamentali, così da evitare ricalcoli live frequenti quando cresce il numero di utenti.
+
 > Ultimo aggiornamento: 13/02/2026
 
 ---

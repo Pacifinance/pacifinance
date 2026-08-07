@@ -1251,14 +1251,6 @@ export default function InvestmentHoldingsPanel({
                       {backfillingProviderHistory ? (t.communityPrice?.providerHistoryLoading || 'Checking CoinGecko…') : (t.communityPrice?.providerHistoryButton || 'Try CoinGecko')}
                     </button>}
                   </CommunityExplainer>
-                  <button type="button" className="contribute" style={{ color: theme.dangerColor, borderColor: `${theme.dangerColor}66` }} onClick={async () => {
-                    if (!window.confirm(t.communityPrice?.resetHistoryConfirm || 'Delete all monthly history for this asset?')) return;
-                    await investmentService.deleteHoldingHistoryForInstrument(holding.instrumentId);
-                    setAllHistory(null);
-                    await onChanged();
-                  }}>
-                    {t.communityPrice?.resetHistoryButton || 'Reset asset history'}
-                  </button>
                   {providerHistoryMessage && <p style={{ margin: '0.45rem 0', fontSize: '0.78rem', opacity: 0.8 }}>{providerHistoryMessage}</p>}
                   {years.length > 1 && (
                     <HistoryYearFilter theme={theme}>
@@ -1387,6 +1379,14 @@ export default function InvestmentHoldingsPanel({
                 </>
               );
             })()}
+            <button type="button" className="contribute" style={{ color: theme.dangerColor, borderColor: `${theme.dangerColor}66`, marginTop: '0.65rem' }} onClick={async () => {
+              if (!window.confirm(t.communityPrice?.resetHistoryConfirm || 'Delete all monthly history for this asset?')) return;
+              await investmentService.deleteHoldingHistoryForInstrument(holding.instrumentId);
+              setAllHistory(null);
+              await onChanged();
+            }}>
+              {t.communityPrice?.resetHistoryButton || 'Reimposta lo storico dell’asset'}
+            </button>
           </HistoryDrawer>
         )}
         {isEditingHistorical && (
@@ -1555,10 +1555,11 @@ export default function InvestmentHoldingsPanel({
               </ModalTitle>
               <CloseButton theme={theme} onClick={() => setDeleteTarget(null)}><FontAwesomeIcon icon={faTimes} /></CloseButton>
             </ModalHeader>
-            <ModalBody theme={theme}>
-              <p style={{ marginTop: 0, opacity: 0.78 }}>{t.deleteDescription || 'Scegli cosa rimuovere. Le transazioni restano disponibili per ricostruire lo storico.'}</p>
+            <ModalBody theme={theme} style={{ color: theme.textColor } as React.CSSProperties}>
+              <p style={{ marginTop: 0, opacity: 0.78, color: theme.textColor }}>{t.deleteDescription || 'Scegli cosa rimuovere. Le transazioni restano disponibili per ricostruire lo storico.'}</p>
+              <p style={{ marginTop: 0, fontSize: '0.78rem', opacity: 0.65, color: theme.textColor }}>{t.deleteScopeHint || `Valore attuale e mese di riferimento: ${new Intl.DateTimeFormat(language === 'it' ? 'it-IT' : 'en-US', { month: 'long', year: 'numeric' }).format(new Date(`${(userDate || new Date().toISOString()).slice(0, 7)}-01T00:00:00Z`))}`}</p>
               <AddTriggerButton type="button" theme={theme} onClick={async () => { await investmentService.deleteHoldingHistoryForInstrument(deleteTarget.instrumentId); setDeleteTarget(null); setAllHistory(null); await onChanged(); }}>
-                {t.deleteHistoryOnly || 'Elimina solo lo storico mensile'}
+                {t.deleteHistoryOnly || 'Elimina tutto lo storico mensile dell’asset'}
               </AddTriggerButton>
               <AddTriggerButton type="button" theme={theme} onClick={async () => { await handleDelete(deleteTarget.id); setDeleteTarget(null); }}>
                 {t.deleteHoldingAndHistory || 'Elimina holding e storico'}

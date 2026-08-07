@@ -2840,6 +2840,8 @@
         "historyEmptyState": "Todavía no hay historial registrado para este instrumento.",
         "historyAllYears": "Todos los años",
         "communityPrice": {
+            "resetHistoryButton": "Restablecer historial del activo",
+            "resetHistoryConfirm": "¿Eliminar todo el historial mensual de este activo? Las transacciones se conservarán.",
             "pricePlaceholder": "Precio",
             "currencyLabel": "Moneda",
             "dateLabel": "Fecha de referencia",

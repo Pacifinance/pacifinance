@@ -2838,6 +2838,8 @@
         "historyEmptyState": "Ainda não há histórico registrado para este ativo.",
         "historyAllYears": "Todos os anos",
         "communityPrice": {
+            "resetHistoryButton": "Redefinir histórico do ativo",
+            "resetHistoryConfirm": "Excluir todo o histórico mensal deste ativo? As transações serão mantidas.",
             "pricePlaceholder": "Preço",
             "currencyLabel": "Moeda",
             "dateLabel": "Data de referência",

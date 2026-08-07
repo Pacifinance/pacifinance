@@ -2838,6 +2838,8 @@
         "historyEmptyState": "Für dieses Instrument ist noch kein Verlauf erfasst.",
         "historyAllYears": "Alle Jahre",
         "communityPrice": {
+            "resetHistoryButton": "Asset-Verlauf zurücksetzen",
+            "resetHistoryConfirm": "Den gesamten Monatsverlauf dieses Assets löschen? Transaktionen bleiben erhalten.",
             "pricePlaceholder": "Preis",
             "currencyLabel": "Währung",
             "dateLabel": "Referenzdatum",

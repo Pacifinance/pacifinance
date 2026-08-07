@@ -2934,6 +2934,8 @@
         "historyEmptyState": "No history recorded for this instrument yet.",
         "historyAllYears": "All years",
         "communityPrice": {
+            "resetHistoryButton": "Reset asset history",
+            "resetHistoryConfirm": "Delete all monthly history for this asset? Transactions will remain.",
             "pricePlaceholder": "Price",
             "currencyLabel": "Currency",
             "dateLabel": "Reference date",

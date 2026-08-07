@@ -2838,6 +2838,8 @@
         "historyEmptyState": "Aucun historique enregistré pour cet instrument pour l'instant.",
         "historyAllYears": "Toutes les années",
         "communityPrice": {
+            "resetHistoryButton": "Réinitialiser l’historique de l’actif",
+            "resetHistoryConfirm": "Supprimer tout l’historique mensuel de cet actif ? Les transactions seront conservées.",
             "pricePlaceholder": "Prix",
             "currencyLabel": "Devise",
             "dateLabel": "Date de référence",

@@ -20,6 +20,8 @@ import {
 import { ModernActionButton } from '../styles/MyStyled';
 import { ASSET_KEY_TO_KIND, KIND_TO_SEARCH_SOURCE, DEFAULT_INSTRUMENT_HINTS } from '../constants/investmentSchema';
 import { formatInstrumentDetails } from '../utils/instrumentDisplay';
+import { getAssetColor } from '../data/assetColors';
+import { getAssetIcon } from '../data/assetIcons';
 import { reconcileInvestmentBalance } from '../utils/investmentBalanceReconciliation';
 import type {
   CommunityPriceDto, InvestmentAssetKey, InvestmentDividendSummaryDto, InvestmentHoldingDto, InvestmentHoldingHistoryDto,
@@ -738,6 +740,9 @@ export default function InvestmentHoldingsPanel({
   });
   const [celebratingCommunityPriceId, setCelebratingCommunityPriceId] = useState<number | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<InvestmentHoldingDto | null>(null);
+  const AssetIcon = getAssetIcon(assetKey);
+  const assetAccent = getAssetColor(assetKey, theme.mode);
+  const supportsCoinGecko = assetKey === 'bitcoin' || assetKey === 'crypto';
   /** Per-instrument dividend totals (see server/src/db/models/investments.ts
    * getDividendsSummaryByUserId) — fetched once per panel open, keyed by
    * instrument id so each holding row can show its own total and compare it
@@ -1227,11 +1232,11 @@ export default function InvestmentHoldingsPanel({
                       <strong><ShieldCheck size={13} />{t.communityPrice.explainerTitle}</strong>
                       <p>{t.communityPrice.explainerDescription}</p>
                     </div>
-                    <button type="button" className="contribute" onClick={recoverProviderHistory} disabled={backfillingProviderHistory}>
+                    {supportsCoinGecko && <button type="button" className="contribute" onClick={recoverProviderHistory} disabled={backfillingProviderHistory}>
                       {backfillingProviderHistory ? (t.communityPrice?.providerHistoryLoading || 'Checking CoinGecko…') : (t.communityPrice?.providerHistoryButton || 'Try CoinGecko')}
-                    </button>
+                    </button>}
                   </CommunityExplainer>
-                  <button type="button" className="contribute" onClick={async () => {
+                  <button type="button" className="contribute" style={{ color: theme.dangerColor, borderColor: `${theme.dangerColor}66` }} onClick={async () => {
                     if (!window.confirm(t.communityPrice?.resetHistoryConfirm || 'Delete all monthly history for this asset?')) return;
                     await investmentService.deleteHoldingHistoryForInstrument(holding.instrumentId);
                     setAllHistory(null);
@@ -1354,6 +1359,7 @@ export default function InvestmentHoldingsPanel({
                                 </>
                               ) : (
                                 <button type="button" className="contribute" onClick={() => startCommunityPriceEdit(holding, entry)}>
+                                  <Users size={14} />
                                   {t.communityPrice?.contributeButton || 'Contribute the market price'}
                                 </button>
                               )}
@@ -1399,8 +1405,13 @@ export default function InvestmentHoldingsPanel({
       <ModalContainer theme={theme} onClick={(e: React.MouseEvent) => e.stopPropagation()}>
         <ModalHeader theme={theme}>
           <ModalTitle theme={theme}>
-            <h2>{t.title}</h2>
-            <p>{translations.assets[assetKey]}</p>
+            <h2 style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', color: assetAccent }}>
+              <span style={{ width: 30, height: 30, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', borderRadius: 9, background: `${assetAccent}22` }}>
+                <AssetIcon size={17} />
+              </span>
+              {translations.assets[assetKey]}
+            </h2>
+            <p>{t.title}</p>
           </ModalTitle>
           <CloseButton theme={theme} onClick={onClose}>
             <FontAwesomeIcon icon={faTimes} />

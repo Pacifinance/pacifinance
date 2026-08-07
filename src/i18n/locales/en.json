@@ -2946,7 +2946,7 @@
             "celebrateButton": "Celebrate 🎉",
             "statusRejected": "Your price wasn't accepted",
             "conflictPending": "This month already has a submission awaiting verification.",
-            "conflictVerified": "This month already has a community-verified price."
+            "conflictVerified": "This month already has a community-verified price.", "providerHistoryButton": "Try recovering from CoinGecko", "providerHistoryLoading": "Checking CoinGecko…", "providerHistoryResult": "Recovered {count} months automatically. You can propose missing months manually.", "providerHistoryError": "Automatic recovery is unavailable. You can propose the price manually below."
         }
         },
         "adminPriceReview": {

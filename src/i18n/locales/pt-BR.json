@@ -2850,7 +2850,7 @@
             "celebrateButton": "Comemorar 🎉",
             "statusRejected": "Seu preço não foi aceito",
             "conflictPending": "Este mês já tem uma proposta aguardando verificação.",
-            "conflictVerified": "Este mês já tem um preço verificado pela comunidade."
+            "conflictVerified": "Este mês já tem um preço verificado pela comunidade.", "providerHistoryButton": "Tentar CoinGecko", "providerHistoryLoading": "Consultando CoinGecko…", "providerHistoryResult": "{count} meses recuperados automaticamente. Você pode sugerir manualmente os meses ausentes.", "providerHistoryError": "A recuperação automática não está disponível. Você pode sugerir o preço manualmente abaixo."
         }
         },
         "adminPriceReview": {

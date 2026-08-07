@@ -2850,7 +2850,7 @@
             "celebrateButton": "Feiern 🎉",
             "statusRejected": "Dein Preis wurde nicht akzeptiert",
             "conflictPending": "Für diesen Monat liegt bereits ein Vorschlag zur Überprüfung vor.",
-            "conflictVerified": "Für diesen Monat gibt es bereits einen von der Community verifizierten Preis."
+            "conflictVerified": "Für diesen Monat gibt es bereits einen von der Community verifizierten Preis.", "providerHistoryButton": "CoinGecko ausprobieren", "providerHistoryLoading": "CoinGecko wird geprüft…", "providerHistoryResult": "{count} Monate automatisch abgerufen. Fehlende Monate können manuell vorgeschlagen werden.", "providerHistoryError": "Die automatische Abfrage ist nicht verfügbar. Du kannst den Preis unten manuell vorschlagen."
         }
         },
         "adminPriceReview": {

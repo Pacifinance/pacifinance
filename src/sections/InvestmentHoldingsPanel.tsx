@@ -725,6 +725,8 @@ export default function InvestmentHoldingsPanel({
   const [communityPriceEditingKey, setCommunityPriceEditingKey] = useState<string | null>(null);
   const [communityPriceInputs, setCommunityPriceInputs] = useState({ price: '', currency: 'EUR', date: '' });
   const [submittingCommunityPrice, setSubmittingCommunityPrice] = useState(false);
+  const [backfillingProviderHistory, setBackfillingProviderHistory] = useState(false);
+  const [providerHistoryMessage, setProviderHistoryMessage] = useState<string | null>(null);
   /** Set when a submission 409s because an active (pending or verified)
    * submission for that instrument+month already exists - possibly from
    * another user, so this is shown as a neutral notice, never folded into
@@ -747,6 +749,24 @@ export default function InvestmentHoldingsPanel({
     localStorage.setItem('celebrated-community-prices', JSON.stringify([...next]));
     setCelebratingCommunityPriceId(id);
     window.setTimeout(() => setCelebratingCommunityPriceId(null), 950);
+  };
+
+  const recoverProviderHistory = async () => {
+    if (backfillingProviderHistory) return;
+    setBackfillingProviderHistory(true);
+    setProviderHistoryMessage(null);
+    try {
+      const result = await investmentService.backfillHistoricalPrices();
+      const filled = result.reduce((sum, item) => sum + (item.monthsFilled || 0), 0);
+      setProviderHistoryMessage((t.communityPrice?.providerHistoryResult || '{count} months recovered automatically').replace('{count}', String(filled)));
+      await onChanged();
+      setAllHistory(null);
+    } catch (error) {
+      console.error('InvestmentHoldingsPanel: provider history recovery failed', error);
+      setProviderHistoryMessage(t.communityPrice?.providerHistoryError || 'Automatic recovery is unavailable. You can propose the price manually below.');
+    } finally {
+      setBackfillingProviderHistory(false);
+    }
   };
 
   useEffect(() => {
@@ -1206,7 +1226,11 @@ export default function InvestmentHoldingsPanel({
                       <strong><ShieldCheck size={13} />{t.communityPrice.explainerTitle}</strong>
                       <p>{t.communityPrice.explainerDescription}</p>
                     </div>
+                    <button type="button" className="contribute" onClick={recoverProviderHistory} disabled={backfillingProviderHistory}>
+                      {backfillingProviderHistory ? (t.communityPrice?.providerHistoryLoading || 'Checking CoinGecko…') : (t.communityPrice?.providerHistoryButton || 'Try CoinGecko')}
+                    </button>
                   </CommunityExplainer>
+                  {providerHistoryMessage && <p style={{ margin: '0.45rem 0', fontSize: '0.78rem', opacity: 0.8 }}>{providerHistoryMessage}</p>}
                   {years.length > 1 && (
                     <HistoryYearFilter theme={theme}>
                       <select

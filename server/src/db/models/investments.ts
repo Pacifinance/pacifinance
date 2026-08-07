@@ -1618,6 +1618,13 @@ async function getTransactionsByUserId(user_id: string): Promise<TransactionSumm
         .filter((entry): entry is TransactionSummaryEntry => entry !== null)
 }
 
+async function deleteTransactionsForInstrument(user_id: string, instrument_id: number) {
+    const {error, count} = await supabase.from("user_investment_transactions")
+        .delete({count: "exact"}).eq("user_id", user_id).eq("instrument_id", instrument_id)
+    if (error) console.error("investments.deleteTransactionsForInstrument: failed", error)
+    return error ? null : {deletedCount: count ?? 0}
+}
+
 // ---------- Community-verified historical prices ----------
 // Finnhub/CoinGecko gate historical candle data behind a paid tier for most
 // users/date-ranges, so backfillHistoricalPrices often finds nothing to fill.
@@ -1950,6 +1957,7 @@ export default {
     upsertTransaction,
     saveTransactionsBatch,
     getTransactionsByUserId,
+    deleteTransactionsForInstrument,
     submitCommunityPrice,
     getPendingCommunityPrices,
     getMyCommunityPriceSubmissions,

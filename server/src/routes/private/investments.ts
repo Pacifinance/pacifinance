@@ -430,6 +430,14 @@ investmentsRouter.post("/transactions/get", async (req, res) => {
     res.status(200).json(transactions)
 })
 
+investmentsRouter.post("/transactions/delete-instrument", async (req, res) => {
+    const instrumentId = Number(req.body.instrument_id ?? req.body.instrumentId)
+    if (!Number.isFinite(instrumentId)) { res.status(400).send(); return }
+    const result = await db.investments.deleteTransactionsForInstrument(req.userId as string, instrumentId)
+    if (result === null) { res.status(500).send(); return }
+    res.status(200).json(result)
+})
+
 investmentsRouter.post("/settings/get", async (req, res) => {
     const settings = await db.investments.getInvestmentSettings(req.userId as string)
     res.status(200).json(settings)

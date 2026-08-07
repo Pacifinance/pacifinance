@@ -102,6 +102,7 @@ export interface InvestmentService {
   saveTransaction(data: InvestmentTransactionSaveRequest): Promise<InvestmentTransactionDto>;
   saveTransactionsBatch(data: InvestmentTransactionSaveBatchRequest): Promise<InvestmentBatchSaveResponse>;
   getTransactions(): Promise<InvestmentTransactionsGetResponse>;
+  deleteTransactionsForInstrument(instrumentId: number): Promise<{deletedCount: number}>;
   submitCommunityPrice(data: CommunityPriceSubmitRequest): Promise<CommunityPriceDto>;
   getMyCommunityPriceSubmissions(): Promise<CommunityPricesMineResponse>;
   getPendingCommunityPrices(): Promise<CommunityPricesPendingResponse>;
@@ -214,6 +215,11 @@ export const createInvestmentService = (apiClient: AxiosInstance): InvestmentSer
   async getTransactions() {
     const res = await apiClient.post<InvestmentTransactionsGetResponse>('/api/investments/transactions/get', {});
     return Array.isArray(res.data) ? res.data : [];
+  },
+
+  async deleteTransactionsForInstrument(instrumentId) {
+    const res = await apiClient.post<{deletedCount: number}>('/api/investments/transactions/delete-instrument', { instrument_id: instrumentId });
+    return res.data;
   },
 
   async submitCommunityPrice(data) {

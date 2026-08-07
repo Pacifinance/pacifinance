@@ -740,6 +740,8 @@ export default function InvestmentHoldingsPanel({
   });
   const [celebratingCommunityPriceId, setCelebratingCommunityPriceId] = useState<number | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<InvestmentHoldingDto | null>(null);
+  const [deletingTransactions, setDeletingTransactions] = useState(false);
+  const [transactionDeleteArmed, setTransactionDeleteArmed] = useState(false);
   const AssetIcon = getAssetIcon(assetKey);
   const assetAccent = getAssetColor(assetKey, theme.mode);
   const supportsCoinGecko = assetKey === 'bitcoin' || assetKey === 'crypto';
@@ -869,6 +871,19 @@ export default function InvestmentHoldingsPanel({
     await investmentService.deleteHolding({ id: holdingId });
     if (editingId === holdingId) resetForm();
     await onChanged();
+  };
+
+  const deleteAssetTransactions = async () => {
+    if (!deleteTarget || deletingTransactions) return;
+    setDeletingTransactions(true);
+    try {
+      await investmentService.deleteTransactionsForInstrument(deleteTarget.instrumentId);
+      setAllTransactions((prev) => prev ? prev.filter((tx) => tx.instrumentId !== deleteTarget.instrumentId) : prev);
+      setDeleteTarget(null);
+      await onChanged();
+    } finally {
+      setDeletingTransactions(false);
+    }
   };
 
   const startHistoricalEdit = (holding: InvestmentHoldingDto) => {
@@ -1158,7 +1173,7 @@ export default function InvestmentHoldingsPanel({
                 <button type="button" onClick={() => startEdit(holding)} aria-label={t.editTitle}>
                   <FontAwesomeIcon icon={faPen} />
                 </button>
-                <button type="button" onClick={() => setDeleteTarget(holding)} aria-label={t.deleteButton}>
+                <button type="button" onClick={async () => { if (!allTransactions) setAllTransactions(await investmentService.getTransactions()); setDeleteTarget(holding); }} aria-label={t.deleteButton}>
                   <FontAwesomeIcon icon={faTrash} />
                 </button>
               </>
@@ -1548,6 +1563,18 @@ export default function InvestmentHoldingsPanel({
               <AddTriggerButton type="button" theme={theme} onClick={async () => { await handleDelete(deleteTarget.id); setDeleteTarget(null); }}>
                 {t.deleteHoldingAndHistory || 'Elimina holding e storico'}
               </AddTriggerButton>
+              <div style={{ marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: `1px solid ${theme.dangerColor}44` }}>
+                <strong style={{ color: theme.dangerColor, fontSize: '0.82rem' }}>{t.deleteTransactionsTitle || 'Elimina transazioni dell’asset'}</strong>
+                <p style={{ fontSize: '0.78rem', opacity: 0.7 }}>{(t.deleteTransactionsDescription || 'Rimuove definitivamente {count} transazioni. Usalo solo per correggere un’importazione errata.').replace('{count}', String(allTransactions?.filter((tx) => tx.instrumentId === deleteTarget.instrumentId).length ?? 0))}</p>
+                <AddTriggerButton type="button" theme={theme} style={{ color: theme.dangerColor, borderColor: `${theme.dangerColor}88` }} disabled={deletingTransactions} onClick={async () => {
+                  if (!transactionDeleteArmed) { setTransactionDeleteArmed(true); return; }
+                  await deleteAssetTransactions();
+                  setTransactionDeleteArmed(false);
+                }}>
+                  {deletingTransactions ? (t.deleteTransactionsLoading || 'Eliminazione…') : transactionDeleteArmed ? (t.deleteTransactionsConfirmButton || 'Conferma cancellazione definitiva') : (t.deleteTransactionsButton || 'Elimina transazioni definitivamente')}
+                </AddTriggerButton>
+                {transactionDeleteArmed && <p style={{ color: theme.dangerColor, fontSize: '0.76rem', margin: '0.35rem 0 0' }}>{t.deleteTransactionsConfirm || 'Premi di nuovo per confermare. Questa azione non può essere annullata.'}</p>}
+              </div>
               <p style={{ marginBottom: 0, fontSize: '0.78rem', opacity: 0.6 }}>{t.deleteTransactionsNote || 'Le transazioni non vengono cancellate da queste azioni.'}</p>
             </ModalBody>
           </ModalContainer>

@@ -737,6 +737,7 @@ export default function InvestmentHoldingsPanel({
     catch { return new Set(); }
   });
   const [celebratingCommunityPriceId, setCelebratingCommunityPriceId] = useState<number | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<InvestmentHoldingDto | null>(null);
   /** Per-instrument dividend totals (see server/src/db/models/investments.ts
    * getDividendsSummaryByUserId) — fetched once per panel open, keyed by
    * instrument id so each holding row can show its own total and compare it
@@ -860,7 +861,6 @@ export default function InvestmentHoldingsPanel({
   };
 
   const handleDelete = async (holdingId: number) => {
-    if (!window.confirm(t.communityPrice?.deleteHoldingConfirm || 'Delete this holding and its monthly history? Transactions will remain.')) return;
     await investmentService.deleteHolding({ id: holdingId });
     if (editingId === holdingId) resetForm();
     await onChanged();
@@ -1153,7 +1153,7 @@ export default function InvestmentHoldingsPanel({
                 <button type="button" onClick={() => startEdit(holding)} aria-label={t.editTitle}>
                   <FontAwesomeIcon icon={faPen} />
                 </button>
-                <button type="button" onClick={() => handleDelete(holding.id)} aria-label={t.deleteButton}>
+                <button type="button" onClick={() => setDeleteTarget(holding)} aria-label={t.deleteButton}>
                   <FontAwesomeIcon icon={faTrash} />
                 </button>
               </>
@@ -1519,6 +1519,29 @@ export default function InvestmentHoldingsPanel({
           </Suspense>
         )}
       </ModalContainer>
+      {deleteTarget && (
+        <Overlay theme={theme} onClick={() => setDeleteTarget(null)}>
+          <ModalContainer theme={theme} onClick={(e: React.MouseEvent) => e.stopPropagation()} style={{ maxWidth: 460 }}>
+            <ModalHeader theme={theme}>
+              <ModalTitle theme={theme}>
+                <h2>{t.deleteTitle || 'Gestisci eliminazione'}</h2>
+                <p>{deleteTarget.instrument?.symbol || deleteTarget.instrument?.name}</p>
+              </ModalTitle>
+              <CloseButton theme={theme} onClick={() => setDeleteTarget(null)}><FontAwesomeIcon icon={faTimes} /></CloseButton>
+            </ModalHeader>
+            <ModalBody theme={theme}>
+              <p style={{ marginTop: 0, opacity: 0.78 }}>{t.deleteDescription || 'Scegli cosa rimuovere. Le transazioni restano disponibili per ricostruire lo storico.'}</p>
+              <AddTriggerButton type="button" theme={theme} onClick={async () => { await investmentService.deleteHoldingHistoryForInstrument(deleteTarget.instrumentId); setDeleteTarget(null); setAllHistory(null); await onChanged(); }}>
+                {t.deleteHistoryOnly || 'Elimina solo lo storico mensile'}
+              </AddTriggerButton>
+              <AddTriggerButton type="button" theme={theme} onClick={async () => { await handleDelete(deleteTarget.id); setDeleteTarget(null); }}>
+                {t.deleteHoldingAndHistory || 'Elimina holding e storico'}
+              </AddTriggerButton>
+              <p style={{ marginBottom: 0, fontSize: '0.78rem', opacity: 0.6 }}>{t.deleteTransactionsNote || 'Le transazioni non vengono cancellate da queste azioni.'}</p>
+            </ModalBody>
+          </ModalContainer>
+        </Overlay>
+      )}
     </Overlay>
   );
 }

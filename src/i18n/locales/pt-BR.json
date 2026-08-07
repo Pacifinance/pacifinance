@@ -2815,7 +2815,7 @@
             "excessDetailLabel": "Detalhe excedente",
             "shareOfCategory": "{percentage}% da categoria",
             "defaultInstrumentHint": "O BTC é pré-selecionado por padrão. Remova-o para buscar outro (ex.: uma carteira separada ou outra blockchain).",
-            "noValueForMonth": "Sem valor definido para este mês",
+            "noValueForMonth": "Sem valor definido para {month}",
         "unverifiedBadge": "Não verificado",
         "unverifiedHint": "Não verificado — não conta nas comparações com outros usuários.",
         "dividendsReceivedTotal": "Dividendos recebidos: {amount}",
@@ -2966,7 +2966,7 @@
         "deleteButton": "Excluir",
         "manageLink": "Gerenciar contas",
         "calculatedFromN": "Calculado a partir de {count} contas",
-        "noValueForMonth": "Sem valor definido para este mês"
+        "noValueForMonth": "Sem valor definido para {month}"
     },
     "recurringTransactions": {
         "navLabel": "Recorrentes",

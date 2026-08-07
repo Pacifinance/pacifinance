@@ -22,7 +22,6 @@ import type { InvestmentDividendSummaryDto } from '../types/api';
 import { useCryptoGroupingPref, type CryptoGroupingMode } from '../hooks/useCryptoGroupingPref';
 import { groupBitcoinWithCrypto } from '../utils/cryptoGrouping';
 import CryptoGroupingToggle from '../components/CryptoGroupingToggle';
-import InvestmentBenchmarkCard from '../components/InvestmentBenchmarkCard';
 
 /** Every investment-holdings asset key that can appear in the category selector (excludes liquidity/bank/cash). */
 const HOLDING_ASSET_KEYS = ['stocks', 'etf', 'bitcoin', 'crypto', 'bonds', 'funds', 'commodities'];
@@ -519,7 +518,7 @@ export default function StatsCharts() {
     const { theme } = useContext(ThemeContext);
     const { language, translations } = useContext(LanguageContext);
     const { isHidden } = useContext(PrivacyContext);
-    const { investmentService, goalService, statsService } = useDemoServices();
+    const { investmentService, goalService } = useDemoServices();
     const [activePage, setActivePage] = useState("statsBilancio");
     const [isLoading, setIsLoading] = useState(true);
     const [investmentHoldings, setInvestmentHoldings] = useState([]);
@@ -850,7 +849,7 @@ export default function StatsCharts() {
                     <CommunitySpotlight theme={theme}>
                         <span className="icon"><Users size={21}/></span>
                         <div><strong><ShieldCheck size={15}/>{t.communityDataTitle}</strong><p>{t.communityDataDescription}</p></div>
-                        <button type="button" onClick={() => navigate('/dashboard')} data-umami-event="holdings-community-contribute">{t.communityDataAction}</button>
+                        <button type="button" onClick={() => navigate('/insert-values?section=balance')} data-umami-event="holdings-community-contribute">{t.communityDataAction}</button>
                     </CommunitySpotlight>
 
                     <ChartGrid columns={2}>
@@ -890,7 +889,6 @@ export default function StatsCharts() {
                         positionConcentrationLimit={userData?.limits?.positionConcentrationLimit ?? null}
                         assetCategoryConcentrationLimit={userData?.limits?.assetCategoryConcentrationLimit ?? null}
                     />
-                    <InvestmentBenchmarkCard theme={theme} service={statsService} hidden={isHidden}/>
                 </SectionContainer>
             </>
         );

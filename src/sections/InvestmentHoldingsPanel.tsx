@@ -1104,7 +1104,7 @@ export default function InvestmentHoldingsPanel({
             ) : historicalEntry ? (
               <strong>{formatAmount(historicalEntry.currentValue ?? historicalEntry.investedAmount ?? 0)}</strong>
             ) : (
-              <span className="no-value">{t.noValueForMonth}</span>
+              <span className="no-value">{(t.noValueForMonth || 'No value set for {month}').replace('{month}', new Intl.DateTimeFormat(language === 'it' ? 'it-IT' : 'en-US', { month: 'long', year: 'numeric' }).format(new Date(`${(userDate || new Date().toISOString()).slice(0, 7)}-01T00:00:00Z`)))}</span>
             )}
             {holdingShareById.get(holding.id) != null && (
               <HoldingShare theme={theme}>

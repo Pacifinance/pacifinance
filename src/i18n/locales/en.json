@@ -2911,7 +2911,7 @@
             "excessDetailLabel": "Excess detail",
             "shareOfCategory": "{percentage}% of category",
             "defaultInstrumentHint": "BTC is pre-filled by default. Remove it to search for a different one (e.g. a separate wallet or another blockchain).",
-            "noValueForMonth": "No value set for this month",
+            "noValueForMonth": "No value set for {month}",
         "unverifiedBadge": "Unverified",
         "unverifiedHint": "Not verified — won't count toward comparisons with other users.",
         "dividendsReceivedTotal": "Dividends received: {amount}",
@@ -3062,7 +3062,7 @@
         "deleteButton": "Delete",
         "manageLink": "Manage accounts",
         "calculatedFromN": "Calculated from {count} accounts",
-        "noValueForMonth": "No value set for this month"
+        "noValueForMonth": "No value set for {month}"
     },
     "recurringTransactions": {
         "navLabel": "Recurring",

@@ -206,7 +206,7 @@ export default function LiquidityAccountsPanel({
   assetKey, accounts, onClose, onChanged, isCurrentMonth = true, userDate, historyByEntityId = {},
 }: LiquidityAccountsPanelProps) {
   const { theme } = useContext(ThemeContext);
-  const { translations } = useContext(LanguageContext);
+  const { translations, language } = useContext(LanguageContext);
   const { toEUR, fromEUR, formatAmount } = useContext(CurrencyContext);
   const { liquidityAccountService } = useDemoServices();
   const t = translations.liquidityAccounts;
@@ -305,7 +305,7 @@ export default function LiquidityAccountsPanel({
                     ) : historicalEntry ? (
                       <span>{formatAmount(historicalEntry.currentValue)}</span>
                     ) : (
-                      <span className="no-value">{t.noValueForMonth}</span>
+                      <span className="no-value">{(t.noValueForMonth || 'No value set for {month}').replace('{month}', new Intl.DateTimeFormat(language === 'it' ? 'it-IT' : 'en-US', { month: 'long', year: 'numeric' }).format(new Date(`${(userDate || new Date().toISOString()).slice(0, 7)}-01T00:00:00Z`)))}</span>
                     )}
                   </AccountInfo>
                   <AccountActions theme={theme}>

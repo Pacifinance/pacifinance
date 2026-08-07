@@ -115,7 +115,11 @@ export const ModalBody = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  
+  /* Default text color so any plain text inside (not wrapped in its own
+     theme-aware styled component) still follows light/dark mode instead of
+     falling back to the browser's default black. */
+  color: ${p => p.theme.textColor};
+
   @media (max-width: 600px) {
     padding: 0.75rem 1rem;
     gap: 0.5rem;

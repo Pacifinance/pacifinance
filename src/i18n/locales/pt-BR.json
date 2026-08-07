@@ -2816,6 +2816,7 @@
             "shareOfCategory": "{percentage}% da categoria",
             "defaultInstrumentHint": "O BTC é pré-selecionado por padrão. Remova-o para buscar outro (ex.: uma carteira separada ou outra blockchain).",
             "noValueForMonth": "Sem valor definido para {month}",
+        "verifiedBadge": "Verificado",
         "unverifiedBadge": "Não verificado",
         "unverifiedHint": "Não verificado — não conta nas comparações com outros usuários.",
         "dividendsReceivedTotal": "Dividendos recebidos: {amount}",
@@ -2852,7 +2853,7 @@
             "celebrateButton": "Comemorar 🎉",
             "statusRejected": "Seu preço não foi aceito",
             "conflictPending": "Este mês já tem uma proposta aguardando verificação.",
-            "conflictVerified": "Este mês já tem um preço verificado pela comunidade.", "providerHistoryButton": "Tentar CoinGecko", "providerHistoryLoading": "Consultando CoinGecko…", "providerHistoryResult": "{count} meses recuperados automaticamente. Você pode sugerir manualmente os meses ausentes.", "providerHistoryError": "A recuperação automática não está disponível. Você pode sugerir o preço manualmente abaixo."
+            "conflictVerified": "Este mês já tem um preço verificado pela comunidade.", "providerHistoryLoading": "Consultando CoinGecko…", "providerHistoryResult": "{count} meses recuperados automaticamente. Você pode sugerir manualmente os meses ausentes.", "providerHistoryNoData": "O CoinGecko não tem dados para este período. Você pode propor o preço manualmente.", "providerHistoryError": "A recuperação automática não está disponível. Você pode sugerir o preço manualmente abaixo."
         }
         },
         "adminPriceReview": {

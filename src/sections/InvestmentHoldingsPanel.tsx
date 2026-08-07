@@ -259,7 +259,7 @@ const HistoricalEditRow = styled.div`
 `;
 
 /** Wraps a single holding's full monthly history (see expandedHistoryHoldingId
- * below) - visually nested under its HoldingRow, one month per HistoryMonthRow. */
+ * below) - visually nested under its HoldingRow, one month per HistoryMonthCard. */
 const HistoryDrawer = styled.div`
   margin: -0.3rem 0 0.3rem;
   padding: 0.5rem 0.7rem 0.2rem;
@@ -292,18 +292,60 @@ const HistoryYearFilter = styled.div`
   }
 `;
 
-const HistoryMonthRow = styled.div`
+/** One month's card in the history drawer - month + verification badge on
+ * top, value + quantity/delta/source tags + edit button below. Replaces a
+ * flatter single-line layout that buried the price under a wall of small
+ * numbers with no visual hierarchy. */
+const HistoryMonthCard = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 10px;
+  color: ${(p) => p.theme.textColor};
+  background: ${(p) => (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.018)')};
+  border: 1px solid ${(p) => (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)')};
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: ${(p) => (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)')};
+  }
+`;
+
+const HistoryMonthTopRow = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
-  padding: 0.3rem 0.1rem;
-  font-size: 0.78rem;
-  color: ${(p) => p.theme.textColor};
 
-  span.month { flex-shrink: 0; opacity: 0.65; min-width: 4.5rem; }
-  span.values { flex: 1; text-align: right; }
-  span.source { display: block; font-size: 0.68rem; opacity: 0.55; }
+  span.month-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: capitalize;
+    opacity: 0.85;
+  }
+`;
+
+const PriceSourceBadge = styled.span<{ $verified: boolean }>`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+  font-size: 0.6rem;
+  font-weight: 700;
+  padding: 0.1rem 0.4rem;
+  border-radius: 20px;
+  background: ${(p) => (p.$verified ? 'rgba(16,185,129,0.14)' : 'rgba(245,158,11,0.14)')};
+  color: ${(p) => (p.$verified ? p.theme.successColor : '#d97706')};
+
+  svg { width: 10px; height: 10px; }
+`;
+
+const HistoryMonthMainRow = styled.div`
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.6rem;
 
   button {
     width: 26px;
@@ -321,9 +363,38 @@ const HistoryMonthRow = styled.div`
   }
 `;
 
+const HistoryMonthValueBlock = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+
+  strong.value { font-size: 1rem; font-weight: 700; }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.3rem 0.5rem;
+    font-size: 0.7rem;
+    color: ${(p) => p.theme.textColor};
+    opacity: 0.6;
+  }
+`;
+
+const HistorySourceTag = styled.span`
+  font-size: 0.62rem;
+  font-weight: 600;
+  padding: 0.05rem 0.4rem;
+  border-radius: 6px;
+  color: ${(p) => p.theme.textColor};
+  background: ${(p) => (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.055)')};
+  opacity: 0.85;
+`;
+
 /** Marks whether a month's quantity grew (bought, green) or shrank (sold,
  * red) vs. the previous recorded month - see the quantityDelta computed
- * alongside each HistoryMonthRow above. */
+ * alongside each HistoryMonthCard above. */
 const HistoryQuantityDelta = styled.span<{ $positive: boolean }>`
   font-weight: 700;
   color: ${(p) => (p.$positive ? p.theme.successColor : p.theme.dangerColor)};
@@ -729,6 +800,10 @@ export default function InvestmentHoldingsPanel({
   const [submittingCommunityPrice, setSubmittingCommunityPrice] = useState(false);
   const [backfillingProviderHistory, setBackfillingProviderHistory] = useState(false);
   const [providerHistoryMessage, setProviderHistoryMessage] = useState<string | null>(null);
+  /** `${holdingId}-${userDate}` of the month whose "contribute" click is
+   * currently driving a CoinGecko recovery attempt (see contributeForMonth
+   * below) - only that one row shows the loading label, the rest stay put. */
+  const [contributingMonthKey, setContributingMonthKey] = useState<string | null>(null);
   /** Set when a submission 409s because an active (pending or verified)
    * submission for that instrument+month already exists - possibly from
    * another user, so this is shown as a neutral notice, never folded into
@@ -759,21 +834,43 @@ export default function InvestmentHoldingsPanel({
     window.setTimeout(() => setCelebratingCommunityPriceId(null), 950);
   };
 
-  const recoverProviderHistory = async () => {
+  // Triggered from a specific month's "contribute the market price" button
+  // (see the CommunityPriceLine render below) rather than from a standalone,
+  // always-visible button - CoinGecko is tried first, for every gap across
+  // this holding's whole history (not just the clicked month), and only the
+  // months it can't cover fall back to the manual proposal form. Immediately
+  // refetches history into state (instead of just nulling it out) so the
+  // month list reflects the recovered prices right away, without requiring
+  // the user to collapse and reopen the drawer.
+  const contributeForMonth = async (holding: InvestmentHoldingDto, entry: InvestmentHoldingHistoryDto) => {
+    if (!supportsCoinGecko) {
+      startCommunityPriceEdit(holding, entry);
+      return;
+    }
     if (backfillingProviderHistory) return;
+    const communityKey = `${holding.id}-${entry.userDate}`;
     setBackfillingProviderHistory(true);
+    setContributingMonthKey(communityKey);
     setProviderHistoryMessage(null);
     try {
       const result = await investmentService.backfillHistoricalPrices();
       const filled = result.reduce((sum, item) => sum + (item.monthsFilled || 0), 0);
-      setProviderHistoryMessage((t.communityPrice?.providerHistoryResult || '{count} months recovered automatically').replace('{count}', String(filled)));
       await onChanged();
-      setAllHistory(null);
+      const refreshedHistory = await investmentService.getHoldingHistory({});
+      setAllHistory(refreshedHistory);
+      const updatedEntry = refreshedHistory.find((e) => e.holdingId === holding.id && e.userDate === entry.userDate);
+      const stillMissing = updatedEntry?.priceSource !== 'provider' && updatedEntry?.priceSource !== 'community';
+      setProviderHistoryMessage(filled > 0
+        ? (t.communityPrice?.providerHistoryResult || '{count} months recovered automatically').replace('{count}', String(filled))
+        : (t.communityPrice?.providerHistoryNoData || 'CoinGecko has no data for this period. You can propose the price manually.'));
+      if (stillMissing) startCommunityPriceEdit(holding, entry);
     } catch (error) {
       console.error('InvestmentHoldingsPanel: provider history recovery failed', error);
       setProviderHistoryMessage(t.communityPrice?.providerHistoryError || 'Automatic recovery is unavailable. You can propose the price manually below.');
+      startCommunityPriceEdit(holding, entry);
     } finally {
       setBackfillingProviderHistory(false);
+      setContributingMonthKey(null);
     }
   };
 
@@ -1247,9 +1344,6 @@ export default function InvestmentHoldingsPanel({
                       <strong><ShieldCheck size={13} />{t.communityPrice.explainerTitle}</strong>
                       <p>{t.communityPrice.explainerDescription}</p>
                     </div>
-                    {supportsCoinGecko && <button type="button" className="contribute" onClick={recoverProviderHistory} disabled={backfillingProviderHistory}>
-                      {backfillingProviderHistory ? (t.communityPrice?.providerHistoryLoading || 'Checking CoinGecko…') : (t.communityPrice?.providerHistoryButton || 'Try CoinGecko')}
-                    </button>}
                   </CommunityExplainer>
                   {providerHistoryMessage && <p style={{ margin: '0.45rem 0', fontSize: '0.78rem', opacity: 0.8 }}>{providerHistoryMessage}</p>}
                   {years.length > 1 && (
@@ -1295,22 +1389,34 @@ export default function InvestmentHoldingsPanel({
 
                     return (
                       <React.Fragment key={entry.userDate}>
-                        <HistoryMonthRow theme={theme}>
-                          <span className="month">{formatHistoryMonthLabel(entry.userDate)}</span>
-                          <span className="values">
-                            {formatAmount(entry.currentValue ?? entry.investedAmount ?? 0)}
-                            {entry.quantity != null && ` · ${entry.quantity.toLocaleString(locale, { maximumFractionDigits: 6 })}`}
-                            {quantityDelta != null && Math.abs(quantityDelta) > 0.0000001 && (
-                              <HistoryQuantityDelta theme={theme} $positive={quantityDelta > 0}>
-                                {' '}({quantityDelta > 0 ? '+' : ''}{quantityDelta.toLocaleString(locale, { maximumFractionDigits: 6 })})
-                              </HistoryQuantityDelta>
-                            )}
-                            {sources.length > 0 && <span className="source">{sources.join(', ')}</span>}
-                          </span>
-                          <button type="button" onClick={() => startHistoryMonthEdit(entry)} aria-label={t.editTitle}>
-                            <FontAwesomeIcon icon={faPen} />
-                          </button>
-                        </HistoryMonthRow>
+                        <HistoryMonthCard theme={theme}>
+                          <HistoryMonthTopRow>
+                            <span className="month-label">{formatHistoryMonthLabel(entry.userDate)}</span>
+                            <PriceSourceBadge theme={theme} $verified={hasVerifiedPrice}>
+                              {hasVerifiedPrice && <ShieldCheck size={10} />}
+                              {hasVerifiedPrice ? (t.verifiedBadge || 'Verified') : (t.unverifiedBadge || 'Unverified')}
+                            </PriceSourceBadge>
+                          </HistoryMonthTopRow>
+                          <HistoryMonthMainRow theme={theme}>
+                            <HistoryMonthValueBlock theme={theme}>
+                              <strong className="value">{formatAmount(entry.currentValue ?? entry.investedAmount ?? 0)}</strong>
+                              <span className="meta">
+                                {entry.quantity != null && (
+                                  <span>{entry.quantity.toLocaleString(locale, { maximumFractionDigits: 6 })}</span>
+                                )}
+                                {quantityDelta != null && Math.abs(quantityDelta) > 0.0000001 && (
+                                  <HistoryQuantityDelta theme={theme} $positive={quantityDelta > 0}>
+                                    {quantityDelta > 0 ? '+' : ''}{quantityDelta.toLocaleString(locale, { maximumFractionDigits: 6 })}
+                                  </HistoryQuantityDelta>
+                                )}
+                                {sources.map((source) => <HistorySourceTag key={source} theme={theme}>{source}</HistorySourceTag>)}
+                              </span>
+                            </HistoryMonthValueBlock>
+                            <button type="button" onClick={() => startHistoryMonthEdit(entry)} aria-label={t.editTitle}>
+                              <FontAwesomeIcon icon={faPen} />
+                            </button>
+                          </HistoryMonthMainRow>
+                        </HistoryMonthCard>
                         {communityEligible && (communityContributionAvailable || myCommunitySubmission) && (
                           communityPriceEditingKey === communityKey ? (
                             <CommunityPriceEditRow theme={theme}>
@@ -1365,9 +1471,11 @@ export default function InvestmentHoldingsPanel({
                                 )}
                                 </>
                               ) : (
-                                <button type="button" className="contribute" onClick={() => startCommunityPriceEdit(holding, entry)}>
+                                <button type="button" className="contribute" onClick={() => contributeForMonth(holding, entry)} disabled={backfillingProviderHistory}>
                                   <Users size={14} />
-                                  {t.communityPrice?.contributeButton || 'Contribute the market price'}
+                                  {contributingMonthKey === communityKey
+                                    ? (t.communityPrice?.providerHistoryLoading || 'Checking CoinGecko…')
+                                    : (t.communityPrice?.contributeButton || 'Contribute the market price')}
                                 </button>
                               )}
                             </CommunityPriceLine>

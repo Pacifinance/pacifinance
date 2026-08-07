@@ -535,9 +535,15 @@ export default function BalanceSection({
     const declaredTotalEur = asset.value !== ''
       ? toEUR(parseBalanceInput(asset.value))
       : Number(placeholderAmount) || 0;
-    const reconciliation = isInvestmentKey && hasHoldings
+    const reconciliation = isInvestmentKey && (hasHoldings || declaredTotalEur > 0)
       ? reconcileInvestmentBalance(declaredTotalEur, subEntries)
       : null;
+    const differenceRatio = reconciliation && reconciliation.declaredTotal > 0
+      ? Math.abs(reconciliation.unallocatedValue) / reconciliation.declaredTotal
+      : 0;
+    const showDifferenceAction = reconciliation
+      && reconciliation.status !== 'exact'
+      && (Math.abs(reconciliation.unallocatedValue) >= 100 || differenceRatio >= 0.05);
 
     return (
       <AssetItem key={asset.key} theme={theme} $color={color}>
@@ -566,13 +572,13 @@ export default function BalanceSection({
                 .replace('{amount}', formatAmount(reconciliation.detailedTotal))
                 .replace('{coverage}', reconciliation.coveragePercent == null ? '—' : reconciliation.coveragePercent.toFixed(1))}
             </span>
-            {reconciliation.status !== 'exact' && (
+            {showDifferenceAction && (
               <span className="difference">
                 {(reconciliation.status === 'unallocated' ? t.unallocatedValue : t.overAllocatedValue)
                   .replace('{amount}', formatAmount(Math.abs(reconciliation.unallocatedValue)))}
               </span>
             )}
-            {reconciliation.status !== 'exact' && (
+            {showDifferenceAction && (
               <button
                 type="button"
                 onClick={() => asset.setter(fromEUR(reconciliation.detailedTotal).toLocaleString('it-IT', { minimumFractionDigits: 2 }))}

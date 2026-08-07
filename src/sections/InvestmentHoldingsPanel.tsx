@@ -860,6 +860,7 @@ export default function InvestmentHoldingsPanel({
   };
 
   const handleDelete = async (holdingId: number) => {
+    if (!window.confirm(t.communityPrice?.deleteHoldingConfirm || 'Delete this holding and its monthly history? Transactions will remain.')) return;
     await investmentService.deleteHolding({ id: holdingId });
     if (editingId === holdingId) resetForm();
     await onChanged();

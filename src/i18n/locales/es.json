@@ -2848,12 +2848,15 @@
             "dateLabel": "Fecha de referencia",
             "explainerTitle": "Contribuye a la base de precios comunitaria",
             "explainerDescription": "Aporta la última cotización disponible de un mes finalizado. Desde el primer día del mes siguiente, un administrador podrá verificarla y completar el historial de todos los usuarios con el mismo activo.",
-            "contributeButton": "Aporta el precio de mercado",
+            "contributeShort": "Aportar",
             "statusPending": "Tu precio está pendiente de verificación",
+            "statusPendingShort": "En revisión",
             "statusVerified": "Tu precio ha sido verificado",
             "statusVerifiedThanks": "Precio aceptado: ¡gracias por apoyar a la comunidad!",
             "celebrateButton": "Celebrar 🎉",
             "statusRejected": "Tu precio no fue aceptado",
+            "statusRejectedShort": "Rechazado",
+            "conflictShort": "Conflicto",
             "conflictPending": "Este mes ya tiene una propuesta pendiente de verificación.",
             "conflictVerified": "Este mes ya tiene un precio verificado por la comunidad.", "providerHistoryLoading": "Comprobando CoinGecko…", "providerHistoryResult": "Se recuperaron automáticamente {count} meses. Puedes proponer manualmente los meses que falten.", "providerHistoryNoData": "CoinGecko no tiene datos para este período. Puedes proponer el precio manualmente.", "providerHistoryError": "La recuperación automática no está disponible. Puedes proponer el precio manualmente abajo."
         }

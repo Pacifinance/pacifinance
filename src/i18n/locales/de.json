@@ -2846,12 +2846,15 @@
             "dateLabel": "Referenzdatum",
             "explainerTitle": "Zur Community-Preisdatenbank beitragen",
             "explainerDescription": "Reiche den letzten verfügbaren Kurs eines abgeschlossenen Monats ein. Ab dem ersten Tag des Folgemonats kann ein Admin ihn prüfen und die Historie aller mit demselben Wertpapier vervollständigen.",
-            "contributeButton": "Marktpreis beitragen",
+            "contributeShort": "Beitragen",
             "statusPending": "Dein Preis wartet auf Überprüfung",
+            "statusPendingShort": "In Prüfung",
             "statusVerified": "Dein Preis wurde verifiziert",
             "statusVerifiedThanks": "Preis akzeptiert — danke für deine Unterstützung der Community!",
             "celebrateButton": "Feiern 🎉",
             "statusRejected": "Dein Preis wurde nicht akzeptiert",
+            "statusRejectedShort": "Abgelehnt",
+            "conflictShort": "Konflikt",
             "conflictPending": "Für diesen Monat liegt bereits ein Vorschlag zur Überprüfung vor.",
             "conflictVerified": "Für diesen Monat gibt es bereits einen von der Community verifizierten Preis.", "providerHistoryLoading": "CoinGecko wird geprüft…", "providerHistoryResult": "{count} Monate automatisch abgerufen. Fehlende Monate können manuell vorgeschlagen werden.", "providerHistoryNoData": "CoinGecko hat für diesen Zeitraum keine Daten. Du kannst den Preis manuell vorschlagen.", "providerHistoryError": "Die automatische Abfrage ist nicht verfügbar. Du kannst den Preis unten manuell vorschlagen."
         }

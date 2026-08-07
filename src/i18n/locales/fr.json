@@ -2846,12 +2846,15 @@
             "dateLabel": "Date de référence",
             "explainerTitle": "Contribuez à la base de prix communautaire",
             "explainerDescription": "Proposez le dernier cours disponible d’un mois terminé. Dès le premier jour du mois suivant, un administrateur pourra le vérifier et compléter l’historique de tous les détenteurs du même actif.",
-            "contributeButton": "Contribuer au prix du marché",
+            "contributeShort": "Contribuer",
             "statusPending": "Votre prix est en attente de vérification",
+            "statusPendingShort": "En attente",
             "statusVerified": "Votre prix a été vérifié",
             "statusVerifiedThanks": "Prix accepté — merci de soutenir la communauté !",
             "celebrateButton": "Célébrer 🎉",
             "statusRejected": "Votre prix n'a pas été accepté",
+            "statusRejectedShort": "Refusé",
+            "conflictShort": "Conflit",
             "conflictPending": "Ce mois a déjà une proposition en attente de vérification.",
             "conflictVerified": "Ce mois a déjà un prix vérifié par la communauté.", "providerHistoryLoading": "Vérification de CoinGecko…", "providerHistoryResult": "{count} mois récupérés automatiquement. Vous pouvez proposer manuellement les mois manquants.", "providerHistoryNoData": "CoinGecko n'a pas de données pour cette période. Vous pouvez proposer le prix manuellement.", "providerHistoryError": "La récupération automatique est indisponible. Vous pouvez proposer le prix manuellement ci-dessous."
         }

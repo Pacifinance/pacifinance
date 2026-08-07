@@ -326,7 +326,18 @@ const HistoryMonthTopRow = styled.div`
   }
 `;
 
-const PriceSourceBadge = styled.span<{ $verified: boolean }>`
+/** Right side of HistoryMonthTopRow - the verification badge plus, when
+ * relevant, the contribute trigger / submission status / celebrate action
+ * right next to it, instead of a whole separate line under the card. */
+const TopRowActions = styled.div`
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-shrink: 0;
+`;
+
+const StatusPill = styled.span<{ $tone: 'success' | 'warning' | 'danger' }>`
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
@@ -335,9 +346,47 @@ const PriceSourceBadge = styled.span<{ $verified: boolean }>`
   font-weight: 700;
   padding: 0.1rem 0.4rem;
   border-radius: 20px;
-  background: ${(p) => (p.$verified ? 'rgba(16,185,129,0.14)' : 'rgba(245,158,11,0.14)')};
-  color: ${(p) => (p.$verified ? p.theme.successColor : '#d97706')};
+  white-space: nowrap;
+  background: ${(p) => (p.$tone === 'success' ? 'rgba(16,185,129,0.14)' : p.$tone === 'warning' ? 'rgba(245,158,11,0.14)' : 'rgba(239,68,68,0.14)')};
+  color: ${(p) => (p.$tone === 'success' ? p.theme.successColor : p.$tone === 'warning' ? '#d97706' : p.theme.dangerColor)};
 
+  svg { width: 10px; height: 10px; }
+`;
+
+/** Compact "contribute the market price" trigger - icon + one short word,
+ * sitting right next to the unverified badge instead of its own underlined
+ * line below the card. */
+const ContributeTrigger = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  flex-shrink: 0;
+  border: none;
+  background: none;
+  padding: 0;
+  font-size: 0.64rem;
+  font-weight: 700;
+  color: ${(p) => p.theme.buttonBackgroundColor};
+  cursor: pointer;
+  white-space: nowrap;
+
+  svg { width: 11px; height: 11px; }
+  &:hover:not(:disabled) { opacity: 0.8; }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+`;
+
+const DismissIconButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: none;
+  background: none;
+  padding: 0;
+  color: ${(p) => p.theme.textColor};
+  opacity: 0.45;
+  cursor: pointer;
+  &:hover { opacity: 0.8; }
   svg { width: 10px; height: 10px; }
 `;
 
@@ -444,44 +493,6 @@ const HistoryMonthEditRow = styled.div`
   @media (max-width: 520px) {
     grid-template-columns: 1fr;
     .actions { justify-content: flex-end; }
-  }
-`;
-
-const CommunityPriceLine = styled.div`
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 0.4rem;
-  padding: 0 0.1rem 0.35rem;
-  font-size: 0.68rem;
-  text-align: right;
-
-  button.contribute {
-    border: none;
-    background: none;
-    padding: 0;
-    color: ${(p) => p.theme.buttonBackgroundColor};
-    cursor: pointer;
-    font-size: 0.68rem;
-    text-decoration: underline;
-    opacity: 0.85;
-    &:hover { opacity: 1; }
-  }
-
-  span.status { color: ${(p) => p.theme.textColor}; opacity: 0.75; }
-  span.status-pending { color: ${(p) => (p.theme.mode === 'dark' ? '#fbbf24' : '#b45309')}; opacity: 1; }
-  span.status-verified { color: ${(p) => p.theme.successColor}; opacity: 0.85; }
-  span.status-rejected { color: ${(p) => p.theme.dangerColor}; opacity: 0.85; }
-
-  button.dismiss {
-    border: none;
-    background: none;
-    padding: 0;
-    color: ${(p) => p.theme.textColor};
-    opacity: 0.4;
-    cursor: pointer;
-    &:hover { opacity: 0.7; }
   }
 `;
 
@@ -834,8 +845,8 @@ export default function InvestmentHoldingsPanel({
     window.setTimeout(() => setCelebratingCommunityPriceId(null), 950);
   };
 
-  // Triggered from a specific month's "contribute the market price" button
-  // (see the CommunityPriceLine render below) rather than from a standalone,
+  // Triggered from a specific month's "contribute the market price" trigger
+  // (see the TopRowActions render below) rather than from a standalone,
   // always-visible button - CoinGecko is tried first, for every gap across
   // this holding's whole history (not just the clicked month), and only the
   // months it can't cover fall back to the manual proposal form. Immediately
@@ -971,11 +982,12 @@ export default function InvestmentHoldingsPanel({
   };
 
   const deleteAssetTransactions = async () => {
-    if (!deleteTarget || deletingTransactions) return;
+    if (!deleteTarget?.instrument || deletingTransactions) return;
+    const instrumentId = deleteTarget.instrument.id;
     setDeletingTransactions(true);
     try {
-      await investmentService.deleteTransactionsForInstrument(deleteTarget.instrumentId);
-      setAllTransactions((prev) => prev ? prev.filter((tx) => tx.instrumentId !== deleteTarget.instrumentId) : prev);
+      await investmentService.deleteTransactionsForInstrument(instrumentId);
+      setAllTransactions((prev) => prev ? prev.filter((tx) => tx.instrumentId !== instrumentId) : prev);
       setDeleteTarget(null);
       await onChanged();
     } finally {
@@ -1387,15 +1399,71 @@ export default function InvestmentHoldingsPanel({
                     const hasVerifiedPrice = entry.priceSource === 'provider' || entry.priceSource === 'community';
                     const communityContributionAvailable = monthKey < currentMonthKey && !hasVerifiedPrice;
 
+                    // A single status pill drives the top-row badge, its tone/
+                    // label escalating from the plain provider-verified state
+                    // to whatever is more specific about THIS user's own
+                    // community submission (conflict > submission > base).
+                    const conflictActive = communityPriceConflict?.key === communityKey;
+                    let pillTone: 'success' | 'warning' | 'danger' = hasVerifiedPrice ? 'success' : 'warning';
+                    let pillLabel = hasVerifiedPrice ? (t.verifiedBadge || 'Verified') : (t.unverifiedBadge || 'Unverified');
+                    let pillTitle: string | undefined;
+                    if (conflictActive) {
+                      pillTone = 'danger';
+                      pillLabel = t.communityPrice?.conflictShort || 'Conflict';
+                      pillTitle = communityPriceConflict!.existing.status === 'verified'
+                        ? (t.communityPrice?.conflictVerified || 'This month already has a community-verified price.')
+                        : (t.communityPrice?.conflictPending || 'This month already has a proposal awaiting verification.');
+                    } else if (myCommunitySubmission?.status === 'pending') {
+                      pillTone = 'warning';
+                      pillLabel = t.communityPrice?.statusPendingShort || 'Pending review';
+                      pillTitle = t.communityPrice?.statusPending || 'Your price is awaiting verification';
+                    } else if (myCommunitySubmission?.status === 'verified') {
+                      pillTone = 'success';
+                      pillLabel = t.verifiedBadge || 'Verified';
+                      pillTitle = t.communityPrice?.statusVerified || 'Your price has been verified';
+                    } else if (myCommunitySubmission?.status === 'rejected') {
+                      pillTone = 'danger';
+                      pillLabel = t.communityPrice?.statusRejectedShort || 'Rejected';
+                      pillTitle = `${t.communityPrice?.statusRejected || 'Your price was not accepted'}${myCommunitySubmission.rejectionNote ? `: ${myCommunitySubmission.rejectionNote}` : ''}`;
+                    }
+                    const showCelebrate = myCommunitySubmission?.status === 'verified' && !celebratedCommunityPrices.has(myCommunitySubmission.id);
+
                     return (
                       <React.Fragment key={entry.userDate}>
                         <HistoryMonthCard theme={theme}>
                           <HistoryMonthTopRow>
                             <span className="month-label">{formatHistoryMonthLabel(entry.userDate)}</span>
-                            <PriceSourceBadge theme={theme} $verified={hasVerifiedPrice}>
-                              {hasVerifiedPrice && <ShieldCheck size={10} />}
-                              {hasVerifiedPrice ? (t.verifiedBadge || 'Verified') : (t.unverifiedBadge || 'Unverified')}
-                            </PriceSourceBadge>
+                            <TopRowActions theme={theme}>
+                              <StatusPill theme={theme} $tone={pillTone} title={pillTitle}>
+                                {pillTone === 'success' && <ShieldCheck size={10} />}
+                                {pillLabel}
+                              </StatusPill>
+                              {conflictActive && (
+                                <DismissIconButton theme={theme} type="button" onClick={() => setCommunityPriceConflict(null)} aria-label={translations.general.cancel}>
+                                  <FontAwesomeIcon icon={faTimes} />
+                                </DismissIconButton>
+                              )}
+                              {showCelebrate && (
+                                <CelebrateButton type="button" title={t.communityPrice?.statusVerifiedThanks} onClick={() => celebrateCommunityPrice(myCommunitySubmission!.id)}>
+                                  {t.communityPrice?.celebrateButton || 'Celebrate 🎉'}
+                                </CelebrateButton>
+                              )}
+                              {celebratingCommunityPriceId === myCommunitySubmission?.id && (
+                                <CelebrationBurst aria-hidden="true">
+                                  {['🎉', '✨', '●', '◆', '🎊'].map((piece, index) => (
+                                    <i key={index} style={{ '--rotation': `${index * 72}deg` } as React.CSSProperties}>{piece}</i>
+                                  ))}
+                                </CelebrationBurst>
+                              )}
+                              {communityEligible && !conflictActive && !myCommunitySubmission && communityContributionAvailable && communityPriceEditingKey !== communityKey && (
+                                <ContributeTrigger theme={theme} type="button" onClick={() => contributeForMonth(holding, entry)} disabled={backfillingProviderHistory}>
+                                  <Users size={11} />
+                                  {contributingMonthKey === communityKey
+                                    ? (t.communityPrice?.providerHistoryLoading || 'Checking CoinGecko…')
+                                    : (t.communityPrice?.contributeShort || 'Contribute')}
+                                </ContributeTrigger>
+                              )}
+                            </TopRowActions>
                           </HistoryMonthTopRow>
                           <HistoryMonthMainRow theme={theme}>
                             <HistoryMonthValueBlock theme={theme}>
@@ -1417,69 +1485,16 @@ export default function InvestmentHoldingsPanel({
                             </button>
                           </HistoryMonthMainRow>
                         </HistoryMonthCard>
-                        {communityEligible && (communityContributionAvailable || myCommunitySubmission) && (
-                          communityPriceEditingKey === communityKey ? (
-                            <CommunityPriceEditRow theme={theme}>
-                              <label>{t.communityPrice?.pricePlaceholder || 'Price'}<input type="number" autoFocus value={communityPriceInputs.price} onChange={(e) => setCommunityPriceInputs((f) => ({ ...f, price: e.target.value }))} /></label>
-                              <label>{t.communityPrice?.currencyLabel || 'Currency'}<input type="text" className="currency" maxLength={3} value={communityPriceInputs.currency} onChange={(e) => setCommunityPriceInputs((f) => ({ ...f, currency: e.target.value.toUpperCase() }))} placeholder="EUR" /></label>
-                              <label className="date">{t.communityPrice?.dateLabel || 'Reference date'}<input type="date" min={`${monthKey}-01`} max={monthLastDate} value={communityPriceInputs.date} onChange={(e) => setCommunityPriceInputs((f) => ({ ...f, date: e.target.value }))} /></label>
-                              <div className="actions">
-                                <button type="button" onClick={() => setCommunityPriceEditingKey(null)} aria-label={translations.general.cancel}><FontAwesomeIcon icon={faTimes} /></button>
-                                <button type="button" onClick={() => submitCommunityPriceForMonth(holding, entry)} disabled={submittingCommunityPrice || !communityPriceInputs.date} aria-label={t.saveButton}><FontAwesomeIcon icon={faCheck} /></button>
-                              </div>
-                            </CommunityPriceEditRow>
-                          ) : (
-                            <CommunityPriceLine theme={theme}>
-                              {communityPriceConflict?.key === communityKey ? (
-                                <>
-                                  <span className="status">
-                                    {communityPriceConflict.existing.status === 'verified'
-                                      ? (t.communityPrice?.conflictVerified || 'This month already has a community-verified price.')
-                                      : (t.communityPrice?.conflictPending || 'This month already has a proposal awaiting verification.')}
-                                  </span>
-                                  <button type="button" className="dismiss" onClick={() => setCommunityPriceConflict(null)} aria-label={translations.general.cancel}>
-                                    <FontAwesomeIcon icon={faTimes} />
-                                  </button>
-                                </>
-                              ) : myCommunitySubmission ? (
-                                <>
-                                <span className={`status status-${myCommunitySubmission.status}`}>
-                                  {myCommunitySubmission.status === 'pending' && (t.communityPrice?.statusPending || 'Your price is awaiting verification')}
-                                  {myCommunitySubmission.status === 'verified' && (
-                                    celebratedCommunityPrices.has(myCommunitySubmission.id) ? (
-                                      (t.communityPrice?.statusVerified || 'Your price has been verified')
-                                    ) : (
-                                      <>
-                                        {t.communityPrice?.statusVerifiedThanks || 'Price accepted — thanks for contributing to the community!'}
-                                        {' '}
-                                        <CelebrateButton type="button" onClick={() => celebrateCommunityPrice(myCommunitySubmission.id)}>
-                                          {t.communityPrice?.celebrateButton || 'Celebrate 🎉'}
-                                        </CelebrateButton>
-                                      </>
-                                    )
-                                  )}
-                                  {myCommunitySubmission.status === 'rejected' && (
-                                    `${t.communityPrice?.statusRejected || 'Your price was not accepted'}${myCommunitySubmission.rejectionNote ? `: ${myCommunitySubmission.rejectionNote}` : ''}`
-                                  )}
-                                </span>
-                                {celebratingCommunityPriceId === myCommunitySubmission.id && (
-                                  <CelebrationBurst aria-hidden="true">
-                                    {['🎉', '✨', '●', '◆', '🎊'].map((piece, index) => (
-                                      <i key={index} style={{ '--rotation': `${index * 72}deg` } as React.CSSProperties}>{piece}</i>
-                                    ))}
-                                  </CelebrationBurst>
-                                )}
-                                </>
-                              ) : (
-                                <button type="button" className="contribute" onClick={() => contributeForMonth(holding, entry)} disabled={backfillingProviderHistory}>
-                                  <Users size={14} />
-                                  {contributingMonthKey === communityKey
-                                    ? (t.communityPrice?.providerHistoryLoading || 'Checking CoinGecko…')
-                                    : (t.communityPrice?.contributeButton || 'Contribute the market price')}
-                                </button>
-                              )}
-                            </CommunityPriceLine>
-                          )
+                        {communityEligible && communityPriceEditingKey === communityKey && (
+                          <CommunityPriceEditRow theme={theme}>
+                            <label>{t.communityPrice?.pricePlaceholder || 'Price'}<input type="number" autoFocus value={communityPriceInputs.price} onChange={(e) => setCommunityPriceInputs((f) => ({ ...f, price: e.target.value }))} /></label>
+                            <label>{t.communityPrice?.currencyLabel || 'Currency'}<input type="text" className="currency" maxLength={3} value={communityPriceInputs.currency} onChange={(e) => setCommunityPriceInputs((f) => ({ ...f, currency: e.target.value.toUpperCase() }))} placeholder="EUR" /></label>
+                            <label className="date">{t.communityPrice?.dateLabel || 'Reference date'}<input type="date" min={`${monthKey}-01`} max={monthLastDate} value={communityPriceInputs.date} onChange={(e) => setCommunityPriceInputs((f) => ({ ...f, date: e.target.value }))} /></label>
+                            <div className="actions">
+                              <button type="button" onClick={() => setCommunityPriceEditingKey(null)} aria-label={translations.general.cancel}><FontAwesomeIcon icon={faTimes} /></button>
+                              <button type="button" onClick={() => submitCommunityPriceForMonth(holding, entry)} disabled={submittingCommunityPrice || !communityPriceInputs.date} aria-label={t.saveButton}><FontAwesomeIcon icon={faCheck} /></button>
+                            </div>
+                          </CommunityPriceEditRow>
                         )}
                       </React.Fragment>
                     );
@@ -1488,8 +1503,9 @@ export default function InvestmentHoldingsPanel({
               );
             })()}
             <button type="button" className="contribute" style={{ color: theme.dangerColor, borderColor: `${theme.dangerColor}66`, marginTop: '0.65rem' }} onClick={async () => {
+              if (!holding.instrument) return;
               if (!window.confirm(t.communityPrice?.resetHistoryConfirm || 'Delete all monthly history for this asset?')) return;
-              await investmentService.deleteHoldingHistoryForInstrument(holding.instrumentId);
+              await investmentService.deleteHoldingHistoryForInstrument(holding.instrument.id);
               setAllHistory(null);
               await onChanged();
             }}>
@@ -1666,7 +1682,7 @@ export default function InvestmentHoldingsPanel({
             <ModalBody theme={theme} style={{ color: theme.textColor } as React.CSSProperties}>
               <p style={{ marginTop: 0, opacity: 0.78, color: theme.textColor }}>{t.deleteDescription || 'Scegli cosa rimuovere. Le transazioni restano disponibili per ricostruire lo storico.'}</p>
               <p style={{ marginTop: 0, fontSize: '0.78rem', opacity: 0.65, color: theme.textColor }}>{t.deleteScopeHint || `Valore attuale e mese di riferimento: ${new Intl.DateTimeFormat(language === 'it' ? 'it-IT' : 'en-US', { month: 'long', year: 'numeric' }).format(new Date(`${(userDate || new Date().toISOString()).slice(0, 7)}-01T00:00:00Z`))}`}</p>
-              <AddTriggerButton type="button" theme={theme} onClick={async () => { await investmentService.deleteHoldingHistoryForInstrument(deleteTarget.instrumentId); setDeleteTarget(null); setAllHistory(null); await onChanged(); }}>
+              <AddTriggerButton type="button" theme={theme} onClick={async () => { if (!deleteTarget.instrument) return; await investmentService.deleteHoldingHistoryForInstrument(deleteTarget.instrument.id); setDeleteTarget(null); setAllHistory(null); await onChanged(); }}>
                 {t.deleteHistoryOnly || 'Elimina tutto lo storico mensile dell’asset'}
               </AddTriggerButton>
               <AddTriggerButton type="button" theme={theme} onClick={async () => { await handleDelete(deleteTarget.id); setDeleteTarget(null); }}>
@@ -1674,7 +1690,7 @@ export default function InvestmentHoldingsPanel({
               </AddTriggerButton>
               <div style={{ marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: `1px solid ${theme.dangerColor}44` }}>
                 <strong style={{ color: theme.dangerColor, fontSize: '0.82rem' }}>{t.deleteTransactionsTitle || 'Elimina transazioni dell’asset'}</strong>
-                <p style={{ fontSize: '0.78rem', opacity: 0.7 }}>{(t.deleteTransactionsDescription || 'Rimuove definitivamente {count} transazioni. Usalo solo per correggere un’importazione errata.').replace('{count}', String(allTransactions?.filter((tx) => tx.instrumentId === deleteTarget.instrumentId).length ?? 0))}</p>
+                <p style={{ fontSize: '0.78rem', opacity: 0.7 }}>{(t.deleteTransactionsDescription || 'Rimuove definitivamente {count} transazioni. Usalo solo per correggere un’importazione errata.').replace('{count}', String(allTransactions?.filter((tx) => tx.instrumentId === deleteTarget.instrument?.id).length ?? 0))}</p>
                 <AddTriggerButton type="button" theme={theme} style={{ color: theme.dangerColor, borderColor: `${theme.dangerColor}88` }} disabled={deletingTransactions} onClick={async () => {
                   if (!transactionDeleteArmed) { setTransactionDeleteArmed(true); return; }
                   await deleteAssetTransactions();

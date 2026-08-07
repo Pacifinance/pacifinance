@@ -2942,12 +2942,15 @@
             "dateLabel": "Reference date",
             "explainerTitle": "Contribute to the community price database",
             "explainerDescription": "Submit the last available quote for a completed month. From the first day of the following month, an admin can verify it and complete the history of everyone holding the same instrument.",
-            "contributeButton": "Contribute market price",
+            "contributeShort": "Contribute",
             "statusPending": "Your price is awaiting verification",
+            "statusPendingShort": "Pending review",
             "statusVerified": "Your price has been verified",
             "statusVerifiedThanks": "Price accepted — thanks for supporting the community!",
             "celebrateButton": "Celebrate 🎉",
             "statusRejected": "Your price wasn't accepted",
+            "statusRejectedShort": "Rejected",
+            "conflictShort": "Conflict",
             "conflictPending": "This month already has a submission awaiting verification.",
             "conflictVerified": "This month already has a community-verified price.", "providerHistoryLoading": "Checking CoinGecko…", "providerHistoryResult": "Recovered {count} months automatically. You can propose missing months manually.", "providerHistoryNoData": "CoinGecko has no data for this period. You can propose the price manually.", "providerHistoryError": "Automatic recovery is unavailable. You can propose the price manually below."
         }

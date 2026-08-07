@@ -2942,12 +2942,15 @@
             "dateLabel": "Data di riferimento",
             "explainerTitle": "Contribuisci al database prezzi della community",
             "explainerDescription": "Proponi l'ultima quotazione disponibile di un mese concluso. Dal primo giorno del mese successivo, un admin potrà verificarla e completare lo storico di tutti gli utenti con lo stesso titolo.",
-            "contributeButton": "Contribuisci il prezzo di mercato",
+            "contributeShort": "Contribuisci",
             "statusPending": "Il tuo prezzo è in attesa di verifica",
+            "statusPendingShort": "In verifica",
             "statusVerified": "Il tuo prezzo è stato verificato",
             "statusVerifiedThanks": "Prezzo accettato — grazie per il contributo alla community!",
             "celebrateButton": "Festeggia 🎉",
             "statusRejected": "Il tuo prezzo non è stato accettato",
+            "statusRejectedShort": "Rifiutato",
+            "conflictShort": "Conflitto",
             "conflictPending": "Questo mese ha già una proposta in attesa di verifica.",
             "conflictVerified": "Questo mese ha già un prezzo verificato dalla community.", "providerHistoryLoading": "Controllo CoinGecko…", "providerHistoryResult": "Recuperati automaticamente {count} mesi. Per i mesi mancanti puoi proporre il prezzo manualmente.", "providerHistoryNoData": "CoinGecko non ha dati per questo periodo. Puoi proporre il prezzo manualmente.", "providerHistoryError": "Il recupero automatico non è disponibile. Puoi proporre il prezzo manualmente qui sotto."
         }

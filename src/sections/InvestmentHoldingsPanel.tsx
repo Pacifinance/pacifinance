@@ -1230,6 +1230,14 @@ export default function InvestmentHoldingsPanel({
                       {backfillingProviderHistory ? (t.communityPrice?.providerHistoryLoading || 'Checking CoinGecko…') : (t.communityPrice?.providerHistoryButton || 'Try CoinGecko')}
                     </button>
                   </CommunityExplainer>
+                  <button type="button" className="contribute" onClick={async () => {
+                    if (!window.confirm(t.communityPrice?.resetHistoryConfirm || 'Delete all monthly history for this asset?')) return;
+                    await investmentService.deleteHoldingHistoryForInstrument(holding.instrumentId);
+                    setAllHistory(null);
+                    await onChanged();
+                  }}>
+                    {t.communityPrice?.resetHistoryButton || 'Reset asset history'}
+                  </button>
                   {providerHistoryMessage && <p style={{ margin: '0.45rem 0', fontSize: '0.78rem', opacity: 0.8 }}>{providerHistoryMessage}</p>}
                   {years.length > 1 && (
                     <HistoryYearFilter theme={theme}>

@@ -90,6 +90,7 @@ export interface InvestmentService {
   backfillHistoricalPrices(): Promise<InvestmentHistoricalPriceBackfillResponse>;
   saveHolding(data: InvestmentHoldingSaveRequest): Promise<InvestmentHoldingDto>;
   deleteHolding(data: InvestmentHoldingDeleteRequest): Promise<AxiosResponse>;
+  deleteHoldingHistoryForInstrument(instrumentId: number): Promise<{deletedCount: number}>;
   getHoldingHistory(params?: InvestmentHoldingHistoryRequest): Promise<InvestmentHoldingHistoryResponse>;
   saveHoldingHistory(data: InvestmentHoldingHistorySaveRequest): Promise<InvestmentHoldingHistoryDto>;
   saveHoldingHistoryBatch(data: InvestmentHoldingHistorySaveBatchRequest): Promise<InvestmentBatchSaveResponse>;
@@ -153,6 +154,11 @@ export const createInvestmentService = (apiClient: AxiosInstance): InvestmentSer
   async deleteHolding(data) {
     const res = await apiClient.post('/api/investments/holdings/delete', data);
     return res;
+  },
+
+  async deleteHoldingHistoryForInstrument(instrumentId) {
+    const res = await apiClient.post<{deletedCount: number}>('/api/investments/holdings/history/delete-instrument', { instrument_id: instrumentId });
+    return res.data;
   },
 
   async getHoldingHistory(params = {}) {

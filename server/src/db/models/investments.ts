@@ -721,6 +721,22 @@ async function updateHolding(user_id: string, holding_id: number, input: Holding
  * Deletes a detailed holding owned by the user.
  */
 async function deleteHolding(user_id: string, holding_id: number) {
+    // A holding delete is an explicit reset of the detailed position. Remove
+    // its monthly snapshots as well; otherwise the FK's SET NULL behavior
+    // leaves orphan history that is picked up again when the same instrument
+    // is imported later, doubling quantity/value while transactions remain
+    // correct.
+    const {data: holdingRow, error: lookupError} = await supabase.from("user_investment_holdings")
+        .select("instrument_id").eq("user_id", user_id).eq("id", holding_id).maybeSingle()
+    if (lookupError) console.error("investments.deleteHolding: failed to look up instrument", lookupError)
+    if (holdingRow?.instrument_id) {
+        const {error: historyError} = await supabase.from("user_investment_holding_history")
+            .delete().eq("user_id", user_id).eq("instrument_id", holdingRow.instrument_id)
+        if (historyError) {
+            console.error("investments.deleteHolding: failed to delete holding history", historyError)
+            return null
+        }
+    }
     const {error, count} = await supabase.from("user_investment_holdings")
         .delete({count: "exact"})
         .eq("user_id", user_id)
@@ -728,6 +744,13 @@ async function deleteHolding(user_id: string, holding_id: number) {
     if (error) console.error("investments.deleteHolding: failed to delete holding", error)
     if (error) return null
     return {deletedCount: count ?? 0}
+}
+
+async function deleteHoldingHistoryForInstrument(user_id: string, instrument_id: number) {
+    const {error, count} = await supabase.from("user_investment_holding_history")
+        .delete({count: "exact"}).eq("user_id", user_id).eq("instrument_id", instrument_id)
+    if (error) console.error("investments.deleteHoldingHistoryForInstrument: failed", error)
+    return error ? null : {deletedCount: count ?? 0}
 }
 
 /**
@@ -1914,6 +1937,7 @@ export default {
     insertHolding,
     updateHolding,
     deleteHolding,
+    deleteHoldingHistoryForInstrument,
     snapshotHoldingsForUser,
     getHoldingHistoryByUserId,
     upsertHoldingHistoryEntry,

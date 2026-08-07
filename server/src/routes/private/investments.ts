@@ -209,6 +209,14 @@ investmentsRouter.post("/holdings/history", async (req, res) => {
     res.status(200).json(history)
 })
 
+investmentsRouter.post("/holdings/history/delete-instrument", async (req, res) => {
+    const instrumentId = Number(req.body.instrument_id ?? req.body.instrumentId)
+    if (!Number.isFinite(instrumentId)) { res.status(400).send(); return }
+    const result = await db.investments.deleteHoldingHistoryForInstrument(req.userId as string, instrumentId)
+    if (result === null) { res.status(500).send(); return }
+    res.status(200).json(result)
+})
+
 function parseHoldingHistoryPayload(body: any): {holdingId: number, userDate: Date, currentValue: number | null, investedAmount: number | null, quantity?: number | null} | {error: string} {
     const holdingId = Number(body.holding_id ?? body.holdingId)
     const userDate = new Date(body.user_date ?? body.userDate)

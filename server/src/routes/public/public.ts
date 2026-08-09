@@ -6,6 +6,7 @@ import common from "../common"
 import authCookies from "../authCookies"
 import supabase from "../../db/supabase"
 import redis from "../../cache/redisClient"
+import cache from "../../cache/cache"
 import { TimeoutError, getTimeoutMs, withTimeout } from "../../libs/timeout"
 import { checkAndConsumeRateLimit } from "../../libs/rateLimiter"
 import { generateRecoveryCode, hashRecoveryCode, parseRecoveryCodeInput } from "../../db/recoveryCode"
@@ -164,6 +165,15 @@ publicRouter.get("/health", (_, res) => {
 
 publicRouter.get("/health/dependencies", dependencyHealthHandler)
 publicRouter.get("/health-dependencies", dependencyHealthHandler)
+
+// Public GitHub repo stats (stars/forks/contributors) for the landing page's
+// open-source section - self-refreshes on read past its TTL, same pattern as
+// the crypto price cache (see server/src/cache/items/githubStats.ts).
+publicRouter.get("/github-stats", async (_, res) => {
+    if (await cache.valueExpired("githubStats")) await cache.invalidate("githubStats")
+    const value = await cache.get("githubStats")
+    res.status(200).json(value)
+})
 
 publicRouter.post("/registration", async (req, res) => {
     try {

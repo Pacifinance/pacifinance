@@ -5,6 +5,7 @@ import averages from "./items/averages"
 import rankings from "./items/rankings"
 import prices from "./items/prices"
 import exchangeRates from "./items/exchangeRates"
+import githubStats from "./items/githubStats"
 
 interface CacheItemInfo {
     durationSec: number
@@ -28,7 +29,8 @@ const expectedItems: {[key: string]: CacheItemInfo} = {
     "userAverages": { durationSec: MONTHLY_DURATION_SEC, fetch: averages.fetchUserAverages },
     "userRankings": { durationSec: MONTHLY_DURATION_SEC, fetch: rankings.fetchUserRankings },
     "crypto": { durationSec: 3600, fetch: prices.fetchCryptoPrices },
-    "exchangeRates": { durationSec: 86400, fetch: exchangeRates.fetchExchangeRates }
+    "exchangeRates": { durationSec: 86400, fetch: exchangeRates.fetchExchangeRates },
+    "githubStats": { durationSec: 6 * 3600, fetch: githubStats.fetchGitHubStats }
 }
 
 /**

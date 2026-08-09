@@ -126,21 +126,29 @@
     "landing": {
         "new": {
             "hero": {
-                "title": "Unifique suas finanças",
-                "subtitle": "em uma plataforma",
-                "description": "Contas espalhadas em diferentes bancos? Investimentos em múltiplas plataformas? O Pacifinance oferece uma visão completa da sua situação financeira, tudo em um só lugar.",
+                "title": "Entenda sua situação financeira",
+                "subtitle": "sem mostrar seus dados a ninguém",
+                "description": "Falar de dinheiro é um tabu, e sem um termo de comparação é difícil saber se você está indo bem. O Pacifinance registra contas, gastos e investimentos, e permite que você se compare de forma totalmente anônima com pessoas em situação parecida — open source, gratuito e também auto-hospedável.",
                 "getStarted": "Comece gratuitamente",
-                "learnMore": "Saiba mais",
-                "socialProof": "Confiável por usuários preocupados com privacidade em todo o mundo"
+                "learnMore": "Saiba mais"
             },
             "benefits": {
-                "freeForever": "100% Grátis para sempre",
+                "anonymousComparison": "Comparação anônima",
                 "privacyFirst": "Privacidade em primeiro lugar",
-                "smartAnalytics": "Análises inteligentes"
+                "openSource": "Open source"
             },
             "features": {
                 "title": "Como o Pacifinance resolve seus problemas",
-                "subtitle": "Cansado de alternar entre vários apps para ver seu panorama financeiro completo? O Pacifinance transforma a maneira como você gerencia seu dinheiro.",
+                "subtitle": "Cansado de alternar entre vários apps para ver seu panorama financeiro completo? O Pacifinance transforma a maneira como você gerencia seu dinheiro — sem compartilhá-lo com ninguém.",
+                "openSource": {
+                    "title": "Open Source e Auto-Hospedável",
+                    "description": "Código público e auditável, sem caixas-pretas: você pode verificar exatamente como seus dados são tratados, ou instalar o Pacifinance no seu próprio servidor com Docker e ficar totalmente fora da nuvem.",
+                    "features": [
+                        "• Licença AGPLv3, código no GitHub",
+                        "• Auto-hospedagem com Docker em poucos minutos",
+                        "• Histórico de preços enriquecido e verificado pela comunidade"
+                    ]
+                },
                 "privacy": {
                     "title": "Comparações anônimas inteligentes",
                     "description": "Descubra se você está gastando demais ou economizando pouco comparado a pessoas em situações semelhantes. Todas as comparações são completamente anônimas.",
@@ -243,6 +251,32 @@
                     ]
                 }
             },
+            "openSource": {
+                "badge": "Open Source",
+                "title": "Desenvolvido em público, com a comunidade",
+                "subtitle": "O Pacifinance é open source sob a licença AGPLv3. O código está no GitHub, aberto para qualquer pessoa ler, auditar ou contribuir — e quem preferir não depender da nossa nuvem pode auto-hospedá-lo com Docker.",
+                "pillars": {
+                    "code": {
+                        "title": "Código Aberto",
+                        "description": "O projeto é público no GitHub: nenhuma funcionalidade oculta, nenhuma surpresa nos termos de serviço."
+                    },
+                    "selfHost": {
+                        "title": "Auto-Hospedável",
+                        "description": "Execute o Pacifinance no seu próprio servidor com Docker, sem depender da nossa hospedagem."
+                    },
+                    "communityPrices": {
+                        "title": "Preços Verificados pela Comunidade",
+                        "description": "O histórico de preços dos ativos é enriquecido e verificado por contribuições da comunidade, não apenas por provedores pagos."
+                    }
+                },
+                "viewOnGithub": "Visitar o repositório no GitHub",
+                "sponsorsComingSoon": "O suporte via GitHub Sponsors está a caminho.",
+                "stats": {
+                    "stars": "estrelas",
+                    "forks": "forks",
+                    "contributors": "colaboradores"
+                }
+            },
             "cta": {
                 "title": "Pronto para unificar sua",
                 "subtitle": "vida financeira",
@@ -251,13 +285,13 @@
                 "disclaimer": "Sem cartão de crédito necessário • Leva menos de 2 minutos • Comece imediatamente"
             },
             "trust": {
-                "encryption": "Segurança avançada",
-                "dataCollection": "Coleta de dados",
+                "license": "Licença Open Source",
+                "dataSold": "Dados Vendidos a Terceiros",
                 "freeForever": "Grátis para sempre"
             },
             "donation": {
                 "title": "Ama o Pacifinance? Ajude a mantê-lo gratuito!",
-                "description": "Esta plataforma é mantida inteiramente por doações da comunidade. Seu apoio nos ajuda a continuar melhorando e adicionando novos recursos."
+                "description": "Esta plataforma é mantida inteiramente por doações da comunidade. Seu apoio nos ajuda a continuar melhorando e adicionando novos recursos. O suporte via GitHub Sponsors também está a caminho."
             }
         }
     },

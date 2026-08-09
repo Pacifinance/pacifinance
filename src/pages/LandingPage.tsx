@@ -21,19 +21,19 @@ export default function NewLandingPage() {
   const getMetadata = () => {
     if (language === 'it') {
       return {
-        title: "Unifica le Tue Finanze - Dashboard Multi-Piattaforma Pacifinance",
-        description: "Unifica le tue finanze in un'unica piattaforma. Traccia conti di diverse banche, confronta spese anonimamente e gestisci investimenti. Supporto per 19 valute con tassi di cambio in tempo reale: EUR, USD, GBP, CHF, JPY, CAD, AUD, SEK, NOK, DKK, PLN, CZK, HUF, RON, BGN, BRL, INR, CNY, TRY.",
+        title: "Pacifinance - Finanza Personale Open Source e Privacy-First",
+        description: "Capisci la tua situazione finanziaria e confrontati in modo completamente anonimo con altri utenti, senza condividere i tuoi dati. App gratuita, open source (AGPLv3) e auto-ospitabile con Docker.",
         locale: "it_IT",
         languageCode: "it",
-        keywords: "unificare finanze, dashboard multi-piattaforma, gestione finanziaria, confronto anonimo, tracciamento spese, portafoglio investimenti, aggregazione conti bancari, analisi finanziaria, importare transazioni CSV, importare Excel spese, multi-valuta, conversione valute, tassi di cambio, prezzi crypto in tempo reale, prezzi criptovalute, EUR, USD, GBP, CHF, JPY, CAD, AUD, SEK, NOK, DKK, PLN, CZK, HUF, RON, BGN, BRL, INR, CNY, TRY, 19 valute supportate"
+        keywords: "app finanza personale open source, gestione finanziaria privacy-first, confronto anonimo finanze, self hosted finance app, app finanze gratuita, budget open source, tracciamento spese, portafoglio investimenti, storico prezzi verificato dalla community, AGPL, Docker self-hosting, unificare conti bancari, multi-valuta, EUR, USD, GBP, CHF, JPY, CAD, AUD, SEK, NOK, DKK, PLN, CZK, HUF, RON, BGN, BRL, INR, CNY, TRY"
       };
     }
     return {
-      title: "Unify Your Finances - Pacifinance Multi-Platform Dashboard",
-      description: "Unify your finances in one platform. Track accounts across multiple banks, compare spending anonymously, and manage investments. Support for 19 currencies with live exchange rates: EUR, USD, GBP, CHF, JPY, CAD, AUD, SEK, NOK, DKK, PLN, CZK, HUF, RON, BGN, BRL, INR, CNY, TRY.",
+      title: "Pacifinance - Open Source, Privacy-First Personal Finance",
+      description: "Understand your financial situation and compare yourself completely anonymously with other users, without sharing your data. Free, open source (AGPLv3) app, self-hostable with Docker.",
       locale: "en_US",
-      languageCode: "en", 
-        keywords: "unify finances, multi-platform dashboard, financial management, anonymous comparison, expense tracking, investment portfolio, bank account aggregation, financial analytics, import CSV transactions, import Excel expenses, multi-currency, currency conversion, exchange rates, crypto market prices, real-time cryptocurrency prices, EUR, USD, GBP, CHF, JPY, CAD, AUD, SEK, NOK, DKK, PLN, CZK, HUF, RON, BGN, BRL, INR, CNY, TRY, 19 currencies supported"
+      languageCode: "en",
+      keywords: "open source personal finance app, privacy-first finance management, anonymous financial comparison, self-hosted finance app, free budget app, open source budgeting, expense tracking, investment portfolio, community-verified price history, AGPL, Docker self-hosting, unify bank accounts, multi-currency, EUR, USD, GBP, CHF, JPY, CAD, AUD, SEK, NOK, DKK, PLN, CZK, HUF, RON, BGN, BRL, INR, CNY, TRY"
     };
   };
 
@@ -49,7 +49,7 @@ export default function NewLandingPage() {
         
         {/* SEO Meta Tags - Dynamic for Current Language */}
         <title>{metadata.title}</title>
-        <meta name="description" content={`${metadata.description} ${language === 'it' ? 'Dashboard finanziario gratuito multi-piattaforma.' : 'Free multi-platform financial dashboard.'}`} />
+        <meta name="description" content={metadata.description} />
         <meta name="keywords" content={metadata.keywords} />
         <meta httpEquiv="Content-Language" content={metadata.languageCode} />
         <meta name="language" content={metadata.languageCode} />
@@ -62,7 +62,7 @@ export default function NewLandingPage() {
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://pacifinance.com/" />
         <meta property="og:image" content="https://pacifinance.com/PacifinanceLogoPNG3NoBg.webp" />
-        <meta property="og:image:alt" content="Pacifinance - Unified Financial Dashboard" />
+        <meta property="og:image:alt" content="Pacifinance - Open Source Privacy-First Personal Finance" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:site_name" content="Pacifinance" />
@@ -88,27 +88,31 @@ export default function NewLandingPage() {
             "applicationCategory": "FinanceApplication",
             "operatingSystem": ["Web Browser", "iOS", "Android"],
             "inLanguage": ["en", "it"],
+            "license": "https://github.com/pacifinance/pacifinance/blob/main/LICENSE",
             "offers": {
               "@type": "Offer",
               "price": "0",
-              "priceCurrency": "USD"
+              "priceCurrency": "EUR"
             },
             "author": {
               "@type": "Organization",
               "name": "Pacifinance",
               "url": "https://pacifinance.com",
               "sameAs": [
-                "https://twitter.com/pacifinance"
+                "https://twitter.com/pacifinance",
+                "https://github.com/pacifinance/pacifinance"
               ]
             },
             "featureList": [
+              language === 'it' ? "Confronto finanziario anonimo" : "Anonymous financial comparison",
+              language === 'it' ? "Open source (AGPLv3), codice pubblico su GitHub" : "Open source (AGPLv3), public code on GitHub",
+              language === 'it' ? "Auto-ospitabile con Docker" : "Self-hostable with Docker",
+              language === 'it' ? "Storico prezzi verificato dalla community" : "Community-verified price history",
               language === 'it' ? "Unificazione conti bancari" : "Bank account unification",
-              language === 'it' ? "Confronti anonimi" : "Anonymous comparisons", 
               language === 'it' ? "Gestione investimenti" : "Investment management",
               language === 'it' ? "Analisi spese" : "Expense analytics",
               language === 'it' ? "Prezzi di mercato crypto in tempo reale" : "Real-time crypto market prices",
-              language === 'it' ? "Supporto 19 valute (EUR, USD, GBP, CHF, JPY, CAD, AUD, SEK, NOK, DKK, PLN, CZK, HUF, RON, BGN, BRL, INR, CNY, TRY)" : "19 currencies supported (EUR, USD, GBP, CHF, JPY, CAD, AUD, SEK, NOK, DKK, PLN, CZK, HUF, RON, BGN, BRL, INR, CNY, TRY)",
-              language === 'it' ? "Tassi di cambio in tempo reale" : "Live exchange rates",
+              language === 'it' ? "Supporto 19 valute" : "19 currencies supported",
               language === 'it' ? "Importazione CSV e Excel" : "CSV and Excel import"
             ]
           })}
@@ -123,7 +127,8 @@ export default function NewLandingPage() {
             "url": "https://pacifinance.com",
             "logo": "https://pacifinance.com/PacifinanceLogoPNG3NoBg.webp",
             "sameAs": [
-              "https://twitter.com/pacifinance"
+              "https://twitter.com/pacifinance",
+              "https://github.com/pacifinance/pacifinance"
             ],
             "contactPoint": {
               "@type": "ContactPoint",

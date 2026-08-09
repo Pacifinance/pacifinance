@@ -10,7 +10,10 @@ import LockIcon from '@mui/icons-material/Lock';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import SecurityIcon from '@mui/icons-material/Security';
 import WarningIcon from '@mui/icons-material/Warning';
+import CodeIcon from '@mui/icons-material/Code';
 import SEOHead from '../components/SEOHead';
+
+const GITHUB_REPO_URL = 'https://github.com/pacifinance/pacifinance';
 
 export default function AuthPage() {
   const { theme, toggleMode } = useContext(ThemeContext);
@@ -28,8 +31,8 @@ export default function AuthPage() {
       {/* SEO Meta Tags */}
       <SEOHead 
         title={isSignUp ? 'Sign Up - Pacifinance | Secure Access' : 'Sign In - Pacifinance | Secure Access'}
-        description="Access your Pacifinance account securely. Sign in or sign up to manage your personal finances with complete privacy."
-        keywords="sign in, sign up, secure access, personal finance, privacy"
+        description="Access your Pacifinance account securely. Sign in or sign up to manage your personal finances with complete privacy — no email required, open source, AGPLv3."
+        keywords="sign in, sign up, secure access, personal finance, privacy, open source"
         canonical="/auth"
         noindex={false}
       />
@@ -215,6 +218,28 @@ export default function AuthPage() {
                       }
                     </p>
                   </div>
+
+                  <a
+                    href={GITHUB_REPO_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-4 rounded-lg border block transition-opacity hover:opacity-80"
+                    style={{
+                      borderColor: `${theme.secondaryColor}40`,
+                      backgroundColor: theme.mode === "dark" ? `${theme.secondaryColor}10` : "rgba(255,255,255,0.5)"
+                    }}
+                  >
+                    <CodeIcon style={{ color: theme.secondaryColor }} className="mb-2" />
+                    <h4 className="font-semibold mb-2 text-sm">
+                      {language === 'it' ? 'Open Source' : 'Open Source'}
+                    </h4>
+                    <p className="text-xs opacity-80">
+                      {language === 'it'
+                        ? 'Codice pubblico e verificabile su GitHub, licenza AGPLv3'
+                        : 'Public, verifiable code on GitHub, under the AGPLv3 license'
+                      }
+                    </p>
+                  </a>
                 </div>
               </div>
 
@@ -305,10 +330,10 @@ export default function AuthPage() {
                     {language === 'it' ? 'La Tua Privacy e Sicurezza' : 'Your Privacy & Security'}
                   </h3>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div 
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div
                       className="p-4 rounded-lg border"
-                      style={{ 
+                      style={{
                         borderColor: `${theme.secondaryColor}40`,
                         backgroundColor: theme.mode === "dark" ? `${theme.secondaryColor}10` : "rgba(255,255,255,0.5)"
                       }}
@@ -318,16 +343,16 @@ export default function AuthPage() {
                         {language === 'it' ? 'Nessuna Email Richiesta' : 'No Email Required'}
                       </h4>
                       <p className="text-sm opacity-80">
-                        {language === 'it' 
+                        {language === 'it'
                           ? 'Completo anonimato con autenticazione sicura basata su ID'
                           : 'Complete anonymity with secure ID-based authentication'
                         }
                       </p>
                     </div>
 
-                    <div 
+                    <div
                       className="p-4 rounded-lg border"
-                      style={{ 
+                      style={{
                         borderColor: `${theme.secondaryColor}40`,
                         backgroundColor: theme.mode === "dark" ? `${theme.secondaryColor}10` : "rgba(255,255,255,0.5)"
                       }}
@@ -343,6 +368,28 @@ export default function AuthPage() {
                         }
                       </p>
                     </div>
+
+                    <a
+                      href={GITHUB_REPO_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-4 rounded-lg border block transition-opacity hover:opacity-80"
+                      style={{
+                        borderColor: `${theme.secondaryColor}40`,
+                        backgroundColor: theme.mode === "dark" ? `${theme.secondaryColor}10` : "rgba(255,255,255,0.5)"
+                      }}
+                    >
+                      <CodeIcon style={{ color: theme.secondaryColor }} className="mb-2" />
+                      <h4 className="font-semibold mb-2">
+                        {language === 'it' ? 'Open Source' : 'Open Source'}
+                      </h4>
+                      <p className="text-sm opacity-80">
+                        {language === 'it'
+                          ? 'Codice pubblico e verificabile su GitHub, licenza AGPLv3'
+                          : 'Public, verifiable code on GitHub, under the AGPLv3 license'
+                        }
+                      </p>
+                    </a>
                   </div>
                 </div>
 

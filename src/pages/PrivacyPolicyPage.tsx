@@ -23,7 +23,7 @@ export default function PrivacyPolicyPage() {
       <SEOHead 
         title={language === 'it' ? 'Privacy Policy | Pacifinance' : 'Privacy Policy | Pacifinance'}
         description={language === 'it' ? 'Leggi la Privacy Policy di Pacifinance per capire come proteggiamo e utilizziamo i tuoi dati personali.' : 'Read Pacifinance Privacy Policy to understand how we protect and use your personal data.'}
-        keywords={language === 'it' ? 'privacy policy, protezione dati, GDPR, Pacifinance' : 'privacy policy, data protection, GDPR, Pacifinance'}
+        keywords={language === 'it' ? 'privacy policy, protezione dati, GDPR, open source, self-hosted, AGPL, Pacifinance' : 'privacy policy, data protection, GDPR, open source, self-hosted, AGPL, Pacifinance'}
         canonical="/privacy-policy"
       />
       <Header
@@ -70,6 +70,15 @@ export default function PrivacyPolicyPage() {
               </h2>
               <p className="mb-4 leading-relaxed">
                 {translations.legal.privacy.dataUsage.content}
+              </p>
+            </section>
+
+            <section>
+              <h2 className="text-2xl font-semibold mb-4" style={{ color: theme.secondaryColor }}>
+                {translations.legal.privacy.openSourceHosting?.title || 'Open Source & Self-Hosting'}
+              </h2>
+              <p className="mb-4 leading-relaxed">
+                {translations.legal.privacy.openSourceHosting?.content || "Pacifinance's source code is public on GitHub under the AGPLv3 license. This policy describes the hosted service at pacifinance.com; self-hosted instances are the operator's own responsibility."}
               </p>
             </section>
 

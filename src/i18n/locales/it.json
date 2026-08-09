@@ -1889,6 +1889,10 @@
                 "title": "Utilizzo dei Dati",
                 "content": "I tuoi dati vengono utilizzati esclusivamente per fornire le funzionalità della piattaforma. Non vendiamo i dati finanziari né li utilizziamo per pubblicità o profilazione commerciale."
             },
+            "openSourceHosting": {
+                "title": "Open Source e Self-Hosting",
+                "content": "Il codice sorgente di Pacifinance è pubblico su GitHub sotto licenza AGPLv3: chiunque può verificare esattamente come vengono trattati i dati. Questa privacy policy descrive il servizio ospitato su pacifinance.com. Se esegui una tua istanza self-hosted, questa policy non si applica: sei tu il responsabile del trattamento dei dati della tua installazione."
+            },
             "benchmarkParticipation": {
                 "title": "Benchmark della community",
                 "content": "La partecipazione ai benchmark hosted è facoltativa e richiede un consenso separato nel profilo. Se attiva, usiamo solo metriche aggregate e bucket di profilo per calcolare statistiche di gruppo soggette a soglie minime di riservatezza; transazioni, note e identificativo pubblico non sono condivisi. Puoi revocare il consenso in qualsiasi momento: i bucket di profilo salvati per i benchmark vengono eliminati."
@@ -1924,8 +1928,16 @@
                 "answer": "Puoi inserire entrate, uscite, investimenti, risparmi e altri dati finanziari. Tutti i dati rimangono anonimi e sono utilizzati solo per le tue analisi personali."
             },
             {
+                "question": "Pacifinance è open source?",
+                "answer": "Sì. Il codice sorgente è pubblico su GitHub sotto licenza AGPLv3: chiunque può leggerlo, verificarlo o contribuire."
+            },
+            {
+                "question": "Posso auto-ospitare Pacifinance?",
+                "answer": "Sì, con Docker puoi eseguire Pacifinance sul tuo server e restare completamente fuori dal nostro cloud. Le istruzioni sono nel README del repository su GitHub."
+            },
+            {
                 "question": "Come posso supportare il progetto?",
-                "answer": "Il modo migliore per supportare Pacifinance è attraverso donazioni volontarie via Buy Me a Coffee. Ogni contributo ci aiuta a mantenere la piattaforma online e a sviluppare nuove funzionalità."
+                "answer": "Puoi supportare Pacifinance con una donazione volontaria via Buy Me a Coffee, contribuendo al codice su GitHub, o mettendo una stella al repository. Il supporto tramite GitHub Sponsors è in arrivo."
             }
         ],
         "stillHaveQuestions": "Hai ancora domande?",

@@ -5,27 +5,37 @@
 ### 🏠 Homepage / Landing Page
 
 **Italian (IT)**
-- Primary: "gestione finanza personale", "app finanze", "risparmio personale"
-- Secondary: "pianificazione budget", "tracciamento spese", "analisi finanziaria personale"
-- Long-tail: "come gestire le finanze personali gratis", "app italiana per il risparmio", "confronto finanziario anonimo"
+- Primary: "app finanze open source", "gestione finanza personale", "app finanze"
+- Secondary: "pianificazione budget", "tracciamento spese", "self-hosted finanze", "confronto anonimo spese"
+- Long-tail: "app open source per il risparmio", "alternativa open source a YNAB", "confronto finanziario anonimo senza condividere dati"
 
 **English (EN)**
-- Primary: "personal finance management", "finance app", "budget tracker"
-- Secondary: "expense tracking", "financial planning", "money management tool"
-- Long-tail: "free personal finance app", "anonymous financial comparison", "privacy-focused finance tracker"
+- Primary: "open source finance app", "personal finance management", "self-hosted budget tracker"
+- Secondary: "expense tracking", "anonymous financial comparison", "privacy-first finance app"
+- Long-tail: "open source alternative to Mint YNAB", "self-host personal finance docker", "anonymous financial comparison without sharing data"
 
 **German (DE)** - Future
-- Primary: "persönliche Finanzverwaltung", "Finanz-App", "Budget-Tracker"
-- Secondary: "Ausgabenverfolgung", "Finanzplanung", "Haushaltsbuch"
-- Long-tail: "kostenlose Finanz-App Deutschland", "anonymer Finanzvergleich", "Datenschutz Finanzen"
+- Primary: "Open-Source-Finanz-App", "persönliche Finanzverwaltung", "selbst gehostete Budget-App"
+- Secondary: "Ausgabenverfolgung", "Finanzplanung", "anonymer Finanzvergleich"
+- Long-tail: "Open-Source-Finanz-App Deutschland", "Finanz-App selbst hosten Docker", "anonymer Finanzvergleich ohne Datenweitergabe"
 
 ---
 
 ### 📊 Dashboard
 
+> **Nota**: `/dashboard` è una pagina privata post-login (`noindex`) e non è indicizzabile — corretto così, i dati mostrati sono personali. Le keyword sotto servono per il contenuto **pubblico** che descrive la dashboard (sezione feature nella landing page, Knowledge Base), non per la pagina stessa.
+
 **IT**: "dashboard finanziario", "panoramica patrimonio", "riepilogo spese mensili"
 **EN**: "financial dashboard", "wealth overview", "monthly expense summary"
 **DE**: "Finanz-Dashboard", "Vermögensübersicht", "monatliche Ausgabenübersicht"
+
+---
+
+### 🐙 Open Source & Self-Hosting
+
+**IT**: "app finanze open source", "self-hosted finanza personale", "Docker app finanze", "licenza AGPLv3", "codice sorgente aperto finanze", "alternativa open source a YNAB/Mint"
+**EN**: "open source finance app", "self-hosted personal finance", "Docker finance app", "AGPLv3 license finance", "open source alternative to Mint YNAB", "run your own finance server"
+**DE**: "Open-Source-Finanz-App", "selbst gehostete Finanzverwaltung", "Docker Finanz-App", "AGPLv3-Lizenz Finanzen"
 
 ---
 
@@ -87,9 +97,9 @@
 
 ### ❓ FAQ
 
-**IT**: "domande frequenti finanze", "come funziona Pacifinance", "supporto app", "sicurezza dati finanziari"
-**EN**: "finance app FAQ", "how Pacifinance works", "app support", "financial data security"
-**DE**: "häufig gestellte Fragen", "Pacifinance Anleitung", "Datensicherheit"
+**IT**: "domande frequenti finanze", "come funziona Pacifinance", "Pacifinance è open source", "come fare self-hosting Pacifinance", "sicurezza dati finanziari"
+**EN**: "finance app FAQ", "how Pacifinance works", "is Pacifinance open source", "how to self-host Pacifinance", "financial data security"
+**DE**: "häufig gestellte Fragen", "Pacifinance Anleitung", "ist Pacifinance Open Source", "Datensicherheit"
 
 ---
 
@@ -105,17 +115,17 @@
 
 ### Homepage IT
 ```
-Gestisci le tue finanze personali con Pacifinance: traccia spese, confronta il tuo budget in modo anonimo e ottimizza il risparmio. App gratuita e sicura. Privacy garantita. 🇮🇹
+Pacifinance è l'app open source per gestire le tue finanze personali: confronta il tuo budget in modo anonimo, senza condividere dati personali. Gratuita, self-hostabile con Docker, licenza AGPLv3. 🇮🇹
 ```
 
 ### Homepage EN
 ```
-Manage your personal finances with Pacifinance: track expenses, compare your budget anonymously, and optimize savings. Free and secure app. Privacy-first. 🌍
+Pacifinance is the open source personal finance app: compare your budget anonymously without sharing personal data. Free, self-hostable with Docker, AGPLv3 licensed. 🌍
 ```
 
 ### Homepage DE
 ```
-Verwalten Sie Ihre persönlichen Finanzen mit Pacifinance: Ausgaben verfolgen, Budget anonym vergleichen, Ersparnisse optimieren. Kostenlose & sichere App. Datenschutz zuerst. 🇩🇪
+Pacifinance ist die Open-Source-App für persönliche Finanzen: Budget anonym vergleichen, ohne persönliche Daten preiszugeben. Kostenlos, selbst hostbar mit Docker, AGPLv3-Lizenz. 🇩🇪
 ```
 
 ---
@@ -179,6 +189,9 @@ Compare your expenses with similar users completely anonymously. Discover where 
 - "encrypted financial data"
 - "GDPR compliant finance"
 - "privacy-first banking"
+- "docker finance app"
+- "self-hosted finance server"
+- "open source PWA"
 
 ---
 
@@ -213,8 +226,9 @@ Compare your expenses with similar users completely anonymously. Discover where 
 ## 🎯 Competitor Analysis Keywords
 
 ### Direct Competitors
-- Mint, YNAB, Personal Capital, Emma, MoneyLover
-- **Differentiation keywords**: "anonymous", "privacy-first", "no bank connection", "manual input", "comparison with peers"
+- Mint, YNAB, Personal Capital, Emma, MoneyLover — all closed-source, cloud-only
+- Actual, Firefly III (open source but no anonymous peer comparison)
+- **Differentiation keywords**: "open source", "self-hosted", "AGPLv3", "anonymous", "privacy-first", "no bank connection", "manual input", "comparison with peers"
 
 ### Keywords They're Missing (Opportunities)
 - "confronto anonimo spese"
@@ -222,6 +236,9 @@ Compare your expenses with similar users completely anonymously. Discover where 
 - "gestione patrimonio senza connessione banca"
 - "financial comparison without sharing data"
 - "anonymous wealth benchmarking"
+- "open source finance app with anonymous comparison"
+- "self-hosted alternative to Mint YNAB"
+- "app finanze open source con confronto anonimo"
 
 ---
 

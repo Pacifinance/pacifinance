@@ -16,7 +16,7 @@ export default function TermsOfServicePage() {
       <SEOHead 
         title={language === 'it' ? 'Termini di Servizio | Pacifinance' : 'Terms of Service | Pacifinance'}
         description={language === 'it' ? 'Termini di Servizio per Pacifinance - Comprendi i tuoi diritti e responsabilità utilizzando la nostra piattaforma finanziaria.' : 'Terms of Service for Pacifinance - Understanding your rights and responsibilities when using our privacy-focused personal finance platform.'}
-        keywords={language === 'it' ? 'termini di servizio, condizioni, diritti, Pacifinance' : 'terms of service, conditions, rights, Pacifinance'}
+        keywords={language === 'it' ? 'termini di servizio, condizioni, diritti, open source, AGPL, self-hosted, Pacifinance' : 'terms of service, conditions, rights, open source, AGPL, self-hosted, Pacifinance'}
         canonical="/terms-of-service"
       />
 
@@ -85,6 +85,18 @@ export default function TermsOfServicePage() {
                   {language === 'it'
                     ? 'Pacifinance è fornito "così com\'è". Non garantiamo che il servizio sia sempre disponibile o privo di errori.'
                     : 'Pacifinance is provided "as is". We do not guarantee that the service will always be available or error-free.'
+                  }
+                </p>
+              </section>
+
+              <section>
+                <h2 className="text-2xl font-semibold mb-4" style={{ color: theme.secondaryColor }}>
+                  {language === 'it' ? '5. Open Source e Self-Hosting' : '5. Open Source & Self-Hosting'}
+                </h2>
+                <p className="leading-relaxed">
+                  {language === 'it'
+                    ? 'Il codice sorgente di Pacifinance è pubblico su GitHub sotto licenza AGPLv3: puoi ispezionarlo, contribuire o eseguire una tua istanza self-hosted. Questi termini di servizio si applicano solo al servizio ospitato su pacifinance.com. Se esegui una tua istanza self-hosted, sei tu il responsabile dei dati e degli utenti di quell\'istanza.'
+                    : 'Pacifinance\'s source code is public on GitHub under the AGPLv3 license: you may inspect it, contribute to it, or run your own self-hosted instance. These terms of service apply only to the hosted service at pacifinance.com. If you run your own self-hosted instance, you are responsible for the data and users of that instance.'
                   }
                 </p>
               </section>

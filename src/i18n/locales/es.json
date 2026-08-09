@@ -1379,6 +1379,10 @@
                 "title": "Uso de datos",
                 "content": "Tus datos se utilizan exclusivamente para proporcionar las funcionalidades de la plataforma y para comparaciones anónimas. No vendemos, compartimos ni utilizamos tus datos con fines comerciales."
             },
+            "openSourceHosting": {
+                "title": "Open Source y Autoalojamiento",
+                "content": "El código fuente de Pacifinance es público en GitHub bajo licencia AGPLv3: cualquiera puede verificar exactamente cómo se tratan los datos. Esta política de privacidad describe el servicio alojado en pacifinance.com. Si ejecutas tu propia instancia autoalojada, esta política no se aplica: tú eres responsable de cómo tu instalación trata los datos."
+            },
             "benchmarkParticipation": {"title": "Benchmarks de la comunidad", "content": "La participación en benchmarks alojados es opcional, requiere consentimiento separado y puede revocarse desde el perfil."},
             "anonymity": {
                 "title": "Anonimato",
@@ -1411,8 +1415,16 @@
                 "answer": "Puedes introducir ingresos, gastos, inversiones, ahorros y otros datos financieros. Todos los datos permanecen anónimos y se utilizan solo para tu análisis personal."
             },
             {
+                "question": "¿Es Pacifinance open source?",
+                "answer": "Sí. El código fuente es público en GitHub bajo licencia AGPLv3: cualquiera puede leerlo, verificarlo o contribuir."
+            },
+            {
+                "question": "¿Puedo autoalojar Pacifinance?",
+                "answer": "Sí, con Docker puedes ejecutar Pacifinance en tu propio servidor y quedarte totalmente fuera de nuestra nube. Las instrucciones están en el README del repositorio en GitHub."
+            },
+            {
                 "question": "¿Cómo puedo apoyar el proyecto?",
-                "answer": "La mejor manera de apoyar Pacifinance es mediante donaciones voluntarias a través de Buy Me a Coffee. Cada contribución nos ayuda a mantener la plataforma en línea y desarrollar nuevas funciones."
+                "answer": "Puedes apoyar a Pacifinance con una donación voluntaria vía Buy Me a Coffee, contribuyendo al código en GitHub, o dándole una estrella al repositorio. El apoyo vía GitHub Sponsors llegará pronto."
             }
         ],
         "stillHaveQuestions": "¿Aún tienes preguntas?",

@@ -637,6 +637,33 @@ const AddTriggerButton = styled.button`
   &:hover { opacity: 1; background: ${(p) => (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.02)')}; }
 `;
 
+/** One choice in the delete-management modal - title + a short explanation
+ * of its exact scope stacked underneath, instead of a single terse label
+ * (AddTriggerButton's shape) that leaves what actually gets removed to
+ * guesswork. */
+const DeleteOptionButton = styled.button<{ $danger?: boolean }>`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
+  width: 100%;
+  margin-top: 0.6rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 10px;
+  text-align: left;
+  cursor: pointer;
+  border: 1px dashed ${(p) => (p.$danger
+    ? `${p.theme.dangerColor}88`
+    : (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.15)' : '#cbd5e1'))};
+  background: transparent;
+
+  strong { display: block; font-size: 0.85rem; font-weight: 700; color: ${(p) => (p.$danger ? p.theme.dangerColor : p.theme.textColor)}; }
+  span { display: block; margin-top: 0.15rem; font-size: 0.72rem; font-weight: 400; line-height: 1.4; color: ${(p) => p.theme.textColor}; opacity: 0.65; }
+
+  &:hover:not(:disabled) { background: ${(p) => (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.02)')}; }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+`;
+
 const FormSection = styled.div`
   margin-top: 0.75rem;
   padding-top: 0.9rem;
@@ -1551,15 +1578,6 @@ export default function InvestmentHoldingsPanel({
                 </>
               );
             })()}
-            <button type="button" className="contribute" style={{ color: theme.dangerColor, borderColor: `${theme.dangerColor}66`, marginTop: '0.65rem' }} onClick={async () => {
-              if (!holding.instrument) return;
-              if (!window.confirm(t.communityPrice?.resetHistoryConfirm || 'Delete all monthly history for this asset?')) return;
-              await investmentService.deleteHoldingHistoryForInstrument(holding.instrument.id);
-              setAllHistory(null);
-              await onChanged();
-            }}>
-              {t.communityPrice?.resetHistoryButton || 'Reimposta lo storico dell’asset'}
-            </button>
           </HistoryDrawer>
         )}
         {isEditingHistorical && (
@@ -1729,27 +1747,28 @@ export default function InvestmentHoldingsPanel({
               <CloseButton theme={theme} onClick={() => setDeleteTarget(null)}><FontAwesomeIcon icon={faTimes} /></CloseButton>
             </ModalHeader>
             <ModalBody theme={theme} style={{ color: theme.textColor } as React.CSSProperties}>
-              <p style={{ marginTop: 0, opacity: 0.78, color: theme.textColor }}>{t.deleteDescription || 'Scegli cosa rimuovere. Le transazioni restano disponibili per ricostruire lo storico.'}</p>
-              <p style={{ marginTop: 0, fontSize: '0.78rem', opacity: 0.65, color: theme.textColor }}>{t.deleteScopeHint || `Valore attuale e mese di riferimento: ${new Intl.DateTimeFormat(language === 'it' ? 'it-IT' : 'en-US', { month: 'long', year: 'numeric' }).format(new Date(`${(userDate || new Date().toISOString()).slice(0, 7)}-01T00:00:00Z`))}`}</p>
-              <AddTriggerButton type="button" theme={theme} onClick={async () => { if (!deleteTarget.instrument) return; await investmentService.deleteHoldingHistoryForInstrument(deleteTarget.instrument.id); setDeleteTarget(null); setAllHistory(null); await onChanged(); }}>
-                {t.deleteHistoryOnly || 'Elimina tutto lo storico mensile dell’asset'}
-              </AddTriggerButton>
-              <AddTriggerButton type="button" theme={theme} onClick={async () => { await handleDelete(deleteTarget.id); setDeleteTarget(null); }}>
-                {t.deleteHoldingAndHistory || 'Elimina holding e storico'}
-              </AddTriggerButton>
+              <p style={{ marginTop: 0, opacity: 0.78, color: theme.textColor }}>{t.deleteDescription || 'Scegli una delle tre opzioni qui sotto — sono indipendenti tra loro.'}</p>
+              <DeleteOptionButton type="button" theme={theme} onClick={async () => { if (!deleteTarget.instrument) return; await investmentService.deleteHoldingHistoryForInstrument(deleteTarget.instrument.id); setDeleteTarget(null); setAllHistory(null); await onChanged(); }}>
+                <strong>{t.deleteHistoryOnly || 'Cancella lo storico mensile'}</strong>
+                <span>{t.deleteHistoryOnlyDescription || 'Rimuove OGNI mese registrato per questo asset, non solo {month} — utile per ricostruirlo da zero re-importando un file. La posizione attuale (quantità e valore) resta invariata.'
+                  .replace('{month}', new Intl.DateTimeFormat(language === 'it' ? 'it-IT' : 'en-US', { month: 'long', year: 'numeric' }).format(new Date(`${(userDate || new Date().toISOString()).slice(0, 7)}-01T00:00:00Z`)))}</span>
+              </DeleteOptionButton>
+              <DeleteOptionButton type="button" theme={theme} onClick={async () => { await handleDelete(deleteTarget.id); setDeleteTarget(null); }}>
+                <strong>{t.deleteHoldingAndHistory || 'Elimina la posizione e il suo storico'}</strong>
+                <span>{t.deleteHoldingAndHistoryDescription || 'Rimuove completamente questo asset dal portafoglio: quantità, valore attuale e ogni mese di storico. Le transazioni importate restano salvate, quindi puoi sempre ricrearlo re-importando lo stesso file.'}</span>
+              </DeleteOptionButton>
               <div style={{ marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: `1px solid ${theme.dangerColor}44` }}>
-                <strong style={{ color: theme.dangerColor, fontSize: '0.82rem' }}>{t.deleteTransactionsTitle || 'Elimina transazioni dell’asset'}</strong>
-                <p style={{ fontSize: '0.78rem', opacity: 0.7 }}>{(t.deleteTransactionsDescription || 'Rimuove definitivamente {count} transazioni. Usalo solo per correggere un’importazione errata.').replace('{count}', String(allTransactions?.filter((tx) => tx.instrumentId === deleteTarget.instrument?.id).length ?? 0))}</p>
-                <AddTriggerButton type="button" theme={theme} style={{ color: theme.dangerColor, borderColor: `${theme.dangerColor}88` }} disabled={deletingTransactions} onClick={async () => {
+                <DeleteOptionButton type="button" theme={theme} $danger disabled={deletingTransactions} onClick={async () => {
                   if (!transactionDeleteArmed) { setTransactionDeleteArmed(true); return; }
                   await deleteAssetTransactions();
                   setTransactionDeleteArmed(false);
                 }}>
-                  {deletingTransactions ? (t.deleteTransactionsLoading || 'Eliminazione…') : transactionDeleteArmed ? (t.deleteTransactionsConfirmButton || 'Conferma cancellazione definitiva') : (t.deleteTransactionsButton || 'Elimina transazioni definitivamente')}
-                </AddTriggerButton>
+                  <strong>{deletingTransactions ? (t.deleteTransactionsLoading || 'Eliminazione…') : transactionDeleteArmed ? (t.deleteTransactionsConfirmButton || 'Conferma cancellazione definitiva') : (t.deleteTransactionsButton || 'Elimina le transazioni importate')}</strong>
+                  <span>{(t.deleteTransactionsDescription || 'Rimuove definitivamente le {count} transazioni di acquisto/vendita/dividendo registrate per questo asset. Usalo solo per correggere un’importazione sbagliata — a differenza delle due opzioni sopra, la posizione attuale e il suo storico NON vengono toccati.')
+                    .replace('{count}', String(allTransactions?.filter((tx) => tx.instrumentId === deleteTarget.instrument?.id).length ?? 0))}</span>
+                </DeleteOptionButton>
                 {transactionDeleteArmed && <p style={{ color: theme.dangerColor, fontSize: '0.76rem', margin: '0.35rem 0 0' }}>{t.deleteTransactionsConfirm || 'Premi di nuovo per confermare. Questa azione non può essere annullata.'}</p>}
               </div>
-              <p style={{ marginBottom: 0, fontSize: '0.78rem', opacity: 0.6 }}>{t.deleteTransactionsNote || 'Le transazioni non vengono cancellate da queste azioni.'}</p>
             </ModalBody>
           </ModalContainer>
         </Overlay>

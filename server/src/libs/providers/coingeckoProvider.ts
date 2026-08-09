@@ -118,6 +118,15 @@ type CoinGeckoRangeResponse = {
     prices?: [number, number][] // [unix ms, price]
 }
 
+// CoinGecko's free/demo tier rejects a /market_chart/range request OUTRIGHT
+// (HTTP 401, error_code 10012 "exceeds the allowed time range") when `from`
+// is more than 365 days before now - confirmed against the live API. Crucially
+// this fails the ENTIRE request, not just the out-of-range portion: a single
+// old gap (e.g. from a multi-year CSV import) would otherwise silently block
+// every month in the request, including recent ones that are trivially
+// available on their own. One day short of the limit as a safety margin.
+const MAX_LOOKBACK_SEC = 364 * 24 * 60 * 60
+
 /**
  * Fetches one price point per calendar month between `fromUnix` and `toUnix`
  * (unix seconds), directly in EUR (no separate exchange-rate conversion
@@ -125,13 +134,20 @@ type CoinGeckoRangeResponse = {
  * range - CoinGecko returns daily granularity automatically for ranges over
  * ~90 days, and this keeps only the last data point of each month.
  *
- * NOTE: CoinGecko's free/demo tier has, at various points, limited how far
- * back a single range request can go - this isn't guaranteed to return the
- * instrument's full history. Returns null (never throws) when no key is
- * configured for demo auth, on rate limit, timeout, or a non-200/malformed
- * response - callers must treat a null result as "not available", not an error.
+ * `fromUnix` is clamped to the free/demo tier's ~365-day lookback window (see
+ * MAX_LOOKBACK_SEC) before the request is made, so a range that starts
+ * further back still returns whatever recent months ARE available instead of
+ * failing entirely - the caller may still see fewer months than it asked
+ * for, but never zero just because the range's start was too old. Returns
+ * null (never throws) when no key is configured for demo auth, on rate
+ * limit, timeout, or a non-200/malformed response - callers must treat a
+ * null result as "not available", not an error.
  */
 export async function getHistoricalMonthlyPrices(coinId: string, fromUnix: number, toUnix: number): Promise<Map<string, number> | null> {
+    if (fromUnix >= toUnix) return null
+
+    const earliestAllowed = Math.floor(Date.now() / 1000) - MAX_LOOKBACK_SEC
+    if (fromUnix < earliestAllowed) fromUnix = earliestAllowed
     if (fromUnix >= toUnix) return null
 
     // Normalize the dynamic timestamps to months: two users requesting the

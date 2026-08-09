@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faFileCsv, faSpinner, faCircleCheck, faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
@@ -6,6 +6,8 @@ import { ThemeContext } from '../contexts/ThemeContext';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
 import { useDemoServices } from '../hooks/useDemoServices';
+import { useCryptoGroupingPref } from '../hooks/useCryptoGroupingPref';
+import { ASSET_CATEGORY_ORDER } from '../utils/holdingsChartHelpers';
 import {
   Overlay, ModalContainer, ModalHeader, ModalTitle, CloseButton, ModalBody, ModalFooter,
 } from '../components/multiInsert/SharedStyles';
@@ -216,6 +218,36 @@ const ErrorLine = styled.p`
   display: flex;
   align-items: center;
   gap: 0.4rem;
+`;
+
+/** Shown in the modal's persistent footer once the import finishes -
+ * ModalFooter sits outside ModalBody's scroll area, so this stays visible
+ * (and the Close button reachable) no matter how far down the position list
+ * the user had scrolled while the import was running. */
+const ImportResultBanner = styled.div<{ $tone: 'success' | 'warning' | 'danger' }>`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: ${(p) => (p.$tone === 'success' ? p.theme.successColor : p.$tone === 'warning' ? '#d97706' : p.theme.dangerColor)};
+
+  svg { flex-shrink: 0; }
+`;
+
+/** Section label splitting the detected positions by asset category (e.g.
+ * "Bitcoin" vs "Crypto") when a mixed-kind file makes that distinction worth
+ * showing - see showGroupHeaders/rowDisplayAssetKey. */
+const GroupHeading = styled.h4`
+  margin: 0.9rem 0 -0.15rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: ${(p) => p.theme.textColor};
+  opacity: 0.5;
+
+  &:first-child { margin-top: 0; }
 `;
 
 const PositionRow = styled.div`
@@ -489,6 +521,7 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
     currencySymbol: string;
   };
   const { investmentService } = useDemoServices();
+  const { isCombined: isCryptoGroupingCombined } = useCryptoGroupingPref();
   const t = translations.investments.importWizard;
 
   const [rows, setRows] = useState<ImportRowState[]>([]);
@@ -1075,6 +1108,45 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
   const importableCount = rows.filter((r) => r.selected && isRowReady(r)).length;
   const savedCount = rows.filter((r) => r.status === 'saved').length;
 
+  // The asset category a row will be saved under (bitcoin and crypto are
+  // never filtered by which panel opened this wizard — every kind found in
+  // the file is always processed together, see importSelected's loop over
+  // ALL rows below), collapsed onto 'crypto' only for DISPLAY grouping when
+  // the user's dashboard-wide crypto view preference is "combined" — the
+  // save itself always keeps BTC and other crypto on their real asset key.
+  const rowDisplayAssetKey = (row: ImportRowState): InvestmentAssetKey | null => {
+    const key = row.instrument ? getAssetKeyForInstrument(row.instrument) : KIND_TO_ASSET_KEY[row.manualKind];
+    if (!key) return null;
+    return isCryptoGroupingCombined && key === 'bitcoin' ? 'crypto' : key;
+  };
+
+  // Groups rows by that display asset key (stable order preserved within
+  // each group) so a mixed-kind import (e.g. a Ledger export with both BTC
+  // and altcoins) shows a clear "Bitcoin" / "Crypto" section split instead of
+  // an undifferentiated flat list — only when there's actually more than one
+  // group present, so a typical single-broker file (all stocks, or an
+  // all-crypto exchange export) renders exactly as before.
+  const { orderedRowIndices, headerPositions, showGroupHeaders } = useMemo(() => {
+    const withGroup = rows.map((row, index) => ({ index, group: rowDisplayAssetKey(row) }));
+    const distinctGroups = new Set(withGroup.map((item) => item.group).filter((g): g is InvestmentAssetKey => g !== null));
+    const sorted = [...withGroup].sort((a, b) => {
+      const rankA = a.group ? ASSET_CATEGORY_ORDER.indexOf(a.group) : ASSET_CATEGORY_ORDER.length;
+      const rankB = b.group ? ASSET_CATEGORY_ORDER.indexOf(b.group) : ASSET_CATEGORY_ORDER.length;
+      return rankA - rankB; // stable sort: original relative order is preserved within a group
+    });
+    const headers = new Set<number>();
+    let lastGroup: InvestmentAssetKey | null | undefined;
+    sorted.forEach((item, pos) => {
+      if (item.group !== lastGroup) { headers.add(pos); lastGroup = item.group; }
+    });
+    return {
+      orderedRowIndices: sorted.map((item) => item.index),
+      headerPositions: headers,
+      showGroupHeaders: distinctGroups.size > 1,
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rows, isCryptoGroupingCombined]);
+
   const formatMonthLabel = (monthKey: string) => {
     const [year, month] = monthKey.split('-').map(Number);
     return new Date(Date.UTC(year, month - 1, 1)).toLocaleDateString(language, { month: 'short', year: 'numeric', timeZone: 'UTC' });
@@ -1287,8 +1359,15 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
             </OrphanSection>
           )}
 
-          {rows.map((row, index) => (
-            <PositionRow key={row.position.key} theme={theme}>
+          {orderedRowIndices.map((index, pos) => {
+            const row = rows[index];
+            const group = rowDisplayAssetKey(row);
+            return (
+            <React.Fragment key={row.position.key}>
+            {showGroupHeaders && headerPositions.has(pos) && group && (
+              <GroupHeading theme={theme}>{translations.assets[group]}</GroupHeading>
+            )}
+            <PositionRow theme={theme}>
               <input
                 type="checkbox"
                 checked={row.selected}
@@ -1450,7 +1529,9 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
               </PositionInfo>
               <StatusIcon theme={theme} className={row.status}>{statusIcon(row.status)}</StatusIcon>
             </PositionRow>
-          ))}
+            </React.Fragment>
+            );
+          })}
 
           {importing && importPhase === 'holdings' && importProgress && (
             <ImportProgressBlock theme={theme}>
@@ -1473,9 +1554,6 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
             </SummaryLine>
           )}
 
-          {importDone && (
-            <SummaryLine theme={theme}>{t.done.replace('{count}', String(savedCount))}</SummaryLine>
-          )}
         </ModalBody>
 
         {rows.length > 0 && !importDone && (
@@ -1487,6 +1565,26 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
             </ModernActionButton>
           </ModalFooter>
         )}
+
+        {importDone && (() => {
+          const errorCount = rows.filter((r) => r.status === 'error').length;
+          const tone: 'success' | 'warning' | 'danger' = errorCount === 0 ? 'success' : savedCount === 0 ? 'danger' : 'warning';
+          const message = errorCount === 0
+            ? t.done.replace('{count}', String(savedCount))
+            : savedCount === 0
+              ? (t.doneFailed || "Import failed — check the errors above and try again.")
+              : (t.donePartial || '{count} imported, {errors} failed — you can review the errors above and retry those.')
+                .replace('{count}', String(savedCount)).replace('{errors}', String(errorCount));
+          return (
+            <ModalFooter theme={theme}>
+              <ImportResultBanner theme={theme} $tone={tone}>
+                <FontAwesomeIcon icon={tone === 'success' ? faCircleCheck : faTriangleExclamation} />
+                <span>{message}</span>
+              </ImportResultBanner>
+              <ModernActionButton theme={theme} onClick={onClose}>{t.closeButton || 'Close'}</ModernActionButton>
+            </ModalFooter>
+          );
+        })()}
       </ModalContainer>
     </Overlay>
   );

@@ -296,15 +296,22 @@ const HistoryYearFilter = styled.div`
  * top, value + quantity/delta/source tags + edit button below. Replaces a
  * flatter single-line layout that buried the price under a wall of small
  * numbers with no visual hierarchy. */
-const HistoryMonthCard = styled.div`
+/** $editing flattens the bottom corners and switches to the same green
+ * accent border as CommunityPriceEditRow below it, so the two visually fuse
+ * into one card instead of reading as two unrelated floating boxes - see the
+ * form's own $connected styling. */
+const HistoryMonthCard = styled.div<{ $editing?: boolean }>`
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
   padding: 0.65rem 0.75rem;
-  border-radius: 10px;
+  border-radius: ${(p) => (p.$editing ? '10px 10px 0 0' : '10px')};
   color: ${(p) => p.theme.textColor};
   background: ${(p) => (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.018)')};
-  border: 1px solid ${(p) => (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)')};
+  border: 1px solid ${(p) => (p.$editing
+    ? (p.theme.mode === 'dark' ? 'rgba(16,185,129,0.35)' : 'rgba(5,150,105,0.3)')
+    : (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)'))};
+  ${(p) => p.$editing && 'border-bottom: none;'}
   transition: background 0.15s ease;
 
   &:hover {
@@ -538,23 +545,44 @@ const CommunityExplainer = styled.div`
   p { margin: 0; font-size: 0.68rem; line-height: 1.45; opacity: 0.72; }
 `;
 
+/** Renders directly under the HistoryMonthCard it edits, with no gap and no
+ * top border/radius of its own (see that component's $editing prop) - the
+ * two visually fuse into a single card so it's unambiguous which month this
+ * form belongs to, instead of reading as a stray box wedged into the list. */
 const CommunityPriceEditRow = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 5rem 9rem auto;
-  align-items: end;
-  gap: 0.35rem;
-  margin: 0.15rem 0 0.45rem;
-  padding: 0.65rem;
-  border-radius: 9px;
-  border: 1px solid ${(p) => (p.theme.mode === 'dark' ? 'rgba(16,185,129,0.2)' : 'rgba(5,150,105,0.18)')};
+  margin: -1px 0 0.45rem;
+  padding: 0.55rem 0.65rem 0.65rem;
+  border-radius: 0 0 10px 10px;
+  border: 1px solid ${(p) => (p.theme.mode === 'dark' ? 'rgba(16,185,129,0.35)' : 'rgba(5,150,105,0.3)')};
+  border-top: none;
   background: ${(p) => (p.theme.mode === 'dark' ? 'rgba(16,185,129,0.055)' : 'rgba(16,185,129,0.04)')};
+
+  .form-title {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin: 0 0 0.55rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: ${(p) => p.theme.textColor};
+    text-transform: capitalize;
+
+    svg { width: 11px; height: 11px; color: ${(p) => p.theme.buttonBackgroundColor}; flex-shrink: 0; }
+  }
+
+  .fields {
+    display: grid;
+    grid-template-columns: 1fr 4rem 8.5rem auto;
+    align-items: end;
+    gap: 0.35rem;
+  }
 
   label { display: flex; flex-direction: column; gap: 0.25rem; min-width: 0; font-size: 0.66rem; color: ${(p) => p.theme.textColor}; opacity: 0.75; }
   .actions { display: flex; gap: 0.3rem; }
 
   input {
-    flex: 1;
-    min-width: 0;
+    width: 100%;
+    box-sizing: border-box;
     padding: 0.35rem 0.5rem;
     border-radius: 7px;
     border: 1px solid ${(p) => (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : '#e2e8f0')};
@@ -564,7 +592,7 @@ const CommunityPriceEditRow = styled.div`
     outline: none;
     &:focus { border-color: ${(p) => p.theme.buttonBackgroundColor}; }
   }
-  input.currency { flex: 0 0 3.6rem; text-transform: uppercase; }
+  input.currency { text-transform: uppercase; text-align: center; }
 
   button {
     width: 24px;
@@ -583,7 +611,7 @@ const CommunityPriceEditRow = styled.div`
   }
 
   @media (max-width: 560px) {
-    grid-template-columns: 1fr 5rem;
+    .fields { grid-template-columns: 1fr 4rem; }
     label.date { grid-column: 1 / -1; }
     .actions { grid-column: 1 / -1; justify-content: flex-end; }
   }
@@ -864,15 +892,28 @@ export default function InvestmentHoldingsPanel({
     setContributingMonthKey(communityKey);
     setProviderHistoryMessage(null);
     try {
-      const result = await investmentService.backfillHistoricalPrices();
-      const filled = result.reduce((sum, item) => sum + (item.monthsFilled || 0), 0);
+      // backfillHistoricalPrices() runs across EVERY holding the user has,
+      // not just this one - its response ({holdingId, monthsFilled}[]) and
+      // the verified/unverified flip we actually care about must both be
+      // scoped down to THIS holding, or a month recovered for a different
+      // asset would misleadingly read as progress here.
+      const previousByDate = new Map(
+        (allHistory ?? []).filter((e) => e.holdingId === holding.id).map((e) => [e.userDate, e.priceSource]),
+      );
+      await investmentService.backfillHistoricalPrices();
       await onChanged();
       const refreshedHistory = await investmentService.getHoldingHistory({});
       setAllHistory(refreshedHistory);
-      const updatedEntry = refreshedHistory.find((e) => e.holdingId === holding.id && e.userDate === entry.userDate);
-      const stillMissing = updatedEntry?.priceSource !== 'provider' && updatedEntry?.priceSource !== 'community';
-      setProviderHistoryMessage(filled > 0
-        ? (t.communityPrice?.providerHistoryResult || '{count} months recovered automatically').replace('{count}', String(filled))
+      const thisHoldingHistory = refreshedHistory.filter((e) => e.holdingId === holding.id);
+      const isVerified = (source?: string | null) => source === 'provider' || source === 'community';
+      const newlyVerifiedMonths = thisHoldingHistory
+        .filter((e) => isVerified(e.priceSource) && !isVerified(previousByDate.get(e.userDate)))
+        .map((e) => formatHistoryMonthLabel(e.userDate));
+      const updatedEntry = thisHoldingHistory.find((e) => e.userDate === entry.userDate);
+      const stillMissing = !isVerified(updatedEntry?.priceSource);
+      setProviderHistoryMessage(newlyVerifiedMonths.length > 0
+        ? (t.communityPrice?.providerHistoryResult || '{count} months recovered automatically ({months}).')
+          .replace('{count}', String(newlyVerifiedMonths.length)).replace('{months}', newlyVerifiedMonths.join(', '))
         : (t.communityPrice?.providerHistoryNoData || 'CoinGecko has no data for this period. You can propose the price manually.'));
       if (stillMissing) startCommunityPriceEdit(holding, entry);
     } catch (error) {
@@ -1428,9 +1469,11 @@ export default function InvestmentHoldingsPanel({
                     }
                     const showCelebrate = myCommunitySubmission?.status === 'verified' && !celebratedCommunityPrices.has(myCommunitySubmission.id);
 
+                    const isEditingCommunityPrice = communityPriceEditingKey === communityKey;
+
                     return (
                       <React.Fragment key={entry.userDate}>
-                        <HistoryMonthCard theme={theme}>
+                        <HistoryMonthCard theme={theme} $editing={isEditingCommunityPrice}>
                           <HistoryMonthTopRow>
                             <span className="month-label">{formatHistoryMonthLabel(entry.userDate)}</span>
                             <TopRowActions theme={theme}>
@@ -1485,14 +1528,20 @@ export default function InvestmentHoldingsPanel({
                             </button>
                           </HistoryMonthMainRow>
                         </HistoryMonthCard>
-                        {communityEligible && communityPriceEditingKey === communityKey && (
+                        {communityEligible && isEditingCommunityPrice && (
                           <CommunityPriceEditRow theme={theme}>
-                            <label>{t.communityPrice?.pricePlaceholder || 'Price'}<input type="number" autoFocus value={communityPriceInputs.price} onChange={(e) => setCommunityPriceInputs((f) => ({ ...f, price: e.target.value }))} /></label>
-                            <label>{t.communityPrice?.currencyLabel || 'Currency'}<input type="text" className="currency" maxLength={3} value={communityPriceInputs.currency} onChange={(e) => setCommunityPriceInputs((f) => ({ ...f, currency: e.target.value.toUpperCase() }))} placeholder="EUR" /></label>
-                            <label className="date">{t.communityPrice?.dateLabel || 'Reference date'}<input type="date" min={`${monthKey}-01`} max={monthLastDate} value={communityPriceInputs.date} onChange={(e) => setCommunityPriceInputs((f) => ({ ...f, date: e.target.value }))} /></label>
-                            <div className="actions">
-                              <button type="button" onClick={() => setCommunityPriceEditingKey(null)} aria-label={translations.general.cancel}><FontAwesomeIcon icon={faTimes} /></button>
-                              <button type="button" onClick={() => submitCommunityPriceForMonth(holding, entry)} disabled={submittingCommunityPrice || !communityPriceInputs.date} aria-label={t.saveButton}><FontAwesomeIcon icon={faCheck} /></button>
+                            <div className="form-title">
+                              <Users size={11} />
+                              {(t.communityPrice?.editFormTitle || 'Market price for {month}').replace('{month}', formatHistoryMonthLabel(entry.userDate))}
+                            </div>
+                            <div className="fields">
+                              <label>{t.communityPrice?.pricePlaceholder || 'Price'}<input type="number" autoFocus value={communityPriceInputs.price} onChange={(e) => setCommunityPriceInputs((f) => ({ ...f, price: e.target.value }))} /></label>
+                              <label>{t.communityPrice?.currencyLabel || 'Currency'}<input type="text" className="currency" maxLength={3} value={communityPriceInputs.currency} onChange={(e) => setCommunityPriceInputs((f) => ({ ...f, currency: e.target.value.toUpperCase() }))} placeholder="EUR" /></label>
+                              <label className="date">{t.communityPrice?.dateLabel || 'Reference date'}<input type="date" min={`${monthKey}-01`} max={monthLastDate} value={communityPriceInputs.date} onChange={(e) => setCommunityPriceInputs((f) => ({ ...f, date: e.target.value }))} /></label>
+                              <div className="actions">
+                                <button type="button" onClick={() => setCommunityPriceEditingKey(null)} aria-label={translations.general.cancel}><FontAwesomeIcon icon={faTimes} /></button>
+                                <button type="button" onClick={() => submitCommunityPriceForMonth(holding, entry)} disabled={submittingCommunityPrice || !communityPriceInputs.date} aria-label={t.saveButton}><FontAwesomeIcon icon={faCheck} /></button>
+                              </div>
                             </div>
                           </CommunityPriceEditRow>
                         )}

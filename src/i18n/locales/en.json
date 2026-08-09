@@ -2937,6 +2937,7 @@
         "communityPrice": {
             "resetHistoryButton": "Reset asset history",
             "resetHistoryConfirm": "Delete all monthly history for this asset? Transactions will remain.",
+            "editFormTitle": "Market price for {month}",
             "pricePlaceholder": "Price",
             "currencyLabel": "Currency",
             "dateLabel": "Reference date",
@@ -2952,7 +2953,7 @@
             "statusRejectedShort": "Rejected",
             "conflictShort": "Conflict",
             "conflictPending": "This month already has a submission awaiting verification.",
-            "conflictVerified": "This month already has a community-verified price.", "providerHistoryLoading": "Checking CoinGecko…", "providerHistoryResult": "Recovered {count} months automatically. You can propose missing months manually.", "providerHistoryNoData": "CoinGecko has no data for this period. You can propose the price manually.", "providerHistoryError": "Automatic recovery is unavailable. You can propose the price manually below."
+            "conflictVerified": "This month already has a community-verified price.", "providerHistoryLoading": "Checking CoinGecko…", "providerHistoryResult": "Recovered {count} months for this asset automatically ({months}). You can propose the remaining months manually.", "providerHistoryNoData": "CoinGecko has no data for this period. You can propose the price manually.", "providerHistoryError": "Automatic recovery is unavailable. You can propose the price manually below."
         }
         },
         "adminPriceReview": {
@@ -2989,6 +2990,9 @@
                         "cryptoMarket": "crypto market · CoinGecko",
                         "changeInstrument": "Change instrument or market",
                         "done": "{count} holdings imported successfully",
+                        "donePartial": "{count} imported, {errors} failed — you can review the errors above and retry those.",
+                        "doneFailed": "Import failed — check the errors above and try again.",
+                        "closeButton": "Close",
                         "importSelected": "Import {count} selected",
                         "importing": "Importing...",
                         "importingProgress": "Saving position {current} of {total}...",

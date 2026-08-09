@@ -2937,6 +2937,7 @@
         "communityPrice": {
             "resetHistoryButton": "Reimposta lo storico dell’asset",
             "resetHistoryConfirm": "Vuoi eliminare tutto lo storico mensile di questo asset? Le transazioni non verranno cancellate.",
+            "editFormTitle": "Prezzo di mercato per {month}",
             "pricePlaceholder": "Prezzo",
             "currencyLabel": "Valuta",
             "dateLabel": "Data di riferimento",
@@ -2952,7 +2953,7 @@
             "statusRejectedShort": "Rifiutato",
             "conflictShort": "Conflitto",
             "conflictPending": "Questo mese ha già una proposta in attesa di verifica.",
-            "conflictVerified": "Questo mese ha già un prezzo verificato dalla community.", "providerHistoryLoading": "Controllo CoinGecko…", "providerHistoryResult": "Recuperati automaticamente {count} mesi. Per i mesi mancanti puoi proporre il prezzo manualmente.", "providerHistoryNoData": "CoinGecko non ha dati per questo periodo. Puoi proporre il prezzo manualmente.", "providerHistoryError": "Il recupero automatico non è disponibile. Puoi proporre il prezzo manualmente qui sotto."
+            "conflictVerified": "Questo mese ha già un prezzo verificato dalla community.", "providerHistoryLoading": "Controllo CoinGecko…", "providerHistoryResult": "Recuperati automaticamente {count} mesi per questo asset ({months}). Per i mesi restanti puoi proporre il prezzo manualmente.", "providerHistoryNoData": "CoinGecko non ha dati per questo periodo. Puoi proporre il prezzo manualmente.", "providerHistoryError": "Il recupero automatico non è disponibile. Puoi proporre il prezzo manualmente qui sotto."
         }
         },
         "adminPriceReview": {
@@ -2989,6 +2990,9 @@
                         "cryptoMarket": "mercato crypto · CoinGecko",
                         "changeInstrument": "Cambia strumento o mercato",
                         "done": "{count} holding importati con successo",
+                        "donePartial": "{count} importati, {errors} falliti — puoi controllare gli errori qui sopra e riprovare.",
+                        "doneFailed": "Importazione non riuscita — controlla gli errori qui sopra e riprova.",
+                        "closeButton": "Chiudi",
                         "importSelected": "Importa {count} selezionati",
                         "importing": "Importazione in corso...",
                         "importingProgress": "Salvataggio posizione {current} di {total}...",

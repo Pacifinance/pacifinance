@@ -63,6 +63,7 @@
         "date": "Data",
         "confirm": "Confirmar",
         "cancel": "Cancelar",
+        "back": "Voltar",
         "other": "Outro",
         "category": "Categoria",
         "typology": "Tipologia",
@@ -2788,6 +2789,7 @@
             "addTabLabel": "Adicionar",
             "pastTabLabel": "Passadas",
             "positionsListTitle": "Suas posições",
+            "balanceSummaryTitle": "Resumo do saldo",
             "addSectionTitle": "Adicionar uma posição",
             "emptyState": "Ainda não há posições ativas para este ativo. Use a aba \"Adicionar\" para adicionar uma.",
             "addTitle": "Adicionar posição",
@@ -2802,12 +2804,13 @@
             "cancelEdit": "Cancelar",
             "deleteButton": "Excluir",
             "manageLink": "Gerenciar posições verificadas",
+            "manageLinkWithCount": "Gerenciar posições verificadas ({count})",
             "calculatedFromN": "Calculado a partir de {count} posições",
-            "reconciledWithN": "Comparado com {count} posições",
             "detailedTotal": "Detalhado: {amount} · cobertura de {coverage}%",
             "unallocatedValue": "Não detalhado: {amount}",
             "overAllocatedValue": "Os detalhes excedem o total em {amount}",
-            "useDetailedTotal": "Usar total das posições",
+            "useDetailedTotalButton": "Usar total das posições",
+            "useDetailedTotalHint": "Substitui o {declared} que você digitou na página de atualização do saldo pela soma das posições abaixo ({detailed}).",
             "declaredCategoryTotal": "Total declarado",
             "detailedCategoryTotal": "Total das posições",
             "coverageLabel": "Cobertura dos detalhes",
@@ -2866,7 +2869,7 @@
             "statusRejectedShort": "Rejeitado",
             "conflictShort": "Conflito",
             "conflictPending": "Este mês já tem uma proposta aguardando verificação.",
-            "conflictVerified": "Este mês já tem um preço verificado pela comunidade.", "providerHistoryLoading": "Consultando CoinGecko…", "providerHistoryResult": "{count} meses recuperados automaticamente para este ativo ({months}). Você pode sugerir manualmente os meses restantes.", "providerHistoryNoData": "O CoinGecko não tem dados para este período. Você pode propor o preço manualmente.", "providerHistoryError": "A recuperação automática não está disponível. Você pode sugerir o preço manualmente abaixo."
+            "conflictVerified": "Este mês já tem um preço verificado pela comunidade.", "providerHistoryLoading": "Consultando CoinGecko…", "providerHistoryResult": "{count} meses recuperados automaticamente para este ativo ({months}). Você pode sugerir manualmente os meses restantes.", "providerHistoryNoData": "O CoinGecko não tem dados para este período. Você pode propor o preço manualmente.", "providerHistoryNotLinked": "Este instrumento não está vinculado a uma ficha do CoinGecko, então não pode ser consultado automaticamente. Você pode propor o preço manualmente.", "providerHistoryError": "A recuperação automática não está disponível. Você pode sugerir o preço manualmente abaixo."
         }
         },
         "adminPriceReview": {
@@ -2984,6 +2987,7 @@
         "cancelEdit": "Cancelar",
         "deleteButton": "Excluir",
         "manageLink": "Gerenciar contas",
+        "manageLinkWithCount": "Gerenciar contas ({count})",
         "calculatedFromN": "Calculado a partir de {count} contas",
         "noValueForMonth": "Sem valor definido para {month}"
     },

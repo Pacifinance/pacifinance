@@ -49,6 +49,7 @@ const AccountPage = React.lazy(() => import("./pages/ProfilePage"));
 const SettingsPage = React.lazy(() => import("./pages/SettingsPage"));
 const GoalsSettingsPage = React.lazy(() => import("./pages/GoalsAndLimitsPage"));
 const AdminPriceReviewPage = React.lazy(() => import("./pages/AdminPriceReviewPage"));
+const InvestmentAssetPage = React.lazy(() => import("./pages/InvestmentAssetPage"));
 
 // Lazy loading for legal/info pages (rarely visited)
 const FAQPage = React.lazy(() => import("./pages/FAQPage"));
@@ -317,6 +318,14 @@ const LanguageRoutes = () => {
           <AdminRoute>
             <AdminPriceReviewPage />
           </AdminRoute>
+        }
+      />
+      <Route
+        path="/investments/:assetKey"
+        element={
+          <ProtectedRoute>
+            <InvestmentAssetPage />
+          </ProtectedRoute>
         }
       />
 

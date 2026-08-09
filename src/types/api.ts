@@ -616,6 +616,8 @@ export type InvestmentHoldingsGetResponse = InvestmentHoldingDto[];
 export interface HistoricalPriceBackfillResultDto {
   holdingId: number;
   monthsFilled: number;
+  /** Present only when monthsFilled is 0 despite this holding having genuine gaps to fill. */
+  skippedReason?: 'missing-coingecko-id' | 'provider-unavailable';
 }
 export type InvestmentHistoricalPriceBackfillResponse = HistoricalPriceBackfillResultDto[];
 

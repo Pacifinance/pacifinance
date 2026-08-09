@@ -72,6 +72,7 @@
         "date": "Data",
         "confirm": "Conferma",
         "cancel": "Annulla",
+        "back": "Indietro",
         "other": "Altro",
         "category": "Categoria",
         "typology": "Tipologia",
@@ -2884,6 +2885,7 @@
             "addTabLabel": "Aggiungi",
             "pastTabLabel": "Passati",
             "positionsListTitle": "Le tue posizioni",
+            "balanceSummaryTitle": "Riepilogo bilancio",
             "addSectionTitle": "Aggiungi una posizione",
             "emptyState": "Nessun holding attivo per questo asset. Usa la tab \"Aggiungi\" per aggiungerne uno.",
             "addTitle": "Aggiungi holding",
@@ -2898,12 +2900,13 @@
             "cancelEdit": "Annulla",
             "deleteButton": "Elimina",
             "manageLink": "Gestisci holding verificati",
+            "manageLinkWithCount": "Gestisci holding verificati ({count})",
             "calculatedFromN": "Calcolato da {count} holding",
-            "reconciledWithN": "Confrontato con {count} holding",
             "detailedTotal": "Dettaglio: {amount} · copertura {coverage}%",
             "unallocatedValue": "Non dettagliato: {amount}",
             "overAllocatedValue": "Il dettaglio supera il totale di {amount}",
-            "useDetailedTotal": "Usa il totale delle holding",
+            "useDetailedTotalButton": "Usa il totale delle holding",
+            "useDetailedTotalHint": "Sostituisce il {declared} che hai inserito a mano nella pagina di aggiornamento bilancio con la somma degli holding qui sotto ({detailed}).",
             "declaredCategoryTotal": "Totale dichiarato",
             "detailedCategoryTotal": "Totale holding",
             "coverageLabel": "Copertura del dettaglio",
@@ -2962,7 +2965,7 @@
             "statusRejectedShort": "Rifiutato",
             "conflictShort": "Conflitto",
             "conflictPending": "Questo mese ha già una proposta in attesa di verifica.",
-            "conflictVerified": "Questo mese ha già un prezzo verificato dalla community.", "providerHistoryLoading": "Controllo CoinGecko…", "providerHistoryResult": "Recuperati automaticamente {count} mesi per questo asset ({months}). Per i mesi restanti puoi proporre il prezzo manualmente.", "providerHistoryNoData": "CoinGecko non ha dati per questo periodo. Puoi proporre il prezzo manualmente.", "providerHistoryError": "Il recupero automatico non è disponibile. Puoi proporre il prezzo manualmente qui sotto."
+            "conflictVerified": "Questo mese ha già un prezzo verificato dalla community.", "providerHistoryLoading": "Controllo CoinGecko…", "providerHistoryResult": "Recuperati automaticamente {count} mesi per questo asset ({months}). Per i mesi restanti puoi proporre il prezzo manualmente.", "providerHistoryNoData": "CoinGecko non ha dati per questo periodo. Puoi proporre il prezzo manualmente.", "providerHistoryNotLinked": "Questo strumento non è collegato a una scheda CoinGecko, quindi non può essere cercato automaticamente. Puoi proporre il prezzo manualmente.", "providerHistoryError": "Il recupero automatico non è disponibile. Puoi proporre il prezzo manualmente qui sotto."
         }
         },
         "adminPriceReview": {
@@ -3080,6 +3083,7 @@
         "cancelEdit": "Annulla",
         "deleteButton": "Elimina",
         "manageLink": "Gestisci conti",
+        "manageLinkWithCount": "Gestisci conti ({count})",
         "calculatedFromN": "Calcolato da {count} conti",
         "noValueForMonth": "Nessun valore per {month}"
     },

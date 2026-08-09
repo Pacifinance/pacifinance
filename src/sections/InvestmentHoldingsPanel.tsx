@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ShieldCheck, Users } from 'lucide-react';
 import {
-  faTrash, faPen, faTimes, faPlus, faCheck, faFileImport, faClockRotateLeft, faMagnifyingGlassChart,
+  faTrash, faPen, faTimes, faPlus, faCheck, faFileImport, faClockRotateLeft, faMagnifyingGlassChart, faArrowLeft,
 } from '@fortawesome/free-solid-svg-icons';
 
 const InvestmentImportWizard = lazy(() => import('./InvestmentImportWizard'));
@@ -32,6 +32,78 @@ import type enTranslations from '../i18n/locales/en.json';
 
 const COMMUNITY_PRICE_KINDS = new Set(['stock', 'etf', 'crypto']);
 
+/** variant="page" stand-ins for Overlay/ModalContainer - same children, same
+ * theme prop, but flowing in the page instead of floating over it: no
+ * backdrop, no fixed max-height/overflow clamp, no click-outside-to-close
+ * (there's nothing to click "outside" of on a page). See InvestmentAssetPage. */
+const PageShell = styled.div`
+  width: 100%;
+`;
+
+const PageContentBox = styled.div`
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  background: ${(p) => p.theme.mode === 'dark'
+    ? 'linear-gradient(180deg, #1a1f2e 0%, #151923 100%)'
+    : 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)'};
+  border: 1px solid ${(p) => p.theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)'};
+  border-radius: 20px;
+  overflow: hidden;
+
+  @media (max-width: 600px) {
+    border-radius: 16px;
+  }
+`;
+
+/** Splits the body into a wide "main" column (tabs + holdings list) and a
+ * narrower "sidebar" column (reconciliation numbers + dividends) - but only
+ * in variant="page", where there's finally room for it. In variant="modal"
+ * display:contents makes both wrappers invisible to layout entirely: their
+ * children fall back to being direct flex children of ModalBody, exactly as
+ * before this existed - zero visual change to any of the modal's existing
+ * call sites. */
+const SectionsGrid = styled.div<{ $page?: boolean }>`
+  display: ${(p) => (p.$page ? 'grid' : 'contents')};
+  grid-template-columns: minmax(0, 1fr) 300px;
+  align-items: start;
+  gap: 1.5rem;
+
+  @media (max-width: 760px) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+`;
+
+const MainColumn = styled.div<{ $page?: boolean }>`
+  display: ${(p) => (p.$page ? 'flex' : 'contents')};
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 0;
+`;
+
+const SideColumn = styled.div<{ $page?: boolean }>`
+  display: ${(p) => (p.$page ? 'flex' : 'contents')};
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 0;
+
+  @media (max-width: 760px) {
+    order: -1;
+  }
+`;
+
+const SideColumnLabel = styled.h3`
+  margin: 0.2rem 0 0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: ${(p) => p.theme.textColor};
+  opacity: 0.5;
+`;
+
 interface InvestmentHoldingsPanelProps {
   assetKey: InvestmentAssetKey;
   holdings: InvestmentHoldingDto[];
@@ -45,6 +117,29 @@ interface InvestmentHoldingsPanelProps {
   historyByEntityId?: Record<number, InvestmentHoldingHistoryDto | undefined>;
   /** Aggregate balance declared by the user for this category and viewed month, in EUR. */
   categoryTotal?: number;
+  /** Replaces the declared category total (the balance the user typed in on
+   * the balance-update card) with the sum of these holdings, in EUR - moved
+   * here from that card so there's room to explain what it actually does
+   * before the user commits to it. Omitted entirely (button hidden) when the
+   * caller has no declared total to update, e.g. past-month read-only views. */
+  onUseDetailedTotal?: (detailedTotalEur: number) => void;
+  /** 'modal' (default) keeps the existing floating overlay behavior, used
+   * everywhere this panel is opened over another screen. 'page' renders the
+   * exact same content flowing in-page instead - no backdrop, no fixed
+   * height/overflow clamp - for InvestmentAssetPage, which is this same
+   * component mounted at a route instead of popped open as a dialog. */
+  variant?: 'modal' | 'page';
+  /** Which tab to land on when the panel first mounts - only meaningful for
+   * isCurrentMonth. Defaults to the panel's own current-vs-add heuristic
+   * (see the activeTab useState below) when omitted. */
+  initialTab?: 'current' | 'add' | 'past';
+  /** When true and there's exactly one active holding, immediately opens
+   * that holding's inline edit form on mount - what lets a "quick edit
+   * value" entry point (e.g. a pencil icon) land the user directly in the
+   * form instead of just the list. Silently ignored (falls back to the tab
+   * itself) when there are zero or multiple holdings, since there's no
+   * single unambiguous holding to edit. */
+  autoEditSingleHolding?: boolean;
 }
 
 interface FormState {
@@ -86,15 +181,15 @@ const DividendsSummary = styled.p`
   opacity: 0.75;
 `;
 
-const BalanceReconciliationSummary = styled.div`
+const BalanceReconciliationSummary = styled.div<{ $accent?: string }>`
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.55rem;
   margin-bottom: 0.85rem;
   padding: 0.75rem;
   border-radius: 10px;
-  border: 1px solid ${(p) => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.09)' : 'rgba(0,0,0,0.08)'};
-  background: ${(p) => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.025)' : 'rgba(0,0,0,0.02)'};
+  border: 1px solid ${(p) => (p.$accent ? `${p.$accent}35` : (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.09)' : 'rgba(0,0,0,0.08)'))};
+  background: ${(p) => (p.$accent ? `${p.$accent}0d` : (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.025)' : 'rgba(0,0,0,0.02)'))};
   color: ${(p) => p.theme.textColor};
 
   div { display: flex; flex-direction: column; gap: 0.15rem; min-width: 0; }
@@ -103,6 +198,37 @@ const BalanceReconciliationSummary = styled.div`
   .difference { color: ${(p) => p.$status === 'over-allocated' ? '#f59e0b' : p.theme.buttonBackgroundColor}; }
 
   @media (max-width: 480px) { grid-template-columns: 1fr 1fr; }
+`;
+
+/** Moved here from the compact balance-update card (see BalanceSection.tsx),
+ * where "use the detailed total" was a bare link with no room to explain
+ * what it actually overwrites - here it sits right next to the numbers it
+ * acts on, with a one-line explanation of the consequence. */
+const UseDetailedTotalAction = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.3rem;
+  margin: -0.35rem 0 0.85rem;
+
+  button {
+    border: none;
+    background: transparent;
+    padding: 0;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: ${(p) => p.theme.buttonBackgroundColor};
+    text-decoration: underline;
+    cursor: pointer;
+    &:hover { opacity: 0.8; }
+  }
+
+  span {
+    font-size: 0.68rem;
+    color: ${(p) => p.theme.textColor};
+    opacity: 0.6;
+    line-height: 1.4;
+  }
 `;
 
 const HoldingShare = styled.span`
@@ -118,13 +244,13 @@ const TabBar = styled.div`
   border-bottom: 1px solid ${(p) => (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)')};
 `;
 
-const TabButton = styled.button<{ $active: boolean }>`
+const TabButton = styled.button<{ $active: boolean; $accent?: string }>`
   padding: 0.55rem 0.2rem;
   margin-bottom: -1px;
   border: none;
-  border-bottom: 2px solid ${(p) => (p.$active ? p.theme.buttonBackgroundColor : 'transparent')};
+  border-bottom: 2px solid ${(p) => (p.$active ? (p.$accent || p.theme.buttonBackgroundColor) : 'transparent')};
   background: transparent;
-  color: ${(p) => p.theme.textColor};
+  color: ${(p) => (p.$active ? (p.$accent || p.theme.textColor) : p.theme.textColor)};
   opacity: ${(p) => (p.$active ? 1 : 0.55)};
   font-size: 0.82rem;
   font-weight: ${(p) => (p.$active ? 700 : 600)};
@@ -781,6 +907,7 @@ const InlineEditActions = styled.div`
 
 export default function InvestmentHoldingsPanel({
   assetKey, holdings, onClose, onChanged, isCurrentMonth = true, userDate, historyByEntityId = {}, categoryTotal = 0,
+  onUseDetailedTotal, variant = 'modal', initialTab, autoEditSingleHolding = false,
 }: InvestmentHoldingsPanelProps) {
   const { theme } = useContext(ThemeContext) as { theme: PacifinanceTheme };
   const { translations, language } = useContext(LanguageContext) as {
@@ -825,7 +952,9 @@ export default function InvestmentHoldingsPanel({
    * own default above but scoped to this asset key's real, open positions -
    * a user whose only holding here is a closed one still has nothing to
    * manage in "current", so land them on "add" instead of an empty list. */
-  const [activeTab, setActiveTab] = useState<'current' | 'add' | 'past'>(activeHoldings.length === 0 ? 'add' : 'current');
+  const [activeTab, setActiveTab] = useState<'current' | 'add' | 'past'>(
+    initialTab ?? (activeHoldings.length === 0 ? 'add' : 'current'),
+  );
   const [historicalEditingId, setHistoricalEditingId] = useState<number | null>(null);
   const [historicalValueInput, setHistoricalValueInput] = useState('');
   const [savingHistorical, setSavingHistorical] = useState(false);
@@ -927,7 +1056,7 @@ export default function InvestmentHoldingsPanel({
       const previousByDate = new Map(
         (allHistory ?? []).filter((e) => e.holdingId === holding.id).map((e) => [e.userDate, e.priceSource]),
       );
-      await investmentService.backfillHistoricalPrices();
+      const backfillResults = await investmentService.backfillHistoricalPrices();
       await onChanged();
       const refreshedHistory = await investmentService.getHoldingHistory({});
       setAllHistory(refreshedHistory);
@@ -938,10 +1067,13 @@ export default function InvestmentHoldingsPanel({
         .map((e) => formatHistoryMonthLabel(e.userDate));
       const updatedEntry = thisHoldingHistory.find((e) => e.userDate === entry.userDate);
       const stillMissing = !isVerified(updatedEntry?.priceSource);
+      const thisHoldingResult = backfillResults.find((r) => r.holdingId === holding.id);
       setProviderHistoryMessage(newlyVerifiedMonths.length > 0
         ? (t.communityPrice?.providerHistoryResult || '{count} months recovered automatically ({months}).')
           .replace('{count}', String(newlyVerifiedMonths.length)).replace('{months}', newlyVerifiedMonths.join(', '))
-        : (t.communityPrice?.providerHistoryNoData || 'CoinGecko has no data for this period. You can propose the price manually.'));
+        : thisHoldingResult?.skippedReason === 'missing-coingecko-id'
+          ? (t.communityPrice?.providerHistoryNotLinked || "This instrument isn't linked to a CoinGecko entry, so it can't be looked up automatically. You can propose the price manually.")
+          : (t.communityPrice?.providerHistoryNoData || 'CoinGecko has no data for this period. You can propose the price manually.'));
       if (stillMissing) startCommunityPriceEdit(holding, entry);
     } catch (error) {
       console.error('InvestmentHoldingsPanel: provider history recovery failed', error);
@@ -1014,6 +1146,17 @@ export default function InvestmentHoldingsPanel({
       notes: holding.notes || '',
     });
   };
+
+  // See autoEditSingleHolding's own doc comment above - a "quick edit value"
+  // entry point (e.g. a pencil icon) only knows which holding to jump to
+  // when there's exactly one, so anything else (none yet, or more than one)
+  // just leaves the user on whichever tab they landed on.
+  useEffect(() => {
+    if (autoEditSingleHolding && isCurrentMonth && activeHoldings.length === 1) {
+      startEdit(activeHoldings[0]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const resetForm = () => {
     setEditingId(null);
@@ -1606,10 +1749,17 @@ export default function InvestmentHoldingsPanel({
     );
   };
 
+  const PanelWrapper = variant === 'page' ? PageShell : Overlay;
+  const PanelContainer = variant === 'page' ? PageContentBox : ModalContainer;
+
   return (
-    <Overlay theme={theme} onClick={onClose}>
-      <ModalContainer theme={theme} onClick={(e: React.MouseEvent) => e.stopPropagation()}>
-        <ModalHeader theme={theme}>
+    <PanelWrapper theme={theme} onClick={variant === 'page' ? undefined : onClose}>
+      <PanelContainer
+        theme={theme}
+        onClick={variant === 'page' ? undefined : (e: React.MouseEvent) => e.stopPropagation()}
+        style={{ borderTop: `3px solid ${assetAccent}` }}
+      >
+        <ModalHeader theme={theme} style={{ background: `linear-gradient(135deg, ${assetAccent}1c 0%, transparent 75%)` }}>
           <ModalTitle theme={theme}>
             <h2 style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', color: assetAccent }}>
               <span style={{ width: 30, height: 30, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', borderRadius: 9, background: `${assetAccent}22` }}>
@@ -1619,95 +1769,116 @@ export default function InvestmentHoldingsPanel({
             </h2>
             <p>{t.title}</p>
           </ModalTitle>
-          <CloseButton theme={theme} onClick={onClose}>
-            <FontAwesomeIcon icon={faTimes} />
+          <CloseButton theme={theme} onClick={onClose} aria-label={variant === 'page' ? (translations.general?.back || 'Back') : translations.general.cancel}>
+            <FontAwesomeIcon icon={variant === 'page' ? faArrowLeft : faTimes} />
           </CloseButton>
         </ModalHeader>
 
         <ModalBody theme={theme}>
-          {isCurrentMonth && (
-            <TabBar theme={theme}>
-              <TabButton type="button" theme={theme} $active={activeTab === 'current'} onClick={() => setActiveTab('current')}>
-                {t.currentTabLabel || 'Current'}{activeHoldings.length > 0 && ` (${activeHoldings.length})`}
-              </TabButton>
-              <TabButton type="button" theme={theme} $active={activeTab === 'add'} onClick={() => setActiveTab('add')}>
-                {t.addTabLabel || 'Add'}
-              </TabButton>
-              {pastHoldings.length > 0 && (
-                <TabButton type="button" theme={theme} $active={activeTab === 'past'} onClick={() => setActiveTab('past')}>
-                  {t.pastTabLabel || 'Past'} ({pastHoldings.length})
-                </TabButton>
+          <SectionsGrid theme={theme} $page={variant === 'page'}>
+            <MainColumn theme={theme} $page={variant === 'page'}>
+              {isCurrentMonth && (
+                <TabBar theme={theme}>
+                  <TabButton type="button" theme={theme} $accent={assetAccent} $active={activeTab === 'current'} onClick={() => setActiveTab('current')}>
+                    {t.currentTabLabel || 'Current'}{activeHoldings.length > 0 && ` (${activeHoldings.length})`}
+                  </TabButton>
+                  <TabButton type="button" theme={theme} $accent={assetAccent} $active={activeTab === 'add'} onClick={() => setActiveTab('add')}>
+                    {t.addTabLabel || 'Add'}
+                  </TabButton>
+                  {pastHoldings.length > 0 && (
+                    <TabButton type="button" theme={theme} $accent={assetAccent} $active={activeTab === 'past'} onClick={() => setActiveTab('past')}>
+                      {t.pastTabLabel || 'Past'} ({pastHoldings.length})
+                    </TabButton>
+                  )}
+                </TabBar>
               )}
-            </TabBar>
-          )}
 
-          <BalanceReconciliationSummary theme={theme} $status={balanceReconciliation.status}>
-            <div><span>{t.declaredCategoryTotal}</span><strong>{formatAmount(balanceReconciliation.declaredTotal)}</strong></div>
-            <div><span>{t.detailedCategoryTotal}</span><strong>{formatAmount(balanceReconciliation.detailedTotal)}</strong></div>
-            <div><span>{t.coverageLabel}</span><strong>{balanceReconciliation.coveragePercent == null ? '—' : `${balanceReconciliation.coveragePercent.toFixed(1)}%`}</strong></div>
-            <div className="difference">
-              <span>{balanceReconciliation.status === 'over-allocated' ? t.excessDetailLabel : t.unallocatedLabel}</span>
-              <strong>{formatAmount(Math.abs(balanceReconciliation.unallocatedValue))}</strong>
-            </div>
-          </BalanceReconciliationSummary>
+              {!isCurrentMonth && (
+                <>
+                  <SectionLabel theme={theme}>{t.positionsListTitle}</SectionLabel>
+                  {holdings.length === 0 && <EmptyState theme={theme}>{t.emptyState}</EmptyState>}
+                  {holdings.map(renderHoldingRow)}
+                </>
+              )}
 
-          {isCurrentMonth && totalDividendsForAssetKey > 0 && (
-            <DividendsSummary theme={theme}>
-              {(t.dividendsReceivedTotal || 'Dividends received: {amount}').replace('{amount}', formatAmount(totalDividendsForAssetKey))}
-            </DividendsSummary>
-          )}
+              {isCurrentMonth && activeTab === 'current' && (
+                <>
+                  {activeHoldings.length === 0 && <EmptyState theme={theme}>{t.emptyState}</EmptyState>}
+                  {activeHoldings.map(renderHoldingRow)}
+                </>
+              )}
 
-          {!isCurrentMonth && (
-            <>
-              <SectionLabel theme={theme}>{t.positionsListTitle}</SectionLabel>
-              {holdings.length === 0 && <EmptyState theme={theme}>{t.emptyState}</EmptyState>}
-              {holdings.map(renderHoldingRow)}
-            </>
-          )}
+              {isCurrentMonth && activeTab === 'past' && pastHoldings.map(renderHoldingRow)}
 
-          {isCurrentMonth && activeTab === 'current' && (
-            <>
-              {activeHoldings.length === 0 && <EmptyState theme={theme}>{t.emptyState}</EmptyState>}
-              {activeHoldings.map(renderHoldingRow)}
-            </>
-          )}
+              {(!isCurrentMonth || activeTab === 'add') && (
+              <AddSection theme={theme}>
+                <SectionLabel theme={theme}>{t.addSectionTitle}</SectionLabel>
 
-          {isCurrentMonth && activeTab === 'past' && pastHoldings.map(renderHoldingRow)}
+                {isCurrentMonth && (showForm ? (
+                  <FormSection theme={theme} style={{ marginTop: 0, paddingTop: 0, borderTop: 'none' }}>
+                    <FormTitle theme={theme}>{t.addTitle}</FormTitle>
+                    {renderFormFields()}
+                  </FormSection>
+                ) : (
+                  <AddTriggerButton type="button" theme={theme} onClick={() => setShowForm(true)} style={{ marginTop: 0 }}>
+                    <FontAwesomeIcon icon={faPlus} />
+                    {t.addTitle}
+                  </AddTriggerButton>
+                ))}
 
-          {(!isCurrentMonth || activeTab === 'add') && (
-          <AddSection theme={theme}>
-            <SectionLabel theme={theme}>{t.addSectionTitle}</SectionLabel>
+                <AddTriggerButton type="button" theme={theme} onClick={() => setShowImportWizard(true)} data-umami-event="investment-import-opened">
+                  <FontAwesomeIcon icon={faFileImport} />
+                  {translations.investments.importWizard?.button || 'Import from CSV'}
+                </AddTriggerButton>
+                {isCurrentMonth && (
+                  <AddTriggerButton type="button" theme={theme} onClick={() => setShowReconciliation(true)} data-umami-event="investment-reconciliation-opened">
+                    <FontAwesomeIcon icon={faMagnifyingGlassChart} />
+                    {t.reconciliationButton || 'Analyze your transactions'}
+                  </AddTriggerButton>
+                )}
+                {!isCurrentMonth && (
+                  <DefaultInstrumentHint theme={theme}>
+                    {translations.investments.importWizard?.pastMonthNote
+                      || 'The import always updates today\'s position and backfills history from the file\'s own dates — it doesn\'t only affect the month shown here.'}
+                  </DefaultInstrumentHint>
+                )}
+              </AddSection>
+              )}
+            </MainColumn>
 
-            {isCurrentMonth && (showForm ? (
-              <FormSection theme={theme} style={{ marginTop: 0, paddingTop: 0, borderTop: 'none' }}>
-                <FormTitle theme={theme}>{t.addTitle}</FormTitle>
-                {renderFormFields()}
-              </FormSection>
-            ) : (
-              <AddTriggerButton type="button" theme={theme} onClick={() => setShowForm(true)} style={{ marginTop: 0 }}>
-                <FontAwesomeIcon icon={faPlus} />
-                {t.addTitle}
-              </AddTriggerButton>
-            ))}
+            <SideColumn theme={theme} $page={variant === 'page'}>
+              {variant === 'page' && <SideColumnLabel theme={theme}>{t.balanceSummaryTitle || 'Riepilogo bilancio'}</SideColumnLabel>}
 
-            <AddTriggerButton type="button" theme={theme} onClick={() => setShowImportWizard(true)} data-umami-event="investment-import-opened">
-              <FontAwesomeIcon icon={faFileImport} />
-              {translations.investments.importWizard?.button || 'Import from CSV'}
-            </AddTriggerButton>
-            {isCurrentMonth && (
-              <AddTriggerButton type="button" theme={theme} onClick={() => setShowReconciliation(true)} data-umami-event="investment-reconciliation-opened">
-                <FontAwesomeIcon icon={faMagnifyingGlassChart} />
-                {t.reconciliationButton || 'Analyze your transactions'}
-              </AddTriggerButton>
-            )}
-            {!isCurrentMonth && (
-              <DefaultInstrumentHint theme={theme}>
-                {translations.investments.importWizard?.pastMonthNote
-                  || 'The import always updates today\'s position and backfills history from the file\'s own dates — it doesn\'t only affect the month shown here.'}
-              </DefaultInstrumentHint>
-            )}
-          </AddSection>
-          )}
+              <BalanceReconciliationSummary theme={theme} $status={balanceReconciliation.status} $accent={assetAccent}>
+                <div><span>{t.declaredCategoryTotal}</span><strong>{formatAmount(balanceReconciliation.declaredTotal)}</strong></div>
+                <div><span>{t.detailedCategoryTotal}</span><strong>{formatAmount(balanceReconciliation.detailedTotal)}</strong></div>
+                <div><span>{t.coverageLabel}</span><strong>{balanceReconciliation.coveragePercent == null ? '—' : `${balanceReconciliation.coveragePercent.toFixed(1)}%`}</strong></div>
+                <div className="difference">
+                  <span>{balanceReconciliation.status === 'over-allocated' ? t.excessDetailLabel : t.unallocatedLabel}</span>
+                  <strong>{formatAmount(Math.abs(balanceReconciliation.unallocatedValue))}</strong>
+                </div>
+              </BalanceReconciliationSummary>
+
+              {onUseDetailedTotal && balanceReconciliation.status !== 'exact' && (
+                <UseDetailedTotalAction theme={theme}>
+                  <button type="button" onClick={() => onUseDetailedTotal(balanceReconciliation.detailedTotal)}>
+                    {t.useDetailedTotalButton || 'Usa il totale delle holding'}
+                  </button>
+                  <span>
+                    {(t.useDetailedTotalHint || 'Sostituisce il {declared} che hai inserito a mano con la somma degli holding qui sotto ({detailed}).')
+                      .replace('{declared}', t.declaredCategoryTotal?.toLowerCase() || '')
+                      .replace('{detailed}', formatAmount(balanceReconciliation.detailedTotal))}
+                  </span>
+                </UseDetailedTotalAction>
+              )}
+
+              {isCurrentMonth && totalDividendsForAssetKey > 0 && (
+                <DividendsSummary theme={theme}>
+                  {(t.dividendsReceivedTotal || 'Dividends received: {amount}').replace('{amount}', formatAmount(totalDividendsForAssetKey))}
+                </DividendsSummary>
+              )}
+            </SideColumn>
+          </SectionsGrid>
         </ModalBody>
 
         {isCurrentMonth && activeTab === 'add' && showForm && (
@@ -1735,7 +1906,7 @@ export default function InvestmentHoldingsPanel({
             />
           </Suspense>
         )}
-      </ModalContainer>
+      </PanelContainer>
       {deleteTarget && (
         <Overlay theme={theme} onClick={() => setDeleteTarget(null)}>
           <ModalContainer theme={theme} onClick={(e: React.MouseEvent) => e.stopPropagation()} style={{ maxWidth: 460 }}>
@@ -1773,6 +1944,6 @@ export default function InvestmentHoldingsPanel({
           </ModalContainer>
         </Overlay>
       )}
-    </Overlay>
+    </PanelWrapper>
   );
 }

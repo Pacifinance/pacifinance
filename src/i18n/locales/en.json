@@ -72,6 +72,7 @@
         "date": "Date",
         "confirm": "Confirm",
         "cancel": "Cancel",
+        "back": "Back",
         "other": "Other",
         "category": "Category",
         "typology": "Typology",
@@ -2884,6 +2885,7 @@
             "addTabLabel": "Add",
             "pastTabLabel": "Past",
             "positionsListTitle": "Your positions",
+            "balanceSummaryTitle": "Balance summary",
             "addSectionTitle": "Add a position",
             "emptyState": "No active holdings for this asset yet. Use the \"Add\" tab to add one.",
             "addTitle": "Add holding",
@@ -2898,12 +2900,13 @@
             "cancelEdit": "Cancel",
             "deleteButton": "Delete",
             "manageLink": "Manage verified holdings",
+            "manageLinkWithCount": "Manage verified holdings ({count})",
             "calculatedFromN": "Calculated from {count} holdings",
-            "reconciledWithN": "Compared with {count} holdings",
             "detailedTotal": "Detailed: {amount} · {coverage}% coverage",
             "unallocatedValue": "Not detailed: {amount}",
             "overAllocatedValue": "Details exceed the total by {amount}",
-            "useDetailedTotal": "Use holdings total",
+            "useDetailedTotalButton": "Use holdings total",
+            "useDetailedTotalHint": "Replaces the {declared} you typed in on the balance-update page with the sum of the holdings below ({detailed}).",
             "declaredCategoryTotal": "Declared total",
             "detailedCategoryTotal": "Holdings total",
             "coverageLabel": "Detail coverage",
@@ -2962,7 +2965,7 @@
             "statusRejectedShort": "Rejected",
             "conflictShort": "Conflict",
             "conflictPending": "This month already has a submission awaiting verification.",
-            "conflictVerified": "This month already has a community-verified price.", "providerHistoryLoading": "Checking CoinGecko…", "providerHistoryResult": "Recovered {count} months for this asset automatically ({months}). You can propose the remaining months manually.", "providerHistoryNoData": "CoinGecko has no data for this period. You can propose the price manually.", "providerHistoryError": "Automatic recovery is unavailable. You can propose the price manually below."
+            "conflictVerified": "This month already has a community-verified price.", "providerHistoryLoading": "Checking CoinGecko…", "providerHistoryResult": "Recovered {count} months for this asset automatically ({months}). You can propose the remaining months manually.", "providerHistoryNoData": "CoinGecko has no data for this period. You can propose the price manually.", "providerHistoryNotLinked": "This instrument isn't linked to a CoinGecko entry, so it can't be looked up automatically. You can propose the price manually.", "providerHistoryError": "Automatic recovery is unavailable. You can propose the price manually below."
         }
         },
         "adminPriceReview": {
@@ -3080,6 +3083,7 @@
         "cancelEdit": "Cancel",
         "deleteButton": "Delete",
         "manageLink": "Manage accounts",
+        "manageLinkWithCount": "Manage accounts ({count})",
         "calculatedFromN": "Calculated from {count} accounts",
         "noValueForMonth": "No value set for {month}"
     },

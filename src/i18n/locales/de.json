@@ -63,6 +63,7 @@
         "date": "Datum",
         "confirm": "Bestätigen",
         "cancel": "Abbrechen",
+        "back": "Zurück",
         "other": "Andere",
         "category": "Kategorie",
         "typology": "Typologie",
@@ -2788,6 +2789,7 @@
             "addTabLabel": "Hinzufügen",
             "pastTabLabel": "Vergangen",
             "positionsListTitle": "Deine Positionen",
+            "balanceSummaryTitle": "Bilanzübersicht",
             "addSectionTitle": "Position hinzufügen",
             "emptyState": "Noch keine aktiven Bestände für dieses Asset. Nutze den Tab \"Hinzufügen\", um einen hinzuzufügen.",
             "addTitle": "Bestand hinzufügen",
@@ -2802,12 +2804,13 @@
             "cancelEdit": "Abbrechen",
             "deleteButton": "Löschen",
             "manageLink": "Verifizierte Bestände verwalten",
+            "manageLinkWithCount": "Verifizierte Bestände verwalten ({count})",
             "calculatedFromN": "Berechnet aus {count} Beständen",
-            "reconciledWithN": "Mit {count} Positionen verglichen",
             "detailedTotal": "Details: {amount} · {coverage}% Abdeckung",
             "unallocatedValue": "Nicht aufgeschlüsselt: {amount}",
             "overAllocatedValue": "Die Details übersteigen den Gesamtwert um {amount}",
-            "useDetailedTotal": "Positionssumme verwenden",
+            "useDetailedTotalButton": "Positionssumme verwenden",
+            "useDetailedTotalHint": "Ersetzt den manuell auf der Bilanz-Aktualisierungsseite eingegebenen {declared} durch die Summe der Positionen unten ({detailed}).",
             "declaredCategoryTotal": "Angegebener Gesamtwert",
             "detailedCategoryTotal": "Positionssumme",
             "coverageLabel": "Detailabdeckung",
@@ -2866,7 +2869,7 @@
             "statusRejectedShort": "Abgelehnt",
             "conflictShort": "Konflikt",
             "conflictPending": "Für diesen Monat liegt bereits ein Vorschlag zur Überprüfung vor.",
-            "conflictVerified": "Für diesen Monat gibt es bereits einen von der Community verifizierten Preis.", "providerHistoryLoading": "CoinGecko wird geprüft…", "providerHistoryResult": "{count} Monate für dieses Asset automatisch abgerufen ({months}). Die restlichen Monate kannst du manuell vorschlagen.", "providerHistoryNoData": "CoinGecko hat für diesen Zeitraum keine Daten. Du kannst den Preis manuell vorschlagen.", "providerHistoryError": "Die automatische Abfrage ist nicht verfügbar. Du kannst den Preis unten manuell vorschlagen."
+            "conflictVerified": "Für diesen Monat gibt es bereits einen von der Community verifizierten Preis.", "providerHistoryLoading": "CoinGecko wird geprüft…", "providerHistoryResult": "{count} Monate für dieses Asset automatisch abgerufen ({months}). Die restlichen Monate kannst du manuell vorschlagen.", "providerHistoryNoData": "CoinGecko hat für diesen Zeitraum keine Daten. Du kannst den Preis manuell vorschlagen.", "providerHistoryNotLinked": "Dieses Instrument ist mit keinem CoinGecko-Eintrag verknüpft und kann daher nicht automatisch nachgeschlagen werden. Du kannst den Preis manuell vorschlagen.", "providerHistoryError": "Die automatische Abfrage ist nicht verfügbar. Du kannst den Preis unten manuell vorschlagen."
         }
         },
         "adminPriceReview": {
@@ -2984,6 +2987,7 @@
         "cancelEdit": "Abbrechen",
         "deleteButton": "Löschen",
         "manageLink": "Konten verwalten",
+        "manageLinkWithCount": "Konten verwalten ({count})",
         "calculatedFromN": "Berechnet aus {count} Konten",
         "noValueForMonth": "Kein Wert für {month}"
     },

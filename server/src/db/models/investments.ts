@@ -1006,6 +1006,11 @@ async function upsertHoldingHistoryBatch(user_id: string, entries: HoldingHistor
 export interface HistoricalPriceBackfillResult {
     holdingId: number
     monthsFilled: number
+    /** Present only when monthsFilled is 0 despite this holding having genuine
+     * gaps to fill - narrows down why nothing came back, instead of leaving
+     * "zero progress" indistinguishable from "nothing needed doing" (which
+     * still isn't reported at all - see the gaps.length===0 skip below). */
+    skippedReason?: "missing-coingecko-id" | "provider-unavailable"
 }
 
 function lastDateOfMonth(monthKey: string): string {
@@ -1128,7 +1133,8 @@ async function backfillHistoricalPrices(user_id: string, eurRates: Record<string
         const toUnix = Math.floor(Date.now() / 1000)
 
         const isCrypto = instrument.kind === "crypto"
-        let priceByMonth = (!isCrypto || instrument.coingeckoId)
+        const hasCoingeckoId = !isCrypto || Boolean(instrument.coingeckoId)
+        let priceByMonth = hasCoingeckoId
             ? (isCrypto
                 ? await coingeckoProvider.getHistoricalMonthlyPrices(instrument.coingeckoId as string, fromUnix, toUnix)
                 : await finnhubProvider.getHistoricalMonthlyPrices(instrument.symbol, fromUnix, toUnix))
@@ -1151,7 +1157,10 @@ async function backfillHistoricalPrices(user_id: string, eurRates: Record<string
         // getVerifiedCommunityPricesForInstrument. Already EUR, so it's never
         // divided by `rate` below, unlike the provider's native-currency price.
         const canonicalByMonth = await getVerifiedCanonicalPricesForInstrument(instrument.id)
-        if (!priceByMonth && canonicalByMonth.size === 0) continue
+        if (!priceByMonth && canonicalByMonth.size === 0) {
+            results.push({holdingId: holding.id, monthsFilled: 0, skippedReason: hasCoingeckoId ? "provider-unavailable" : "missing-coingecko-id"})
+            continue
+        }
 
         let monthsFilled = 0
         for (const gap of gaps) {
@@ -1170,7 +1179,9 @@ async function backfillHistoricalPrices(user_id: string, eurRates: Record<string
             })
             if (result.status === "ok") monthsFilled++
         }
-        if (monthsFilled > 0) results.push({holdingId: holding.id, monthsFilled})
+        results.push(monthsFilled > 0
+            ? {holdingId: holding.id, monthsFilled}
+            : {holdingId: holding.id, monthsFilled: 0, skippedReason: "provider-unavailable"})
     }
     return results
 }

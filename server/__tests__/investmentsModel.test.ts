@@ -688,7 +688,23 @@ describe("investments model", () => {
 
             const result = await investments.backfillHistoricalPrices("user-1", {EUR: 1, USD: 1.1})
 
-            expect(result).toEqual([])
+            expect(result).toEqual([{holdingId: 16, monthsFilled: 0, skippedReason: "provider-unavailable"}])
+        })
+
+        it("reports a missing CoinGecko id as the skip reason for a crypto holding, instead of a generic 'provider unavailable'", async () => {
+            const cryptoHoldingNoId = {
+                ...holdingRow, asset_key: "crypto",
+                instrument: {...holdingRow.instrument, kind: "crypto", symbol: "BTC", currency: null, coingecko_id: null},
+            }
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: [cryptoHoldingNoId], error: null}))
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: [gapRow({quantity: 1})], error: null}))
+            // getVerifiedCommunityPricesForInstrument's query - no community fallback either.
+            mockSupabase.from.mockReturnValueOnce(makeChain({data: [], error: null}))
+
+            const result = await investments.backfillHistoricalPrices("user-1", {EUR: 1})
+
+            expect(coingeckoProvider.getHistoricalMonthlyPrices).not.toHaveBeenCalled()
+            expect(result).toEqual([{holdingId: 16, monthsFilled: 0, skippedReason: "missing-coingecko-id"}])
         })
 
         it("retries with Finnhub's exchange-suffixed symbol when the bare ticker has no historical data (e.g. a European ETF)", async () => {

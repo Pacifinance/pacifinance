@@ -60,7 +60,6 @@ import {
     PortfolioExtraInfo
 } from '../styles/ModernDashboardStyled';
 import { useDemoServices } from '../hooks/useDemoServices';
-import InvestmentHoldingsPanel from './InvestmentHoldingsPanel';
 import LiquidityAccountsPanel from './LiquidityAccountsPanel';
 import PortfolioSection from '../components/PortfolioSection';
 import PortfolioAssetCard from '../components/PortfolioAssetCard';
@@ -141,9 +140,9 @@ const Dashboard = ({ theme, userData, isHidden }) => {
 
     // A "closed" holding (fully sold) is never deleted, just set to quantity 0
     // (see closeStaleHolding.ts) - filtered out here so it doesn't show as
-    // 0,00€ noise in the compact/card overview views. InvestmentHoldingsPanel
-    // still gets the unfiltered holdingsByAssetKey above (it needs both, for
-    // its own "current"/"past" tabs).
+    // 0,00€ noise in the compact/card overview views. InvestmentAssetPage
+    // (see the pencil/list-icon links below) still gets the unfiltered
+    // holdingsByAssetKey via its own fetch, for its own "current"/"past" tabs.
     const activeHoldingsByAssetKey = useMemo(() => {
         const map = {};
         for (const key of Object.keys(holdingsByAssetKey)) {
@@ -773,26 +772,27 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                                                 actions={(
                                                     <>
                                                         {isVerifiableAssetKey(investment.key) && !(combineCrypto && investment.key === 'crypto') && (
-                                                            <button
-                                                                type="button"
-                                                                className="icon-action"
-                                                                onClick={() => setOpenSubAccountsAssetKey(investment.key)}
-                                                                aria-label={translations.investments.holdings.manageLink}
-                                                                title={translations.investments.holdings.manageLink}
-                                                                data-umami-event="dashboard-manage-holdings"
-                                                            >
-                                                                <BiListUl />
-                                                            </button>
+                                                            <>
+                                                                <LocalizedLink
+                                                                    to={`/investments/${investment.key}`}
+                                                                    className="icon-action"
+                                                                    aria-label={translations.investments.holdings.manageLink}
+                                                                    title={translations.investments.holdings.manageLink}
+                                                                    data-umami-event="dashboard-manage-holdings"
+                                                                >
+                                                                    <BiListUl />
+                                                                </LocalizedLink>
+                                                                <LocalizedLink
+                                                                    to={`/investments/${investment.key}?mode=edit`}
+                                                                    className="icon-action"
+                                                                    aria-label={translations.dashboard.updateValue}
+                                                                    title={translations.dashboard.updateValue}
+                                                                    data-umami-event="dashboard-update-investment"
+                                                                >
+                                                                    <HiOutlinePencilAlt />
+                                                                </LocalizedLink>
+                                                            </>
                                                         )}
-                                                        <LocalizedLink
-                                                            to="/insert-values?section=balance"
-                                                            className="icon-action"
-                                                            aria-label={translations.dashboard.updateValue}
-                                                            title={translations.dashboard.updateValue}
-                                                            data-umami-event="dashboard-update-investment"
-                                                        >
-                                                            <HiOutlinePencilAlt />
-                                                        </LocalizedLink>
                                                     </>
                                                 )}
                                             />
@@ -1204,15 +1204,6 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                     accounts={liquidityAccountsByAssetKey[openSubAccountsAssetKey] || []}
                     onClose={() => setOpenSubAccountsAssetKey(null)}
                     onChanged={refreshLiquidityAccounts}
-                />
-            )}
-
-            {openSubAccountsAssetKey && isVerifiableAssetKey(openSubAccountsAssetKey) && (
-                <InvestmentHoldingsPanel
-                    assetKey={openSubAccountsAssetKey}
-                    holdings={holdingsByAssetKey[openSubAccountsAssetKey] || []}
-                    onClose={() => setOpenSubAccountsAssetKey(null)}
-                    onChanged={refreshInvestmentHoldings}
                 />
             )}
         </MainDashboardLayout>

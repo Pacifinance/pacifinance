@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { CurrencyContext } from '../contexts/CurrencyContext';
 import { Select, MenuItem } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faLayerGroup, faCircleInfo, faListCheck } from '@fortawesome/free-solid-svg-icons';
+import { faLayerGroup, faCircleInfo, faListCheck, faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
 import styled from 'styled-components';
 import {
   ModernActionButton,
@@ -14,6 +14,7 @@ import InvestmentHoldingsPanel from './InvestmentHoldingsPanel';
 import LiquidityAccountsPanel from './LiquidityAccountsPanel';
 import { isVerifiableAssetKey } from '../constants/investmentSchema';
 import { LIQUIDITY_KEYS } from '../constants/balanceSchema';
+import { useLocalizedNavigate } from '../hooks/useLocalizedNavigate';
 import { reconcileInvestmentBalance } from '../utils/investmentBalanceReconciliation';
 
 /* ─── Helpers ─── */
@@ -262,18 +263,11 @@ const PastMonthBanner = styled.div`
   }
 `;
 
-const HoldingsLinkRow = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.4rem;
-  margin-top: 0.3rem;
-`;
-
 const HoldingsLinkButton = styled.button`
   display: flex;
   align-items: center;
   gap: 0.3rem;
+  margin-top: 0.3rem;
   border: none;
   background: transparent;
   padding: 0;
@@ -288,36 +282,28 @@ const HoldingsLinkButton = styled.button`
   &:hover { opacity: 1; }
 `;
 
-const CalculatedBadge = styled.span`
-  font-size: 0.62rem;
-  font-weight: 600;
-  color: ${(p) => p.theme.textColor};
-  opacity: 0.5;
-`;
-
-const ReconciliationHint = styled.div`
+/** Replaces the old always-expanded reconciliation paragraph (coverage %,
+ * unallocated amount, "use detailed total" link) with a single icon, shown
+ * only when there's actually a meaningful mismatch worth the user's
+ * attention. The full explanation lives in its title tooltip; clicking it
+ * jumps straight to "Gestisci holding" where the numbers - and the fix -
+ * are one tap away, instead of cluttering every card at rest. */
+const AttentionBadge = styled.button`
   display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-  color: ${(p) => p.theme.textColor};
-  font-size: 0.64rem;
-  line-height: 1.35;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  margin-left: auto;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  background: ${(p) => (p.$status === 'over-allocated' ? '#f59e0b' : p.theme.buttonBackgroundColor)}18;
+  color: ${(p) => (p.$status === 'over-allocated' ? '#f59e0b' : p.theme.buttonBackgroundColor)};
 
-  .summary { opacity: 0.62; }
-  .difference {
-    color: ${(p) => p.$status === 'over-allocated' ? '#f59e0b' : p.theme.buttonBackgroundColor};
-    font-weight: 600;
-  }
-  button {
-    align-self: flex-start;
-    border: 0;
-    padding: 0;
-    background: transparent;
-    color: ${(p) => p.theme.buttonBackgroundColor};
-    font: inherit;
-    font-weight: 600;
-    cursor: pointer;
-  }
+  svg { width: 9px; height: 9px; }
+  &:hover { opacity: 0.8; }
 `;
 
 /* ─── Component ─── */
@@ -361,6 +347,7 @@ export default function BalanceSection({
   liquidityAccountHistory = [],
 }) {
   const { currencySymbol, fromEUR, toEUR, formatAmount } = React.useContext(CurrencyContext);
+  const navigate = useLocalizedNavigate();
   const [openSubAccountsAssetKey, setOpenSubAccountsAssetKey] = useState(null);
 
   const holdingsByAssetKey = useMemo(() => {
@@ -513,6 +500,19 @@ export default function BalanceSection({
     { key: 'commodities', label: translations.assets.commodities, value: commoditiesValue, setter: setCommoditiesValue },
   ];
 
+  // Investment categories now get their own dedicated page (richer layout,
+  // asset-colored, shareable) instead of the in-place modal - but only for
+  // the CURRENT month, where "which month am I looking at" doesn't need to
+  // travel through the URL too. A past month (this component's own date
+  // picker) keeps using the modal, same as liquidity accounts always do.
+  const openAssetPanel = (assetKey, isInvestmentAsset) => {
+    if (isInvestmentAsset && isCurrentMonth) {
+      navigate(`/investments/${assetKey}`);
+      return;
+    }
+    setOpenSubAccountsAssetKey(assetKey);
+  };
+
   const renderAssetInput = (asset) => {
     const IconComponent = getAssetIcon(asset.key);
     const colorData = getAssetColor(asset.key);
@@ -545,6 +545,16 @@ export default function BalanceSection({
       && reconciliation.status !== 'exact'
       && (Math.abs(reconciliation.unallocatedValue) >= 100 || differenceRatio >= 0.05);
 
+    // Full explanation for the attention icon's tooltip - the only place this
+    // wording still appears, now that the card itself stays quiet unless
+    // something actually needs the user's attention (see AttentionBadge).
+    const attentionTooltip = showDifferenceAction
+      ? `${t.detailedTotal
+        .replace('{amount}', formatAmount(reconciliation.detailedTotal))
+        .replace('{coverage}', reconciliation.coveragePercent == null ? '—' : reconciliation.coveragePercent.toFixed(1))} — ${(reconciliation.status === 'unallocated' ? t.unallocatedValue : t.overAllocatedValue)
+        .replace('{amount}', formatAmount(Math.abs(reconciliation.unallocatedValue)))}`
+      : undefined;
+
     return (
       <AssetItem key={asset.key} theme={theme} $color={color}>
         <AssetLabel theme={theme}>
@@ -552,6 +562,18 @@ export default function BalanceSection({
             <IconComponent />
           </AssetIconWrapper>
           {asset.label}
+          {!isHidden && showDifferenceAction && (
+            <AttentionBadge
+              type="button"
+              theme={theme}
+              $status={reconciliation.status}
+              title={attentionTooltip}
+              aria-label={attentionTooltip}
+              onClick={() => openAssetPanel(asset.key, isInvestmentKey)}
+            >
+              <FontAwesomeIcon icon={faTriangleExclamation} />
+            </AttentionBadge>
+          )}
         </AssetLabel>
         <CurrencyInputWrapper>
           <CurrencySymbol theme={theme}>{currencySymbol}</CurrencySymbol>
@@ -565,46 +587,18 @@ export default function BalanceSection({
             placeholder={isHidden ? '****' : placeholderValue}
           />
         </CurrencyInputWrapper>
-        {!isHidden && reconciliation && (
-          <ReconciliationHint theme={theme} $status={reconciliation.status}>
-            <span className="summary">
-              {t.detailedTotal
-                .replace('{amount}', formatAmount(reconciliation.detailedTotal))
-                .replace('{coverage}', reconciliation.coveragePercent == null ? '—' : reconciliation.coveragePercent.toFixed(1))}
-            </span>
-            {showDifferenceAction && (
-              <span className="difference">
-                {(reconciliation.status === 'unallocated' ? t.unallocatedValue : t.overAllocatedValue)
-                  .replace('{amount}', formatAmount(Math.abs(reconciliation.unallocatedValue)))}
-              </span>
-            )}
-            {showDifferenceAction && (
-              <button
-                type="button"
-                onClick={() => asset.setter(fromEUR(reconciliation.detailedTotal).toLocaleString('it-IT', { minimumFractionDigits: 2 }))}
-              >
-                {t.useDetailedTotal}
-              </button>
-            )}
-          </ReconciliationHint>
-        )}
         {(isLiquidityKey || isInvestmentKey) && t && (
-          <HoldingsLinkRow>
-            {hasHoldings && (
-              <CalculatedBadge theme={theme}>
-                {(isInvestmentKey ? t.reconciledWithN : t.calculatedFromN).replace('{count}', subEntries.length)}
-              </CalculatedBadge>
-            )}
-            <HoldingsLinkButton
-              type="button"
-              theme={theme}
-              $color={color}
-              onClick={() => setOpenSubAccountsAssetKey(asset.key)}
-            >
-              <FontAwesomeIcon icon={faListCheck} />
-              {t.manageLink}
-            </HoldingsLinkButton>
-          </HoldingsLinkRow>
+          <HoldingsLinkButton
+            type="button"
+            theme={theme}
+            $color={color}
+            onClick={() => openAssetPanel(asset.key, isInvestmentKey)}
+          >
+            <FontAwesomeIcon icon={faListCheck} />
+            {hasHoldings
+              ? (t.manageLinkWithCount || t.manageLink).replace('{count}', subEntries.length)
+              : t.manageLink}
+          </HoldingsLinkButton>
         )}
       </AssetItem>
     );
@@ -734,6 +728,10 @@ export default function BalanceSection({
               ? toEUR(parseBalanceInput(asset.value))
               : Number(balancePlaceholders?.[asset.key]) || 0;
           })()}
+          onUseDetailedTotal={(detailedTotalEur) => {
+            const asset = investmentAssets.find((item) => item.key === openSubAccountsAssetKey);
+            if (asset) asset.setter(fromEUR(detailedTotalEur).toLocaleString('it-IT', { minimumFractionDigits: 2 }));
+          }}
         />
       )}
     </SectionWrapper>

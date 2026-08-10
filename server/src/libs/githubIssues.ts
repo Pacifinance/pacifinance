@@ -1,4 +1,5 @@
 import { logger } from "./logger"
+import githubApp from "./githubApp"
 
 const GITHUB_REPO = "Pacifinance/Pacifinance"
 const GITHUB_API_BASE = "https://api.github.com"
@@ -10,6 +11,12 @@ const LABELS_BY_TYPE: Record<FeedbackType, string> = {
     idea: "enhancement",
     other: "feedback",
 }
+
+// Every auto-created issue gets this label too, so maintainers can filter
+// for "new, unreviewed community feedback" in one view instead of a bespoke
+// private moderation queue - GitHub's own issue tools (edit/close/lock,
+// block a user) are the moderation layer, same as any other bot-filed issue.
+const TRIAGE_LABEL = "needs-triage"
 
 export type CreateIssueInput = {
     type: FeedbackType
@@ -24,20 +31,22 @@ export type CreateIssueResult = {
 }
 
 /**
- * Creates a GitHub issue from in-app feedback, posted by the bot account
- * that owns GITHUB_ISSUE_TOKEN - never the submitting user's identity. The
- * issue body only contains what the user typed plus the optional page they
- * were on; no userId or other identifying data.
+ * Creates a GitHub issue from in-app feedback, posted by our GitHub App's
+ * installation - shows up authored by "<app-name>[bot]", never by whichever
+ * human's key signs the App's JWT (see githubApp.ts) and never by the
+ * submitting user (who has no GitHub identity to begin with - accounts here
+ * are anonymous). The issue body only contains what the user typed plus the
+ * optional page they were on; no userId or other identifying data.
  *
- * Deliberately a separate token from GITHUB_TOKEN (server/src/cache/items/githubStats.ts),
- * which is read-only and only raises the anonymous rate-limit ceiling. This
- * one needs "Issues: write" (or classic public_repo) scope - keeping them
- * separate means a leaked read-only token can't be used to create issues.
+ * Deliberately a separate credential from GITHUB_TOKEN (server/src/cache/items/githubStats.ts),
+ * which is read-only and only raises the anonymous rate-limit ceiling for
+ * public repo stats - keeping them separate means that read-only token
+ * can't be used to create issues even if it leaked.
  */
 async function createIssue(input: CreateIssueInput): Promise<CreateIssueResult | null> {
-    const token = process.env.GITHUB_ISSUE_TOKEN
+    const token = await githubApp.getInstallationToken()
     if (!token) {
-        logger.info("githubIssues.createIssue: GITHUB_ISSUE_TOKEN not configured")
+        logger.info("githubIssues.createIssue: no GitHub App installation token available")
         return null
     }
 
@@ -59,7 +68,7 @@ async function createIssue(input: CreateIssueInput): Promise<CreateIssueResult |
             body: JSON.stringify({
                 title: input.title,
                 body: bodyLines.join("\n"),
-                labels: [LABELS_BY_TYPE[input.type]],
+                labels: [LABELS_BY_TYPE[input.type], TRIAGE_LABEL],
             }),
         })
 

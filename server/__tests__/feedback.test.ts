@@ -1,14 +1,10 @@
-import { afterEach, describe, expect, it } from "vitest"
+import { describe, expect, it } from "vitest"
 
 import app from "../src/index"
 import { authCookie, request } from "./helpers/http"
 import { mockRedis } from "./setup"
 
 describe("POST /api/feedback", () => {
-    afterEach(() => {
-        delete process.env.GITHUB_ISSUE_TOKEN
-    })
-
     it("requires an access-token cookie", async () => {
         const response = await request(app, "/api/feedback", {
             method: "POST",
@@ -39,7 +35,6 @@ describe("POST /api/feedback", () => {
     })
 
     it("rate-limits repeated submissions from the same user", async () => {
-        process.env.GITHUB_ISSUE_TOKEN = "test-token"
         mockRedis.incr.mockResolvedValue(999)
 
         const response = await request(app, "/api/feedback", {
@@ -51,9 +46,7 @@ describe("POST /api/feedback", () => {
         expect(response.status).toBe(429)
     })
 
-    it("returns 502 without crashing when GITHUB_ISSUE_TOKEN isn't configured", async () => {
-        delete process.env.GITHUB_ISSUE_TOKEN
-
+    it("returns 502 without crashing when the GitHub App isn't configured (no cached installation token, no app credentials)", async () => {
         const response = await request(app, "/api/feedback", {
             method: "POST",
             headers: { cookie: authCookie },
@@ -63,8 +56,11 @@ describe("POST /api/feedback", () => {
         expect(response.status).toBe(502)
     })
 
-    it("creates a GitHub issue and never includes the user's id in the request", async () => {
-        process.env.GITHUB_ISSUE_TOKEN = "test-token"
+    it("creates a GitHub issue labelled for triage and never includes the user's id in the request", async () => {
+        // A cached installation token short-circuits githubApp.getInstallationToken()
+        // before it needs to sign a JWT or call GitHub - see githubApp.test.ts for
+        // that path in isolation.
+        mockRedis.get.mockResolvedValue("cached-installation-token")
         const fetchMock = global.fetch as unknown as ReturnType<typeof import("vitest").vi.fn>
         // @ts-expect-error - test stub, real Response shape not needed
         fetchMock.mockResolvedValueOnce({
@@ -87,15 +83,15 @@ describe("POST /api/feedback", () => {
         expect(fetchMock).toHaveBeenCalledTimes(1)
         const [url, init] = fetchMock.mock.calls[0]
         expect(url).toBe("https://api.github.com/repos/Pacifinance/Pacifinance/issues")
-        expect(init.headers.authorization).toBe("Bearer test-token")
+        expect(init.headers.authorization).toBe("Bearer cached-installation-token")
         const sentBody = JSON.parse(init.body)
         expect(sentBody.title).toBe("Add dark mode")
-        expect(sentBody.labels).toEqual(["enhancement"])
+        expect(sentBody.labels).toEqual(["enhancement", "needs-triage"])
         expect(JSON.stringify(sentBody)).not.toContain("user-uuid")
     })
 
     it("returns 502 when the GitHub API call fails", async () => {
-        process.env.GITHUB_ISSUE_TOKEN = "test-token"
+        mockRedis.get.mockResolvedValue("cached-installation-token")
         const fetchMock = global.fetch as unknown as ReturnType<typeof import("vitest").vi.fn>
         // @ts-expect-error - test stub, real Response shape not needed
         fetchMock.mockResolvedValueOnce({ status: 403 })

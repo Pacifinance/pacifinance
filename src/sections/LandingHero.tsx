@@ -63,10 +63,10 @@ export default function LandingHero({ theme }: LandingHeroProps) {
             </HeroPill>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center lg:justify-start">
+          <div className="flex flex-col items-center sm:flex-row gap-2 md:gap-4 justify-center lg:justify-start">
             <button
               onClick={handleGetStarted}
-              className="px-6 md:px-8 py-3 md:py-4 rounded-xl text-white font-semibold text-base md:text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+              className="w-full sm:w-auto px-6 md:px-8 py-3 md:py-4 rounded-xl text-white font-semibold text-base md:text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
               style={{ backgroundColor: theme.secondaryColor }}
               data-umami-event="hero-get-started"
             >
@@ -74,11 +74,11 @@ export default function LandingHero({ theme }: LandingHeroProps) {
             </button>
             <button
               onClick={handleLearnMore}
-              className="px-6 md:px-8 py-3 md:py-4 rounded-xl font-semibold text-base md:text-lg border-2 hover:shadow-lg transform hover:scale-105 transition-all duration-200"
-              style={{ borderColor: theme.secondaryColor, color: theme.secondaryColor, backgroundColor: 'transparent' }}
+              className="px-2 py-2 font-semibold text-sm md:text-base hover:underline underline-offset-4 transition-all duration-200"
+              style={{ color: theme.secondaryColor, background: 'transparent' }}
               data-umami-event="hero-learn-more"
             >
-              {t.hero.learnMore}
+              {t.hero.learnMore} →
             </button>
           </div>
 
@@ -142,7 +142,7 @@ function HeroPill({ theme, label, children }: { theme: PacifinanceTheme; label: 
       style={{ backgroundColor: `${theme.secondaryColor}20` }}
     >
       {children}
-      <span className="text-xs md:text-sm font-medium">{label}</span>
+      <span className="text-sm md:text-base font-medium">{label}</span>
     </div>
   );
 }

@@ -234,6 +234,40 @@
             "text": "No pedimos un email para mantenerte anónimo: sin él, tu ID, contraseña y recovery code son la única forma de recuperar el acceso. Guárdalos en un gestor de contraseñas (Bitwarden, 1Password, LastPass o el de tu navegador)."
         }
     },
+    "contribute": {
+        "title": "Contribuye",
+        "subtitle": "Pacifinance funciona gracias a la comunidad. Así puedes ayudar.",
+        "feedback": {
+            "title": "Reporta un bug o propón una idea",
+            "description": "Tu feedback se convierte directamente en una issue de GitHub, así podemos hacerle seguimiento.",
+            "loginPrompt": "Debes iniciar sesión para enviar feedback desde la app.",
+            "signInCta": "Iniciar sesión",
+            "githubFallback": "O abre una issue directamente en GitHub"
+        },
+        "support": {
+            "title": "Apoya el proyecto",
+            "description": "Pacifinance es gratis y se sostiene con donaciones de la comunidad."
+        },
+        "code": {
+            "title": "Contribuye con código",
+            "description": "El código es open source en GitHub, licencia AGPLv3.",
+            "cta": "Lee CONTRIBUTING.md"
+        },
+        "roadmapLink": "Ver la roadmap →"
+    },
+    "feedback": {
+        "typeBug": "Bug",
+        "typeIdea": "Idea",
+        "typeOther": "Otro",
+        "titlePlaceholder": "Título breve",
+        "descriptionPlaceholder": "Describe el problema o la idea...",
+        "submit": "Enviar feedback",
+        "submitting": "Enviando...",
+        "success": "¡Gracias! Tu feedback se publicó como issue en GitHub.",
+        "viewIssue": "Ver la issue →",
+        "sendAnother": "Enviar otro",
+        "error": "No se pudo enviar el feedback. Inténtalo más tarde."
+    },
     "header": {
         "signIn": "Iniciar sesión",
         "signUp": "Registrarse",
@@ -348,7 +382,12 @@
         "features": "Funciones",
         "community": "Comunidad",
         "security": "Seguridad",
-        "noItems": "Sin elementos"
+        "noItems": "Sin elementos",
+        "vote": {
+            "cta": "Votar",
+            "voted": "Votado",
+            "loginPrompt": "Inicia sesión para votar"
+        }
     },
     "sidebar": {
         "dashboard": "Panel",

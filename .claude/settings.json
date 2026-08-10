@@ -19,7 +19,8 @@
       "Bash(echo \"started pid $!\")",
       "Bash(grep -E \"^\\\\.agents/|^\\\\.github/instructions/|^\\\\.github/prompts/|^CLAUDE\\\\.md$|^AGENTS\\\\.md$\")",
       "Bash(pip show *)",
-      "Bash(npx --version)"
+      "Bash(npx --version)",
+      "Bash(grep -n 'renderCards = \\\\|CategoryBadge $cat' src/pages/RoadmapPage.tsx)"
     ]
   }
 }

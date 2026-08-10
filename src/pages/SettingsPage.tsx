@@ -70,6 +70,7 @@ import { usePastDateBalancePref, PAST_DATE_BALANCE_CHOICES } from "../hooks/useP
 import { usePrivacyDefaultPref, PRIVACY_DEFAULT_CHOICES } from "../hooks/usePrivacyDefaultPref";
 import { useCryptoGroupingPref } from "../hooks/useCryptoGroupingPref";
 import CryptoGroupingToggle from "../components/CryptoGroupingToggle";
+import { GITHUB_ISSUES_URL } from "../data/externalLinks";
 
 const SettingsPage = () => {
     const { theme, toggleMode } = useContext(ThemeContext);
@@ -1651,7 +1652,7 @@ const SettingsPage = () => {
                                 icon={faBug}
                                 label={translations.sidebar.settings.bugReport || (language === "it" ? "Segnala un bug" : "Report a bug")}
                                 subtitle={translations.sidebar.settings.bugReportSubtitle || (language === "it" ? "Apri una segnalazione su GitHub" : "Open a report on GitHub")}
-                                href="https://github.com/Pacifinance/Pacifinance/issues/new/choose"
+                                href={GITHUB_ISSUES_URL}
                                 external
                             />
                         </SettingsGroup>

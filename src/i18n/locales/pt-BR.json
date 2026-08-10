@@ -234,6 +234,40 @@
             "text": "Não pedimos email para manter você anônimo: sem ele, seu ID, senha e recovery code são a única forma de recuperar o acesso. Guarde-os em um gerenciador de senhas (Bitwarden, 1Password, LastPass ou o do seu navegador)."
         }
     },
+    "contribute": {
+        "title": "Contribua",
+        "subtitle": "O Pacifinance funciona graças à comunidade. Veja como você pode ajudar.",
+        "feedback": {
+            "title": "Reporte um bug ou proponha uma ideia",
+            "description": "Seu feedback se torna diretamente uma issue no GitHub, para que possamos acompanhá-la.",
+            "loginPrompt": "Você precisa estar logado para enviar feedback pelo app.",
+            "signInCta": "Entrar",
+            "githubFallback": "Ou abra uma issue diretamente no GitHub"
+        },
+        "support": {
+            "title": "Apoie o projeto",
+            "description": "O Pacifinance é gratuito e mantido por doações da comunidade."
+        },
+        "code": {
+            "title": "Contribua com código",
+            "description": "O código é open source no GitHub, licença AGPLv3.",
+            "cta": "Leia o CONTRIBUTING.md"
+        },
+        "roadmapLink": "Ver a roadmap →"
+    },
+    "feedback": {
+        "typeBug": "Bug",
+        "typeIdea": "Ideia",
+        "typeOther": "Outro",
+        "titlePlaceholder": "Título breve",
+        "descriptionPlaceholder": "Descreva o problema ou a ideia...",
+        "submit": "Enviar feedback",
+        "submitting": "Enviando...",
+        "success": "Obrigado! Seu feedback foi publicado como issue no GitHub.",
+        "viewIssue": "Ver a issue →",
+        "sendAnother": "Enviar outro feedback",
+        "error": "Não foi possível enviar o feedback. Tente novamente mais tarde."
+    },
     "header": {
         "signIn": "Entrar",
         "signUp": "Cadastrar",
@@ -348,7 +382,12 @@
         "features": "Recursos",
         "community": "Comunidade",
         "security": "Segurança",
-        "noItems": "Nenhum item"
+        "noItems": "Nenhum item",
+        "vote": {
+            "cta": "Votar",
+            "voted": "Votado",
+            "loginPrompt": "Entre para votar"
+        }
     },
     "sidebar": {
         "dashboard": "Painel",

@@ -234,6 +234,40 @@
             "text": "Wir verlangen keine E-Mail, um Ihre Anonymität zu wahren: ohne sie sind ID, Passwort und Recovery-Code der einzige Weg zurück in Ihr Konto. Bewahren Sie sie in einem Passwort-Manager auf (Bitwarden, 1Password, LastPass oder dem Ihres Browsers)."
         }
     },
+    "contribute": {
+        "title": "Mitmachen",
+        "subtitle": "Pacifinance lebt von seiner Community. So können Sie helfen.",
+        "feedback": {
+            "title": "Fehler melden oder Idee vorschlagen",
+            "description": "Ihr Feedback wird direkt zu einem GitHub-Issue, damit wir es verfolgen können.",
+            "loginPrompt": "Sie müssen angemeldet sein, um Feedback aus der App zu senden.",
+            "signInCta": "Anmelden",
+            "githubFallback": "Oder direkt ein Issue auf GitHub öffnen"
+        },
+        "support": {
+            "title": "Projekt unterstützen",
+            "description": "Pacifinance ist kostenlos und wird durch Spenden der Community getragen."
+        },
+        "code": {
+            "title": "Zum Code beitragen",
+            "description": "Der Code ist Open Source auf GitHub, AGPLv3-Lizenz.",
+            "cta": "CONTRIBUTING.md lesen"
+        },
+        "roadmapLink": "Roadmap ansehen →"
+    },
+    "feedback": {
+        "typeBug": "Fehler",
+        "typeIdea": "Idee",
+        "typeOther": "Sonstiges",
+        "titlePlaceholder": "Kurzer Titel",
+        "descriptionPlaceholder": "Beschreiben Sie das Problem oder die Idee...",
+        "submit": "Feedback senden",
+        "submitting": "Wird gesendet...",
+        "success": "Danke! Ihr Feedback wurde als GitHub-Issue veröffentlicht.",
+        "viewIssue": "Issue ansehen →",
+        "sendAnother": "Weiteres Feedback senden",
+        "error": "Feedback konnte nicht gesendet werden. Bitte versuchen Sie es später erneut."
+    },
     "header": {
         "signIn": "Anmelden",
         "signUp": "Registrieren",
@@ -348,7 +382,12 @@
         "features": "Funktionen",
         "community": "Community",
         "security": "Sicherheit",
-        "noItems": "Noch keine Roadmap-Einträge."
+        "noItems": "Noch keine Roadmap-Einträge.",
+        "vote": {
+            "cta": "Abstimmen",
+            "voted": "Abgestimmt",
+            "loginPrompt": "Zum Abstimmen anmelden"
+        }
     },
     "sidebar": {
         "dashboard": "Dashboard",

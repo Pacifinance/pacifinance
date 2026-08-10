@@ -47,6 +47,8 @@ import { createGoalService } from '../services/goalService';
 import { createCommunityBenchmarkService } from '../services/communityBenchmarkService';
 import { createSharedExpenseService } from '../services/sharedExpenseService';
 import { createNotificationService } from '../services/notificationService';
+import { createFeedbackService } from '../services/feedbackService';
+import { createRoadmapVotesService } from '../services/roadmapVotesService';
 
 const ServiceContext = createContext(null);
 
@@ -88,6 +90,8 @@ export const createServices = (client) => {
     communityBenchmarkService: createCommunityBenchmarkService(apiClient),
     sharedExpenseService: createSharedExpenseService(apiClient),
     notificationService: createNotificationService(apiClient),
+    feedbackService: createFeedbackService(apiClient),
+    roadmapVotesService: createRoadmapVotesService(apiClient),
   };
 };
 

@@ -9,6 +9,10 @@ import { useAuth } from '../hooks/useAuth';
 import { Header } from '../sections/LandingHeader';
 import LandingFooter from '../sections/LandingFooter';
 import Sidebar from '../sections/Sidebar';
+import { LocalizedLink } from '../components/LocalizedLink';
+import { useLocalizedNavigate } from '../hooks/useLocalizedNavigate';
+import { useServices } from '../contexts/ServiceContext';
+import { GITHUB_REPO_URL } from '../data/externalLinks';
 
 /* ─── Styled Components ─── */
 
@@ -216,6 +220,48 @@ const CategoryBadge = styled.span`
   }};
 `;
 
+const CardFooter = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.6rem;
+  gap: 0.5rem;
+`;
+
+const VoteButton = styled.button<{ $voted?: boolean }>`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1.5px solid ${p => p.$voted ? p.theme.secondaryColor : (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.12)')};
+  background: ${p => p.$voted ? `${p.theme.secondaryColor}20` : 'transparent'};
+  color: ${p => p.$voted ? p.theme.secondaryColor : (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)')};
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: ${p => p.theme.secondaryColor};
+    color: ${p => p.theme.secondaryColor};
+  }
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.6;
+  }
+`;
+
+const GithubIssueLink = styled.a`
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.45)'};
+  text-decoration: none;
+
+  &:hover { text-decoration: underline; }
+`;
+
 const FeedbackCTA = styled.div`
   text-align: center;
   margin-top: 3rem;
@@ -280,6 +326,10 @@ const RoadmapPage = () => {
   const { isMobileScreen } = useContext(MediaQueryContext);
   const [activeFilter, setActiveFilter] = useState('all');
   const { isAuthenticated, userData, handleSetIsUpdated, handleSetIsAuthenticated } = useAuth();
+  const { roadmapVotesService } = useServices();
+  const navigate = useLocalizedNavigate();
+  const [voteCounts, setVoteCounts] = useState({});
+  const [myVotes, setMyVotes] = useState([]);
 
   const { mode } = theme;
 
@@ -287,6 +337,42 @@ const RoadmapPage = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  // Vote counts are public (visible logged out too); "mine" only once authenticated.
+  useEffect(() => {
+    roadmapVotesService.getVoteCounts().then(setVoteCounts).catch(() => {});
+  }, [roadmapVotesService]);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setMyVotes([]);
+      return;
+    }
+    roadmapVotesService.getMyVotes().then(setMyVotes).catch(() => {});
+  }, [isAuthenticated, roadmapVotesService]);
+
+  const handleToggleVote = async (itemId) => {
+    if (!isAuthenticated) {
+      navigate('/auth');
+      return;
+    }
+    const hadVoted = myVotes.includes(itemId);
+    // Optimistic update, reconciled with the server response.
+    setMyVotes(prev => hadVoted ? prev.filter(id => id !== itemId) : [...prev, itemId]);
+    setVoteCounts(prev => ({ ...prev, [itemId]: Math.max(0, (prev[itemId] || 0) + (hadVoted ? -1 : 1)) }));
+    try {
+      const result = await roadmapVotesService.toggleVote(itemId);
+      if (result.voted !== !hadVoted) {
+        // Server disagreed with the optimistic guess (e.g. stale local state) - refetch to reconcile.
+        roadmapVotesService.getMyVotes().then(setMyVotes).catch(() => {});
+        roadmapVotesService.getVoteCounts().then(setVoteCounts).catch(() => {});
+      }
+    } catch {
+      // Roll back on failure.
+      setMyVotes(prev => hadVoted ? [...prev, itemId] : prev.filter(id => id !== itemId));
+      setVoteCounts(prev => ({ ...prev, [itemId]: Math.max(0, (prev[itemId] || 0) + (hadVoted ? 1 : -1)) }));
+    }
+  };
 
   const counts = getStatusCounts();
   const isIt = language === 'it';
@@ -312,6 +398,26 @@ const RoadmapPage = () => {
         <CategoryBadge $cat={item.category}>
           {CATEGORY_LABELS[item.category]?.[language] || item.category}
         </CategoryBadge>
+        <CardFooter>
+          <VoteButton
+            theme={theme}
+            $voted={myVotes.includes(item.id)}
+            onClick={() => handleToggleVote(item.id)}
+            title={isAuthenticated ? undefined : (t.vote?.loginPrompt || (isIt ? 'Accedi per votare' : 'Sign in to vote'))}
+          >
+            🗳️ {voteCounts[item.id] || 0}
+          </VoteButton>
+          {item.githubIssue && (
+            <GithubIssueLink
+              theme={theme}
+              href={`${GITHUB_REPO_URL}/issues/${item.githubIssue}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              GitHub #{item.githubIssue}
+            </GithubIssueLink>
+          )}
+        </CardFooter>
       </Card>
     ));
   };
@@ -325,7 +431,8 @@ const RoadmapPage = () => {
         description={isIt
           ? 'Scopri le funzionalità completate, in corso e pianificate di Pacifinance.'
           : 'Discover the completed, in progress and planned features of Pacifinance.'}
-        path="/roadmap"
+        canonical="/roadmap"
+        language={language}
       />
 
       <PageHeader theme={theme}>
@@ -416,14 +523,9 @@ const RoadmapPage = () => {
             ? 'Pacifinance è un progetto community-centrico. Il tuo feedback è fondamentale!'
             : 'Pacifinance is a community-centric project. Your feedback is essential!'}
         </p>
-        <a
-          href="https://github.com/Pacifinance/Pacifinance/issues/new/choose"
-          target="_blank"
-          rel="noopener noreferrer"
-          data-umami-event="roadmap-feedback-click"
-        >
+        <LocalizedLink to="/contribute" data-umami-event="roadmap-feedback-click">
           🐛 {isIt ? 'Invia Feedback' : 'Send Feedback'}
-        </a>
+        </LocalizedLink>
       </FeedbackCTA>
     </PageWrapper>
   );

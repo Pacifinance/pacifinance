@@ -18,6 +18,8 @@ import benchmarksRouter from "./private/benchmarks"
 import exchangeRatesRouter from "./private/exchangeRates"
 import sharedExpensesRouter from "./private/sharedExpenses"
 import notificationsRouter from "./private/notifications"
+import feedbackRouter from "./private/feedback"
+import roadmapVotesRouter from "./private/roadmapVotes"
 
 import supabase from "../db/supabase"
 import authCookies from "./authCookies"
@@ -92,5 +94,7 @@ rootRouter.use("/benchmarks", benchmarksRouter)
 rootRouter.use("/exchange-rates", exchangeRatesRouter)
 rootRouter.use("/shared-expenses", sharedExpensesRouter)
 rootRouter.use("/notifications", notificationsRouter)
+rootRouter.use("/feedback", feedbackRouter)
+rootRouter.use("/roadmap-votes", roadmapVotesRouter)
 
 export default rootRouter

@@ -12,5 +12,6 @@ import benchmarks from "./models/benchmarks"
 import benchmarkSnapshots from "./models/benchmarkSnapshots"
 import sharedExpenses from "./models/sharedExpenses"
 import notifications from "./models/notifications"
+import roadmapVotes from "./models/roadmapVotes"
 
-export default {users, balances, transactions, tags, categories, investments, liquidityAccounts, recurringTransactions, goals, delqueue, benchmarks, benchmarkSnapshots, sharedExpenses, notifications}
+export default {users, balances, transactions, tags, categories, investments, liquidityAccounts, recurringTransactions, goals, delqueue, benchmarks, benchmarkSnapshots, sharedExpenses, notifications, roadmapVotes}

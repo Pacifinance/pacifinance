@@ -119,6 +119,12 @@ const generated = roadmapItems.map((item) => {
     entry.completedDate = item.completedDate;
   }
 
+  // Optional cross-link to a real GitHub issue (e.g. one that started life as
+  // in-app feedback and got promoted to the roadmap) - most items omit this.
+  if (item.githubIssue) {
+    entry.githubIssue = item.githubIssue;
+  }
+
   return entry;
 });
 
@@ -147,6 +153,8 @@ export interface RoadmapItem {
   category: RoadmapCategory;
   icon: string;
   completedDate?: string;
+  /** Real GitHub issue number, when one naturally exists for this item (see docs/FUTURE_DESIGNS.md). */
+  githubIssue?: number;
 }
 
 const roadmapData: RoadmapItem[] = [\n`;
@@ -175,6 +183,9 @@ for (const item of generated) {
   output += `    icon: '${item.icon}',\n`;
   if (item.completedDate) {
     output += `    completedDate: '${item.completedDate}',\n`;
+  }
+  if (item.githubIssue) {
+    output += `    githubIssue: ${Number(item.githubIssue)},\n`;
   }
   output += `  },\n`;
 }

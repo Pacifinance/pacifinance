@@ -8,7 +8,6 @@ import BuyMeACoffeeWidget from '../components/BuyMeACoffeeWidget';
 import { SUPPORTED_LANGUAGES } from '../i18n/languagesConfig';
 import { addLanguageToPath, removeLanguageFromPath } from '../utils/i18nRouting';
 import { APP_VERSION } from '../data/appVersion';
-import { GITHUB_ISSUES_URL } from '../data/externalLinks';
 
 export default function LandingFooter({ theme }) {
   const { language, translations, setLanguage } = useContext(LanguageContext);
@@ -144,16 +143,14 @@ export default function LandingFooter({ theme }) {
                 </LocalizedLink>
               </li>
               <li>
-                <a
-                  href={GITHUB_ISSUES_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <LocalizedLink
+                  to="/contribute"
                   className="hover:opacity-70 transition-opacity"
                   style={{ color: theme.textColor }}
                   data-umami-event="footer-feedback-click"
                 >
                   {translations.footer.support.feedback || (language === 'it' ? 'Feedback & Bug' : 'Feedback & Bugs')}
-                </a>
+                </LocalizedLink>
               </li>
             </ul>
           </div>

@@ -16,6 +16,8 @@ export interface RoadmapItem {
   category: RoadmapCategory;
   icon: string;
   completedDate?: string;
+  /** Real GitHub issue number, when one naturally exists for this item (see docs/FUTURE_DESIGNS.md). */
+  githubIssue?: number;
 }
 
 const roadmapData: RoadmapItem[] = [

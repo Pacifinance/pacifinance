@@ -243,6 +243,40 @@
             "text": "We don't ask for an email to keep you anonymous: without one, your ID, password, and recovery code are the only way back in. Keep them in a password manager (Bitwarden, 1Password, LastPass, or your browser's)."
         }
     },
+    "contribute": {
+        "title": "Contribute",
+        "subtitle": "Pacifinance runs on its community. Here's how you can help.",
+        "feedback": {
+            "title": "Report a bug or suggest an idea",
+            "description": "Your feedback becomes a GitHub issue directly, so we can track it.",
+            "loginPrompt": "You need to sign in to send feedback from the app.",
+            "signInCta": "Sign In",
+            "githubFallback": "Or open an issue directly on GitHub"
+        },
+        "support": {
+            "title": "Support the project",
+            "description": "Pacifinance is free and supported by community donations."
+        },
+        "code": {
+            "title": "Contribute code",
+            "description": "The code is open source on GitHub, AGPLv3 licensed.",
+            "cta": "Read CONTRIBUTING.md"
+        },
+        "roadmapLink": "See the roadmap →"
+    },
+    "feedback": {
+        "typeBug": "Bug",
+        "typeIdea": "Idea",
+        "typeOther": "Other",
+        "titlePlaceholder": "Short title",
+        "descriptionPlaceholder": "Describe the problem or idea...",
+        "submit": "Send feedback",
+        "submitting": "Sending...",
+        "success": "Thanks! Your feedback was published as a GitHub issue.",
+        "viewIssue": "View the issue →",
+        "sendAnother": "Send another",
+        "error": "Couldn't send your feedback. Please try again later."
+    },
     "header": {
         "signIn": "Sign In",
         "signUp": "Sign Up",
@@ -357,7 +391,12 @@
         "features": "Features",
         "community": "Community",
         "security": "Security",
-        "noItems": "No items"
+        "noItems": "No items",
+        "vote": {
+            "cta": "Vote",
+            "voted": "Voted",
+            "loginPrompt": "Sign in to vote"
+        }
     },
     "sidebar": {
         "dashboard": "Dashboard",

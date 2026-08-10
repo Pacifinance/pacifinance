@@ -234,6 +234,40 @@
             "text": "Nous ne demandons pas d'email pour préserver ton anonymat : sans lui, ton ID, ton mot de passe et ton recovery code sont le seul moyen de récupérer l'accès. Conserve-les dans un gestionnaire de mots de passe (Bitwarden, 1Password, LastPass ou celui de ton navigateur)."
         }
     },
+    "contribute": {
+        "title": "Contribuer",
+        "subtitle": "Pacifinance fonctionne grâce à sa communauté. Voici comment tu peux aider.",
+        "feedback": {
+            "title": "Signaler un bug ou proposer une idée",
+            "description": "Ton feedback devient directement une issue GitHub, pour qu'on puisse la suivre.",
+            "loginPrompt": "Tu dois être connecté pour envoyer un feedback depuis l'app.",
+            "signInCta": "Se connecter",
+            "githubFallback": "Ou ouvre une issue directement sur GitHub"
+        },
+        "support": {
+            "title": "Soutenir le projet",
+            "description": "Pacifinance est gratuit et fonctionne grâce aux dons de la communauté."
+        },
+        "code": {
+            "title": "Contribuer au code",
+            "description": "Le code est open source sur GitHub, licence AGPLv3.",
+            "cta": "Lire CONTRIBUTING.md"
+        },
+        "roadmapLink": "Voir la roadmap →"
+    },
+    "feedback": {
+        "typeBug": "Bug",
+        "typeIdea": "Idée",
+        "typeOther": "Autre",
+        "titlePlaceholder": "Titre court",
+        "descriptionPlaceholder": "Décris le problème ou l'idée...",
+        "submit": "Envoyer le feedback",
+        "submitting": "Envoi en cours...",
+        "success": "Merci ! Ton feedback a été publié comme issue sur GitHub.",
+        "viewIssue": "Voir l'issue →",
+        "sendAnother": "Envoyer un autre feedback",
+        "error": "Impossible d'envoyer le feedback. Réessaie plus tard."
+    },
     "header": {
         "signIn": "Connexion",
         "signUp": "Inscription",
@@ -348,7 +382,12 @@
         "features": "Fonctionnalités",
         "community": "Communauté",
         "security": "Sécurité",
-        "noItems": "Aucun élément"
+        "noItems": "Aucun élément",
+        "vote": {
+            "cta": "Voter",
+            "voted": "Voté",
+            "loginPrompt": "Connecte-toi pour voter"
+        }
     },
     "sidebar": {
         "dashboard": "Tableau de bord",

@@ -175,6 +175,16 @@ publicRouter.get("/github-stats", async (_, res) => {
     res.status(200).json(value)
 })
 
+// Aggregated roadmap vote counts { [itemId]: count }, public since the
+// /roadmap page is visible logged out. Cached like the entries above; a
+// successful vote toggle (routes/private/roadmapVotes.ts) invalidates it
+// so the voter sees their own vote reflected without waiting for the TTL.
+publicRouter.get("/roadmap-votes", async (_, res) => {
+    if (await cache.valueExpired("roadmapVoteCounts")) await cache.invalidate("roadmapVoteCounts")
+    const value = await cache.get("roadmapVoteCounts")
+    res.status(200).json(value ?? {})
+})
+
 publicRouter.post("/registration", async (req, res) => {
     try {
         // Sanitize user input. Send status code 400 (Bad Request)

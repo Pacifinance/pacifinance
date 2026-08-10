@@ -33,12 +33,13 @@ import { ASSET_KEYS } from '../constants/balanceSchema';
 
 // Styled Components
 const ProfileContainer = styled.div`
-  background: ${props => props.theme.mode === 'dark' 
+  background: ${props => props.theme.mode === 'dark'
     ? `linear-gradient(135deg, ${props.theme.backgroundColor} 0%, ${props.theme.secondaryColor}08 100%)`
     : `linear-gradient(135deg, ${props.theme.backgroundColor} 0%, rgba(255,255,255,0.9) 100%)`};
   min-height: 100vh;
   padding: 2rem;
-  
+  overflow-x: hidden;
+
   @media (max-width: 768px) {
     padding: 1rem;
   }
@@ -199,7 +200,7 @@ const ControlGroup = styled.div`
 
 const ControlTitle = styled.div`
   display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: .75rem;
-  strong { color: ${(p) => p.theme.textColor}; font-size: .95rem; }
+  strong { color: ${(p) => p.theme.textColor}; font-size: .95rem; min-width: 0; }
 `;
 
 const ControlExplanation = styled.p`
@@ -221,7 +222,7 @@ const SwitchLabel = styled.label`
 
 const FieldHeading = styled.div`
   display: flex; align-items: flex-start; justify-content: space-between; gap: .5rem; margin-bottom: .5rem;
-  > label { margin: 0 !important; }
+  > label { margin: 0 !important; min-width: 0; }
   ${SwitchLabel} { font-size: .68rem !important; flex-shrink: 0; }
 `;
 

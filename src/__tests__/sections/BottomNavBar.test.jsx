@@ -34,7 +34,7 @@ describe('BottomNavBar', () => {
     renderNav();
     expect(screen.getByText('Dashboard')).toBeInTheDocument();
     expect(screen.getByText('Statistiche')).toBeInTheDocument();
-    expect(screen.getByText('Obiettivi')).toBeInTheDocument();
+    expect(screen.getByText('Confronto')).toBeInTheDocument();
     expect(screen.getByText('Altro')).toBeInTheDocument();
     expect(screen.getByLabelText('Aggiunta rapida')).toBeInTheDocument();
   });
@@ -49,7 +49,7 @@ describe('BottomNavBar', () => {
   it('opens More with secondary destinations', () => {
     renderNav();
     fireEvent.click(screen.getByText('Altro'));
-    expect(screen.getByText('Confronto')).toBeInTheDocument();
+    expect(screen.getByText('Obiettivi')).toBeInTheDocument();
     expect(screen.getByText('Prezzi di Mercato')).toBeInTheDocument();
     expect(screen.getByText('Conoscenza')).toBeInTheDocument();
     expect(screen.getByText('Impostazioni')).toBeInTheDocument();
@@ -69,14 +69,14 @@ describe('BottomNavBar', () => {
     renderNav();
     fireEvent.click(screen.getByText('Altro'));
     fireEvent.click(screen.getByTestId('bottom-nav-backdrop'));
-    expect(screen.queryByText('Confronto')).not.toBeInTheDocument();
+    expect(screen.queryByText('Obiettivi')).not.toBeInTheDocument();
   });
 
   it('toggles More on repeated clicks', () => {
     renderNav();
     fireEvent.click(screen.getByText('Altro'));
     fireEvent.click(screen.getByText('Altro'));
-    expect(screen.queryByText('Confronto')).not.toBeInTheDocument();
+    expect(screen.queryByText('Obiettivi')).not.toBeInTheDocument();
   });
 
   it('renders in dark theme', () => {

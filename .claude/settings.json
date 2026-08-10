@@ -20,7 +20,8 @@
       "Bash(grep -E \"^\\\\.agents/|^\\\\.github/instructions/|^\\\\.github/prompts/|^CLAUDE\\\\.md$|^AGENTS\\\\.md$\")",
       "Bash(pip show *)",
       "Bash(npx --version)",
-      "Bash(grep -n 'renderCards = \\\\|CategoryBadge $cat' src/pages/RoadmapPage.tsx)"
+      "Bash(grep -n 'renderCards = \\\\|CategoryBadge $cat' src/pages/RoadmapPage.tsx)",
+      "Bash(grep -n \"min-width:\\\\s*[0-9]\\\\{3,\\\\}px\\\\|width:\\\\s*[0-9]\\\\{3,\\\\}px\\\\|grid-template-columns\\\\|white-space: nowrap\\\\|overflow-x\" src/sections/GoalsAndLimits.tsx src/sections/GoalTracker.tsx)"
     ]
   }
 }

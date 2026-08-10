@@ -318,6 +318,7 @@ const CategoryPillsRow = styled.div`
   justify-content: center;
   gap: 0.5rem;
   margin-bottom: 1.5rem;
+  min-width: 0;
 `;
 
 const RefreshPricesButton = styled.button`
@@ -395,12 +396,19 @@ const CategoryPill = styled.button`
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
   background: ${(props) => (props.active ? props.theme.buttonBackgroundColor : 'transparent')};
   color: ${(props) => (props.active ? 'white' : props.theme.textColor)};
   border: 1px solid ${(props) => (props.active ? 'transparent' : (props.theme.mode === 'dark' ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.12)'))};
 
   &:hover {
     opacity: 0.9;
+  }
+
+  @media (max-width: 640px) {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.78rem;
   }
 `;
 

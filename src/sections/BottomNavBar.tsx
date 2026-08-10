@@ -27,7 +27,7 @@ export default function BottomNavBar({ onQuickAdd }: BottomNavBarProps) {
   const isActive = (path: string) => currentPath === path;
 
   const morePages = [
-    { path: '/comparison', icon: <CompareArrowsIcon style={{ fontSize: 20 }} />, label: translations?.sidebar?.comparison || 'Comparison' },
+    { path: '/goals-limits', icon: <FaBullseye size={18} />, label: translations?.sidebar?.goalsShort || 'Obiettivi' },
     { path: '/market-prices', icon: <BsGraphUp size={20} />, label: translations?.sidebar?.marketPrices || 'Market Prices' },
     { path: '/knowledge', icon: <BsBook size={20} />, label: translations?.sidebar?.knowledge || 'Knowledge' },
     { path: '/settings', icon: <SettingsOutlinedIcon style={{ fontSize: 20 }} />, label: translations?.sidebar?.settings?.title || 'Settings' },
@@ -140,9 +140,9 @@ export default function BottomNavBar({ onQuickAdd }: BottomNavBarProps) {
         >
           <IoAdd size={29} />
         </button>
-        <button type="button" style={navItemStyle(isActive('/goals-limits'))} onClick={() => navigateTo('/goals-limits')}>
-          {isActive('/goals-limits') && activeMarker}<FaBullseye size={20} />
-          <span style={labelStyle(isActive('/goals-limits'))}>{translations?.sidebar?.goalsShort || 'Obiettivi'}</span>
+        <button type="button" style={navItemStyle(isActive('/comparison'))} onClick={() => navigateTo('/comparison')}>
+          {isActive('/comparison') && activeMarker}<CompareArrowsIcon style={{ fontSize: 22 }} />
+          <span style={labelStyle(isActive('/comparison'))}>{translations?.sidebar?.comparison || 'Comparison'}</span>
         </button>
         <button type="button" style={navItemStyle(isMoreActive || showMoreMenu)} onClick={() => { if (navigator.vibrate) navigator.vibrate(8); setShowMoreMenu((open) => !open); }}>
           {isMoreActive && activeMarker}<IoGridOutline size={22} />

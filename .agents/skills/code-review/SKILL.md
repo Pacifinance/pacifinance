@@ -1,63 +1,63 @@
 # Skill: Code Review
 
 ## Purpose
-Review sistematico del codice Pacifinance per correttezza, sicurezza, convenzioni e qualità.
+Systematic review of Pacifinance code for correctness, security, conventions, and quality.
 
 ## Trigger
-Usa quando: *revisione PR*, *review del codice*, *controlla questo file*, *è corretto?*
+Use when: *PR review*, *code review*, *check this file*, *is this correct?*
 
 ---
 
 ## Instructions
 
-### Checklist di Review (in ordine di priorità)
+### Review Checklist (in priority order)
 
-#### 🔴 Auto-fail — blocca il merge
-- [ ] Testo UI hardcoded (non in `it.json`/`en.json`)
-- [ ] `€` o `EUR` hardcoded nel JSX
+#### 🔴 Auto-fail — blocks the merge
+- [ ] Hardcoded UI text (not in `it.json`/`en.json`)
+- [ ] Hardcoded `€` or `EUR` in JSX
 - [ ] `any` in TypeScript
-- [ ] Accesso diretto a `userData.property` senza selector
-- [ ] `useNavigate()` o `<Link>` diretto invece dei localized equivalenti
-- [ ] Chiamata API fuori da `UserContext.tsx`
-- [ ] Modifica a `server/` (backend — off limits)
-- [ ] `dangerouslySetInnerHTML` senza sanitizzazione
-- [ ] Segreti/API keys hardcoded nel codice
+- [ ] Direct access to `userData.property` without a selector
+- [ ] Direct `useNavigate()` or `<Link>` instead of the localized equivalents
+- [ ] API call outside `UserContext.tsx`
+- [ ] Change to `server/` (backend — off limits)
+- [ ] `dangerouslySetInnerHTML` without sanitization
+- [ ] Hardcoded secrets/API keys in the code
 
-#### 🟡 Warning — correggere prima possibile
-- [ ] Nuovo campo `userData` non aggiunto a `MockAuthContext.tsx`
-- [ ] Funzione utility senza test corrispondente
-- [ ] Componente con stato/logica che dovrebbe essere in un hook
-- [ ] `useEffect` che scrive su stato persistente (pattern pericoloso)
-- [ ] Colore/icona hardcoded per dati finanziari
-- [ ] Mancanza guard `if (!userData)` in pagine autenticate
-- [ ] `console.log` dimenticato in produzione
+#### 🟡 Warning — fix as soon as possible
+- [ ] New `userData` field not added to `MockAuthContext.tsx`
+- [ ] Utility function without a corresponding test
+- [ ] Component with state/logic that should be in a hook
+- [ ] `useEffect` that writes to persistent state (dangerous pattern)
+- [ ] Hardcoded color/icon for financial data
+- [ ] Missing `if (!userData)` guard in authenticated pages
+- [ ] `console.log` forgotten in production
 
-#### 🟢 Best practice — suggerire
-- [ ] Lazy loading per pagine non critiche
-- [ ] Privacy mode: usa `isPrivate` da `PrivacyContext` per valori sensibili
-- [ ] Umami analytics su azioni interattive: `data-umami-event="..."`
-- [ ] ARIA labels su elementi interattivi
-- [ ] Gestione stato loading/error espliciti
+#### 🟢 Best practice — suggest
+- [ ] Lazy loading for non-critical pages
+- [ ] Privacy mode: use `isPrivate` from `PrivacyContext` for sensitive values
+- [ ] Umami analytics on interactive actions: `data-umami-event="..."`
+- [ ] ARIA labels on interactive elements
+- [ ] Explicit loading/error state handling
 
-### OWASP Check (per codice che tocca auth/dati)
-| Rischio | Cosa controllare |
+### OWASP Check (for code touching auth/data)
+| Risk | What to check |
 |---|---|
-| XSS | Input utente mai in `innerHTML` raw |
-| Auth bypass | Route protette verificano `isAuthenticated`, non solo `userData` |
-| Info exposure | Nessun dato sensibile in localStorage non cifrato |
-| CSRF | Chiamate API usano `withCredentials: true` (cookie HTTP-only) |
+| XSS | User input never in raw `innerHTML` |
+| Auth bypass | Protected routes check `isAuthenticated`, not just `userData` |
+| Info exposure | No sensitive data in unencrypted localStorage |
+| CSRF | API calls use `withCredentials: true` (HTTP-only cookie) |
 
-### Formato risposta review
+### Review response format
 ```
 ## Auto-fail ❌
-- [file:riga] Descrizione problema + fix suggerito
+- [file:line] Problem description + suggested fix
 
 ## Warning ⚠️  
-- [file:riga] Descrizione + suggerimento
+- [file:line] Description + suggestion
 
 ## OK ✅
-- Aspetti positivi (brevemente)
+- Positive aspects (briefly)
 
-## Suggerimenti 💡
-- Miglioramenti non bloccanti
+## Suggestions 💡
+- Non-blocking improvements
 ```

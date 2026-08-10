@@ -1,100 +1,100 @@
 # Skill: Test-Driven Development
 
 ## Purpose
-Implementa funzionalità seguendo il ciclo Red → Green → Refactor, con test negativi prima del happy path.
+Implement functionality following the Red → Green → Refactor cycle, with negative tests before the happy path.
 
 ## Trigger
-Usa quando: *scrivi test prima*, *TDD*, *test-driven*, *test prima del codice*, *aggiungi test*.
+Use when: *write tests first*, *TDD*, *test-driven*, *test before code*, *add tests*.
 
 ---
 
 ## Instructions
 
-### Il Ciclo TDD
+### The TDD Cycle
 ```
-Red    → Scrivi un test che FALLISCE → confermane il fallimento
-Green  → Scrivi il codice MINIMO per farlo passare
-Refactor → Pulisci solo dopo che tutti i test passano
+Red    → Write a test that FAILS → confirm the failure
+Green  → Write the MINIMUM code to make it pass
+Refactor → Clean up only after all tests pass
 ```
-"Codice minimo" significa: se un valore hardcoded fa passare il test, usalo — il test successivo forzerà la logica reale. Questo previene over-engineering precoce.
+"Minimum code" means: if a hardcoded value makes the test pass, use it — the next test will force the real logic. This prevents premature over-engineering.
 
 ---
 
-### Phase 1 — Piano dei Test
-Prima di scrivere codice, elenca i casi di test in quest'ordine:
+### Phase 1 — Test Plan
+Before writing code, list the test cases in this order:
 
 ```ts
-// Template: scrivi questi stub vuoti come piano
+// Template: write these empty stubs as the plan
 describe('functionName', () => {
-  // 1. Input null/undefined
+  // 1. null/undefined input
   it('returns default for null input', () => {});
 
-  // 2. Input invalido / forma sbagliata
+  // 2. Invalid input / wrong shape
   it('returns default for malformed input', () => {});
 
-  // 3. Valori boundary
+  // 3. Boundary values
   it('returns 0 for empty array', () => {});
   it('handles single item', () => {});
 
-  // 4. Errore asincrono (se applicabile)
+  // 4. Async error (if applicable)
   it('handles API failure gracefully', () => {});
 
-  // 5. Happy path (ultimo)
+  // 5. Happy path (last)
   it('returns correct value for valid input', () => {});
 });
 ```
 
 ### Phase 2 — Red (failing test)
 ```bash
-npm test -- NomeFile   # ← deve fallire
+npm test -- FileName   # ← must fail
 ```
-Se il test NON fallisce, il test è sbagliato — correggilo prima di procedere.
+If the test does NOT fail, the test is wrong — fix it before proceeding.
 
-### Phase 3 — Green (codice minimo)
-Implementa il minimo per far passare il test attuale. Solo quello.
+### Phase 3 — Green (minimum code)
+Implement the minimum to make the current test pass. Only that.
 
 ```bash
-npm test -- NomeFile   # ← deve passare
+npm test -- FileName   # ← must pass
 ```
 
 ### Phase 4 — Refactor
-Solo dopo che TUTTI i test passano:
-- Rimuovi duplicazioni
-- Migliora nomi variabili
-- Estrai funzioni helper
+Only after ALL tests pass:
+- Remove duplication
+- Improve variable names
+- Extract helper functions
 
 ```bash
-npm test               # ← tutti i test, nessuna regressione
+npm test               # ← all tests, no regressions
 ```
 
 ---
 
-### Esempi Dominio Pacifinance
+### Pacifinance Domain Examples
 
 #### Selector (utils)
 ```ts
-// RED: scrivi prima
+// RED: write first
 it('getBankValue returns 0 for null', () => {
   expect(getBankValue(null)).toBe(0);
 });
-// GREEN: implementa
+// GREEN: implement
 export const getBankValue = (u: UserData | null) => u?.balances?.[0]?.balance?.bank ?? 0;
 ```
 
-#### Calcolo finanziario
+#### Financial calculation
 ```ts
-// Ordine: null → 0 → negativo → mese vuoto → happy path
+// Order: null → 0 → negative → empty month → happy path
 describe('getMonthlyDelta', () => {
   it('returns 0 for null userData', () => ...);
   it('returns 0 when no balances', () => ...);
-  it('handles negative delta (spese > entrate)', () => ...);
+  it('handles negative delta (expenses > income)', () => ...);
   it('returns correct delta for current month', () => ...);
 });
 ```
 
-#### Funzione con date
+#### Function with dates
 ```ts
-// Minimo 3 test: data normale, mezzanotte, cambio mese
+// Minimum 3 tests: normal date, midnight, month change
 describe('formatDate', () => {
   it('formats a midday date correctly', () => ...);
   it('does not shift midnight date (UTC bug)', () => ...);
@@ -102,7 +102,7 @@ describe('formatDate', () => {
 });
 ```
 
-#### Componente con Context mock
+#### Component with mocked Context
 ```ts
 const renderWithMocks = (ui: ReactElement) =>
   render(ui, {
@@ -123,9 +123,9 @@ it('renders balance correctly', () => ...);
 
 ---
 
-### Regole Invarianti
-- **Mai scrivere codice senza un test rosso prima** (nella logica pura/selector)
-- **Mai saltare i test negativi** — definiscono il contratto della funzione
-- **"Se ha un `if`, ha ≥2 test"** — una per ogni branch
-- **"Se tocca una data, ha ≥3 test"** — normal, midnight, boundary
-- **Coverage target**: `utils/` e selectors → 100% righe
+### Invariant Rules
+- **Never write code without a failing test first** (in pure logic/selectors)
+- **Never skip negative tests** — they define the function's contract
+- **"If it has an `if`, it has ≥2 tests"** — one per branch
+- **"If it touches a date, it has ≥3 tests"** — normal, midnight, boundary
+- **Coverage target**: `utils/` and selectors → 100% lines

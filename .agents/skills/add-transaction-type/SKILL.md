@@ -1,56 +1,56 @@
 # Skill: Add Transaction Type
 
 ## Purpose
-Aggiunge un nuovo tipo di transazione (uscita o entrata) con tutti i layer necessari: tag, категорiz­azione, selector, UI, i18n.
+Add a new transaction type (outflow or income) with all the necessary layers: tag, categorization, selector, UI, i18n.
 
 ## Trigger
-Usa quando: *aggiungi tipo transazione*, *nuova categoria di uscita/entrata*, *nuovo tipo di asset*.
+Use when: *add transaction type*, *new outflow/income category*, *new asset type*.
 
 ---
 
 ## Instructions
 
-Pacifinance gestisce transazioni tramite tag backend. Ogni tipo di transazione ha:
-- Un tag nel sistema tags (`outflowsTags`, `incomesTags`, `paymentTags`)
-- Colori/icone centralizzati
-- Chiavi i18n per display
-- Selectors per accesso ai dati
+Pacifinance manages transactions via backend tags. Each transaction type has:
+- A tag in the tags system (`outflowsTags`, `incomesTags`, `paymentTags`)
+- Centralized colors/icons
+- i18n keys for display
+- Selectors for data access
 
-### Phase 1 — Identifica il tipo
-- **Uscita (outflow)**: va in `outflowsTags` → `expenses.allOutflows`
-- **Entrata (income)**: va in `incomesTags` → `incomes.allIncomes`
-- **Pagamento (metodo)**: va in `paymentTags`
+### Phase 1 — Identify the type
+- **Outflow**: goes into `outflowsTags` → `expenses.allOutflows`
+- **Income**: goes into `incomesTags` → `incomes.allIncomes`
+- **Payment (method)**: goes into `paymentTags`
 
-### Phase 2 — Aggiungi colore/icona
+### Phase 2 — Add color/icon
 ```ts
 // src/data/categoryColors.ts
 export const getCategoryColor = (key: string): string => {
   const colors: Record<string, string> = {
     // ... existing ...
-    'nuovoTipo': '#HEXCOLOR',  // ← aggiungi qui
+    'newType': '#HEXCOLOR',  // ← add here
   };
   return colors[key] ?? '#999999'; // fallback
 };
 ```
-Stesso pattern per `categoryIcons.ts`.
+Same pattern for `categoryIcons.ts`.
 
-### Phase 3 — Aggiungi i18n
-In entrambi `it.json` e `en.json`:
+### Phase 3 — Add i18n
+In both `it.json` and `en.json`:
 ```json
 "categories": {
-  "nuovoTipo": "Nome Categoria"
+  "newType": "Category Name"
 }
 ```
 
-### Phase 4 — Aggiungi in tagTranslations.ts
+### Phase 4 — Add to tagTranslations.ts
 ```ts
 export const tagTranslations: Record<string, { it: string; en: string }> = {
   // ... existing ...
-  'nuovoTipo': { it: 'Nome IT', en: 'Name EN' },
+  'newType': { it: 'Nome IT', en: 'Name EN' },
 };
 ```
 
-### Phase 5 — Selector (se serve accesso aggregato)
+### Phase 5 — Selector (if aggregated access is needed)
 In `src/utils/userDataSelectors.ts`:
 ```ts
 export const getOutflowsByType = (userData: UserData | null, type: string) =>
@@ -58,21 +58,21 @@ export const getOutflowsByType = (userData: UserData | null, type: string) =>
 ```
 
 ### Phase 6 — MockAuthContext
-Aggiungi dati di esempio nel mock per il nuovo tipo:
+Add sample data in the mock for the new type:
 ```ts
 // src/contexts/MockAuthContext.tsx
-// Aggiungi nel mockUserData.expenses.outflowsArray o .allIncomes
+// Add to mockUserData.expenses.outflowsArray or .allIncomes
 ```
 
-### Phase 7 — Test
+### Phase 7 — Tests
 ```ts
-describe('getOutflowsByType - nuovoTipo', () => {
+describe('getOutflowsByType - newType', () => {
   it('returns [] for null userData', () => ...);
   it('filters correctly by type', () => ...);
 });
 ```
 
-### Verifica
+### Verification
 ```bash
 npm run lint && npm test && npm run build
 ```

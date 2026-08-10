@@ -347,4 +347,4 @@ Integrate into `code-review/SKILL.md`:
 
 ---
 
-*Generated for ADASTRAfit. Adapt freely to any TypeScript/React project.*
+*Generated for Pacifinance. Adapt freely to any TypeScript/React project.*

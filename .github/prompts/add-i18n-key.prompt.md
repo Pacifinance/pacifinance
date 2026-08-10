@@ -1,32 +1,32 @@
 ---
 mode: agent
-description: Aggiunge una o più chiavi di traduzione in it.json e en.json
+description: Adds one or more translation keys to it.json and en.json
 ---
 
-Aggiungi le seguenti chiavi di traduzione a entrambi i file locale:
+Add the following translation keys to both locale files:
 
-## Keys da aggiungere
-<!-- elenca qui le chiavi e i valori: -->
-- `sezione.sottochiave` — IT: "..." / EN: "..."
+## Keys to add
+<!-- list the keys and values here: -->
+- `section.subkey` — IT: "..." / EN: "..."
 
 ---
 
-## Processo
+## Process
 
-1. **Leggi il contesto** — verifica se la sezione esiste già in `it.json` e `en.json`
-2. **Aggiungi in `src/i18n/locales/it.json`** — nella sezione corretta (non duplicare sezioni)
-3. **Aggiungi in `src/i18n/locales/en.json`** — stesso path di chiave, testo in inglese
-4. **Verifica struttura** — le chiavi devono esistere identiche in entrambi i file
-5. **Usa le nuove chiavi** nel componente: `translations.sezione.sottochiave`
+1. **Read the context** — check whether the section already exists in `it.json` and `en.json`
+2. **Add to `src/i18n/locales/it.json`** — in the correct section (do not duplicate sections)
+3. **Add to `src/i18n/locales/en.json`** — same key path, text in English
+4. **Verify structure** — the keys must exist identically in both files
+5. **Use the new keys** in the component: `translations.section.subkey`
 
-## Regole chiavi
-- camelCase per tutti i livelli: `dashboard.weeklyChart.noData`
-- Sezioni esistenti: `common`, `errors`, `navigation`, `dashboard`, `profile`, `settings`, 
+## Key rules
+- camelCase for all levels: `dashboard.weeklyChart.noData`
+- Existing sections: `common`, `errors`, `navigation`, `dashboard`, `profile`, `settings`, 
   `auth`, `goals`, `limits`, `assets`, `incomes`, `outflows`, `rankings`, `roadmap`, `landing`
-- Se la sezione non esiste, aggiungila come oggetto nuovo
+- If the section does not exist, add it as a new object
 
-## Verifica
+## Verification
 ```bash
-# Controlla che le chiavi siano bilanciate (stesso numero di chiavi in entrambi i file)
+# Check that the keys are balanced (same number of keys in both files)
 npm run lint
 ```

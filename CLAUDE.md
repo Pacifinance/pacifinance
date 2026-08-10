@@ -6,17 +6,17 @@ npm run dev       # dev server
 npm run lint      # ESLint
 npm test          # Vitest
 npm run build     # prod build (auto-roadmap)
-npm run roadmap   # rigenera src/data/roadmapData.js
+npm run roadmap   # regenerates src/data/roadmapData.js
 ```
 After every change: `npm run lint && npm test && npm run build`
 
-**Non avviare `npm run dev` / il dev server per verifiche extra (screenshot, Playwright, browser) di tua iniziativa.** Rallenta molto lo sviluppo e nella maggior parte dei casi l'utente verifica autonomamente. `lint && test && build` è la verifica standard e sufficiente — avvia il dev server solo se l'utente lo chiede esplicitamente.
+**Don't start `npm run dev` / the dev server for extra checks (screenshots, Playwright, browser) on your own initiative.** It slows development down a lot and in most cases the user verifies things themselves. `lint && test && build` is the standard and sufficient check — only start the dev server if the user explicitly asks for it.
 
 ## Architecture
 ```
 src/
   components/   # Generic UI, reusable across unrelated features
-  pages/        # Routes — assembla contexts + sections
+  pages/        # Routes — assembles contexts + sections
   sections/     # Feature blocks tied to one domain/page
   contexts/     # Global state
   utils/        # Pure functions (selectors, routing, math)
@@ -25,50 +25,50 @@ src/
   __tests__/    # Mirrors src/
 ```
 
-**components/ vs sections/ — il test non è "usa un context?", è "a quale dominio appartiene?"**
-Un componente può stare in `components/` pur leggendo un context, purché quel context sia
-trasversale/UI (`LanguageContext`, `ThemeContext`, `ToastContext`) e non dati di business
-(`UserContext`, dati di uno specifico dominio come investimenti/transazioni). Il vero criterio:
-- **`components/`** — generico, riusabile in feature diverse e non correlate tra loro (es.
+**components/ vs sections/ — the test isn't "does it use a context?", it's "which domain does it belong to?"**
+A component can live in `components/` even while reading a context, as long as that context is
+cross-cutting/UI-level (`LanguageContext`, `ThemeContext`, `ToastContext`) and not business data
+(`UserContext`, data from a specific domain like investments/transactions). The real criterion:
+- **`components/`** — generic, reusable across unrelated features (e.g.
   `LocalizedLink`, `ThemedSelect`, `AvatarIcon`, `CategoryPicker`, `LanguageSelector`,
-  `ScrollNavigationIndicator`, `PWAInstallGuide`, `ImportPlatformGuide`). Se legge un context,
-  deve essere solo per un bisogno trasversale (lingua/tema/toast), mai per recuperare dati di
-  dominio (es. `useDemoServices`, chiamate a `services/*`).
-- **`sections/`** — legato a un dominio/feature specifico (transazioni, investimenti, goal),
-  anche se riusato in 2+ punti dentro allo stesso dominio (es. `InvestmentHoldingsPanel` è
-  riusato ma resta investment-specific → resta in `sections/`).
+  `ScrollNavigationIndicator`, `PWAInstallGuide`, `ImportPlatformGuide`). If it reads a context,
+  it must be only for a cross-cutting need (language/theme/toast), never to fetch domain
+  data (e.g. `useDemoServices`, calls to `services/*`).
+- **`sections/`** — tied to a specific domain/feature (transactions, investments, goals),
+  even if reused in 2+ places within the same domain (e.g. `InvestmentHoldingsPanel` is
+  reused but stays investment-specific → stays in `sections/`).
 
-Quando aggiungi un file nuovo o sposti un file esistente, applica questo test invece di
-guardare solo se importa un context.
+When adding a new file or moving an existing one, apply this test instead of
+just checking whether it imports a context.
 
-**Context hierarchy (ordine fisso):**
+**Context hierarchy (fixed order):**
 ```
 MediaQuery > Language > Theme > DevMode > User > Currency > Page > Privacy > Toast
 ```
 
 ## Critical Rules
-1. **i18n** — ogni stringa UI in `it.json` + `en.json`. Mai hardcoded.
-2. **Routing** — `LocalizedLink` (non `Link`), `useLocalizedNavigate` (non `useNavigate`)
-3. **Currency** — DB sempre EUR. Display via `formatAmount()` da `CurrencyContext`. Mai `€` hardcoded.
-4. **Selectors** — `userData` solo via `src/utils/userDataSelectors.ts`
-5. **Mock** — ogni campo `userData` nuovo → aggiornare `MockAuthContext.tsx`
-6. **Colors/Icons** — `getAssetColor()`, `getCategoryColor()` da `src/data/`. Mai hardcoded.
-7. **Outflows not expenses** — "outflows/uscite" sempre. "expenses" solo se investimenti esclusi.
-8. **Roadmap** — feature user-facing completata → `roadmap-items.json` + `todo.md` + `npm run roadmap`
-9. **No `any`** — TypeScript strict. Props come `interface`.
+1. **i18n** — every UI string in both `it.json` and `en.json`. Never hardcoded.
+2. **Routing** — `LocalizedLink` (not `Link`), `useLocalizedNavigate` (not `useNavigate`)
+3. **Currency** — DB is always EUR. Display via `formatAmount()` from `CurrencyContext`. Never hardcode `€`.
+4. **Selectors** — access `userData` only via `src/utils/userDataSelectors.ts`
+5. **Mock** — every new `userData` field → update `MockAuthContext.tsx`
+6. **Colors/Icons** — `getAssetColor()`, `getCategoryColor()` from `src/data/`. Never hardcoded.
+7. **Outflows not expenses** — always "outflows". Use "expenses" only when investments are excluded.
+8. **Roadmap** — completed user-facing feature → `roadmap-items.json` + `todo.md` + `npm run roadmap`
+9. **No `any`** — TypeScript strict. Props as `interface`.
 10. **Commit messages only** — after each finished update, include a short commit message in English as the very last line of the assistant response. Keep it concise, imperative, and open-source friendly. Never run `git commit` or `git push` autonomously: the user performs both operations.
 
 ## Key Files
-| File | Scopo |
+| File | Purpose |
 |---|---|
-| `src/AppRouter.tsx` | Tutte le routes (lazy load per pagine non critiche) |
-| `src/contexts/UserContext.tsx` | Tutte le API calls + shape userData |
-| `src/contexts/MockAuthContext.tsx` | Dev mock — mirror di UserContext |
-| `src/utils/userDataSelectors.ts` | Unico accesso a userData |
-| `src/utils/i18nRouting.ts` | LocalizedLink, useLocalizedNavigate |
-| `src/i18n/languagesConfig.js` | Unica fonte per lingue supportate |
-| `src/data/currencyConfig.ts` | 19 valute + fallback rates |
-| `scripts/roadmap-items.json` | Sorgente roadmap pubblica |
+| `src/AppRouter.tsx` | All routes (lazy-loaded for non-critical pages) |
+| `src/contexts/UserContext.tsx` | All API calls + the `userData` shape |
+| `src/contexts/MockAuthContext.tsx` | Dev mock — mirrors `UserContext` |
+| `src/utils/userDataSelectors.ts` | The only access point for `userData` |
+| `src/utils/i18nRouting.ts` | `LocalizedLink`, `useLocalizedNavigate` |
+| `src/i18n/languagesConfig.js` | Single source of truth for supported languages |
+| `src/data/currencyConfig.ts` | 19 currencies + fallback rates |
+| `scripts/roadmap-items.json` | Public roadmap source |
 
 ## userData Shape
 ```ts
@@ -84,12 +84,12 @@ MediaQuery > Language > Theme > DevMode > User > Currency > Page > Privacy > Toa
 ```
 
 ## DO NOT
-- Usare `Link` o `useNavigate` diretti (usa i localized wrapper)
-- Hardcodare `€`, `EUR`, colori hex per dati finanziari, testo UI
-- Accedere a `userData.property` senza selector
-- Fare chiamate API fuori da `UserContext.tsx`
-- Aggiungere toast di successo per operazioni normali
-- Usare `.toISOString().split('T')[0]` (UTC midnight bug)
-- Chiudere un update senza una commit message finale in inglese
-- Eseguire `git commit` o `git push` autonomamente
-- Avviare il dev server / browser di tua iniziativa per verifiche extra — solo se richiesto esplicitamente
+- Use `Link` or `useNavigate` directly (use the localized wrappers)
+- Hardcode `€`, `EUR`, or hex colors for financial data or UI text
+- Access `userData.property` without a selector
+- Make API calls outside `UserContext.tsx`
+- Add success toasts for normal operations
+- Use `.toISOString().split('T')[0]` (UTC midnight bug)
+- End an update without a final commit message in English
+- Run `git commit` or `git push` autonomously
+- Start the dev server / browser on your own initiative for extra checks — only if explicitly requested

@@ -1,51 +1,51 @@
 ---
 mode: ask
-description: Checklist completa prima di fare commit di una nuova feature
+description: Complete checklist before committing a new feature
 ---
 
-Prima di committare, verifica ogni punto di questo gate:
+Before committing, check every point of this gate:
 
-## 1. Compilazione & Qualità
-- [ ] `npm run lint` — zero errori
-- [ ] `npm test` — tutti i test passano
-- [ ] `npm run build` — build di produzione completata
+## 1. Build & Quality
+- [ ] `npm run lint` — zero errors
+- [ ] `npm test` — all tests pass
+- [ ] `npm run build` — production build completed
 
 ## 2. i18n
-- [ ] Ogni stringa UI nuova è in `src/i18n/locales/it.json`
-- [ ] Ogni stringa UI nuova è in `src/i18n/locales/en.json`
-- [ ] Nessun testo hardcoded (`"Salva"`, `"Save"`, ecc.)
+- [ ] Every new UI string is in `src/i18n/locales/it.json`
+- [ ] Every new UI string is in `src/i18n/locales/en.json`
+- [ ] No hardcoded text (`"Salva"`, `"Save"`, etc.)
 
 ## 3. Currency
-- [ ] Nessun `€` o `EUR` hardcoded nel JSX/TSX
-- [ ] Tutti gli importi usano `formatAmount()` da `CurrencyContext`
-- [ ] Input utente convertiti con `toEUR()` prima dell'invio all'API
+- [ ] No hardcoded `€` or `EUR` in JSX/TSX
+- [ ] All amounts use `formatAmount()` from `CurrencyContext`
+- [ ] User input converted with `toEUR()` before sending to the API
 
-## 4. Dati & State
-- [ ] Nessun accesso diretto a `userData.balances[x]...` — usa selectors
-- [ ] Se aggiunto campo a `userData` → aggiornato anche `MockAuthContext.tsx`
-- [ ] Nessuna chiamata API fuori da `UserContext.tsx`
+## 4. Data & State
+- [ ] No direct access to `userData.balances[x]...` — use selectors
+- [ ] If a field was added to `userData` → `MockAuthContext.tsx` also updated
+- [ ] No API call outside `UserContext.tsx`
 
 ## 5. Routing
-- [ ] Nessun `<Link to="...">` diretto — usa `<LocalizedLink>`
-- [ ] Nessun `useNavigate()` diretto — usa `useLocalizedNavigate()`
+- [ ] No direct `<Link to="...">` — use `<LocalizedLink>`
+- [ ] No direct `useNavigate()` — use `useLocalizedNavigate()`
 
-## 6. Test
-- [ ] Nuovi test aggiunti per le nuove funzioni in `utils/`
-- [ ] Test negativi scritti prima del happy path
-- [ ] Selectors testati con input null/undefined
+## 6. Tests
+- [ ] New tests added for the new functions in `utils/`
+- [ ] Negative tests written before the happy path
+- [ ] Selectors tested with null/undefined input
 
-## 7. Feature User-Facing
-- [ ] Se la feature è visibile all'utente:
-  - [ ] `scripts/roadmap-items.json` aggiornato con `completedDate`
-  - [ ] `todo.md` aggiornato con `[x]` e `<!-- roadmap:id -->`
-  - [ ] `npm run roadmap` eseguito → `src/data/roadmapData.js` rigenerato
+## 7. User-Facing Feature
+- [ ] If the feature is visible to the user:
+  - [ ] `scripts/roadmap-items.json` updated with `completedDate`
+  - [ ] `todo.md` updated with `[x]` and `<!-- roadmap:id -->`
+  - [ ] `npm run roadmap` executed → `src/data/roadmapData.js` regenerated
 
 ## 8. TypeScript
-- [ ] Nessun `any` — usa tipi espliciti o `unknown` + type guard
-- [ ] Props dei componenti definite come `interface`
+- [ ] No `any` — use explicit types or `unknown` + type guard
+- [ ] Component props defined as `interface`
 
 ## 9. Commit Message
-- [ ] L'ultima riga della risposta dell'IA contiene una commit message breve in inglese, pronta per il repository open source
-- [ ] La commit message è chiara, imperativa e descrive il risultato dell'update
+- [ ] The last line of the AI's response contains a short commit message in English, ready for the open source repository
+- [ ] The commit message is clear, imperative, and describes the outcome of the update
 
-Se tutti i punti sono ✅, sei pronto per il commit.
+If all points are ✅, you are ready to commit.

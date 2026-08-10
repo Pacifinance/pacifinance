@@ -14,7 +14,7 @@
 - Secondary: "expense tracking", "anonymous financial comparison", "privacy-first finance app"
 - Long-tail: "open source alternative to Mint YNAB", "self-host personal finance docker", "anonymous financial comparison without sharing data"
 
-**German (DE)** - Future
+**German (DE)**
 - Primary: "Open-Source-Finanz-App", "persönliche Finanzverwaltung", "selbst gehostete Budget-App"
 - Secondary: "Ausgabenverfolgung", "Finanzplanung", "anonymer Finanzvergleich"
 - Long-tail: "Open-Source-Finanz-App Deutschland", "Finanz-App selbst hosten Docker", "anonymer Finanzvergleich ohne Datenweitergabe"

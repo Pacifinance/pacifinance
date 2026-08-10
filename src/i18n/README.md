@@ -1,50 +1,50 @@
-# Sistema i18n di Pacifinance
+# Pacifinance i18n System
 
-## 📁 Struttura
+## 📁 Structure
 
 ```
 src/i18n/
-├── index.js                # Export principale e configurazione
+├── index.js                # Main export and configuration
 ├── locales/
-│   ├── it.json            # Traduzioni italiane
-│   └── en.json            # Traduzioni inglesi
-├── README.md              # Questa documentazione
-└── extract-languages.js   # Script utility per migrazione
+│   ├── it.json            # Italian translations
+│   └── en.json            # English translations
+├── README.md              # This documentation
+└── extract-languages.js   # Utility script for migration
 ```
 
-## 🌍 Sistema URL-based i18n
+## 🌍 URL-based i18n System
 
-Pacifinance implementa un sistema di internazionalizzazione basato su URL per migliorare SEO e UX.
+Pacifinance implements a URL-based internationalization system to improve SEO and UX.
 
 ### URL Structure
 ```
-pacifinance.com/it/           # Homepage italiana
-pacifinance.com/en/dashboard  # Dashboard inglese
-pacifinance.com/it/profile    # Profilo italiano
+pacifinance.com/it/           # Italian homepage
+pacifinance.com/en/dashboard  # English dashboard
+pacifinance.com/it/profile    # Italian profile
 ```
 
 ### Routing Utilities
 
-Le utilities di routing sono in `src/utils/i18nRouting.js`:
+The routing utilities are in `src/utils/i18nRouting.js`:
 
 ```javascript
 import { 
-  getLanguageFromPath,      // Estrae lingua da URL
-  removeLanguageFromPath,    // Rimuove prefisso lingua
-  addLanguageToPath,         // Aggiunge prefisso lingua
-  getLocalizedPath,          // Path completo con lingua
-  getInitialLanguage,        // Determina lingua iniziale
-  isValidLanguage            // Valida codice lingua
+  getLanguageFromPath,      // Extracts language from URL
+  removeLanguageFromPath,    // Removes the language prefix
+  addLanguageToPath,         // Adds the language prefix
+  getLocalizedPath,          // Full path with language
+  getInitialLanguage,        // Determines the initial language
+  isValidLanguage            // Validates the language code
 } from '../utils/i18nRouting';
 ```
 
-## 🚀 Uso nel Codice
+## 🚀 Usage in Code
 
-## 🚀 Uso nel Codice
+## 🚀 Usage in Code
 
-### 1. Nei Componenti - Accesso Traduzioni
+### 1. In Components - Accessing Translations
 
-**Metodo Consigliato (nuovo):**
+**Recommended Method (new):**
 ```jsx
 import { useContext } from 'react';
 import { LanguageContext } from '../contexts/LanguageContext';
@@ -58,7 +58,7 @@ const MyComponent = () => {
 };
 ```
 
-**Metodo Legacy (ancora supportato):**
+**Legacy Method (still supported):**
 ```jsx
 import { useContext } from 'react';
 import { LanguageContext } from '../contexts/LanguageContext';
@@ -73,25 +73,25 @@ const MyComponent = () => {
 };
 ```
 
-### 2. Link e Navigazione
+### 2. Links and Navigation
 
-**SEMPRE usare LocalizedLink:**
+**ALWAYS use LocalizedLink:**
 ```jsx
 import { LocalizedLink } from '../components/LocalizedLink';
 
 <LocalizedLink to="/dashboard">Dashboard</LocalizedLink>
-// Renderizza: /it/dashboard o /en/dashboard automaticamente
+// Renders: /it/dashboard or /en/dashboard automatically
 ```
 
-**SEMPRE usare useLocalizedNavigate:**
+**ALWAYS use useLocalizedNavigate:**
 ```jsx
 import { useLocalizedNavigate } from '../hooks/useLocalizedNavigate';
 
 const navigate = useLocalizedNavigate();
-navigate('/profile'); // Naviga a /it/profile o /en/profile
+navigate('/profile'); // Navigates to /it/profile or /en/profile
 ```
 
-### 3. Cambio Lingua
+### 3. Changing Language
 
 ```jsx
 import { useContext } from 'react';
@@ -108,10 +108,10 @@ const LanguageSwitcher = () => {
   const toggleLanguage = () => {
     const newLang = language === 'it' ? 'en' : 'it';
     
-    // 1. Aggiorna il context
+    // 1. Update the context
     setLanguage(newLang);
     
-    // 2. Aggiorna l'URL
+    // 2. Update the URL
     const currentPath = removeLanguageFromPath(location.pathname);
     const newPath = addLanguageToPath(currentPath, newLang);
     navigate(newPath, { replace: true });
@@ -125,67 +125,63 @@ const LanguageSwitcher = () => {
 };
 ```
 
-## 📝 Aggiungere una Nuova Lingua
+## 📝 Adding a New Language
 
-## ✅ Vantaggi della Struttura Attuale
+## ✅ Advantages of the Current Structure
 
-1. **URL-based routing**: SEO ottimizzato con URL specifici per lingua
-2. **Scalabilità**: Facile aggiungere nuove lingue
-3. **Manutenibilità**: File separati per ogni lingua
-4. **Performance**: Possibilità di lazy loading
-5. **Standard industry**: Segue best practice i18n
-6. **Tree-shaking**: Ottimizzazione build automatica
-7. **Backward compatible**: Funziona con codice esistente
-8. **User Experience**: URL condivisibili con lingua specifica
+1. **URL-based routing**: SEO-optimized with language-specific URLs
+2. **Scalability**: easy to add new languages
+3. **Maintainability**: separate files for each language
+4. **Performance**: lazy loading possible
+5. **Industry standard**: follows i18n best practices
+6. **Tree-shaking**: automatic build optimization
+7. **Backward compatible**: works with existing code
+8. **User Experience**: shareable URLs with a specific language
 
 ## 🧪 Testing
 
-Test disponibili per il sistema i18n:
+Tests available for the i18n system:
 ```bash
-# Test utilities routing
+# Routing utilities tests
 npm test src/__tests__/utils/i18nRouting.test.js
 
-# Test LocalizedLink
+# LocalizedLink tests
 npm test src/__tests__/components/LocalizedLink.test.jsx
 
-# Test useLocalizedNavigate
+# useLocalizedNavigate tests
 npm test src/__tests__/hooks/useLocalizedNavigate.test.js
 ```
 
-## 📚 Documentazione Completa
+## 📚 Full Documentation
 
-- **README principale**: [/README.md](../../README.md)
-- **Guida migrazione**: [/MIGRATION_I18N_ROUTING.md](../../MIGRATION_I18N_ROUTING.md)
-- **FAQ**: [/FAQ_I18N_ROUTING.md](../../FAQ_I18N_ROUTING.md)
-- **Checklist**: [/CHECKLIST.md](../../CHECKLIST.md)
-- **Esempi**: [/src/examples/I18nRoutingExamples.jsx](../examples/I18nRoutingExamples.jsx)
+- **Main README**: [/README.md](../../README.md)
 
-## 🔄 Migrazione Graduale
+## 🔄 Gradual Migration
 
-Non è necessario aggiornare tutti i file subito. Il sistema è backward compatible:
+There is no need to update all files right away. The system is backward compatible:
 
-1. Vecchio modo (continua a funzionare):
+1. Old way (still works):
    ```jsx
    import languages from '../data/languages.json';
    ```
 
-2. Nuovo modo (raccomandato per nuovi componenti):
+2. New way (recommended for new components):
    ```jsx
    import { getTranslations } from '../i18n';
    ```
 
-## 📝 Come aggiungere una nuova lingua
+## 📝 How to add a new language
 
-1. Crea `src/i18n/locales/es.json` (esempio spagnolo)
-2. Copia la struttura da `it.json` e traduci
-3. Aggiorna `src/i18n/index.js`:
+1. Create `src/i18n/locales/es.json` (Spanish example)
+2. Copy the structure from `it.json` and translate
+3. Update `src/i18n/index.js`:
    ```js
    import es from './locales/es.json';
    
    const languages = {
      it,
      en,
-     es  // Nuovo
+     es  // New
    };
    ```
-4. Fatto! La nuova lingua è disponibile
+4. Done! The new language is now available

@@ -19,6 +19,10 @@ migration-final.sql
 migration-encryption-key.txt
 backupMongo/
 
+# private notes: business strategy, ops runbooks with secret names, informal
+# personal scratchpad — never meant for the public repo (see docs cleanup)
+.internal/
+
 # misc
 server/scripts
 .DS_Store

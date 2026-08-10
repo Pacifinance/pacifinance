@@ -5,10 +5,11 @@ This folder contains product, architecture, migration, SEO, and open-source oper
 ## Start Here
 
 - [Architecture Guide](ARCHITECTURE.md) explains the frontend/backend structure and local conventions.
+- [Open Source Product Charter](OPEN_SOURCE_PRODUCT_CHARTER.md) — license, public terminology, and the project's sustainability model.
 - [Privacy And Anonymity](PRIVACY_ANONYMITY.md) defines the privacy model for an open-source, comparison-focused finance product.
 - [Community Benchmark Strategy](COMMUNITY_BENCHMARK_STRATEGY.md) explains how anonymous comparisons should stay useful and safe.
 - [Community Stats Protocol](COMMUNITY_STATS_PROTOCOL.md) describes the draft boundary for optional hosted community statistics.
-- [Open Source Operations](OPEN_SOURCE_OPERATIONS.md) tracks repository-publication and governance tasks.
+- [Future Feature Designs](FUTURE_DESIGNS.md) — technical proposals for features that aren't built yet, for anyone who wants to pick one up.
 
 ## Product And Privacy
 
@@ -22,14 +23,16 @@ Pacifinance is meant to make personal finance clearer without exposing personal 
 ## Engineering References
 
 - [Currency Flow](CURRENCY_FLOW.md)
-- [Vercel And Supabase Migration](VERCEL_SUPABASE_MIGRATION.md)
-- [Migration Guide](MIGRATION_GUIDE.md)
-- [Analyses And Feature Planning](ANALYSES.md)
+- [i18n Migration Guide](MIGRATION_GUIDE.md) — migrating components from the old `languages.json` system to the current one
+- [Threat Model](THREAT_MODEL.md)
+- [Supabase RLS Audit](SUPABASE_RLS_AUDIT.md)
+- [Backup & Recovery](BACKUP_RECOVERY.md)
+- [Transaction Terminology](TRANSACTION_TERMINOLOGY.md)
+- [Investment Import Research](INVESTMENT_IMPORT_RESEARCH.md)
 
 ## SEO And Public Pages
 
-- [SEO Optimization Plan](SEO_OPTIMIZATION_PLAN.md)
-- [SEO Keywords Map](SEO_KEYWORDS_MAP.md)
-- [SEO Implementation Checklist](SEO_IMPLEMENTATION_CHECKLIST.md)
+- [SEO](SEO.md) — what's implemented and how to add SEO to a new page
+- [SEO Keywords Map](SEO_KEYWORDS_MAP.md) — target keywords per page and language
 
 Before publishing new docs, check that examples are synthetic and that the brand is written as `Pacifinance`.

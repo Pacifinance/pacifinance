@@ -1,12 +1,12 @@
-# Guida alla Migrazione dei Componenti al Nuovo Sistema i18n
+# Guide to Migrating Components to the New i18n System
 
-## 📋 Panoramica
+## 📋 Overview
 
-Questa guida mostra come migrare gradualmente i componenti dal vecchio sistema di traduzioni al nuovo sistema i18n, mantenendo piena retrocompatibilità.
+This guide shows how to gradually migrate components from the old translation system to the new i18n system, while maintaining full backward compatibility.
 
-## 🔄 Sistemi a Confronto
+## 🔄 Systems Compared
 
-### Vecchio Sistema (languages.json)
+### Old System (languages.json)
 
 ```jsx
 import React, { useContext } from 'react';
@@ -26,7 +26,7 @@ const MyComponent = () => {
 };
 ```
 
-### Nuovo Sistema (i18n con translations)
+### New System (i18n with translations)
 
 ```jsx
 import React, { useContext } from 'react';
@@ -45,19 +45,19 @@ const MyComponent = () => {
 };
 ```
 
-## ✅ Vantaggi del Nuovo Sistema
+## ✅ Advantages of the New System
 
-1. **Meno import**: Non serve importare `languages.json`
-2. **Più pulito**: Codice più leggibile senza `languages[language]`
-3. **Type-safe**: Migliore supporto per TypeScript (se usato in futuro)
-4. **Auto-completamento**: IDE fornisce suggerimenti migliori
-5. **Meno ripetizioni**: `translations.` invece di `languages[language].`
+1. **Fewer imports**: no need to import `languages.json`
+2. **Cleaner**: more readable code without `languages[language]`
+3. **Type-safe**: better TypeScript support (if used in the future)
+4. **Autocompletion**: the IDE provides better suggestions
+5. **Less repetition**: `translations.` instead of `languages[language].`
 
-## 📝 Esempi di Migrazione
+## 📝 Migration Examples
 
-### Esempio 1: Componente Semplice
+### Example 1: Simple Component
 
-**Prima:**
+**Before:**
 ```jsx
 import languages from '../data/languages.json';
 
@@ -76,9 +76,9 @@ const Header = () => {
 };
 ```
 
-**Dopo:**
+**After:**
 ```jsx
-// Rimuovi l'import di languages.json
+// Remove the languages.json import
 
 const Header = () => {
   const { translations } = useContext(LanguageContext);
@@ -95,9 +95,9 @@ const Header = () => {
 };
 ```
 
-### Esempio 2: Componente con Fallback
+### Example 2: Component with Fallback
 
-**Prima:**
+**Before:**
 ```jsx
 const Button = ({ label }) => {
   const { language } = useContext(LanguageContext);
@@ -110,7 +110,7 @@ const Button = ({ label }) => {
 };
 ```
 
-**Dopo:**
+**After:**
 ```jsx
 const Button = ({ label }) => {
   const { translations } = useContext(LanguageContext);
@@ -123,9 +123,9 @@ const Button = ({ label }) => {
 };
 ```
 
-### Esempio 3: Componente con Array/Loop
+### Example 3: Component with Array/Loop
 
-**Prima:**
+**Before:**
 ```jsx
 const MonthSelector = () => {
   const { language } = useContext(LanguageContext);
@@ -143,7 +143,7 @@ const MonthSelector = () => {
 };
 ```
 
-**Dopo:**
+**After:**
 ```jsx
 const MonthSelector = () => {
   const { translations } = useContext(LanguageContext);
@@ -161,9 +161,9 @@ const MonthSelector = () => {
 };
 ```
 
-### Esempio 4: Componente con Interpolazione
+### Example 4: Component with Interpolation
 
-**Prima:**
+**Before:**
 ```jsx
 const Greeting = ({ userName }) => {
   const { language } = useContext(LanguageContext);
@@ -173,7 +173,7 @@ const Greeting = ({ userName }) => {
 };
 ```
 
-**Dopo:**
+**After:**
 ```jsx
 const Greeting = ({ userName }) => {
   const { translations } = useContext(LanguageContext);
@@ -183,57 +183,57 @@ const Greeting = ({ userName }) => {
 };
 ```
 
-## 🔍 Identificare Componenti da Migrare
+## 🔍 Identifying Components to Migrate
 
-### Cerca pattern vecchio sistema:
+### Search for old system patterns:
 ```bash
-# Trova tutti i file che importano languages.json
+# Find all files that import languages.json
 grep -r "import.*languages.*from.*languages.json" src/
 
-# Trova tutti gli usi di languages[language]
+# Find all uses of languages[language]
 grep -r "languages\[language\]" src/
 ```
 
-### Pattern da cercare:
+### Patterns to look for:
 - `import languages from '../data/languages.json'`
 - `languages[language].`
 - `languages[language]?.`
 
-## 📋 Checklist Migrazione
+## 📋 Migration Checklist
 
-Per ogni componente:
+For each component:
 
-- [ ] Rimuovi `import languages from '../data/languages.json'`
-- [ ] Aggiungi `translations` alla destrutturazione di `LanguageContext`
-- [ ] Sostituisci `languages[language].` con `translations.`
-- [ ] Verifica che il componente funzioni correttamente
-- [ ] Esegui i test per il componente
-- [ ] Commit delle modifiche
+- [ ] Remove `import languages from '../data/languages.json'`
+- [ ] Add `translations` to the `LanguageContext` destructuring
+- [ ] Replace `languages[language].` with `translations.`
+- [ ] Verify the component works correctly
+- [ ] Run the tests for the component
+- [ ] Commit the changes
 
-## ⚠️ Note Importanti
+## ⚠️ Important Notes
 
-### Quando NON migrare:
-- Se il componente è in fase di refactoring completo
-- Se ci sono modifiche urgenti in corso
-- Se il componente verrà rimosso a breve
+### When NOT to migrate:
+- If the component is undergoing a full refactor
+- If there are urgent changes in progress
+- If the component will be removed soon
 
-### Cosa NON fare:
-- ❌ Non migrare tutti i componenti in un'unica commit gigante
-- ❌ Non cambiare la struttura delle traduzioni durante la migrazione
-- ❌ Non rimuovere `languages.json` (ancora necessario per retrocompatibilità)
+### What NOT to do:
+- ❌ Do not migrate all components in a single giant commit
+- ❌ Do not change the translation structure during migration
+- ❌ Do not remove `languages.json` (still needed for backward compatibility)
 
-### Cosa fare:
-- ✅ Migrare un componente alla volta
-- ✅ Testare dopo ogni migrazione
-- ✅ Committare frequentemente
-- ✅ Documentare eventuali problemi incontrati
+### What to do:
+- ✅ Migrate one component at a time
+- ✅ Test after each migration
+- ✅ Commit frequently
+- ✅ Document any issues encountered
 
 ## 🧪 Testing
 
-Dopo la migrazione, verifica:
+After migrating, verify:
 
 ```jsx
-// Test che il componente usi translations
+// Test that the component uses translations
 import { render, screen } from '@testing-library/react';
 import { LanguageContext } from '../contexts/LanguageContext';
 import MyComponent from './MyComponent';
@@ -262,46 +262,35 @@ test('uses translations from context', () => {
 
 ## 📊 Progress Tracking
 
-Mantieni una lista dei componenti migrati:
+Update this table as components are migrated.
 
-### ✅ Migrati
-- [Nessuno ancora]
+## 🎯 Migration Priority
 
-### 🔄 In Corso
-- [Nessuno ancora]
+### High Priority
+1. Frequently modified components
+2. Components with a lot of text
+3. New components (use the new system directly)
 
-### ⏳ Da Migrare
-- [ ] ConsentBanner.jsx
-- [ ] SidebarMobile.jsx
-- [ ] [Altri componenti...]
+### Medium Priority
+1. Common UI components
+2. Page components
 
-## 🎯 Priorità di Migrazione
-
-### Alta Priorità
-1. Componenti frequentemente modificati
-2. Componenti con molti testi
-3. Nuovi componenti (usa direttamente il nuovo sistema)
-
-### Media Priorità
-1. Componenti UI comuni
-2. Componenti di pagina
-
-### Bassa Priorità
-1. Componenti legacy
-2. Componenti che verranno rimossi
-3. Componenti raramente modificati
+### Low Priority
+1. Legacy components
+2. Components that will be removed
+3. Rarely modified components
 
 ## 💡 Best Practices
 
-1. **Un componente alla volta**: Evita migrazioni massive
-2. **Test immediato**: Verifica dopo ogni migrazione
-3. **Commit atomici**: Un componente = un commit
-4. **Documentazione**: Annota eventuali problemi
-5. **Peer review**: Fai revisionare le modifiche
+1. **One component at a time**: avoid mass migrations
+2. **Immediate testing**: verify after each migration
+3. **Atomic commits**: one component = one commit
+4. **Documentation**: note any issues
+5. **Peer review**: have the changes reviewed
 
-## 🚀 Esempio Completo: Prima e Dopo
+## 🚀 Full Example: Before and After
 
-### ConsentBanner.jsx - Prima
+### ConsentBanner.jsx - Before
 
 ```jsx
 import React, { useState, useContext } from 'react';
@@ -328,7 +317,7 @@ const ConsentBanner = () => {
 export default ConsentBanner;
 ```
 
-### ConsentBanner.jsx - Dopo
+### ConsentBanner.jsx - After
 
 ```jsx
 import React, { useState, useContext } from 'react';
@@ -354,19 +343,19 @@ const ConsentBanner = () => {
 export default ConsentBanner;
 ```
 
-### Differenze:
-- ✅ Rimosso import di `languages.json`
-- ✅ Aggiunto `translations` al Context
-- ✅ Sostituito `languages[language].` con `translations.`
-- ✅ Codice più pulito e leggibile
-- ✅ Stessa funzionalità
+### Differences:
+- ✅ Removed the `languages.json` import
+- ✅ Added `translations` from the Context
+- ✅ Replaced `languages[language].` with `translations.`
+- ✅ Cleaner, more readable code
+- ✅ Same functionality
 
-## 📚 Risorse
+## 📚 Resources
 
-- [src/i18n/README.md](README.md) - Documentazione completa i18n
-- [src/contexts/LanguageContext.jsx](../contexts/LanguageContext.jsx) - Implementazione Context
-- [.github/copilot-instructions.md](../../.github/copilot-instructions.md) - Linee guida progetto
+- [src/i18n/README.md](../src/i18n/README.md) - Full i18n documentation
+- [src/contexts/LanguageContext.tsx](../src/contexts/LanguageContext.tsx) - Context implementation
+- [.github/copilot-instructions.md](../.github/copilot-instructions.md) - Project guidelines
 
 ---
 
-**Ricorda**: La migrazione è **opzionale** e può essere fatta **gradualmente**. Il vecchio sistema continuerà a funzionare indefinitamente grazie alla retrocompatibilità!
+**Remember**: migration is **optional** and can be done **gradually**. The old system will continue to work indefinitely thanks to backward compatibility!

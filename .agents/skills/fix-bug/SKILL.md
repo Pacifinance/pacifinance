@@ -1,67 +1,67 @@
 # Skill: Fix Bug
 
 ## Purpose
-Diagnosi e fix di bug in Pacifinance con verifica che non vengano introdotte regressioni.
+Diagnose and fix bugs in Pacifinance while verifying that no regressions are introduced.
 
 ## Trigger
-Usa questa skill quando: *c'è un bug*, *qualcosa non funziona*, *errore in console*, *test fallisce*, *comportamento inatteso*.
+Use this skill when: *there's a bug*, *something isn't working*, *console error*, *test fails*, *unexpected behavior*.
 
 ---
 
 ## Instructions
 
-### Phase 1 — Riproduzione
-1. Leggi il messaggio di errore intero (stack trace incluso)
-2. Identifica il file e la riga dell'errore
-3. Leggi il contesto del file: ±30 righe intorno all'errore
-4. Identifica: è un errore di runtime, logico, di rete, o di rendering?
+### Phase 1 — Reproduction
+1. Read the full error message (including stack trace)
+2. Identify the file and line of the error
+3. Read the file context: ±30 lines around the error
+4. Identify: is it a runtime, logic, network, or rendering error?
 
-### Phase 2 — Diagnosi
-Scorri questa tabella di bug noti prima di cercare altrove:
+### Phase 2 — Diagnosis
+Scan this table of known bugs before looking elsewhere:
 
-| Sintomo | Causa probabile | File da controllare |
+| Symptom | Likely cause | File to check |
 |---|---|---|
-| `userData is null/undefined` | Componente usato fuori da `UserProvider`, o prima che i dati siano caricati | `UserContext.tsx`, guard `if (!userData)` |
-| `translations.X.Y is undefined` | Chiave mancante in `it.json` o `en.json`, o sezione diversa | `src/i18n/locales/*.json` |
-| Route `/en/...` non trovata | Manca prefisso lingua in `AppRouter.tsx` | `src/AppRouter.tsx` |
-| Navigazione senza prefisso lingua | Uso di `useNavigate` invece di `useLocalizedNavigate` | File che chiama `navigate()` |
-| Importo mostrato sempre in EUR | Uso di `toLocaleString` invece di `formatAmount` | Componente che mostra il valore |
-| Colore/icona undefined | `getAssetColor('chiave-inesistente')` — chiave non mappata | `src/data/assetColors.ts` |
-| Mock non aggiornato | Nuovo campo in `userData` senza aggiornare `MockAuthContext` | `src/contexts/MockAuthContext.tsx` |
-| Build fallisce dopo cambio i18n | Chiave in un file ma non nell'altro | `it.json` vs `en.json` |
-| `date.toISOString()` bug notturno | UTC midnight issue | Funzione che usa `toISOString()` |
-| Test failing dopo aggiunta campo | `mockUserData` non aggiornato nei test | `src/__tests__/setup.js` o test specifico |
+| `userData is null/undefined` | Component used outside `UserProvider`, or before the data has loaded | `UserContext.tsx`, guard `if (!userData)` |
+| `translations.X.Y is undefined` | Key missing in `it.json` or `en.json`, or in a different section | `src/i18n/locales/*.json` |
+| Route `/en/...` not found | Missing language prefix in `AppRouter.tsx` | `src/AppRouter.tsx` |
+| Navigation without language prefix | Use of `useNavigate` instead of `useLocalizedNavigate` | File calling `navigate()` |
+| Amount always shown in EUR | Use of `toLocaleString` instead of `formatAmount` | Component displaying the value |
+| Undefined color/icon | `getAssetColor('nonexistent-key')` — key not mapped | `src/data/assetColors.ts` |
+| Mock not updated | New field in `userData` without updating `MockAuthContext` | `src/contexts/MockAuthContext.tsx` |
+| Build fails after i18n change | Key present in one file but not the other | `it.json` vs `en.json` |
+| `date.toISOString()` overnight bug | UTC midnight issue | Function using `toISOString()` |
+| Test failing after adding a field | `mockUserData` not updated in tests | `src/__tests__/setup.js` or the specific test |
 
 ### Phase 3 — Fix
-1. Applica il fix **minimo** — solo le righe necessarie
-2. Non refactorare durante un bug fix
-3. Se il bug è in un selector: aggiungi un test che riproduce il bug PRIMA del fix
+1. Apply the **minimal** fix — only the necessary lines
+2. Do not refactor during a bug fix
+3. If the bug is in a selector: add a test that reproduces the bug BEFORE the fix
 
-### Phase 4 — Verifica
+### Phase 4 — Verification
 ```bash
 npm run lint && npm test && npm run build
 ```
-- [ ] Il bug non si riproduce più
-- [ ] I test esistenti passano ancora
-- [ ] Nessun new warning in console
+- [ ] The bug no longer reproduces
+- [ ] Existing tests still pass
+- [ ] No new warnings in the console
 
-### Phase 5 — Documentazione
-Se il bug è un pattern ricorrente (vedi tabella Phase 2): aggiorna la tabella con il nuovo caso.
+### Phase 5 — Documentation
+If the bug is a recurring pattern (see Phase 2 table): update the table with the new case.
 
 ---
 
-## Quick Fixes Comuni
+## Common Quick Fixes
 
 ```tsx
 // userData null guard
 if (isLoading || !userData) return <Skeleton />;
 
-// Traduzione mancante — fallback sicuro
+// Missing translation — safe fallback
 const title = translations?.dashboard?.title ?? 'Pacifinance';
 
-// Data locale (non UTC)
+// Local date (not UTC)
 const today = new Date().toLocaleDateString('sv'); // 'YYYY-MM-DD'
 
-// Selector sicuro
+// Safe selector
 export const getBank = (u: UserData | null) => u?.balances?.[0]?.balance?.bank ?? 0;
 ```

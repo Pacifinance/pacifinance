@@ -16,7 +16,10 @@
       "Bash(python3 -c ' *)",
       "Bash(journalctl -k --since \"-10 min\")",
       "Bash(NODE_OPTIONS=\"--max-old-space-size=6144\" npx vite build)",
-      "Bash(echo \"started pid $!\")"
+      "Bash(echo \"started pid $!\")",
+      "Bash(grep -E \"^\\\\.agents/|^\\\\.github/instructions/|^\\\\.github/prompts/|^CLAUDE\\\\.md$|^AGENTS\\\\.md$\")",
+      "Bash(pip show *)",
+      "Bash(npx --version)"
     ]
   }
 }

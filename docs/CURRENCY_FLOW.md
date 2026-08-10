@@ -1,51 +1,51 @@
-# Pacifinance — Analisi Flow Conversioni Valuta
+# Pacifinance — Currency Conversion Flow Analysis
 
-> Documento di riferimento per il flusso completo delle conversioni EUR ↔ valuta display.
-> Ultima revisione: Aprile 2026
+> Reference document for the complete EUR ↔ display currency conversion flow.
+> Last revised: April 2026
 
 ---
 
-## 📑 Indice
+## 📑 Index
 
-1. [Principio Fondamentale](#-principio-fondamentale)
-2. [Funzioni di Conversione (CurrencyContext)](#-funzioni-di-conversione-currencycontext)
-3. [Mappa Completa dei Flussi per Sezione](#-mappa-completa-dei-flussi-per-sezione)
-   - [Inserimento Singolo (Uscita / Entrata)](#1-inserimento-singolo-uscita--entrata)
-   - [Inserimento Multiplo Uscite](#2-inserimento-multiplo-uscite)
-   - [Inserimento Multiplo Entrate](#3-inserimento-multiplo-entrate)
-   - [Inserimento Multiplo Bilancio](#4-inserimento-multiplo-bilancio)
-   - [Inserimento Bilancio Manuale](#5-inserimento-bilancio-manuale)
-   - [Modifica Inline (Uscita / Entrata)](#6-modifica-inline-uscita--entrata)
-   - [Eliminazione (Uscita / Entrata)](#7-eliminazione-uscita--entrata)
-   - [Import CSV/Excel](#8-import-csvexcel)
+1. [Fundamental Principle](#-fundamental-principle)
+2. [Conversion Functions (CurrencyContext)](#-conversion-functions-currencycontext)
+3. [Complete Flow Map by Section](#-complete-flow-map-by-section)
+   - [Single Insert (Outflow / Income)](#1-single-insert-outflow--income)
+   - [Multiple Outflow Insert](#2-multiple-outflow-insert)
+   - [Multiple Income Insert](#3-multiple-income-insert)
+   - [Multiple Balance Insert](#4-multiple-balance-insert)
+   - [Manual Balance Insert](#5-manual-balance-insert)
+   - [Inline Edit (Outflow / Income)](#6-inline-edit-outflow--income)
+   - [Delete (Outflow / Income)](#7-delete-outflow--income)
+   - [CSV/Excel Import](#8-csvexcel-import)
    - [Undo Import](#9-undo-import)
-4. [Stato dei Valori in Memoria (Balance State)](#-stato-dei-valori-in-memoria-balance-state)
-5. [Funzione Helper: parseFormattedAmount](#-funzione-helper-parseformattedamount)
-6. [Tabella Riepilogativa](#-tabella-riepilogativa)
-7. [Regole d'Oro](#-regole-doro)
+4. [In-Memory Value State (Balance State)](#-in-memory-value-state-balance-state)
+5. [Helper Function: parseFormattedAmount](#-helper-function-parseformattedamount)
+6. [Summary Table](#-summary-table)
+7. [Golden Rules](#-golden-rules)
 
 ---
 
-## 🏛️ Principio Fondamentale
+## 🏛️ Fundamental Principle
 
 ```
-DB = sempre EUR
-Display = valuta scelta dall'utente (EUR, USD, JPY, GBP, ...)
+DB = always EUR
+Display = currency chosen by the user (EUR, USD, JPY, GBP, ...)
 
-Scrittura DB:  utente → toEUR() → API → DB (EUR)
-Lettura DB:    DB (EUR) → API → fromEUR() / formatAmount() → utente
+Writing to DB:  user → toEUR() → API → DB (EUR)
+Reading from DB: DB (EUR) → API → fromEUR() / formatAmount() → user
 ```
 
-- **`toEUR(displayValue)`** — converte dalla valuta display a EUR (per salvare su DB)
-- **`fromEUR(eurValue)`** — converte da EUR alla valuta display (per mostrare all'utente)
-- **`formatAmount(eurValue)`** — chiama internamente `fromEUR()` + formatta con simbolo valuta
-- **`formatNumber(eurValue)`** — chiama internamente `fromEUR()` + formatta senza simbolo
+- **`toEUR(displayValue)`** — converts from the display currency to EUR (for saving to DB)
+- **`fromEUR(eurValue)`** — converts from EUR to the display currency (for showing to the user)
+- **`formatAmount(eurValue)`** — internally calls `fromEUR()` + formats with the currency symbol
+- **`formatNumber(eurValue)`** — internally calls `fromEUR()` + formats without the symbol
 
-Quando la valuta è EUR, tutte le funzioni sono no-op (restituiscono il valore invariato).
+When the currency is EUR, all functions are no-ops (they return the value unchanged).
 
 ---
 
-## 🔧 Funzioni di Conversione (CurrencyContext)
+## 🔧 Conversion Functions (CurrencyContext)
 
 **File:** `src/contexts/CurrencyContext.jsx`
 
@@ -55,7 +55,7 @@ const fromEUR = (eurValue) => {
   if (typeof eurValue !== 'number' || isNaN(eurValue)) return 0;
   if (currency === 'EUR') return eurValue;
   const rate = exchangeRates[currency] || FALLBACK_RATES[currency] || 1;
-  return eurValue * rate;  // Es: 100 EUR * 1.08 = 108 USD
+  return eurValue * rate;  // E.g.: 100 EUR * 1.08 = 108 USD
 };
 ```
 
@@ -65,29 +65,29 @@ const toEUR = (localValue) => {
   if (typeof localValue !== 'number' || isNaN(localValue)) return 0;
   if (currency === 'EUR') return localValue;
   const rate = exchangeRates[currency] || FALLBACK_RATES[currency] || 1;
-  return localValue / rate;  // Es: 108 USD / 1.08 = 100 EUR
+  return localValue / rate;  // E.g.: 108 USD / 1.08 = 100 EUR
 };
 ```
 
-### `formatAmount(eurValue)` — EUR → stringa formattata con simbolo
+### `formatAmount(eurValue)` — EUR → formatted string with symbol
 ```javascript
 const formatAmount = (eurValue) => {
-  const displayValue = fromEUR(eurValue);  // ← chiama internamente fromEUR
+  const displayValue = fromEUR(eurValue);  // ← internally calls fromEUR
   return new Intl.NumberFormat(locale, { style: 'currency', currency }).format(displayValue);
 };
-// Es: formatAmount(100) con USD → "$108.00"
+// E.g.: formatAmount(100) with USD → "$108.00"
 ```
 
-### `formatNumber(eurValue)` — EUR → stringa formattata senza simbolo
+### `formatNumber(eurValue)` — EUR → formatted string without symbol
 ```javascript
 const formatNumber = (eurValue) => {
-  const displayValue = fromEUR(eurValue);  // ← chiama internamente fromEUR
+  const displayValue = fromEUR(eurValue);  // ← internally calls fromEUR
   return displayValue.toLocaleString(locale, { minimumFractionDigits: 2 });
 };
-// Es: formatNumber(100) con USD → "108.00"
+// E.g.: formatNumber(100) with USD → "108.00"
 ```
 
-### Exports del Provider
+### Provider Exports
 ```javascript
 value={{ currency, setCurrency, currencySymbol, currencyConfig, 
          exchangeRates, formatAmount, formatNumber, fromEUR, toEUR }}
@@ -95,83 +95,83 @@ value={{ currency, setCurrency, currencySymbol, currencyConfig,
 
 ---
 
-## 🗺️ Mappa Completa dei Flussi per Sezione
+## 🗺️ Complete Flow Map by Section
 
-### 1. Inserimento Singolo (Uscita / Entrata)
+### 1. Single Insert (Outflow / Income)
 
 **File:** `InsertValues.jsx` → `createInExJson()` + `handleConfirmInEx()`
 
 ```
-Utente digita "108" (USD)
+User types "108" (USD)
     │
     ▼
-outflow / income state = "108" (stringa, valuta display)
+outflow / income state = "108" (string, display currency)
     │
     ├─► createInExJson(amount="108")
     │       Number("108") = 108
     │       toEUR(108) = 100          ──► API: { amount: 100 }  ✅ EUR
     │
-    └─► Aggiornamento bilancio (se selectedOption attivo):
-            valueBalanceSelected = parseFloat(bankValue)   // EUR da DB
+    └─► Balance update (if selectedOption active):
+            valueBalanceSelected = parseFloat(bankValue)   // EUR from DB
             outflowNumber = toEUR(parseFloat("108"))       // 108 USD → 100 EUR
-            newValue = valueBalanceSelected - 100           // tutto in EUR
+            newValue = valueBalanceSelected - 100           // all in EUR
             createBalancesJson(date, "Banca", newValue)    ──► API ✅ EUR
 ```
 
-### 2. Inserimento Multiplo Uscite
+### 2. Multiple Outflow Insert
 
 **File:** `InsertValues.jsx` → `handleBatchOutflowSubmit()`
 
 ```
-Utente compila N righe con importi in valuta display
+User fills in N rows with amounts in the display currency
     │
     ▼
-Per ogni riga:
-    parseFormattedAmount(row.amount) → numero (es: 108 USD)
+For each row:
+    parseFormattedAmount(row.amount) → number (e.g.: 108 USD)
     createInExJson(amount=108) → toEUR(108) = 100 EUR     ──► API ✅ EUR
     │
-Aggiornamento bilancio per sorgente:
-    groupAmountsByBalanceSource(rows) → { "Banca": 500 }  // totale display
-    currentBalanceValue (EUR da state)
+Balance update per source:
+    groupAmountsByBalanceSource(rows) → { "Banca": 500 }  // display total
+    currentBalanceValue (EUR from state)
     newValue = currentBalanceValue - toEUR(500)            ──► API ✅ EUR
 ```
 
-### 3. Inserimento Multiplo Entrate
+### 3. Multiple Income Insert
 
 **File:** `InsertValues.jsx` → `handleBatchIncomeSubmit()`
 
 ```
-Identico al flusso uscite, ma:
+Identical to the outflow flow, but:
     newValue = currentBalanceValue + toEUR(totalAmount)    ──► API ✅ EUR
 ```
 
-### 4. Inserimento Multiplo Bilancio
+### 4. Multiple Balance Insert
 
 **File:** `InsertValues.jsx` → `handleBatchBalanceSubmit()`
 
 ```
-Utente compila importi per ogni asset in valuta display
+User fills in amounts for each asset in the display currency
     │
     ▼
-Per ogni riga e per ogni asset:
-    val = parseFormattedAmount(row[key])     // es: "1.234,56" → 1234.56 (display)
+For each row and for each asset:
+    val = parseFormattedAmount(row[key])     // e.g.: "1.234,56" → 1234.56 (display)
     balance[assetDbKey] = toEUR(val)         ──► API ✅ EUR
 ```
 
-### 5. Inserimento Bilancio Manuale
+### 5. Manual Balance Insert
 
 **File:** `InsertValues.jsx` → `handleConfirmBalance()` → `createBalancesJson()`
 
 ```
-Stato iniziale:
-    bankValue = getBankValue(userData)   // EUR da DB, tipo number
+Initial state:
+    bankValue = getBankValue(userData)   // EUR from DB, number type
 
-Utente NON modifica il campo:
-    typeof bankValue === 'number'  →  return bankValue  ──► API ✅ EUR (invariato)
+User does NOT modify the field:
+    typeof bankValue === 'number'  →  return bankValue  ──► API ✅ EUR (unchanged)
 
-Utente modifica il campo:
-    handleInputChange → bankValue = "1234.56" (stringa, raw digits)
-    handleInputBlur   → bankValue = "1.234,56" (stringa formato IT, valuta display)
+User modifies the field:
+    handleInputChange → bankValue = "1234.56" (string, raw digits)
+    handleInputBlur   → bankValue = "1.234,56" (string, IT format, display currency)
     │
     ▼
     typeof bankValue === 'string'
@@ -179,114 +179,114 @@ Utente modifica il campo:
     toEUR(1234.56) = ~1143.11                            ──► API ✅ EUR
 ```
 
-### 6. Modifica Inline (Uscita / Entrata)
+### 6. Inline Edit (Outflow / Income)
 
 **File:** `OutflowSection.jsx` / `IncomeSection.jsx` → `startEditing()` + `InsertValues.jsx` → `handleSaveEditOutflow/Income()`
 
 ```
-Fase LETTURA (DB → utente):
-    add.amount = 100 (EUR da DB)
+READ phase (DB → user):
+    add.amount = 100 (EUR from DB)
     displayAmount = fromEUR(100) = 108 (USD)
-    editValues.amount = "108"                            // utente vede 108
+    editValues.amount = "108"                            // user sees 108
 
-Fase SCRITTURA (utente → DB):
-    1. Delete originale:
-       originalAdd.amount = 100 (EUR da DB, invariato)
+WRITE phase (user → DB):
+    1. Delete the original:
+       originalAdd.amount = 100 (EUR from DB, unchanged)
        API delete: { amount: 100 }                      ──► API ✅ EUR
 
-    2. Insert nuovo:
-       editedValues.amount = "120" (utente ha modificato, valuta display)
+    2. Insert the new one:
+       editedValues.amount = "120" (user modified it, display currency)
        createInExJson(amount="120") → toEUR(120)        ──► API ✅ EUR
 ```
 
-### 7. Eliminazione (Uscita / Entrata)
+### 7. Delete (Outflow / Income)
 
 **File:** `InsertValues.jsx` → `handleIncomesDelete()` / `handleOutflowsDelete()`
 
 ```
-deleteIncomeAmount = add.amount     // EUR da DB (passato da IncomeSection)
+deleteIncomeAmount = add.amount     // EUR from DB (passed from IncomeSection)
     │
     ▼
 API delete: { amount: Number(deleteIncomeAmount) }       ──► API ✅ EUR
 
-Aggiornamento bilancio:
-    valueBalanceSelected = parseFloat(bankValue)          // EUR (se non editato)
-    incomeNumber = parseFloat(deleteIncomeAmount)         // EUR da DB
+Balance update:
+    valueBalanceSelected = parseFloat(bankValue)          // EUR (if not edited)
+    incomeNumber = parseFloat(deleteIncomeAmount)         // EUR from DB
     newValue = valueBalanceSelected - incomeNumber        // EUR - EUR ✅
     createBalancesJson(date, "Banca", newValue)           ──► API ✅ EUR
 ```
 
-> **Nota:** `deleteIncomeAmount` e `deleteOutflowAmount` provengono da `add.amount` che è il valore EUR dal database. Non serve conversione.
+> **Note:** `deleteIncomeAmount` and `deleteOutflowAmount` come from `add.amount`, which is the EUR value from the database. No conversion needed.
 
-### 8. Import CSV/Excel
+### 8. CSV/Excel Import
 
 **File:** `DataImportWizard.jsx` + `src/utils/dataImport.js`
 
 ```
-CSV parsing → tx.amount = valore numerico (valuta display dell'utente)
+CSV parsing → tx.amount = numeric value (user's display currency)
     │
     ▼
-Import batch:
+Batch import:
     toAPIFormat({ ...tx, amount: toEUR(tx.amount) })     ──► API ✅ EUR
 
-Salvataggio per undo:
-    savedTxForUndo.amount = toEUR(tx.amount)             // salvato in EUR
+Saving for undo:
+    savedTxForUndo.amount = toEUR(tx.amount)             // saved in EUR
 ```
 
-> **Nota:** `toAPIFormat()` in `dataImport.js` è una funzione pura che non fa conversioni — la conversione avviene nel chiamante (`DataImportWizard.jsx`) prima di passare il tx.
+> **Note:** `toAPIFormat()` in `dataImport.js` is a pure function that performs no conversions — the conversion happens in the caller (`DataImportWizard.jsx`) before passing the tx.
 
 ### 9. Undo Import
 
 **File:** `DataImportWizard.jsx` → `handleUndo()`
 
 ```
-importedTx = importResult._savedTx     // già in EUR (salvato post-conversione)
+importedTx = importResult._savedTx     // already in EUR (saved post-conversion)
     │
     ▼
-Per ogni tx:
+For each tx:
     financeService.deleteExpenseOrIncome({ expense: tx })
-    // tx.amount è già EUR                               ──► API ✅ EUR
+    // tx.amount is already EUR                               ──► API ✅ EUR
 ```
 
 ---
 
-## 💾 Stato dei Valori in Memoria (Balance State)
+## 💾 In-Memory Value State (Balance State)
 
-I valori di bilancio (`bankValue`, `cashValue`, ecc.) seguono un ciclo specifico:
+Balance values (`bankValue`, `cashValue`, etc.) follow a specific cycle:
 
 ```
-INIZIALIZZAZIONE:
+INITIALIZATION:
     fetchData() → setBankValue(getBankValue(userData))
-    Tipo: number (EUR da DB)
+    Type: number (EUR from DB)
 
-SE L'UTENTE NON TOCCA IL CAMPO:
-    bankValue rimane number (EUR)
+IF THE USER DOES NOT TOUCH THE FIELD:
+    bankValue remains a number (EUR)
     createBalancesJson → typeof === 'number' → return as-is
 
-SE L'UTENTE MODIFICA IL CAMPO:
-    1. handleInputChange → setBankValue("1234.56")     // stringa raw
-    2. handleInputBlur   → setBankValue("1.234,56")    // stringa formato IT
-       Ora bankValue è una stringa in VALUTA DISPLAY
+IF THE USER MODIFIES THE FIELD:
+    1. handleInputChange → setBankValue("1234.56")     // raw string
+    2. handleInputBlur   → setBankValue("1.234,56")    // IT format string
+       Now bankValue is a string in DISPLAY CURRENCY
     3. createBalancesJson → typeof === 'string'
        → parseFormattedAmount("1.234,56") = 1234.56
        → toEUR(1234.56) = EUR value
 ```
 
-### Mappa balance state:
+### Balance state map:
 
-| Stato | Tipo | Valuta | Conversione in createBalancesJson |
+| State | Type | Currency | Conversion in createBalancesJson |
 |-------|------|--------|----------------------------------|
-| Da fetchData (mai toccato) | `number` | EUR | Nessuna (`return currentValue`) |
-| Dopo edit + blur | `string` | Display | `toEUR(parseFormattedAmount(str))` |
-| Override da selectedOption | `number` | EUR | `return Number(newValue)` (pre-converted) |
+| From fetchData (never touched) | `number` | EUR | None (`return currentValue`) |
+| After edit + blur | `string` | Display | `toEUR(parseFormattedAmount(str))` |
+| Override from selectedOption | `number` | EUR | `return Number(newValue)` (pre-converted) |
 
 ---
 
-## 🔧 Funzione Helper: parseFormattedAmount
+## 🔧 Helper Function: parseFormattedAmount
 
 **File:** `src/components/multiInsert/helpers.js`
 
-Converte stringhe formato italiano in numeri float:
+Converts Italian-formatted strings into float numbers:
 
 ```javascript
 export const parseFormattedAmount = (value) => {
@@ -308,34 +308,34 @@ export const parseFormattedAmount = (value) => {
 
 ---
 
-## 📊 Tabella Riepilogativa
+## 📊 Summary Table
 
-| Operazione | Input utente | Conversione | Valore API | File |
+| Operation | User input | Conversion | API value | File |
 |------------|-------------|-------------|------------|------|
-| **Uscita singola** | Display currency | `createInExJson` → `toEUR()` | EUR ✅ | InsertValues.jsx |
-| **Entrata singola** | Display currency | `createInExJson` → `toEUR()` | EUR ✅ | InsertValues.jsx |
-| **Bilancio manuale (non editato)** | — | Nessuna (già EUR) | EUR ✅ | InsertValues.jsx |
-| **Bilancio manuale (editato)** | Display currency IT format | `parseFormattedAmount` → `toEUR()` | EUR ✅ | InsertValues.jsx |
-| **Batch uscite** | Display currency IT format | `parseFormattedAmount` → `createInExJson` → `toEUR()` | EUR ✅ | InsertValues.jsx |
-| **Batch entrate** | Display currency IT format | `parseFormattedAmount` → `createInExJson` → `toEUR()` | EUR ✅ | InsertValues.jsx |
-| **Batch bilancio** | Display currency IT format | `parseFormattedAmount` → `toEUR()` | EUR ✅ | InsertValues.jsx |
-| **Modifica inline** | Display currency (da `fromEUR`) | `createInExJson` → `toEUR()` | EUR ✅ | InsertValues.jsx |
-| **Delete inline** | EUR (da DB, `add.amount`) | Nessuna (già EUR) | EUR ✅ | InsertValues.jsx |
-| **Import CSV/Excel** | Display currency (dal file) | `toEUR()` nel chiamante | EUR ✅ | DataImportWizard.jsx |
-| **Undo import** | EUR (salvato post-conversione) | Nessuna (già EUR) | EUR ✅ | DataImportWizard.jsx |
-| **Balance update post-insert** | EUR (da state) - `toEUR(amount)` | Tutto EUR | EUR ✅ | InsertValues.jsx |
-| **Balance update post-delete** | EUR (da state) ± EUR (da DB) | Tutto EUR | EUR ✅ | InsertValues.jsx |
-| **Visualizzazione importi** | EUR (da DB) | `formatNumber()` / `formatAmount()` → `fromEUR()` interno | Display ✅ | OutflowSection / IncomeSection |
-| **Placeholder bilancio** | EUR (da DB) | `fromEUR()` → `toLocaleString()` | Display ✅ | BalanceSection.jsx |
+| **Single outflow** | Display currency | `createInExJson` → `toEUR()` | EUR ✅ | InsertValues.jsx |
+| **Single income** | Display currency | `createInExJson` → `toEUR()` | EUR ✅ | InsertValues.jsx |
+| **Manual balance (not edited)** | — | None (already EUR) | EUR ✅ | InsertValues.jsx |
+| **Manual balance (edited)** | Display currency, IT format | `parseFormattedAmount` → `toEUR()` | EUR ✅ | InsertValues.jsx |
+| **Batch outflows** | Display currency, IT format | `parseFormattedAmount` → `createInExJson` → `toEUR()` | EUR ✅ | InsertValues.jsx |
+| **Batch incomes** | Display currency, IT format | `parseFormattedAmount` → `createInExJson` → `toEUR()` | EUR ✅ | InsertValues.jsx |
+| **Batch balance** | Display currency, IT format | `parseFormattedAmount` → `toEUR()` | EUR ✅ | InsertValues.jsx |
+| **Inline edit** | Display currency (from `fromEUR`) | `createInExJson` → `toEUR()` | EUR ✅ | InsertValues.jsx |
+| **Inline delete** | EUR (from DB, `add.amount`) | None (already EUR) | EUR ✅ | InsertValues.jsx |
+| **CSV/Excel import** | Display currency (from file) | `toEUR()` in the caller | EUR ✅ | DataImportWizard.jsx |
+| **Undo import** | EUR (saved post-conversion) | None (already EUR) | EUR ✅ | DataImportWizard.jsx |
+| **Balance update post-insert** | EUR (from state) - `toEUR(amount)` | All EUR | EUR ✅ | InsertValues.jsx |
+| **Balance update post-delete** | EUR (from state) ± EUR (from DB) | All EUR | EUR ✅ | InsertValues.jsx |
+| **Amount display** | EUR (from DB) | `formatNumber()` / `formatAmount()` → internal `fromEUR()` | Display ✅ | OutflowSection / IncomeSection |
+| **Balance placeholder** | EUR (from DB) | `fromEUR()` → `toLocaleString()` | Display ✅ | BalanceSection.jsx |
 
 ---
 
-## 🏆 Regole d'Oro
+## 🏆 Golden Rules
 
-1. **Mai mandare valuta display all'API** — tutto ciò che va al DB deve passare per `toEUR()`
-2. **Mai mostrare EUR crudo all'utente** — usare `formatAmount()`, `formatNumber()`, o `fromEUR()` manualmente
-3. **`formatAmount`/`formatNumber` fanno `fromEUR` internamente** — non fare doppia conversione: ❌ `formatAmount(fromEUR(val))`
-4. **I valori da DB (`add.amount`, `userData.balances`) sono sempre EUR** — nessuna conversione necessaria per il delete o per passarli come identificativi
-5. **`typeof` check per balance state** — se `number` = EUR da DB, se `string` = valuta display editata dall'utente
-6. **`parseFormattedAmount` prima di `toEUR`** — per stringhe formato IT: `toEUR(parseFormattedAmount("1.234,56"))`
-7. **`toAPIFormat` è una funzione pura** — la conversione a EUR avviene PRIMA nel chiamante, non dentro `toAPIFormat()`
+1. **Never send the display currency to the API** — everything that goes to the DB must pass through `toEUR()`
+2. **Never show raw EUR to the user** — use `formatAmount()`, `formatNumber()`, or `fromEUR()` manually
+3. **`formatAmount`/`formatNumber` call `fromEUR` internally** — do not double-convert: ❌ `formatAmount(fromEUR(val))`
+4. **Values from DB (`add.amount`, `userData.balances`) are always EUR** — no conversion needed for delete or when passing them as identifiers
+5. **`typeof` check for balance state** — if `number` = EUR from DB, if `string` = display currency edited by the user
+6. **`parseFormattedAmount` before `toEUR`** — for IT-format strings: `toEUR(parseFormattedAmount("1.234,56"))`
+7. **`toAPIFormat` is a pure function** — the conversion to EUR happens BEFORE, in the caller, not inside `toAPIFormat()`

@@ -106,13 +106,13 @@ catch (e) { showToast('error', translations.errors.generic); }
 
 ## State & Side Effects
 ```tsx
-// ❌ Mai useEffect per scrivere su stato persistente/sincronizzato
+// ❌ Never use useEffect to write persistent/synced state
 useEffect(() => { saveToAPI(value); }, [value]); // WRONG
 
-// ✅ Solo handler espliciti scrivono su stato persistente
+// ✅ Only explicit handlers write persistent state
 const handleSave = async () => { await saveToAPI(value); };
 
-// ✅ localStorage PRIMA di navigate (le pagine leggono all'mount, non dai params)
+// ✅ localStorage BEFORE navigate (pages read it on mount, not from params)
 localStorage.setItem('pendingDraft', JSON.stringify(data));
 navigate('/confirm');
 // In ConfirmPage: const draft = JSON.parse(localStorage.getItem('pendingDraft') ?? '{}');

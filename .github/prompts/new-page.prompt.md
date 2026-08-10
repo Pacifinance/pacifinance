@@ -1,23 +1,23 @@
 ---
 mode: agent
-description: Scaffolding completo di una nuova pagina Pacifinance
+description: Complete scaffolding of a new Pacifinance page
 ---
 
-Crea una nuova pagina Pacifinance seguendo questo checklist verticale (tutto in un'unica pass):
+Create a new Pacifinance page following this vertical checklist (all in a single pass):
 
-## Input richiesti
-- **Nome pagina**: (es. `AnalysisPage`)
-- **Route path**: (es. `/analysis`)
-- **Descrizione**: cosa fa la pagina
+## Required inputs
+- **Page name**: (e.g. `AnalysisPage`)
+- **Route path**: (e.g. `/analysis`)
+- **Description**: what the page does
 
 ---
 
-## Steps da eseguire
+## Steps to execute
 
-### 1. Crea il file pagina
-`src/pages/{NomePagina}.tsx`
+### 1. Create the page file
+`src/pages/{PageName}.tsx`
 
-Struttura minima:
+Minimal structure:
 ```tsx
 import React, { useContext } from 'react';
 import { UserContext } from '../contexts/UserContext';
@@ -25,7 +25,7 @@ import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
 import { Helmet } from 'react-helmet-async';
 
-const {NomePagina} = () => {
+const {PageName} = () => {
   const { userData, isLoading } = useContext(UserContext);
   const { translations } = useContext(LanguageContext);
   const { formatAmount } = useContext(CurrencyContext);
@@ -35,47 +35,47 @@ const {NomePagina} = () => {
   return (
     <>
       <Helmet>
-        <title>{translations.{sezione}.pageTitle} — Pacifinance</title>
-        <meta name="description" content={translations.{sezione}.pageDescription} />
+        <title>{translations.{section}.pageTitle} — Pacifinance</title>
+        <meta name="description" content={translations.{section}.pageDescription} />
       </Helmet>
-      {/* contenuto */}
+      {/* content */}
     </>
   );
 };
 
-export default {NomePagina};
+export default {PageName};
 ```
 
-### 2. Aggiungi la route in `src/AppRouter.tsx`
+### 2. Add the route in `src/AppRouter.tsx`
 ```tsx
-const {NomePagina} = React.lazy(() => import('./pages/{NomePagina}'));
-// Nella definizione Routes:
-<Route path="/:lang/{route-path}" element={<{NomePagina} />} />
+const {PageName} = React.lazy(() => import('./pages/{PageName}'));
+// In the Routes definition:
+<Route path="/:lang/{route-path}" element={<{PageName} />} />
 ```
 
-### 3. Aggiungi i18n keys in entrambi i file
+### 3. Add i18n keys in both files
 `src/i18n/locales/it.json`:
 ```json
-"{sezione}": {
+"{section}": {
   "pageTitle": "...",
   "pageDescription": "..."
 }
 ```
-`src/i18n/locales/en.json`: stessa struttura, testo in inglese
+`src/i18n/locales/en.json`: same structure, text in English
 
-### 4. Aggiungi navigazione (se serve)
-In `BottomNavBar.tsx` o nei link esistenti — usa `<LocalizedLink to="/{route-path}">`.
+### 4. Add navigation (if needed)
+In `BottomNavBar.tsx` or in existing links — use `<LocalizedLink to="/{route-path}">`.
 
-### 5. Crea il test smoke
-`src/__tests__/pages/{NomePagina}.test.tsx`:
+### 5. Create the smoke test
+`src/__tests__/pages/{PageName}.test.tsx`:
 ```tsx
 it('renders without crashing with mock data', () => {
-  render(<{NomePagina} />, { wrapper: MockProviders });
+  render(<{PageName} />, { wrapper: MockProviders });
   expect(screen.getByRole('main')).toBeInTheDocument();
 });
 ```
 
-### 6. Verifica finale
+### 6. Final verification
 ```bash
 npm run lint && npm test && npm run build
 ```

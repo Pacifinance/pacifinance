@@ -1,87 +1,34 @@
 # Pacifinance Backend - TODO
 
-- [ ] Aggiungere un job/cache periodico per le classifiche comportamentali, così da evitare ricalcoli live frequenti quando cresce il numero di utenti.
+> Last updated: 2026-04-17
+> Full historical/completed backend notes have been archived privately during
+> the docs cleanup — this file only tracks what's still open.
 
-> Ultimo aggiornamento: 13/02/2026
+## Open Items
 
----
+### User Similarity & Rankings
+- [ ] Add a periodic job/cache for behavioral rankings, to avoid frequent live recalculation as the user base grows.
+- [ ] Let a user control how "users similar to them" are calculated — checkboxes in the client that map to the profiling booleans the backend already uses.
+- [ ] Backend support for the roadmap priority-voting feature (frontend side tracked as `roadmap-voting` in the root [todo.md](../todo.md)).
+- [ ] Referral/invite badge system (frontend gamification slot exists; needs a backend method to detect and reward referrals).
 
-## 🔧 Da Fare
+### User Profile
+- [ ] Evaluate adding an optional email to the profile for bot prevention, password recovery, and support — see the encrypted-email design in [docs/FUTURE_DESIGNS.md](../docs/FUTURE_DESIGNS.md).
+- [ ] Auto-generated nickname (profile backend).
 
-### Urgente
-- [x] Aggiungere fattore 100 per convertire i valori inseriti dall'utente in centesimi così non ne perdiamo per Error floating point (ovunque) ★
+### Income & Outflows
+- [ ] Add a monthly income goal field to the DB (needs product discussion first).
 
-- [x] Permettere agli utenti di crearsi e salvare a db delle categorie personalizzate, figlie di quelle principali. Statistiche lato client su categorie utente, statiche globali che mi mandi te su categorie madre. (farlo prima di passaggio a PostgreSQL) ★
+### Price Data
+- [ ] Stocks API route (may already be partially covered by the Finnhub live-price refresh — verify before starting).
+- [ ] ETF API route.
 
-- [x] Aggiungere al profilo dati per facilitare la profilazione utenti simili: anni di esperienza nel settore, età utente, vivi da solo o meno (utile per spese condominiali, affitto, mutuo, da capire come scriverlo), figli o no? ★
+### Auth
+- [ ] "Smart login": cache session info client-side and let the backend distinguish between the two login modes.
 
-- [ ] un utente potrebbe voler e dovrebbe poter dire come gli utenti simili a lui devono essere calcolati, nel client dei checkbox e tramite quei 0 e 1 te profili l'utente ★
- 
-### Valute & Moneta
-- [ ] Aggiungere richiesta API e sistema di cache per le valute (mettine più possibili) ★
-- [x] Aggiungere alla route del profilo un campo currency, per permettere all'utente di scegliere la sua moneta di riferimento e salvarla a db (ora salvata in locale ) ★
-
-### Rankings & Confronti
-
-### Profilo Utente
-- [ ] Valutare se aggiungere email al profilo per prevenzione bot, recupero password e supporto ★
-- [ ] Profile - Back End
-  - [x] Nationality
-  - [x] Job
-  - [ ] Auto-generated nickname
-  - [x] Job type (employee/freelance, full/part time, office/hybrid/remote)
-
-### Spese & Entrate
-- [x] Permettere all'utente di modificare una sua spesa o entrata inserita ★
-- [x] Permettere agli utenti di creare delle sottocategorie delle spese personalizzate (per visualizzazione utente vedrà le sue, per le statistiche generali vedrà i raggruppamenti per macrocategoria) (potremmo anche pensare delle sottocategorie di default per aumentarne il numero e limitare quelle personalizzate. Maggiori ne abbiamo di Default migliori statistiche avremo) ★
-- [x] Permettere di vedere tutte le spese e le entrate inserite all'utente anche oltre l'anno (guardare filtri grafici) ★
-- [x] Aggiungere limite di spesa per utente mensile a db (ora salvato in locale) ★
-- [ ] Aggiungere obbiettivo di income mensile a db (ragioniamoci)
-- [ ] Permettere per gli abbonamenti di attivare la ricorrenza e scalare in automatico delle spese ogni mese
-
-### Investimenti
-- [x] Fare categorie degli investimenti (BTC, Crypto, Stocks, Commodities, ecc...)
-
-### API Prices Data
-- [ ] Settare una o più route alla quale richiedere i dati crypto, stocks e etf ★
-  - [x] Cache requirements
-  - [x] Cache design
-  - [x] Cache implementation
-  - [x] Crypto API
-  - [ ] Stocks API
-  - [ ] ETF API
-
-### Roadmap & Community
-- [ ] Sviluppare interazione backend Roadmap page ★
-- [ ] Metodo per implementare referral e badge per utenti che hanno fatto iscrivere un nuovo utente
-
-### Autenticazione & Login
-- [ ] Permettere all'utente di avere il login smart (salvare in cache l'informazione e gestire dal backend due login diversi)
-
-### Qualità Codice
-- [ ] Controllare nomenclatura backend soprattutto per il formato dei dati e dei campi nelle route ma anche per il resto
-- [ ] Controllare qualità del codice in ottica di eventuale apertura (open source)
+### Code Quality
+- [ ] Review backend naming conventions, especially data/field formats in routes.
+- [ ] General code-quality pass with open-sourcing in mind (this is happening now — good time to do it).
 
 ### Performance
-- [ ] Enable text compression Server Side
-  - [ ] https://developer.chrome.com/docs/lighthouse/performance/uses-text-compression/?utm_source=lighthouse&utm_medium=lr
-- [x] Fix FUNCTION_INVOCATION_TIMEOUT su /api/cron/refresh-user-averages: fetchUserAverages/fetchUserRankings giravano completamente sequenziali (una query alla volta per utente), tempo O(n) utenti — ora parallelizzati con concorrenza limitata (server/src/libs/concurrency.ts) + maxDuration:60 in vercel.json come rete di sicurezza
-- [x] Bug trovato durante il fix sopra: in computeAveragesForCohorts (averages.ts) il ciclo per-utente riusava e MUTAVA la stessa istanza `thisMonthStart` condivisa (ExtDate.moveByMonths muta in place) — dopo il primo utente che entrava nel loop dei 12 mesi, "questo mese" scivolava indietro per tutti gli utenti successivi nello stesso calcolo, probabilmente corrompendo silenziosamente userAverages per gran parte degli utenti ad ogni run mensile. Risolto passando una copia per utente
-
-## Idea
-- [ ] 
-
----
-
-## ✅ Completati
-
-- [x] Ritornare media Bilancio, media spesa del mese, media income del mese di tutti gli utenti per analisi comparativa anonima ★
-- [x] Aggiungere lato investimenti Obbligazioni, Fondi e Oro (come campi del portafoglio tipo BTC, crypto etf ecc) ★
-- [x] Permettere all'utente di scaricare tutti i suoi dati, quindi fare una route che invia tutti i dati anche quelli storici ★
-- [x] Aggiungere lavori: logistica e trasporti, Artigiano (lo ha richiesto un fabbro), Trader, per chi lavora nei bar o nei ristoranti cosa c'é?, commercialista? ★
-- [x] Documentazione Backend ★
-- [x] Pulizia utenti di test dal database ★
-- [x] Cookie login per Backend ★
-- [x] capire perché gli url variabilizzati con le lingue non funzionano (per ora l'url che funziona per browser senza cache è solo pacifinance.com)
-- [x] Modificare la response di tutti i rank e mandare solo il rapporto tra data.position e data.total moltiplicato * 100 ★
-- [x] Cambiare tag it spesa "Divertimento" in "Tempo libero"
+- [ ] Enable server-side text compression — see [web.dev: uses-text-compression](https://developer.chrome.com/docs/lighthouse/performance/uses-text-compression/).

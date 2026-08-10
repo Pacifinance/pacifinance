@@ -127,7 +127,9 @@ src/
 
 ┌─────────────────────────────────────────────────────────┐
 │                    Backend API                           │
-│            (Express + MongoDB — separate repo)           │
+│   (Express, same repo under server/ — Supabase/Postgres, │
+│    Upstash Redis for caching, deployed as Vercel          │
+│    serverless functions)                                  │
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -299,6 +301,19 @@ Backend Response → API Client → Service Method → Context setState → Re-r
 - **Translation files**: `src/i18n/locales/{lang}.json`
 - Always use `LocalizedLink` and `useLocalizedNavigate` — NEVER raw `Link`/`useNavigate`
 - All user-facing text must use translation keys, never hardcoded strings
+
+---
+
+## Quick Reference Facts
+
+- **Mobile breakpoint**: `max-width: 839px` (`MediaQueryContext`'s `isMobileScreen`)
+- **CSS breakpoint**: most `styled-components` use `max-width: 768px`
+- **BottomNavBar height**: 66px + `safe-area-inset-bottom`
+- **Routing**: every route is language-prefixed (`/it/dashboard`, `/en/dashboard`)
+- **Current auth model**: system-generated user ID + password — no email collected
+- **Sessions**: HTTP-only cookies; an axios interceptor handles 401s with automatic logout
+- **Monetary values in the DB**: always stored in EUR, converted at display time via `CurrencyContext`
+- **`preferredCurrency`**: stored in the DB as an index, mapped to a currency code via currency tags from `/tags/get`
 
 ---
 

@@ -1,204 +1,198 @@
-﻿# Pacifinance - TODO
+# Pacifinance - TODO
 
-> Ultimo aggiornamento: 17/04/2026
-> Per analisi, idee e feature planning vedi [docs/ANALYSES.md](docs/ANALYSES.md)
-> Roadmap status rapido: [x] completato · [~] in sviluppo · [ ] pianificato (con marker <!-- roadmap:id -->)
+> Last updated: 2026-04-17
+> For proposed designs of features not yet built, see [docs/FUTURE_DESIGNS.md](docs/FUTURE_DESIGNS.md)
+> Roadmap status legend: [x] done · [~] in progress · [ ] planned (with `<!-- roadmap:id -->` markers)
 
-- [x] Recovery code per il recupero account: codice a blocchi + frase di parole, card stampabile con QR, generabile anche dalle Impostazioni <!-- roadmap:account-recovery-code -->
-- [x] Grafici investimenti interattivi: categorie richiudibili/selezionabili, dettagli asset e feed Novità progressivo <!-- roadmap:interactive-investment-chart-legends -->
+- [x] Account recovery code: block code + word phrase, printable card with QR, can also be regenerated from Settings <!-- roadmap:account-recovery-code -->
+- [x] Interactive investment charts: collapsible/selectable categories, asset detail and a progressive "What's New" feed <!-- roadmap:interactive-investment-chart-legends -->
 
 ---
 
-## Completati
+## Completed
 
-- [x] BottomNavBar mobile (React Portal, menu popup, indicatore attivo) <!-- roadmap:mobile-nav -->
-- [x] Sidebar desktop: fix Link -> LocalizedLink per routing i18n
-- [x] useLocalizedNavigate usato ovunque <!-- roadmap:i18n -->
-- [x] useScrollNavigation fix con removeLanguageFromPath()
-- [x] DashboardPage: navigate() localizzato al posto di window.location.href
-- [x] Traduzioni sidebar: dashboard, more, goalsLimits
-- [x] Axios interceptor 401 (logout automatico su sessione scaduta)
-- [x] ProtectedRoute redirect a / (landing)
-- [x] UI/UX mobile dashboard (card 2 per riga, metric cards colonna, grafici ridotti, spacing)
-- [x] Animazioni floating disattivate su mobile
-- [x] SettingsPage: fix typo, fix toggleLanguage, fix useNavigate, riordino sezioni
+- [x] Mobile BottomNavBar (React Portal, popup menu, active indicator) <!-- roadmap:mobile-nav -->
+- [x] Sidebar desktop: fixed `Link` -> `LocalizedLink` for i18n routing
+- [x] `useLocalizedNavigate` used everywhere <!-- roadmap:i18n -->
+- [x] Fixed `useScrollNavigation` with `removeLanguageFromPath()`
+- [x] DashboardPage: localized `navigate()` instead of `window.location.href`
+- [x] Sidebar translations: dashboard, more, goalsLimits
+- [x] Axios 401 interceptor (automatic logout on expired session)
+- [x] ProtectedRoute redirects to / (landing)
+- [x] Mobile dashboard UI/UX (2-per-row cards, metric card column, smaller charts, spacing)
+- [x] Floating animations disabled on mobile
+- [x] SettingsPage: fixed typo, fixed toggleLanguage, fixed useNavigate, reordered sections
 - [x] Lazy loading: FinancialInsights, GoalTracker, GamificationSection
-- [x] Memoizzazione pie chart con useMemo
-- [x] Skeleton loading con shimmer animation
-- [x] Test: BottomNavBar (10), useScrollNavigation (10), SettingsPage ordine (2)
-- [x] Gamification: 44 badge in 10 categorie, GamificationSection, traduzioni IT/EN <!-- roadmap:gamification -->
-- [x] Dashboard personalizzabile: drag-and-drop, compact view, toolbar <!-- roadmap:dashboard-custom -->
-- [x] BuyMeACoffee widget: CSS per posizionamento su mobile
-- [x] ScrollNavigationIndicator: bottom 74px su mobile
-- [x] Avatar generato client-side (1400+ combinazioni, rigenerabile)
-- [x] Multi-valuta: CurrencyContext, 19 valute, frankfurter.app API, cache 24h, fallback rates <!-- roadmap:multi-currency -->
-- [x] Multi-valuta: sostituzione hardcoded euro, provider tree, test (17+12), traduzioni
-- [x] Multi-valuta: preferredCurrency da DB (index -> codice via currency tags)
-- [x] Multi-valuta: Settings currency session-only (non persistita), ProfilePage currency persistita nel DB
-- [x] Roadmap: pagina pubblica kanban, automazione da todo.md, filtri, traduzioni <!-- roadmap:roadmap-feedback -->
-- [x] Feedback: link GitHub Issues in SettingsPage + Info page
-- [x] Confronto anonimo utenti simili (rankings patrimonio/entrate/uscite) <!-- roadmap:anonymous-comparison -->
-- [x] SettingsPage redesign: layout compatto, Account Preferences, fix dropdown valuta
-- [x] Import CSV/Excel: wizard multi-step, colonna duale, fuzzy matching categorie <!-- roadmap:csv-import -->
-- [x] Import: fix dropdown bianchi, fix importi negativi, parseExcel padding
-- [x] Import: modal overlay, URL diretto (?section=import), landing page card, SEO
-- [x] Fix: dashboard caricamento bloccato (error recovery + retry + timeout)
-- [x] Fix: toast achievements sopra BottomNavBar su mobile
-- [x] Fix: achievements buggati (verifica dati reali, non solo struttura)
-- [x] Fix: cambio lingua da impostazioni (doppio prefisso lingua)
-- [x] Modifica note dall'excel prima dell'inserimento transazioni
-- [x] Fix: pagina bianca dopo registrazione (reset stati autenticazione al logout) <!-- roadmap:stability -->
-- [x] Fix: meccanismo retry dopo errore API (retryCounter per forzare re-fetch)
-- [x] Schermata di caricamento ridisegnata con branding e contrasto migliorato
-- [x] Ottimizzazione performance immagine landing page (LCP preload, fetchpriority)
-- [x] Fix: overflow orizzontale su mobile nelle pagine di inserimento
-- [x] Prevenzione zoom/pinch accidentale su mobile (viewport + CSS touch-action) <!-- roadmap:mobile-ux -->
-- [x] Test stati critici app: 79 nuovi test per autenticazione, caricamento dati, recupero errori
-- [x] Architettura Dependency Injection con ServiceContext (refactoring interno)
-- [x] Test: axios interceptor 401, auth flow completo, retry errori
-- [x] Ranking: backend ora manda la %, adattare il frontend per usarla direttamente
-- [x] Dark/Light mode: transizione animata al cambio tema (già implementata)
-- [x] Haptic feedback sui tap della nav bar (navigator.vibrate)
-- [x] Notifiche/changelog in-app per aggiornamenti e nuove feature (WhatsNewBanner)
-- [x] Test per removeLanguageFromPath edge cases (8 test)
-- [x] Test per DataImportWizard processRowDual (15 test)
-- [x] Undo/rollback ultima importazione (saveLastImport + UI undo)
-- [x] Drag and drop file upload (già implementato nel wizard)
-- [x] Modifica inline entrate e uscite: edit direttamente nella tabella con delete+reinsert <!-- roadmap:inline-edit -->
-- [x] Guida installazione PWA: istruzioni auto-detect dispositivo (iOS/Android/Desktop) in Impostazioni e Info <!-- roadmap:pwa-install-guide -->
-- [x] Fix: i18n colori categorie: fallback robusto con reverse-lookup per tag tradotti <!-- roadmap:i18n-category-colors -->
-- [x] Mock data allineati con file i18n per consistenza demo/dev/prod 
-- [x] Mock data CoinGecko per pagina Market Prices in dev mode
-- [x] Pagina prezzi di mercato crypto con dati e sparkline 7 giorni <!-- roadmap:market-prices -->
-- [x] Inserimento multiplo: uscite, entrate e bilanci in un'unica operazione (MultiOutflowInsert, MultiIncomeInsert, MultiBalanceInsert) <!-- roadmap:multi-insert -->
-- [x] Analisi dettagliata uscite: categorie, metodi di pagamento, pattern ricorrenti con confronti mensili <!-- roadmap:detailed-outflow-analysis -->
-- [x] Esploratore entrate e uscite: KPI, andamento, flusso netto, categorie, confronto periodo e tabella responsive <!-- roadmap:income-outflow-explorer -->
-- [x] Fix: categorie uscite tradotte in tutte le lingue (i18n category names in DetailedOutflowsAnalysis) <!-- roadmap:i18n-category-colors -->
-- [x] Scelta utente su impatto bilancio per inserimenti datati in mesi passati (past date balance choice) con modale, preferenza persistente e toggle in Impostazioni <!-- roadmap:past-date-balance-choice -->
-- [x] Rilevamento duplicati anche sull'inserimento manuale di uscite/entrate (stessa euristica dell'import CSV), con modale di conferma <!-- roadmap:manual-duplicate-check -->
-- [x] Spese condivise: "ho pagato per il gruppo" su una uscita registra solo la propria quota come spesa reale e traccia il resto come credito verso terzi, recuperabile senza generare un'entrata fittizia <!-- roadmap:shared-expenses -->
-- [x] Prezzi di mercato live per azioni/ETF via Finnhub: pulsante "Aggiorna prezzi" nei grafici investimenti, converte la quotazione nella valuta di scambio in EUR, aggiorna il valore corrente e ne registra uno storico mensile <!-- roadmap:live-stock-prices -->
-- [x] Analisi adattiva del portafoglio investimenti: guadagno/perdita, migliore/peggiore posizione, media investita al mese e stima del tempo per raggiungere un obiettivo collegato — ogni dato si sblocca in base allo storico realmente inserito, con suggerimenti su cosa aggiungere per un'analisi più precisa <!-- roadmap:portfolio-insights -->
-- [x] Obiettivo di investimento mensile: imposta quanto vorresti investire ogni mese e verifica automaticamente, mese per mese, se lo hai raggiunto, ricostruito dallo storico degli investimenti già registrato <!-- roadmap:investment-monthly-target -->
-- [x] Riconciliazione bilancio e holding: totale mensile dichiarato distinto dal dettaglio, copertura, scostamento e peso percentuale di ogni posizione <!-- roadmap:investment-balance-reconciliation -->
-- [x] Prezzi storici verificati dalla community: proponi il prezzo di un tuo asset per un mese passato, un amministratore lo verifica confrontandolo con un provider reale e, una volta approvato, diventa il prezzo condiviso da tutti — alternativa gratuita ai prezzi storici a pagamento <!-- roadmap:community-historical-prices -->
+- [x] Pie chart memoization with useMemo
+- [x] Skeleton loading with shimmer animation
+- [x] Tests: BottomNavBar (10), useScrollNavigation (10), SettingsPage order (2)
+- [x] Gamification: 44 badges across 10 categories, GamificationSection, IT/EN translations <!-- roadmap:gamification -->
+- [x] Customizable dashboard: drag-and-drop, compact view, toolbar <!-- roadmap:dashboard-custom -->
+- [x] BuyMeACoffee widget: mobile positioning CSS
+- [x] ScrollNavigationIndicator: bottom 74px on mobile
+- [x] Client-side generated avatar (1400+ combinations, regenerable)
+- [x] Multi-currency: CurrencyContext, 19 currencies, frankfurter.app API, 24h cache, fallback rates <!-- roadmap:multi-currency -->
+- [x] Multi-currency: replaced hardcoded euro, provider tree, tests (17+12), translations
+- [x] Multi-currency: `preferredCurrency` from DB (index -> code via currency tags)
+- [x] Multi-currency: session-only Settings currency (not persisted), ProfilePage currency persisted to DB
+- [x] Roadmap: public kanban page, automated from todo.md, filters, translations <!-- roadmap:roadmap-feedback -->
+- [x] Feedback: GitHub Issues link in SettingsPage + Info page
+- [x] Anonymous comparison with similar users (net worth/income/outflow rankings) <!-- roadmap:anonymous-comparison -->
+- [x] SettingsPage redesign: compact layout, Account Preferences, fixed currency dropdown
+- [x] CSV/Excel import: multi-step wizard, dual column, fuzzy category matching <!-- roadmap:csv-import -->
+- [x] Import: fixed white dropdowns, fixed negative amounts, Excel parsing padding
+- [x] Import: modal overlay, direct URL (`?section=import`), landing page card, SEO
+- [x] Fix: dashboard stuck loading (error recovery + retry + timeout)
+- [x] Fix: achievement toast overlapping BottomNavBar on mobile
+- [x] Fix: broken achievements (verify against real data, not just structure)
+- [x] Fix: language switch from settings (double language prefix)
+- [x] Edit notes from the Excel import before inserting transactions
+- [x] Fix: blank page after registration (reset auth state on logout) <!-- roadmap:stability -->
+- [x] Fix: retry mechanism after an API error (retryCounter to force a re-fetch)
+- [x] Redesigned loading screen with better branding and contrast
+- [x] Landing page image performance (LCP preload, fetchpriority)
+- [x] Fix: horizontal overflow on mobile insert pages
+- [x] Prevent accidental pinch/zoom on mobile (viewport + CSS touch-action) <!-- roadmap:mobile-ux -->
+- [x] Tests for critical app states: 79 new tests for auth, data loading, error recovery
+- [x] Dependency Injection architecture via ServiceContext (internal refactor)
+- [x] Tests: axios 401 interceptor, full auth flow, error retries
+- [x] Ranking: backend now sends the percentage directly, frontend adapted to use it
+- [x] Dark/light mode: animated transition on theme switch (already implemented)
+- [x] Haptic feedback on nav bar taps (navigator.vibrate)
+- [x] In-app notifications/changelog for updates and new features (WhatsNewBanner)
+- [x] Tests for removeLanguageFromPath edge cases (8 tests)
+- [x] Tests for DataImportWizard processRowDual (15 tests)
+- [x] Undo/rollback of the last import (saveLastImport + UI undo)
+- [x] Drag and drop file upload (already implemented in the wizard)
+- [x] Inline editing of income/outflows: edit directly in the table with delete+reinsert <!-- roadmap:inline-edit -->
+- [x] PWA install guide: auto-detects device (iOS/Android/Desktop) in Settings and Info <!-- roadmap:pwa-install-guide -->
+- [x] Fix: category color i18n with a robust reverse-lookup fallback for translated tags <!-- roadmap:i18n-category-colors -->
+- [x] Mock data aligned with i18n files for demo/dev/prod consistency
+- [x] CoinGecko mock data for the Market Prices page in dev mode
+- [x] Crypto market prices page with data and 7-day sparklines <!-- roadmap:market-prices -->
+- [x] Multi-insert: outflows, incomes and balances in one operation (MultiOutflowInsert, MultiIncomeInsert, MultiBalanceInsert) <!-- roadmap:multi-insert -->
+- [x] Detailed outflow analysis: categories, payment methods, recurring patterns with monthly comparisons <!-- roadmap:detailed-outflow-analysis -->
+- [x] Income/outflow explorer: KPIs, trend, net flow, categories, period comparison, responsive table <!-- roadmap:income-outflow-explorer -->
+- [x] Fix: outflow categories translated in every language (i18n category names in DetailedOutflowsAnalysis) <!-- roadmap:i18n-category-colors -->
+- [x] User choice for balance impact on backdated entries (past date balance choice), with a modal, persisted preference and a Settings toggle <!-- roadmap:past-date-balance-choice -->
+- [x] Duplicate detection on manual income/outflow entry too (same heuristic as CSV import), with a confirmation modal <!-- roadmap:manual-duplicate-check -->
+- [x] Shared expenses: "I paid for the group" on an outflow records only your own share as a real expense and tracks the rest as a receivable, recoverable without creating a fake income entry <!-- roadmap:shared-expenses -->
+- [x] Live stock/ETF prices via Finnhub: "Refresh prices" button in investment charts, converts the quote to EUR at the exchange currency, updates the current value and logs a monthly history <!-- roadmap:live-stock-prices -->
+- [x] Adaptive investment portfolio analysis: gain/loss, best/worst position, average monthly invested amount and time-to-goal estimate — each figure unlocks based on the history actually entered, with suggestions on what to add for a more precise analysis <!-- roadmap:portfolio-insights -->
+- [x] Monthly investment target: set how much you'd like to invest each month and automatically check, month by month, whether you hit it, reconstructed from the investment history already entered <!-- roadmap:investment-monthly-target -->
+- [x] Balance/holdings reconciliation: declared monthly total kept distinct from the detailed holdings, with coverage, drift and percentage weight per position <!-- roadmap:investment-balance-reconciliation -->
+- [x] Community-verified historical prices: propose the price of one of your assets for a past month, an admin verifies it against a real provider and, once approved, it becomes the shared price for everyone — a free alternative to paid historical price data <!-- roadmap:community-historical-prices -->
 ---
 
-## Piano strategico (luglio 2026)
+## Roadmap
 
-> Direzione decisa: progetto open source privacy-first per la nicchia europea/italiana,
-> con opzione hosted. Non startup che compete su open banking. Il confronto anonimo
-> tra utenti simili è il differenziante di lungo termine (nessun self-hosted può copiarlo).
-> Metrica guida: utenti che inseriscono dati per 3+ mesi consecutivi (retention), non iscritti.
+### Phase 1 — Entry friction (top priority)
+- [x] Quick-add from the dashboard/PWA: floating action button + popup, log an outflow in under 10 seconds (amount + category, everything else optional) <!-- roadmap:quick-add -->
+- [x] Recurring expenses/subscriptions: full end-to-end monthly recurrence (DB + backend + management UI) <!-- roadmap:recurring-transactions -->
+- [x] Paste-and-recognize: client-side parsing (smartPasteParser.ts) of free text into amount+category, inside quick-add — 100% client-side, zero server involvement
+- [x] Voice input = OS dictation in the paste-and-recognize field (the phone's keyboard mic transcribes, our parser recognizes it; the audio never touches our servers)
+- [ ] Auto-link recurring outflows created from the "subscription/periodic payment" payment type (prompt "make it recurring" on save) — not done this round, for now these are only created from the dedicated panel
+- [ ] Per-bank mapping templates for import (Fineco, Intesa, Revolut, N26) — a privacy-friendly substitute for open banking
+- [ ] Receipt photo: client-side OCR with tesseract.js (WASM in the browser) → pre-fills quick-add; the image never leaves the device. Not done this round: needs a new heavyweight dependency (tesseract.js, a few MB of WASM + trained data) — deserves its own round to evaluate the bundle-size impact, not a rushed addition
+- [ ] No Telegram/WhatsApp bot for data entry (financial data would pass through third-party servers — against the privacy positioning; revisit only as an explicit opt-in bridge in the future)
 
-### Fase 1 — Frizione di inserimento (priorità massima)
-- [x] Quick-add veloce da dashboard/PWA: floating action button + popup, inserire un'uscita in <10 secondi (importo + categoria, il resto opzionale) <!-- roadmap:quick-add -->
-- [x] Spese ricorrenti/abbonamenti: ricorrenza automatica mensile end-to-end (DB + backend + UI gestione) <!-- roadmap:recurring-transactions -->
-- [x] Incolla-e-riconosci: parsing client-side (smartPasteParser.ts) di testo libero in importo+categoria, dentro il quick-add — 100% client-side, zero server
-- [x] Input vocale = dettatura OS nel campo incolla-e-riconosci (il microfono di tastiera del telefono trascrive, il nostro parser riconosce; l'audio non passa MAI dai nostri server)
-- [ ] Collegare automaticamente le uscite ricorrenti create dal payment type "abbonamento/pagamento periodico" (prompt "rendi ricorrente" al salvataggio) — non fatto in questo round, per ora si creano solo dal pannello dedicato
-- [ ] Template di mappatura per banca nell'import (Fineco, Intesa, Revolut, N26) — sostituto privacy-friendly dell'open banking
-- [ ] Foto scontrino: OCR client-side con tesseract.js (WASM nel browser) → precompila quick-add; l'immagine non lascia mai il dispositivo. NON fatto in questo round: richiede una nuova dipendenza pesante (tesseract.js, alcuni MB di WASM+traineddata) — merita un round dedicato per valutare l'impatto sul bundle, non un'aggiunta improvvisata
-- [ ] NO bot Telegram/WhatsApp per inserimento (i dati finanziari passerebbero da server terzi — contro il posizionamento privacy; riaprire solo come bridge opzionale esplicito in futuro)
+### Phase 2 — Data consistency
+- [ ] Income/outflows: select the source at the sub-account level, with a nested dropdown (sub-accounts indented under the parent account, not flat "Bank / Revolut" entries)
+- [ ] Persist the transaction→source link to the DB: deleting an outflow (or income) with a specified source should propose auto-reversing that exact field, with user confirmation
+- [ ] Compact dashboard view: % of each sub-account relative to its parent account
+- [ ] Compact view: expand "Category Summary" and "Income|Outflows" with more detail (%, change vs previous month, saving rate — a quick snapshot of the financial situation)
+- [ ] Market Prices: fix values showing 0 (7d average, up/down), disclaimer "showing the top N by market cap", raise N beyond 10, on-demand search for coins not in cache (single fetch via CoinGecko /search + /coins/{id}) — minimal fix only, don't over-invest here
 
-### Fase 2 — Coerenza dati (richieste luglio 2026)
-- [ ] Uscite/entrate: selezione della fonte a livello di sotto-conto, con dropdown annidato (sotto-conti indentati sotto il conto madre, non voci piatte "Banca / Revolut")
-- [ ] Collegamento transazione→fonte persistito a DB: eliminando un'uscita (o entrata) con fonte specificata, proporre in automatico il ri-accredito/storno su quel campo esatto, con conferma utente
-- [ ] Vista compatta dashboard: % di ogni sotto-conto rispetto al conto madre
-- [ ] Vista compatta: espandere "Riepilogo per Categoria" e "Entrate|Uscite" con più dettagli (%, variazione vs mese precedente, saving rate — una fotografia rapida della situazione finanziaria)
-- [ ] Market Prices: fix valori a 0 (media 7g, in rialzo/ribasso), disclaimer "mostriamo i primi N per capitalizzazione", aumentare N oltre 10, ricerca on-demand di coin non in cache (fetch singolo via CoinGecko /search + /coins/{id}) — fix minimo, non investire oltre
+### Phase 3 — Going open source
+- [ ] Audit secrets/credentials in the git history before opening the repo
+- [x] Chose a license: AGPLv3 — forces hosted forks to publish their changes back
+- [x] Transferred the serverless repo into the Pacifinance GitHub organization (a transfer, not a copy: GitHub creates automatic redirects); archived the legacy repo with a README pointing to the new one
+- [x] Vercel deploy from the org repo WITHOUT Vercel Pro: `.github/workflows/deploy-vercel.yml` workflow (Vercel CLI, not the native import — importing from an org pushes you toward the paid Team plan, deploying via CLI + personal token doesn't). Push to `main` → production, PR → preview with a URL comment. Still open: create the 3 secrets (VERCEL_TOKEN/VERCEL_ORG_ID/VERCEL_PROJECT_ID via a local `vercel link`) and disconnect Vercel's native Git integration to avoid deploying twice
+- [ ] GitHub org: mandatory 2FA for members, branch protection on main (PR + review), CODEOWNERS, secrets only in deploy environments (Vercel/Supabase), never in the repo
+- [x] Co-owner: added a second maintainer as an org Owner (bus factor ≥ 2)
+- [x] Removed the global floating BuyMeACoffee widget (a script injected outside the React tree that stayed visible on every page, including the authenticated app, after the first visit to Landing/Pricing/Info — invasive and inconsistent with the privacy-first positioning); replaced with a static "☕ Support Pacifinance" link only where a dedicated support section already exists
+- [x] FUNDING.yml: BuyMeACoffee as the initial static channel; GitHub Sponsors can be added once active
+- [x] README + CONTRIBUTING in English, public CI (GitHub Actions: lint+test+build on PR — free for public repos)
+- [ ] Landing page "self-host in 10 minutes" with Docker (docker-compose: static frontend + Express server + Postgres; Redis optional)
+- [ ] Demo account with mock data and no DB requests (planned below too, becomes a launch prerequisite)
+- [ ] Launch: Hacker News, r/selfhosted, r/ItaliaPersonalFinance
 
-### Fase 3 — Apertura (open source)
-- [ ] Audit segreti/credenziali nella history git prima di aprire il repo
-- [x] Scegliere licenza: AGPLv3 — obbliga i fork hostati a ripubblicare le modifiche
-- [x] Trasferire il repo serverless nell'organizzazione GitHub Pacifinance (transfer, non copia: GitHub crea i redirect automatici); archiviare il repo legacy con README che punta al nuovo
-- [x] Deploy Vercel da repo in org SENZA Vercel Pro: workflow `.github/workflows/deploy-vercel.yml` (Vercel CLI, non l'import nativo — l'import da org spinge verso Team a pagamento, il deploy via CLI+token personale no). Push su `main` → produzione, PR → preview con commento URL. Resta da: creare i 3 secrets (VERCEL_TOKEN/VERCEL_ORG_ID/VERCEL_PROJECT_ID via `vercel link` locale) e scollegare la Git integration nativa su Vercel per non deployare due volte
-- [ ] Org GitHub: 2FA obbligatoria per i membri, branch protection su main (PR + review), CODEOWNERS, secrets SOLO negli env di deploy (Vercel/Supabase), mai nel repo
-- [x] Co-owner: aggiungere un secondo maintainer come Owner dell'organizzazione (bus factor ≥ 2)
-- [x] Rimosso il widget BuyMeACoffee floating globale (script iniettato fuori dall'albero React, restava visibile su ogni pagina inclusa l'app autenticata dopo la prima visita a Landing/Pricing/Info — invasivo e incoerente col posizionamento privacy-first); sostituito con un link statico "☕ Support Pacifinance" solo dove c'è già una sezione di supporto dedicata
-- [x] FUNDING.yml: link BuyMeACoffee come canale statico iniziale; GitHub Sponsors aggiungibile quando attivo
-- [x] README + CONTRIBUTING in inglese, CI pubblica (GitHub Actions: lint+test+build su PR — gratis per repo pubblici)
-- [ ] Landing "self-host in 10 minuti" con Docker (docker-compose: frontend statico + server Express + Postgres; Redis opzionale)
-- [ ] Demo account con mock data senza richieste DB (già pianificato sotto, diventa prerequisito del lancio)
-- [ ] Lancio: Hacker News, r/selfhosted, r/ItaliaPersonalFinance
+### Phase 3b — Hosted + self-hosted architecture
+- [ ] Dual distribution: hosted web app (pacifinance.com, free) + free self-hosted (AGPL) — same codebase; the competition is NOT hosted-vs-self-hosted (someone who self-hosts would never have paid anyway — they contribute code, bug reports, and credibility instead)
+- [ ] Anonymous comparison for self-hosted instances: an opt-in "community stats" service — the self-hosted instance sends ONLY anonymous aggregates (profile bucket: age range/job/country + rounded monthly totals), NEVER raw transactions; it receives percentiles back. Anyone who opts out gets everything except the comparison. This is the network effect that stays with the project even with open code
+- [ ] Note on Vercel: the Hobby plan prohibits commercial use — the day a paid tier launches, Vercel Pro (or a host migration) becomes necessary; budget for it then, not before
 
-### Fase 3b — Architettura hosted + self-hosted
-- [ ] Doppia distribuzione: web hosted (pacifinance.com, gratuita) + self-hosted gratuito (AGPL) — il codice è lo stesso; la concorrenza NON è hosted-vs-self-hosted (chi self-hosta non avrebbe mai pagato: contribuisce con codice/bug/credibilità)
-- [ ] Confronto anonimo per self-hosted: servizio "community stats" opt-in — l'istanza self-hosted invia SOLO aggregati anonimi (bucket profilo: fascia età/lavoro/nazione + totali mensili arrotondati), MAI transazioni; riceve i percentili. Chi non aderisce ha tutto tranne il confronto. È il network effect che resta al progetto anche con codice aperto
-- [ ] Monetizzazione (SOLO quando ci sarà retention dimostrata, non prima): tier "Sostenitore" ~€2-3/mese = donazione strutturata con piccoli perk (badge, early access, voto priorità roadmap) — non un paywall su feature; eventuali feature Pro vere solo su cose che costano per-utente o richiedono lavoro dedicato: coorti di confronto personalizzate, spazi famiglia/condivisi, report email/push automatici
-- [ ] Nota Vercel: il piano Hobby vieta uso commerciale — il giorno in cui parte un tier a pagamento serve comunque Vercel Pro (o migrazione host); metterlo a budget in quel momento, non prima
+### Phase 4 — Anonymous comparison (the differentiator)
+- [x] Benchmark transparency v1: cohort size, factors used, privacy threshold and real percentiles all visible on the comparison page
+- [x] Excluded demo/test accounts from community averages and rankings
+- [x] Separate explicit consent to contribute to hosted benchmarks, with revocation/deletion available <!-- roadmap:benchmark-consent -->
+- [x] Median, quartiles and the actual contributor count per metric (not relying on the average alone) <!-- roadmap:benchmark-distributions -->
+- [x] Cohort personalization: dynamic selection of job/career, geographic area, life stage and household; short-lived Redis cache, on-demand aggregate computation, a live preview of cohort size and a hard cutoff below the privacy threshold <!-- roadmap:custom-cohort -->
+- [x] Monthly snapshot of standard cohorts: save the profile buckets and the algorithm version at each monthly refresh, so every benchmark stays reproducible for the whole month without reacting to later profile changes. Balances, income or outflows are never part of the similarity definition. <!-- roadmap:benchmark-snapshots -->
+- [~] Derived insights: highlight the parent category with the largest economic gap vs the cohort; add trend and percentage contribution to the gap
+- [x] Longitudinal 3/6/12-month benchmarks using a stable group, with an update date, sample size and a reliability indicator <!-- roadmap:benchmark-longitudinal -->
+- [ ] Benchmarks for emergency runway, fixed costs/income ratio, saving rate and asset diversification
+- [ ] Comparisons by job, experience, work region, remote work and household composition; always show range and sample size
+- [ ] Cost-of-living normalization by geographic area, while keeping the nominal comparison visible too
+- [ ] Job/location change simulator as an observational scenario with explicit assumptions, never presented as advice or causation
+- [~] Opt-in community stats protocol for self-hosted instances: sending only rounded monthly buckets and aggregates, never transactions — v1 spec in `docs/COMMUNITY_STATS_PROTOCOL.md`; endpoint and signing still to be implemented
+- [ ] Signed/versioned benchmark snapshots for self-hosted instances, short contribution retention and verifiable revocation
+- [ ] Anti-differencing/Sybil protections, a contribution quality score, and bias auditing for rare cohorts
+- [ ] Referral and invite badges (already tracked in server/todo.md)
 
-### Fase 4 — Confronto anonimo (differenziante)
-- [x] Trasparenza benchmark v1: dimensione coorte, fattori usati, soglia privacy e percentili reali visibili nella pagina confronto
-- [x] Escludere account demo/test da medie e ranking della community
-- [x] Consenso esplicito separato per contribuire ai benchmark hosted e possibilità di revoca/cancellazione <!-- roadmap:benchmark-consent -->
-- [x] Mediana, quartili e numero effettivo di contribuenti per metrica (non affidarsi solo alla media) <!-- roadmap:benchmark-distributions -->
-- [x] Personalizzazione coorte: selezione dinamica di lavoro/carriera, area geografica, fase di vita e nucleo familiare; cache Redis breve, calcolo aggregato on-demand, anteprima live della numerosità e blocco rigoroso sotto soglia privacy <!-- roadmap:custom-cohort -->
-- [x] Snapshot mensile delle coorti standard: salvare i bucket profilo e la versione dell'algoritmo al refresh mensile, così ogni benchmark resta riproducibile per tutto il mese senza reagire a modifiche successive del profilo. Non includere mai saldi, entrate o uscite nella definizione di similarità. <!-- roadmap:benchmark-snapshots -->
-- [~] Insight derivati: evidenziare la categoria madre con il maggiore scostamento economico dalla coorte; aggiungere trend e contributo percentuale al gap
-- [x] Benchmark longitudinali 3/6/12 mesi usando un gruppo stabile, con data di aggiornamento, numerosità e indicatore di affidabilità <!-- roadmap:benchmark-longitudinal -->
-- [ ] Benchmark runway emergenza, costi fissi/reddito, saving rate e diversificazione patrimoniale
-- [ ] Confronti per lavoro, esperienza, regione di lavoro, lavoro remoto e composizione familiare; mostrare sempre range e numerosità
-- [ ] Normalizzazione costo della vita per area geografica, mantenendo visibile anche il confronto nominale
-- [ ] Simulatore cambio lavoro/luogo come scenario osservazionale con assunzioni esplicite, senza presentarlo come consiglio o causalità
-- [~] Protocollo community stats opt-in per self-host: invio di soli bucket e aggregati mensili arrotondati, mai transazioni — specifica v1 in `docs/COMMUNITY_STATS_PROTOCOL.md`; endpoint e firma da implementare
-- [ ] Snapshot benchmark firmati/versionati per istanze self-hosted, retention breve dei contributi e revoca verificabile
-- [ ] Protezioni anti-differencing/Sybil, quality score dei contributi e audit bias per coorti rare
-- [ ] Referral e badge per inviti (già in server/todo.md)
-
-### Fuori scope (deciso, non riaprire senza motivo forte)
-- Offerte di lavoro in piattaforma (two-sided market, fuori focus, rischio privacy)
-- Espansione Market Prices oltre il fix minimo (commodity, non differenziante)
-- Nuove lingue oltre le 6 attuali / asset esotici
+### Out of scope (decided, don't reopen without a strong reason)
+- Job listings inside the platform (two-sided marketplace, off-focus, privacy risk)
+- Expanding Market Prices beyond the minimal fix (commodities aren't a differentiator)
+- New languages beyond the current 6 / exotic assets
 
 ---
 
-## Da Fare
+## To Do
 
-### Bug Noti
-- [ ] BuyMeACoffee widget: verificare posizionamento su tutti i dispositivi (CSS !important workaround)
-- [ ] Grafici renderCustomizedLabel: verificare sovrapposizione con raggio ridotto su mobile
-- [ ] Floating point e centesimi: il DB mandera valori interi (* 100), gestire la conversione
+### Known Bugs
+- [ ] BuyMeACoffee widget: verify positioning across all devices (CSS `!important` workaround)
+- [ ] Chart `renderCustomizedLabel`: check for overlap with a reduced radius on mobile
+- [ ] Floating point and cents: the DB will send integer values (`* 100`), handle the conversion
 
-### Sicurezza
-<!-- Idea di email di recupero criptata valutata e scartata: anche opzionale non
-     impedirebbe a un utente di scrivere nome.cognome@..., reintroducendo
-     l'esposizione di dati identificativi che l'account anonimo evita. Il
-     recovery code (vedi sopra, completato) risolve lo stesso problema restando
-     coerente con "nessun dato personale mai". -->
+### Security
+<!-- Encrypted recovery-email idea evaluated and dropped: even as an optional
+     field it wouldn't stop a user from typing firstname.lastname@..., which
+     reintroduces the identifying-data exposure that the anonymous account
+     model avoids. The recovery code (see above, done) solves the same
+     problem while staying consistent with "no personal data, ever". -->
 
 
 ### Mobile
-- [ ] Testare BottomNavBar su dispositivi con notch/Dynamic Island (safe-area-inset)
-- [ ] Scroll navigation: valutare se disabilitare su mobile (interferenza con scroll naturale)
-- [ ] Card fondo emergenza sola: ridimensionare come half-width
-- [ ] Chart legend su mobile: verificare su schermi ~320px
+- [ ] Test BottomNavBar on devices with a notch/Dynamic Island (safe-area-inset)
+- [ ] Scroll navigation: evaluate disabling it on mobile (interferes with natural scrolling)
+- [ ] Emergency fund card alone: resize to half-width
+- [ ] Chart legend on mobile: verify on ~320px screens
 
 ### Desktop
-- [ ] Sidebar: tooltip Goals and Limits
-- [ ] Sidebar: verificare highlight link attivi con nuovo routing
+- [ ] Sidebar: tooltip for Goals and Limits
+- [ ] Sidebar: verify active-link highlighting with the new routing
 
-### Funzionalita
-- [ ] Notifiche push (PWA) per promemoria inserimento dati mensili <!-- roadmap:push-notifications -->
-- [ ] Widget riepilogo rapido home: patrimonio + variazione mese precedente
-- [x] Grafici trend storico patrimonio (linea temporale) <!-- roadmap:trend-charts -->
-- [ ] Export PDF: migliorare layout con grafici inclusi <!-- roadmap:pdf-reports -->
-- [x] Obiettivi e limiti flessibili: soglie fisse e percentuali combinabili, fondo d'emergenza in mesi, limiti per categoria e concentrazione, debiti e rendita passiva (backend + UI + analisi) <!-- roadmap:goals-limits -->
-- [~] Onboarding guidato per nuovi utenti: wizard 4 step con progress bar <!-- roadmap:onboarding -->
-- [ ] Rendere l'account demo che non faccia richieste al db e usi dei mockData in modo da mostrare rapidamente tutte le funzionalità dell'applicazione e convincere l'utente a registrarsi (ora è un account che fa richieste al db ma non è scalabile con tanti utenti)
+### Features
+- [ ] Push notifications (PWA) as a monthly data-entry reminder <!-- roadmap:push-notifications -->
+- [ ] Quick summary widget on the home: net worth + change vs previous month
+- [x] Historical net-worth trend charts (timeline) <!-- roadmap:trend-charts -->
+- [ ] Export PDF: improve the layout, include charts <!-- roadmap:pdf-reports -->
+- [x] Flexible goals and limits: fixed and percentage thresholds that can be combined, emergency fund in months, per-category and concentration limits, debts and passive income (backend + UI + analysis) <!-- roadmap:goals-limits -->
+- [~] Guided onboarding for new users: 4-step wizard with a progress bar <!-- roadmap:onboarding -->
+- [ ] Make the demo account avoid DB requests entirely and use mock data instead, so it can quickly showcase every feature and convince the user to sign up (right now it hits the DB, which doesn't scale with many concurrent users)
 
-### Community e Feedback
-- [~] Sistema feedback utenti (Fase 1): form in-app -> GitHub Issue via backend <!-- roadmap:feedback-system -->
-- [~] Sezione Contribuisci: come donare, segnalare bug, proporre idee <!-- roadmap:contribute-section -->
-- [~] Sistema di voto priorita roadmap (richiede backend) <!-- roadmap:roadmap-voting -->
+### Community and Feedback
+- [~] User feedback system (Phase 1): in-app form -> GitHub Issue via the backend <!-- roadmap:feedback-system -->
+- [~] "Contribute" section: how to donate, report bugs, propose ideas <!-- roadmap:contribute-section -->
+- [~] Roadmap priority voting system (needs a backend) <!-- roadmap:roadmap-voting -->
 
 ### Performance
-- [ ] Verificare bundle size dopo aggiunta BottomNavBar + MUI icons
+- [ ] Check bundle size after adding BottomNavBar + MUI icons
 
-### Import Dati (Evoluzione)
-- [ ] Supporto aggiornamento bilancio tramite import
-- [ ] Preview grafico transazioni importate (istogramma per mese/categoria)
-- [ ] Template di mappatura per banca (UniCredit, Revolut, N26...) con condivisione community <!-- roadmap:bank-templates -->
-- [~] Auto-detect formati bancari noti (Fineco, Intesa, Revolut, N26) <!-- roadmap:auto-detect-bank-format -->
-- [~] Supporto file OFX/QIF <!-- roadmap:OFX/QIF-support -->
-- [ ] Import ricorrente: ricordare ultimo file e suggerire aggiornamento
+### Data Import (evolution)
+- [ ] Support updating the balance via import
+- [ ] Chart preview of imported transactions (histogram by month/category)
+- [ ] Per-bank mapping templates (UniCredit, Revolut, N26...) with community sharing <!-- roadmap:bank-templates -->
+- [~] Auto-detect known bank formats (Fineco, Intesa, Revolut, N26) <!-- roadmap:auto-detect-bank-format -->
+- [~] OFX/QIF file support <!-- roadmap:OFX/QIF-support -->
+- [ ] Recurring import: remember the last file and suggest an update

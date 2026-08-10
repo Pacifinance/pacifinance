@@ -5,6 +5,7 @@ This folder contains product, architecture, migration, SEO, and open-source oper
 ## Start Here
 
 - [Architecture Guide](ARCHITECTURE.md) explains the frontend/backend structure and local conventions.
+- [Product Vision & Long-Term Roadmap](PRODUCT_VISION.md) — where the product is headed beyond a finance tracker (simulations, generic assets, a context engine, optional AI), organized Now/Next/Later/Research for contributors and supporters.
 - [Open Source Product Charter](OPEN_SOURCE_PRODUCT_CHARTER.md) — license, public terminology, and the project's sustainability model.
 - [Privacy And Anonymity](PRIVACY_ANONYMITY.md) defines the privacy model for an open-source, comparison-focused finance product.
 - [Community Benchmark Strategy](COMMUNITY_BENCHMARK_STRATEGY.md) explains how anonymous comparisons should stay useful and safe.

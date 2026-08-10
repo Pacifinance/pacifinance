@@ -4,6 +4,8 @@ Thanks for your interest in contributing. Pacifinance is a privacy-first persona
 
 This guide explains how to set up the project, what to check before opening a pull request, and how to keep the codebase ready for open-source collaboration.
 
+Looking for a bigger idea to work on than a single bug fix? [docs/PRODUCT_VISION.md](docs/PRODUCT_VISION.md) is the long-term product vision — simulations, generic assets, a financial context engine, optional AI — organized Now/Next/Later/Research so it's clear which pieces are ready to start and which still need groundwork.
+
 ## Getting Started
 
 ```bash

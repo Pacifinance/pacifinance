@@ -2,6 +2,7 @@
 
 > Last updated: 2026-04-17
 > For proposed designs of features not yet built, see [docs/FUTURE_DESIGNS.md](docs/FUTURE_DESIGNS.md)
+> For the longer-term product vision beyond this list (simulations, generic assets, context engine, optional AI), see [docs/PRODUCT_VISION.md](docs/PRODUCT_VISION.md)
 > Roadmap status legend: [x] done · [~] in progress · [ ] planned (with `<!-- roadmap:id -->` markers)
 
 - [x] Account recovery code: block code + word phrase, printable card with QR, can also be regenerated from Settings <!-- roadmap:account-recovery-code -->

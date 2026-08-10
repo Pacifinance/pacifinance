@@ -219,12 +219,28 @@
             "trust": {
                 "license": "Licenza Open Source",
                 "dataSold": "Dati Venduti a Terzi",
-                "freeForever": "Gratuito per Sempre"
+                "freeForever": "Gratuito"
             },
             "donation": {
                 "title": "Ti piace Pacifinance? Aiutaci a Mantenerlo Gratuito!",
                 "description": "Questa piattaforma è mantenuta interamente attraverso le donazioni della community. Il tuo supporto ci aiuta a continuare a migliorare e aggiungere nuove funzionalità. Presto sarà disponibile anche il supporto tramite GitHub Sponsors."
             }
+        }
+    },
+    "auth": {
+        "trust": {
+            "noEmailTitle": "Nessuna Email Richiesta",
+            "noEmailDescription": "Anonimato completo, solo un ID e una password",
+            "openSourceTitle": "Open Source",
+            "openSourceDescription": "Codice pubblico e verificabile su GitHub, licenza AGPLv3"
+        },
+        "signupSteps": {
+            "label": "Come funziona",
+            "flow": "Scegli una password sicura → il sistema genera un ID casuale → salva entrambi per i prossimi accessi"
+        },
+        "recoveryNotice": {
+            "title": "Salva le tue credenziali",
+            "text": "Non chiediamo un'email per restare anonimi: senza di essa, ID, password e recovery code sono l'unico modo per recuperare l'accesso. Conservali in un gestore di password (Bitwarden, 1Password, LastPass o quello del tuo browser)."
         }
     },
     "header": {

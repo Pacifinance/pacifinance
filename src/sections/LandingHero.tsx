@@ -39,7 +39,7 @@ export default function LandingHero({ theme }: LandingHeroProps) {
       <div className="relative z-10 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-12 items-center">
         <div className="text-center lg:text-left space-y-5 md:space-y-8">
           <div className="space-y-3 md:space-y-4">
-            <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold leading-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
               <span style={{ color: theme.secondaryColor }}>{t.hero.title}</span>
               <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-600">
@@ -99,13 +99,28 @@ export default function LandingHero({ theme }: LandingHeroProps) {
 
         <div className="flex justify-center lg:justify-end mt-2 md:mt-0">
           <div className="relative w-full max-w-xs sm:max-w-sm md:max-w-lg lg:max-w-none">
-            <DashboardMockup theme={theme} />
+            {/* Brand art (peace/calm illustration) as a soft backdrop behind the
+                product mockup — decorative only, so empty alt + lazy load. */}
+            <picture>
+              <source srcSet="/hero.avif" type="image/avif" />
+              <img
+                src="/hero.webp"
+                alt=""
+                aria-hidden="true"
+                loading="lazy"
+                decoding="async"
+                className="absolute -inset-[15%] w-[130%] h-[130%] object-contain opacity-30 md:opacity-40 pointer-events-none select-none z-0"
+              />
+            </picture>
+            <div className="relative z-10">
+              <DashboardMockup theme={theme} />
+            </div>
             <div
-              className="hidden sm:block absolute -top-3 -right-3 md:-top-4 md:-right-4 w-6 h-6 md:w-8 md:h-8 rounded-full animate-bounce"
+              className="hidden sm:block absolute -top-3 -right-3 md:-top-4 md:-right-4 w-6 h-6 md:w-8 md:h-8 rounded-full animate-bounce z-10"
               style={{ backgroundColor: theme.secondaryColor }}
             />
             <div
-              className="hidden sm:block absolute -bottom-3 -left-3 md:-bottom-4 md:-left-4 w-4 h-4 md:w-6 md:h-6 rounded-full animate-pulse"
+              className="hidden sm:block absolute -bottom-3 -left-3 md:-bottom-4 md:-left-4 w-4 h-4 md:w-6 md:h-6 rounded-full animate-pulse z-10"
               style={{ backgroundColor: theme.secondaryColor, opacity: 0.7 }}
             />
           </div>

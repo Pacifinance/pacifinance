@@ -1,6 +1,5 @@
 import React, { useContext } from 'react';
 import { LanguageContext } from '../contexts/LanguageContext';
-import BuyMeACoffeeWidget from '../components/BuyMeACoffeeWidget';
 import { GITHUB_REPO_URL } from '../data/externalLinks';
 import CodeIcon from '@mui/icons-material/Code';
 import StorageIcon from '@mui/icons-material/Storage';
@@ -60,11 +59,12 @@ export default function LandingOpenSource({ theme }: LandingOpenSourceProps) {
           </a>
         </div>
 
+        {/* Support/donation button already lives in the footer right below —
+            keep just the context here, not a second copy of the same button. */}
         <div className="text-center pt-8 border-t" style={{ borderColor: theme.borderColor }}>
           <h3 className="text-lg md:text-xl font-bold mb-2">{t.donation.title}</h3>
           <p className="opacity-80 mb-2 text-sm md:text-base">{t.donation.description}</p>
-          <p className="text-xs md:text-sm opacity-60 mb-4">{os.sponsorsComingSoon}</p>
-          <BuyMeACoffeeWidget />
+          <p className="text-xs md:text-sm opacity-60">{os.sponsorsComingSoon}</p>
         </div>
       </div>
     </section>

@@ -31,10 +31,10 @@ export default function LandingPillars({ theme }: LandingPillarsProps) {
           <PillarCard theme={theme} data={pillars.comparison} illustration={<PercentileIllustration theme={theme} />}>
             <CompareArrowsIcon className="text-white" sx={{ fontSize: 24 }} />
           </PillarCard>
-          <PillarCard theme={theme} data={pillars.unifiedView}>
+          <PillarCard theme={theme} data={pillars.unifiedView} illustration={<UnifiedViewIllustration theme={theme} />}>
             <TrendingUpIcon className="text-white" sx={{ fontSize: 24 }} />
           </PillarCard>
-          <PillarCard theme={theme} data={pillars.privacy}>
+          <PillarCard theme={theme} data={pillars.privacy} illustration={<PrivacyIllustration theme={theme} />}>
             <ShieldIcon className="text-white" sx={{ fontSize: 24 }} />
           </PillarCard>
         </div>
@@ -105,6 +105,71 @@ function PercentileIllustration({ theme }: { theme: PacifinanceTheme }) {
         />
       ))}
       <circle cx={16 + markerIndex * 30 + 9} cy={82 - barHeights[markerIndex] - 10} r="4" fill={theme.secondaryColor} />
+    </svg>
+  );
+}
+
+/**
+ * Placeholder illustration for the unified-view pillar: three separate
+ * account cards converging into one consolidated total.
+ */
+function UnifiedViewIllustration({ theme }: { theme: PacifinanceTheme }) {
+  const stroke = theme.mode === 'dark' ? 'rgba(255,255,255,0.14)' : 'rgba(0,0,0,0.08)';
+
+  return (
+    <svg viewBox="0 0 260 100" className="w-full h-auto" role="img" aria-hidden="true">
+      <rect x="0" y="0" width="260" height="100" rx="12" fill={`${theme.secondaryColor}0d`} />
+      {[0, 1, 2].map((i) => (
+        <rect key={i} x={36 + i * 70} y="14" width="50" height="26" rx="6" fill={stroke} />
+      ))}
+      {[0, 1, 2].map((i) => (
+        <line
+          key={i}
+          x1={36 + i * 70 + 25}
+          y1="42"
+          x2="130"
+          y2="68"
+          stroke={theme.secondaryColor}
+          strokeWidth="2"
+          opacity="0.45"
+        />
+      ))}
+      <circle cx="130" cy="78" r="15" fill={theme.secondaryColor} />
+    </svg>
+  );
+}
+
+/**
+ * Placeholder illustration for the privacy pillar: a shield with a
+ * checkmark, flanked by scattered dots standing in for anonymized data.
+ */
+function PrivacyIllustration({ theme }: { theme: PacifinanceTheme }) {
+  const stroke = theme.mode === 'dark' ? 'rgba(255,255,255,0.14)' : 'rgba(0,0,0,0.08)';
+  const dots = [
+    [40, 28], [56, 58], [34, 74],
+    [220, 28], [204, 58], [226, 74],
+  ];
+
+  return (
+    <svg viewBox="0 0 260 100" className="w-full h-auto" role="img" aria-hidden="true">
+      <rect x="0" y="0" width="260" height="100" rx="12" fill={`${theme.secondaryColor}0d`} />
+      {dots.map(([cx, cy]) => (
+        <circle key={`${cx}-${cy}`} cx={cx} cy={cy} r="4" fill={stroke} />
+      ))}
+      <path
+        d="M130 12 L163 24 V52 C163 72 148 84 130 89 C112 84 97 72 97 52 V24 Z"
+        fill={`${theme.secondaryColor}22`}
+        stroke={theme.secondaryColor}
+        strokeWidth="2"
+      />
+      <path
+        d="M118 51 L127 60 L145 39"
+        stroke={theme.secondaryColor}
+        strokeWidth="3"
+        fill="none"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }

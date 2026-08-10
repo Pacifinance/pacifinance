@@ -126,9 +126,9 @@
     "landing": {
         "new": {
             "hero": {
-                "title": "Entenda sua situação financeira",
-                "subtitle": "sem mostrar seus dados a ninguém",
-                "description": "Falar de dinheiro é um tabu, e sem um termo de comparação é difícil saber se você está indo bem. O Pacifinance registra contas, gastos e investimentos, e permite que você se compare de forma totalmente anônima com pessoas em situação parecida — open source, gratuito e também auto-hospedável.",
+                "title": "Entenda suas finanças",
+                "subtitle": "sem mostrá-las a ninguém",
+                "description": "Falar de dinheiro é um tabu. O Pacifinance te ajuda a saber se você está indo bem, comparando você de forma anônima com pessoas como você.",
                 "getStarted": "Comece gratuitamente",
                 "learnMore": "Saiba mais"
             },

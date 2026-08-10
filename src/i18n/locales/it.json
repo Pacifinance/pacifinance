@@ -135,9 +135,9 @@
     "landing": {
         "new": {
             "hero": {
-                "title": "Capisci la Tua Situazione Finanziaria",
-                "subtitle": "Senza Mostrare i Tuoi Dati a Nessuno",
-                "description": "Parlare di soldi è un tabù, e senza un termine di paragone è difficile sapere se stai andando bene. Pacifinance traccia conti, spese e investimenti e ti permette di confrontarti in modo completamente anonimo con persone nella tua stessa situazione — open source, gratuito, e puoi anche auto-ospitarlo.",
+                "title": "Capisci le Tue Finanze",
+                "subtitle": "Senza Mostrarle a Nessuno",
+                "description": "Parlare di soldi è un tabù. Pacifinance ti aiuta a capire se stai andando bene, confrontandoti in modo anonimo con chi è nella tua stessa situazione.",
                 "getStarted": "Inizia Gratis",
                 "learnMore": "Scopri di Più"
             },

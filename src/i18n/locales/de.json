@@ -126,9 +126,9 @@
     "landing": {
         "new": {
             "hero": {
-                "title": "Verstehen Sie Ihre finanzielle Situation",
-                "subtitle": "ohne Ihre Daten irgendjemandem zu zeigen",
-                "description": "Über Geld spricht man nicht – aber ohne Vergleichswert ist es schwer zu wissen, ob man gut dasteht. Pacifinance erfasst Konten, Ausgaben und Investitionen und lässt Sie sich völlig anonym mit Menschen in einer ähnlichen Situation vergleichen — open source, kostenlos und auch selbst hostbar.",
+                "title": "Verstehen Sie Ihre Finanzen",
+                "subtitle": "ohne sie irgendjemandem zu zeigen",
+                "description": "Über Geld spricht man nicht. Pacifinance zeigt Ihnen, wo Sie stehen – durch anonymen Vergleich mit Menschen wie Ihnen.",
                 "getStarted": "Kostenlos starten",
                 "learnMore": "Mehr erfahren"
             },

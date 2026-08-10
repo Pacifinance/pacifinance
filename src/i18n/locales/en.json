@@ -135,9 +135,9 @@
     "landing": {
         "new": {
             "hero": {
-                "title": "Understand Your Financial Situation",
-                "subtitle": "Without Showing Your Data to Anyone",
-                "description": "Talking about money is taboo, and without something to compare against it's hard to know if you're doing okay. Pacifinance tracks accounts, spending and investments, and lets you compare yourself completely anonymously with people in a similar situation — open source, free, and self-hostable too.",
+                "title": "Understand Your Finances",
+                "subtitle": "Without Showing Them to Anyone",
+                "description": "Talking about money is taboo. Pacifinance helps you see where you stand, by comparing anonymously with people like you.",
                 "getStarted": "Get Started Free",
                 "learnMore": "Learn More"
             },

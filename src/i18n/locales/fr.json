@@ -126,9 +126,9 @@
     "landing": {
         "new": {
             "hero": {
-                "title": "Comprends ta situation financière",
-                "subtitle": "sans montrer tes données à personne",
-                "description": "Parler d'argent est un tabou, et sans point de comparaison il est difficile de savoir si tu t'en sors bien. Pacifinance suit tes comptes, dépenses et investissements, et te permet de te comparer de façon totalement anonyme avec des personnes dans une situation similaire — open source, gratuit, et auto-hébergeable.",
+                "title": "Comprends tes finances",
+                "subtitle": "sans les montrer à personne",
+                "description": "Parler d'argent est un tabou. Pacifinance t'aide à savoir où tu en es, en te comparant anonymement à des gens comme toi.",
                 "getStarted": "Commencer gratuitement",
                 "learnMore": "En savoir plus"
             },

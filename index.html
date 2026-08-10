@@ -11,9 +11,9 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta
       name="description"
-      content="Pacifinance - Unify your finances in one platform. Track accounts across multiple banks, compare spending anonymously, and manage investments. Free multi-platform financial dashboard."
+      content="Pacifinance - Open source, privacy-first personal finance. Understand your financial situation and compare yourself completely anonymously with other users, without sharing your data. Free, AGPLv3 licensed, self-hostable with Docker."
     />
-    <meta name="keywords" content="personal finance, expense management, budget, financial dashboard, unify finances, multi-platform, anonymous comparison, investment tracking" />
+    <meta name="keywords" content="open source personal finance app, privacy-first finance management, anonymous financial comparison, self-hosted finance app, free budget app, AGPLv3, Docker self-hosting, unify bank accounts, multi-currency" />
     <meta name="author" content="Pacifinance" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
@@ -32,12 +32,11 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"></noscript>
 
-    <!-- Preload LCP hero image (AVIF with WebP fallback) -->
-    <link rel="preload" as="image" type="image/avif" href="/hero.avif" fetchpriority="high">
-    <link rel="preload" as="image" type="image/webp" href="/hero.webp" fetchpriority="low">
+    <!-- Hero visual is now an inline SVG mockup (src/sections/LandingHero.tsx), not a raster
+         image, so there's no LCP image to preload here anymore — one less network request. -->
 
     <!-- Umami is injected by analyticsService only after analytics consent. -->
-    <title>Pacifinance - Unify Your Finances | Multi-Platform Dashboard</title>
+    <title>Pacifinance - Open Source, Privacy-First Personal Finance</title>
   </head>
   <body>
     <div id="root"></div>

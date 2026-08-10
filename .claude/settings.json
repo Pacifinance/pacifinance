@@ -12,7 +12,10 @@
       "Bash(git -C /workspaces/pacifinance-serverless log --oneline -1 -- src/sections/InsertValues.jsx)",
       "Bash(git -C /workspaces/pacifinance-serverless log --oneline -1 -- src/sections/InsertValues.tsx)",
       "PowerShell(npm run test:server 2>&1)",
-      "Bash(git stash *)"
+      "Bash(git stash *)",
+      "Bash(python3 -c ' *)",
+      "Bash(journalctl -k --since \"-10 min\")",
+      "Bash(NODE_OPTIONS=\"--max-old-space-size=6144\" npx vite build)"
     ]
   }
 }

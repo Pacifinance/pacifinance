@@ -8,6 +8,7 @@ import BuyMeACoffeeWidget from '../components/BuyMeACoffeeWidget';
 import { SUPPORTED_LANGUAGES } from '../i18n/languagesConfig';
 import { addLanguageToPath, removeLanguageFromPath } from '../utils/i18nRouting';
 import { APP_VERSION } from '../data/appVersion';
+import { GITHUB_ISSUES_URL } from '../data/externalLinks';
 
 export default function LandingFooter({ theme }) {
   const { language, translations, setLanguage } = useContext(LanguageContext);
@@ -143,8 +144,8 @@ export default function LandingFooter({ theme }) {
                 </LocalizedLink>
               </li>
               <li>
-                <a 
-                  href="https://github.com/Pacifinance/Pacifinance/issues/new/choose"
+                <a
+                  href={GITHUB_ISSUES_URL}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:opacity-70 transition-opacity"

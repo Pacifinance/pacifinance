@@ -137,37 +137,10 @@
                 "privacyFirst": "Confidentialité d'abord",
                 "openSource": "Open source"
             },
-            "features": {
+            "pillars": {
                 "title": "Comment Pacifinance résout tes problèmes",
                 "subtitle": "Fatigué de jongler entre plusieurs applications pour voir ta situation financière complète ? Pacifinance transforme la façon dont tu gères ton argent — sans le partager avec personne.",
-                "openSource": {
-                    "title": "Open source et auto-hébergeable",
-                    "description": "Code public et vérifiable, aucune boîte noire : tu peux vérifier comment tes données sont traitées, ou installer Pacifinance sur ton propre serveur avec Docker et rester totalement hors du cloud.",
-                    "features": [
-                        "• Licence AGPLv3, code sur GitHub",
-                        "• Auto-hébergement avec Docker en quelques minutes",
-                        "• Historique des prix enrichi et vérifié par la communauté"
-                    ]
-                },
-                "privacy": {
-                    "title": "Comparaisons anonymes intelligentes",
-                    "description": "Découvre si tu dépenses trop ou si tu épargnes trop peu par rapport à des personnes dans des situations similaires. Toutes les comparaisons sont totalement anonymes.",
-                    "features": [
-                        "• Matching anonyme des utilisateurs",
-                        "• Analyse des habitudes de dépenses",
-                        "• Informations personnalisées"
-                    ]
-                },
-                "analytics": {
-                    "title": "Vue unifiée complète",
-                    "description": "Consulte tous tes comptes, investissements et dépenses sur un seul tableau de bord. Plus besoin de basculer entre les applications pour comprendre ta situation financière.",
-                    "features": [
-                        "• Intégration multi-plateforme",
-                        "• Tableau de bord unifié",
-                        "• Analyse des tendances"
-                    ]
-                },
-                "comparisons": {
+                "comparison": {
                     "title": "Brise le tabou de l'argent",
                     "description": "Découvre enfin si tu es sur la bonne voie. Les comparaisons anonymes te montrent comment tes dépenses et ton épargne se situent par rapport à des profils similaires.",
                     "features": [
@@ -176,25 +149,16 @@
                         "• Recommandations personnalisées"
                     ]
                 },
-                "investment": {
-                    "title": "Investissements multi-plateformes",
-                    "description": "Suis tes actions, ETF et cryptos sur différentes plateformes. Consulte l'ensemble de ton portefeuille d'investissement en un seul endroit, sans éparpillement entre les applications.",
+                "unifiedView": {
+                    "title": "Vue unifiée complète",
+                    "description": "Consulte tous tes comptes, investissements et dépenses sur un seul tableau de bord. Plus besoin de basculer entre les applications pour comprendre ta situation financière.",
                     "features": [
-                        "• Suivi multi-plateforme",
-                        "• Vue de performance unifiée",
-                        "• Analyse de diversification"
+                        "• Intégration multi-plateforme",
+                        "• Tableau de bord unifié",
+                        "• Analyse des tendances"
                     ]
                 },
-                "free": {
-                    "title": "100% Gratuit",
-                    "description": "Pas d'abonnements, pas de frais cachés, pas de niveaux premium. Entièrement financé par les dons de la communauté.",
-                    "features": [
-                        "• Aucune carte bancaire requise",
-                        "• Toutes les fonctionnalités incluses",
-                        "• Soutenu par la communauté"
-                    ]
-                },
-                "security": {
+                "privacy": {
                     "title": "Sécurité de niveau bancaire",
                     "description": "Tes données financières sont protégées par un chiffrement avancé et des mesures de sécurité. Confidentialité totale et anonymat garantis.",
                     "features": [
@@ -202,54 +166,13 @@
                         "• Traitement anonyme des données",
                         "• Confidentialité totale de l'utilisateur"
                     ]
-                },
-                "marketPrices": {
-                    "title": "Prix du marché en temps réel",
-                    "description": "Suis les prix des cryptomonnaies avec des graphiques interactifs et des données de marché détaillées. Tendances sparkline, plus hauts et plus bas historiques, et multiples plages temporelles.",
-                    "features": [
-                        "• Suivi des prix crypto en direct",
-                        "• Graphiques interactifs avec plages temporelles",
-                        "• Capitalisation, volume et données d'offre"
-                    ]
-                },
-                "currencies": {
-                    "title": "19 devises supportées",
-                    "description": "Consulte tes finances dans ta devise préférée. Taux de change en direct avec conversion automatique — toutes les données affichées dans la devise de ton choix.",
-                    "features": [
-                        "🇪🇺 EUR",
-                        "🇺🇸 USD",
-                        "🇬🇧 GBP",
-                        "🇨🇭 CHF",
-                        "🇯🇵 JPY",
-                        "🇨🇦 CAD",
-                        "🇦🇺 AUD",
-                        "🇸🇪 SEK",
-                        "🇳🇴 NOK",
-                        "🇩🇰 DKK",
-                        "🇵🇱 PLN",
-                        "🇨🇿 CZK",
-                        "🇭🇺 HUF",
-                        "🇷🇴 RON",
-                        "🇧🇬 BGN",
-                        "🇧🇷 BRL",
-                        "🇮🇳 INR",
-                        "🇨🇳 CNY",
-                        "🇹🇷 TRY"
-                    ],
-                    "liveRates": "Taux de change en direct",
-                    "autoConversion": "Conversion automatique"
-                },
-                "import": {
-                    "title": "Importation rapide CSV et Excel",
-                    "description": "Tu as déjà tes transactions dans un export bancaire ou un tableur ? Importe-les en quelques clics. Support CSV et Excel avec mapping automatique des colonnes, filtres de dates et correspondance intelligente des catégories.",
-                    "features": [
-                        "CSV & Excel (.xlsx)",
-                        "Mapping automatique des colonnes",
-                        "Filtre par plage de dates",
-                        "Catégories intelligentes",
-                        "Colonnes revenus/dépenses séparées"
-                    ]
                 }
+            },
+            "featureBadges": {
+                "free": "100% Gratuit",
+                "marketPrices": "Prix du marché en temps réel",
+                "currencies": "19 devises supportées",
+                "import": "Importation rapide CSV et Excel"
             },
             "openSource": {
                 "badge": "Open source",

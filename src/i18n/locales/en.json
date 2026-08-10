@@ -146,37 +146,10 @@
                 "privacyFirst": "Privacy First",
                 "openSource": "Open Source"
             },
-            "features": {
+            "pillars": {
                 "title": "How Pacifinance Solves Your Problems",
                 "subtitle": "Tired of juggling multiple apps to see your complete financial picture? Pacifinance transforms the way you manage your money — without sharing it with anyone.",
-                "openSource": {
-                    "title": "Open Source & Self-Hostable",
-                    "description": "Public, inspectable code — no black box. Verify exactly how your data is handled, or run Pacifinance on your own server with Docker and stay off the cloud entirely.",
-                    "features": [
-                        "• AGPLv3 licensed, code on GitHub",
-                        "• Self-host with Docker in minutes",
-                        "• Price history enriched and verified by the community"
-                    ]
-                },
-                "privacy": {
-                    "title": "Smart Anonymous Comparisons",
-                    "description": "Discover if you're spending too much or saving too little compared to people in similar situations. All comparisons are completely anonymous.",
-                    "features": [
-                        "• Anonymous user matching",
-                        "• Spending pattern analysis", 
-                        "• Personalized insights"
-                    ]
-                },
-                "analytics": {
-                    "title": "Complete Unified View",
-                    "description": "See all your accounts, investments, and outflows in one dashboard. No more switching between apps to understand your financial situation.",
-                    "features": [
-                        "• Multi-platform integration",
-                        "• Unified dashboard",
-                        "• Trend analysis"
-                    ]
-                },
-                "comparisons": {
+                "comparison": {
                     "title": "Break the Money Taboo",
                     "description": "Finally discover if you're on the right track. Anonymous comparisons show you how your spending and savings compare to similar profiles.",
                     "features": [
@@ -185,25 +158,16 @@
                         "• Personalized recommendations"
                     ]
                 },
-                "investment": {
-                    "title": "Multi-Platform Investments",
-                    "description": "Track stocks, ETFs, crypto across different platforms. See your complete investment portfolio in one place, not scattered across apps.",
+                "unifiedView": {
+                    "title": "Complete Unified View",
+                    "description": "See all your accounts, investments, and outflows in one dashboard. No more switching between apps to understand your financial situation.",
                     "features": [
-                        "• Cross-platform tracking",
-                        "• Unified performance view",
-                        "• Diversification analysis"
+                        "• Multi-platform integration",
+                        "• Unified dashboard",
+                        "• Trend analysis"
                     ]
                 },
-                "free": {
-                    "title": "100% Free",
-                    "description": "No subscriptions, no hidden fees, no premium tiers. Supported entirely by community donations.",
-                    "features": [
-                        "• No credit card required",
-                        "• All features included",
-                        "• Community supported"
-                    ]
-                },
-                "security": {
+                "privacy": {
                     "title": "Bank-Level Security",
                     "description": "Your financial data is protected with advanced encryption and security measures. Complete privacy and anonymity guaranteed.",
                     "features": [
@@ -211,54 +175,13 @@
                         "• Anonymous data handling",
                         "• Complete user privacy"
                     ]
-                },
-                "marketPrices": {
-                    "title": "Real-Time Market Prices",
-                    "description": "Track cryptocurrency prices with interactive charts and detailed market data. Sparkline trends, historical highs and lows, and multiple time ranges.",
-                    "features": [
-                        "• Live crypto price tracking",
-                        "• Interactive charts with time ranges",
-                        "• Market cap, volume & supply data"
-                    ]
-                },
-                "currencies": {
-                    "title": "19 Currencies Supported",
-                    "description": "View your finances in your preferred currency. Live exchange rates with automatic conversion — all data displayed in the currency you choose.",
-                    "features": [
-                        "🇪🇺 EUR",
-                        "🇺🇸 USD",
-                        "🇬🇧 GBP",
-                        "🇨🇭 CHF",
-                        "🇯🇵 JPY",
-                        "🇨🇦 CAD",
-                        "🇦🇺 AUD",
-                        "🇸🇪 SEK",
-                        "🇳🇴 NOK",
-                        "🇩🇰 DKK",
-                        "🇵🇱 PLN",
-                        "🇨🇿 CZK",
-                        "🇭🇺 HUF",
-                        "🇷🇴 RON",
-                        "🇧🇬 BGN",
-                        "🇧🇷 BRL",
-                        "🇮🇳 INR",
-                        "🇨🇳 CNY",
-                        "🇹🇷 TRY"
-                    ],
-                    "liveRates": "Live exchange rates",
-                    "autoConversion": "Automatic conversion"
-                },
-                "import": {
-                    "title": "Quick CSV & Excel Import",
-                    "description": "Already have your transactions in a bank export or spreadsheet? Import them in a few clicks. CSV and Excel support with automatic column mapping, date filters, and smart category matching.",
-                    "features": [
-                        "CSV & Excel (.xlsx)",
-                        "Auto column mapping",
-                        "Date range filter",
-                        "Smart categories",
-                        "Separate income/outflow columns"
-                    ]
                 }
+            },
+            "featureBadges": {
+                "free": "100% Free",
+                "marketPrices": "Real-Time Market Prices",
+                "currencies": "19 Currencies Supported",
+                "import": "Quick CSV & Excel Import"
             },
             "openSource": {
                 "badge": "Open Source",

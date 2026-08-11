@@ -111,11 +111,33 @@ business/domain data (`UserContext`, a service call, a domain-specific hook like
 
 ## Submitting Changes
 
-1. Fork and create a feature branch from `main`.
-2. Keep PRs focused: one feature or fix per PR.
-3. Add or update tests for behavior you change.
-4. Include screenshots for UI changes when useful.
-5. Explain privacy impact when touching auth, profile data, comparison, import/export, analytics, or storage.
+`main` is the only permanent branch. Do not push changes directly to it. Create
+a short-lived branch from the latest `main` for each change:
+
+- `feature/<short-description>` for new functionality;
+- `fix/<short-description>` for bug fixes;
+- `docs/<short-description>` for documentation; and
+- `chore/<short-description>` for maintenance.
+
+For example:
+
+```bash
+git switch main
+git pull --ff-only origin main
+git switch -c feature/recurring-payment-alerts
+```
+
+Collaborators with write access may push that branch to the official
+repository. External contributors should create the branch in their own fork
+and open a pull request against `Pacifinance/pacifinance:main`.
+
+1. Keep each branch and pull request focused on one feature or fix.
+2. Add or update tests for behavior you change.
+3. Include screenshots for UI changes when useful.
+4. Explain privacy impact when touching auth, profile data, comparison,
+   import/export, analytics, or storage.
+5. Wait for the required checks and review before merging into `main`.
+6. Delete the short-lived branch after its pull request is merged.
 
 For larger features, open an issue first so the design can be discussed before implementation.
 

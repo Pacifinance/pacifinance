@@ -23,7 +23,7 @@
 
 ### 📊 Dashboard
 
-> **Nota**: `/dashboard` è una pagina privata post-login (`noindex`) e non è indicizzabile — corretto così, i dati mostrati sono personali. Le keyword sotto servono per il contenuto **pubblico** che descrive la dashboard (sezione feature nella landing page, Knowledge Base), non per la pagina stessa.
+> **Note**: `/dashboard` is a private post-login page (`noindex`) and isn't indexable — that's correct, the data shown is personal. The keywords below are for the **public** content that describes the dashboard (feature section on the landing page, Knowledge Base), not the page itself.
 
 **IT**: "dashboard finanziario", "panoramica patrimonio", "riepilogo spese mensili"
 **EN**: "financial dashboard", "wealth overview", "monthly expense summary"

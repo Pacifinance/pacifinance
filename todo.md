@@ -105,7 +105,7 @@
 - [ ] Market Prices: fix values showing 0 (7d average, up/down), disclaimer "showing the top N by market cap", raise N beyond 10, on-demand search for coins not in cache (single fetch via CoinGecko /search + /coins/{id}) — minimal fix only, don't over-invest here
 
 ### Phase 3 — Going open source
-- [ ] Audit secrets/credentials in the git history before opening the repo
+- [x] Audit secrets/credentials in the git history before opening the repo — full history + working tree scanned, no live secrets found; the earlier Mongo migration data was already scrubbed via `git filter-repo`. Also found and removed a fabricated `aggregateRating` (fake star rating) that had shipped in the landing page's structured data for ~10 months (already gone from HEAD, now scrubbed from history too, including the giveaway commit message and author emails); translated ~20 stray Italian code comments to English <!-- roadmap:oss-history-audit -->
 - [x] Chose a license: AGPLv3 — forces hosted forks to publish their changes back
 - [x] Transferred the serverless repo into the Pacifinance GitHub organization (a transfer, not a copy: GitHub creates automatic redirects); archived the legacy repo with a README pointing to the new one
 - [x] Vercel deploy from the org repo WITHOUT Vercel Pro: `.github/workflows/deploy-vercel.yml` workflow (Vercel CLI, not the native import — importing from an org pushes you toward the paid Team plan, deploying via CLI + personal token doesn't). Push to `main` → production, PR → preview with a URL comment. Still open: create the 3 secrets (VERCEL_TOKEN/VERCEL_ORG_ID/VERCEL_PROJECT_ID via a local `vercel link`) and disconnect Vercel's native Git integration to avoid deploying twice

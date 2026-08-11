@@ -32,7 +32,7 @@ import {
 import { BsShield, BsBarChart, BsPhone, BsGear, BsHeart, BsLightbulb } from 'react-icons/bs';
 import PWAInstallGuide from '../components/PWAInstallGuide';
 
-// I styled components sono ora nel file ModernInfoStyled.jsx
+// The styled components now live in ModernInfoStyled.jsx
 
 function Info({ theme }) {
     const { translations } = useContext(LanguageContext);

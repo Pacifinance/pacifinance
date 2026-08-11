@@ -1977,10 +1977,10 @@ function Comparison({ theme, userData, isHidden}) {
                                 </div>
                                 {spendingByCategory.slice(0, 5).map((category, index) => {
                                 // Find the category index to look up averages.
-                                // category.name è la traduzione EN della label (vedi
-                                // userDataTransformers), quindi si confronta con la
-                                // stessa traduzione i18n: i tag dal DB non portano
-                                // più il campo translations.
+                                // category.name is the EN translation of the label (see
+                                // userDataTransformers), so it's compared against the
+                                // same i18n translation: tags from the DB no longer
+                                // carry a translations field.
                                 const categoryIndex = userData?.tags?.outflowsTags?.find(
                                     t => t.label === category.tagKey || translateTag(t.label, 'en', 'expense') === category.name
                                 )?.index;

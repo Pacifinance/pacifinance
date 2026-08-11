@@ -17,7 +17,7 @@ import { useGamification } from "./hooks/useGamification";
 import { useAchievementNotifications } from "./hooks/useAchievementNotifications";
 import { getIsAdmin } from "./utils/userDataSelectors";
 
-// Componente di loading semplice e affidabile
+// Simple, reliable loading component
 const SimpleLoader = () => (
   <div style={{
     display: 'flex',

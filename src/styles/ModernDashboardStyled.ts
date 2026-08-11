@@ -306,7 +306,7 @@ export const ModernMetricCard = styled.div`
 `;
 
 // ─────────────────────────────────────────────────────────────────
-// Portfolio section (Liquidità / Emergenza / Investimenti) — card view
+// Portfolio section (Liquidity / Emergency / Investments) — card view
 // Elegant, uniform, collapsible groups + responsive auto-fill grid.
 // ─────────────────────────────────────────────────────────────────
 

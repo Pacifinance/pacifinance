@@ -420,7 +420,7 @@ export const UserProvider = ({ children }) => {
     } : prev);
   };
 
-  if (isLoading) return null; // oppure uno spinner
+  if (isLoading) return null; // or a spinner
 
   // Create enhanced userData with both new structure and legacy compatibility
   const enhancedUserData = userData ? {

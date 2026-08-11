@@ -260,7 +260,7 @@ export const mockUserData = {
 
     incomes: {
         allIncomes: [
-            // Mese corrente [0] - array di transazioni income
+            // Current month [0] - array of income transactions
             [
                 {
                     id: 1,

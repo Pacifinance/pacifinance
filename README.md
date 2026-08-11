@@ -16,6 +16,10 @@ The codebase contains both the React frontend and the Express serverless backend
 [![Vite](https://img.shields.io/badge/Vite-7-646CFF?logo=vite)](https://vite.dev/)
 [![Supabase](https://img.shields.io/badge/Supabase-Postgres-3ECF8E?logo=supabase)](https://supabase.com/)
 
+The source-code licence does not grant permission to present a fork as an
+official Pacifinance product. See the [Trademark Policy](TRADEMARK_POLICY.md)
+for permitted uses of the name and logo.
+
 ## Core Principles
 
 - Privacy first: no raw transactions, notes, merchants, account identifiers, or exact personal records should be exposed in public comparison flows.
@@ -168,6 +172,31 @@ supabase/            Canonical schema and incremental migrations
 
 ## Open Source Model
 
-Pacifinance is licensed under the GNU AGPLv3. If you run a modified version as a network service, the license requires making the corresponding source available to users of that service.
+Pacifinance is licensed under the
+[GNU AGPLv3 or later](LICENSE). Commercial use, paid hosting, support and
+integration services are allowed. You do not need to assign your changes to
+Pacifinance or open an upstream pull request.
+
+If users interact with your modified version over a network, the AGPL requires
+you to give those users a clear opportunity to obtain the Corresponding Source
+of the version you are running, under the same licence. A practical way to do
+this is to place a visible **Source code** link in the application that points
+to a public repository or downloadable archive. The offered source should:
+
+- match the version actually provided to users;
+- include the code and scripts needed to build, install, run and modify it;
+- retain the required copyright, licence and modification notices; and
+- exclude credentials, production secrets and user data, which are not source
+  code and must never be published.
+
+Users who receive that source may modify and redistribute it under the AGPL.
+The licence does not require the project maintainers to accept, merge or support
+a fork's changes. This summary is provided for convenience and is not a
+substitute for the full licence text or legal advice.
+
+The code licence and project identity are separate. Forks may accurately state
+that they are based on Pacifinance, but must follow the
+[Trademark Policy](TRADEMARK_POLICY.md) and must not imply endorsement or
+official status.
 
 Contributions are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a PR. For security issues, do not open a public issue; see [SECURITY.md](SECURITY.md).

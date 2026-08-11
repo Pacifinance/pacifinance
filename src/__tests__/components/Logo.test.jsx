@@ -27,7 +27,7 @@ vi.mock('../assets/Brand/PacifinanceLogoPNG3NoBg.webp', () => ({
 
 import LogoPaci from '../../components/Logo';
 
-// Wrapper con LanguageContext
+// Wrapper with LanguageContext
 const Wrapper = ({ children }) => {
   const value = {
     language: 'en',

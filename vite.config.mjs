@@ -76,29 +76,29 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          // Chunk per le librerie principali React
+          // Chunk for the main React libraries
           'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          // Chunk per le librerie di grafici (molto pesanti)
+          // Chunk for chart libraries (very heavy)
           'charts': ['recharts'],
-          // Chunk per le icone (molto pesanti)
+          // Chunk for icons (very heavy)
           'icons': ['react-icons'],
-          // Chunk per styled-components
+          // Chunk for styled-components
           'styled': ['styled-components'],
-          // Chunk per le utility UI
+          // Chunk for UI utilities
           'ui-utils': ['react-calendar', 'react-csv', 'dom-to-image'],
-          // ExcelJS è caricato con import() solo quando serve export/import Excel.
+          // ExcelJS is loaded via import() only when Excel export/import is needed.
           'excel': ['exceljs'],
-          // Chunk per Emotion (se usato)
+          // Chunk for Emotion (if used)
           'emotion': ['@emotion/react', '@emotion/styled']
         }
       }
     },
-    chunkSizeWarningLimit: 1000, // Aumenta il limite per evitare warning
+    chunkSizeWarningLimit: 1000, // Raise the limit to avoid warnings
     sourcemap: false, // Disabled in production — no source maps served to users
     minify: 'terser',
     terserOptions: {
       compress: {
-        drop_console: true, // Rimuove console.log in produzione
+        drop_console: true, // Removes console.log in production
         drop_debugger: true
       }
     }

@@ -21,7 +21,30 @@
       "Bash(pip show *)",
       "Bash(npx --version)",
       "Bash(grep -n 'renderCards = \\\\|CategoryBadge $cat' src/pages/RoadmapPage.tsx)",
-      "Bash(grep -n \"min-width:\\\\s*[0-9]\\\\{3,\\\\}px\\\\|width:\\\\s*[0-9]\\\\{3,\\\\}px\\\\|grid-template-columns\\\\|white-space: nowrap\\\\|overflow-x\" src/sections/GoalsAndLimits.tsx src/sections/GoalTracker.tsx)"
+      "Bash(grep -n \"min-width:\\\\s*[0-9]\\\\{3,\\\\}px\\\\|width:\\\\s*[0-9]\\\\{3,\\\\}px\\\\|grid-template-columns\\\\|white-space: nowrap\\\\|overflow-x\" src/sections/GoalsAndLimits.tsx src/sections/GoalTracker.tsx)",
+      "Bash(gh repo *)",
+      "Bash(gh api *)",
+      "Bash(git -C /workspaces/pacifinance-serverless log --oneline)",
+      "Bash(gh auth *)",
+      "Bash(grep -iE '\\\\.env|secret|credential|\\\\.pem|\\\\.key$|\\\\.p12|\\\\.pfx')",
+      "Bash(git check-ignore *)",
+      "Bash(git ls-tree *)",
+      "Bash(grep -rnE \"\\(throw new Error|Error\\\\\\(\\)\\\\s*['\\\\\"\\\\`]\" --include=\"*.ts\" --include=\"*.tsx\" --include=\"*.js\" --include=\"*.jsx\" src server scripts api)",
+      "Bash(grep -noE 'eyJ[A-Za-z0-9_-]{10,}\\\\.[A-Za-z0-9_-]{10,}\\\\.[A-Za-z0-9_-]{10,}' full_history.txt)",
+      "Bash(grep -rnE \"\\(alert|confirm\\)\\\\\\(['\\\\\"\\\\`][^'\\\\\"\\\\`]*\\\\b\\(sei sicuro|conferma|attenzione|errore|elimina|salva|annulla\\)\\\\b\" --include=\"*.tsx\" --include=\"*.ts\" --include=\"*.jsx\" --include=\"*.js\" src)",
+      "Bash(grep -noE '\\(sk_live_|sk_test_|pk_live_|whsec_[A-Za-z0-9]+|xox[baprs]-[A-Za-z0-9-]+|ghp_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|AIza[0-9A-Za-z_-]{35}|AKIA[0-9A-Z]{16}\\)' full_history.txt)",
+      "Bash(grep -E '^migration-encryption-key\\\\.txt$|^migration-final\\\\.sql$')",
+      "Bash(rm -rf /tmp/claude-1000/-workspaces-pacifinance-serverless/6aac455c-9810-47a3-9d59-31a33c4a4bde/scratchpad/full_history.txt /tmp/claude-1000/-workspaces-pacifinance-serverless/6aac455c-9810-47a3-9d59-31a33c4a4bde/scratchpad/hits_hardcore.txt)",
+      "Bash(grep -inB2 -A2 -E \"fake.*count|seed.*fake|inflat|numero.*utenti.*fals|utenti.*fittizi|finti utenti|contatore.*fint\")",
+      "Bash(grep -inB2 -A2 -E \"fake|fint|fittizi|manipul|inflat|gonfia|inganna\")",
+      "Bash(awk '/^diff --git/{f=$0} /aggregateRating|ratingValue|reviewCount|ratingCount/{print f}')",
+      "Bash(awk '/^diff --git/{f=$0} /aggregateRating|ratingValue|reviewCount|ratingCount/{print NR\": \"f}')",
+      "Bash(/home/codespace/.python/current/bin/git-filter-repo --help)",
+      "Bash(git config *)",
+      "Bash(git show *)",
+      "Bash(git update-ref *)",
+      "Bash(git branch *)",
+      "Bash(git rev-list *)"
     ]
   }
 }

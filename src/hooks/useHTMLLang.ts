@@ -1,19 +1,19 @@
 import { useEffect } from 'react';
 
 /**
- * Hook per aggiornare dinamicamente l'attributo lang dell'elemento HTML
- * Questo aiuta i motori di ricerca e i browser a riconoscere la lingua attiva
+ * Hook to dynamically update the HTML element's lang attribute.
+ * Helps search engines and browsers recognize the active language.
  */
 export const useHTMLLang = (language) => {
   useEffect(() => {
     const htmlElement = document.documentElement;
     if (htmlElement) {
       htmlElement.lang = language === 'it' ? 'it' : 'en';
-      
-      // Aggiorna anche l'attributo dir per lingue RTL (futuro supporto)
+
+      // Also update the dir attribute for RTL languages (future support)
       htmlElement.dir = 'ltr';
-      
-      // Meta tag per Content-Language (backup per browser vecchi)
+
+      // Content-Language meta tag (fallback for older browsers)
       let contentLangMeta = document.querySelector('meta[http-equiv="Content-Language"]');
       if (!contentLangMeta) {
         contentLangMeta = document.createElement('meta');

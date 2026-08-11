@@ -37,7 +37,7 @@ function StatsChartsPage() {
     isAutoScrolling 
   } = useScrollNavigation(true);
 
-  // Gestisce il click sui punti di navigazione
+  // Handles clicking a navigation dot
   const handlePageClick = (pageIndex) => {
     const pages = ['/dashboard', '/charts-statistics', '/insert-values', '/comparison'];
     navigate(pages[pageIndex]);

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useMediaQuery } from 'react-responsive';
 
-// Creiamo un contesto con valori di default
+// Create a context with default values
 export const MediaQueryContext = React.createContext({
   isDesktopOrLaptop: false,
   isBigScreen: false,

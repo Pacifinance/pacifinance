@@ -98,7 +98,7 @@ const SidebarModals = ({
     handleCloseSecondaryModal,
     handleCloseModalAndLogout,
 }) => {
-    // Guardia per verificare che theme e translations siano disponibili
+    // Guard to ensure theme and translations are available
     if (!theme || !translations) {
         return null;
     }

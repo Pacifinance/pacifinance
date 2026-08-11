@@ -22,7 +22,8 @@ on the number of bank connections or investment products it can sell.
 - Core application and server: GNU AGPLv3-or-later.
 - Documentation: CC BY-SA 4.0 unless a document says otherwise.
 - Product name, logo and Pacifinance domains remain project trademarks and are
-  not granted by the source-code licence.
+  not granted by the source-code licence. Permitted descriptive and community
+  uses are documented in the [Trademark Policy](../TRADEMARK_POLICY.md).
 - The hosted service may add paid operations, support, backups and integrations
   without changing the licence of the core application.
 - Contributions are accepted under the repository licence; no CLA is required

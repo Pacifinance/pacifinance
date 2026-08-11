@@ -14,7 +14,7 @@ html/html.meta.json.gz
 server/build
 aStableBuild/
 
-# migration output e backup DB (contengono hash bcrypt e dati utente — mai committare)
+# migration output and DB backups (contain bcrypt hashes and user data — never commit)
 migration-final.sql
 migration-encryption-key.txt
 backupMongo/
@@ -22,6 +22,11 @@ backupMongo/
 # private notes: business strategy, ops runbooks with secret names, informal
 # personal scratchpad — never meant for the public repo (see docs cleanup)
 .internal/
+
+# Claude Code local/per-machine state — settings.json (shared) stays tracked,
+# but personal overrides and session locks should never land in the repo.
+.claude/settings.local.json
+.claude/scheduled_tasks.lock
 
 # misc
 server/scripts

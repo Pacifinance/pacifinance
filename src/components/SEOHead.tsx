@@ -68,7 +68,7 @@ const SEOHead = ({
   license
 }: SEOHeadProps) => {
   const siteUrl = "https://pacifinance.com";
-  const defaultImage = `${siteUrl}/PacifinanceLogoPNG3NoBg.webp`;
+  const defaultImage = `${siteUrl}/og-image.webp`;
 
   // Automatically generate hreflang for every supported language unless overridden
   const hreflangLinks: HreflangLink[] = alternateLanguages.length > 0

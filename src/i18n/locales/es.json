@@ -126,6 +126,7 @@
     "landing": {
         "new": {
             "hero": {
+                "eyebrow": "Finanzas personales, con serenidad.",
                 "title": "Entiende tus finanzas",
                 "subtitle": "sin mostrárselas a nadie",
                 "description": "Hablar de dinero es un tabú. Pacifinance te ayuda a saber si vas bien, comparándote de forma anónima con gente como tú.",
@@ -133,9 +134,15 @@
                 "learnMore": "Saber más"
             },
             "benefits": {
-                "anonymousComparison": "Comparación anónima",
-                "privacyFirst": "Privacidad ante todo",
-                "openSource": "Open source"
+                "anonymousComparison": { "title": "Comparación anónima", "subtitle": "Sin datos personales" },
+                "privacyFirst": { "title": "Privacidad ante todo", "subtitle": "Tus datos siguen siendo tuyos" },
+                "openSource": { "title": "Open source", "subtitle": "Transparente y verificable" }
+            },
+            "stats": {
+                "anonymous": { "value": "100%", "label": "Anónimo" },
+                "control": { "value": "Tú", "label": "Controlas tus datos" },
+                "peace": { "value": "Serenidad", "label": "en cada decisión" },
+                "awareness": { "value": "Consciencia", "label": "para crecer" }
             },
             "pillars": {
                 "title": "Cómo Pacifinance resuelve tus problemas",
@@ -271,6 +278,14 @@
     "header": {
         "signIn": "Iniciar sesión",
         "signUp": "Registrarse",
+        "nav": {
+            "menu": "Menú",
+            "features": "Funciones",
+            "whyUs": "Por qué PaciFinance",
+            "roadmap": "Roadmap",
+            "privacy": "Privacidad",
+            "openSource": "Open Source"
+        },
         "login": {
             "title": "Iniciar sesión",
             "titleButton": "Iniciar sesión",

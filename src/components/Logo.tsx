@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLocalizedNavigate } from '../hooks/useLocalizedNavigate';
-import LogoPacifinance from '../assets/Brand/logo.webp';
+import LogoPacifinance from '../assets/brand/logo-mark.webp';
 
 export default function LogoPaci() {
   const navigate = useLocalizedNavigate();

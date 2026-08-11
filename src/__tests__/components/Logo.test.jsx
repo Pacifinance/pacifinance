@@ -21,7 +21,7 @@ vi.mock('react-router-dom', async () => {
 });
 
 // Mock the logo image
-vi.mock('../assets/Brand/PacifinanceLogoPNG3NoBg.webp', () => ({
+vi.mock('../assets/brand/logo-mark.webp', () => ({
   default: 'mock-logo.webp'
 }));
 

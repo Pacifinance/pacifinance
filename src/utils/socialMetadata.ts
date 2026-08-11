@@ -1,4 +1,4 @@
-// Generatore di URL per Open Graph images dinamiche
+// URL generator for dynamic Open Graph images
 export const generateOGImage = (language, title) => {
   const baseUrl = "https://pacifinance.com/api/og";
   const params = new URLSearchParams({
@@ -10,7 +10,7 @@ export const generateOGImage = (language, title) => {
   return `${baseUrl}?${params.toString()}`;
 };
 
-// Metadata per social sharing ottimizzati
+// Metadata optimized for social sharing
 export const getSocialMetadata = (language) => {
   const isItalian = language === 'it';
   
@@ -23,7 +23,7 @@ export const getSocialMetadata = (language) => {
       ? "Unifica le tue finanze in un'unica piattaforma. Traccia conti di diverse banche, confronta spese anonimamente e gestisci investimenti."
       : "Unify your finances in one platform. Track accounts across multiple banks, compare spending anonymously, and manage investments.",
     
-    image: "https://pacifinance.com/PacifinanceLogoPNG3NoBg.webp",
+    image: "https://pacifinance.com/og-image.webp",
     
     keywords: isItalian
       ? "unificare finanze, dashboard multi-piattaforma, gestione finanziaria, confronto anonimo, tracciamento spese, portafoglio investimenti"

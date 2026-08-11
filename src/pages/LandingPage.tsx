@@ -81,7 +81,7 @@ export default function NewLandingPage() {
             "@type": "Organization",
             "name": "Pacifinance",
             "url": "https://pacifinance.com",
-            "logo": "https://pacifinance.com/PacifinanceLogoPNG3NoBg.webp",
+            "logo": "https://pacifinance.com/og-image.webp",
             "sameAs": [
               "https://twitter.com/pacifinance",
               GITHUB_REPO_URL

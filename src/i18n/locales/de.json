@@ -126,6 +126,7 @@
     "landing": {
         "new": {
             "hero": {
+                "eyebrow": "Persönliche Finanzen, mit Gelassenheit.",
                 "title": "Verstehen Sie Ihre Finanzen",
                 "subtitle": "ohne sie irgendjemandem zu zeigen",
                 "description": "Über Geld spricht man nicht. Pacifinance zeigt Ihnen, wo Sie stehen – durch anonymen Vergleich mit Menschen wie Ihnen.",
@@ -133,9 +134,15 @@
                 "learnMore": "Mehr erfahren"
             },
             "benefits": {
-                "anonymousComparison": "Anonymer Vergleich",
-                "privacyFirst": "Datenschutz zuerst",
-                "openSource": "Open Source"
+                "anonymousComparison": { "title": "Anonymer Vergleich", "subtitle": "Keine persönlichen Daten" },
+                "privacyFirst": { "title": "Datenschutz zuerst", "subtitle": "Ihre Daten bleiben Ihre" },
+                "openSource": { "title": "Open Source", "subtitle": "Transparent und überprüfbar" }
+            },
+            "stats": {
+                "anonymous": { "value": "100%", "label": "Anonym" },
+                "control": { "value": "Sie", "label": "kontrollieren Ihre Daten" },
+                "peace": { "value": "Gelassenheit", "label": "bei jeder Entscheidung" },
+                "awareness": { "value": "Bewusstsein", "label": "um zu wachsen" }
             },
             "pillars": {
                 "title": "Wie Pacifinance Ihre Probleme löst",
@@ -271,6 +278,14 @@
     "header": {
         "signIn": "Anmelden",
         "signUp": "Registrieren",
+        "nav": {
+            "menu": "Menü",
+            "features": "Funktionen",
+            "whyUs": "Warum PaciFinance",
+            "roadmap": "Roadmap",
+            "privacy": "Datenschutz",
+            "openSource": "Open Source"
+        },
         "login": {
             "title": "Anmeldung",
             "titleButton": "Anmelden",

@@ -21,7 +21,7 @@ export default function LandingOpenSource({ theme }: LandingOpenSourceProps) {
   };
 
   return (
-    <section className="py-14 md:py-20 px-4" style={{ backgroundColor: theme.backgroundColor }}>
+    <section id="open-source" className="py-14 md:py-20 px-4" style={{ backgroundColor: theme.backgroundColor }}>
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-8 md:mb-12">
           <span

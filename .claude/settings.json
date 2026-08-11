@@ -44,7 +44,19 @@
       "Bash(git show *)",
       "Bash(git update-ref *)",
       "Bash(git branch *)",
-      "Bash(git rev-list *)"
+      "Bash(git rev-list *)",
+      "Bash(grep -v '^refs/remotes/origin/main$\\\\|^refs/heads/main$')",
+      "Bash(identify public/hero.webp)",
+      "Bash(python3 -c \"from PIL import Image; im=Image.open\\('public/hero.webp'\\); print\\(im.size\\)\")",
+      "Bash(file src/assets/LandingPage/*.png src/assets/LandingPage/*.webp src/assets/LandingPage/*.jpeg)",
+      "Bash(identify /workspaces/pacifinance-serverless/public/PacifinanceBackground.webp)",
+      "Bash(python3 -c \"from PIL import Image; im=Image.open\\('/workspaces/pacifinance-serverless/public/PacifinanceBackground.webp'\\); print\\(im.size, im.mode\\)\")",
+      "Bash(journalctl -k --since \"-10min\")",
+      "Bash(grep -iE \"\\\\.\\(png|jpe?g|webp|avif|svg|ico\\)$\")",
+      "Bash(python3 -c \"import PIL; print\\('PIL available'\\)\")",
+      "Bash(pip list *)",
+      "Bash(npm ls *)",
+      "Bash(python3 -c \"from PIL import Image; print\\('OK', Image.__version__ if hasattr\\(Image,'__version__'\\) else 'ok'\\)\")"
     ]
   }
 }

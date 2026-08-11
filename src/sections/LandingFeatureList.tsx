@@ -22,7 +22,7 @@ export default function LandingFeatureList({ theme }: LandingFeatureListProps) {
   ];
 
   return (
-    <section className="py-8 md:py-10 px-4" style={{ backgroundColor: theme.backgroundColor }}>
+    <section id="features" className="py-8 md:py-10 px-4" style={{ backgroundColor: theme.backgroundColor }}>
       <div className="max-w-5xl mx-auto flex flex-wrap items-center justify-center gap-3 md:gap-4">
         {items.map(({ icon: Icon, label }) => (
           <div

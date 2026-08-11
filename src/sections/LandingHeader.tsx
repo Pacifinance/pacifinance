@@ -187,6 +187,31 @@ const MobileNavList = styled.div`
   gap: 0.25rem;
 `;
 
+const MobileNavSectionLabel = styled.div`
+  padding: 0.6rem 0.5rem 0.3rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: ${(props) => (props.theme.mode === "dark" ? "rgba(255,255,255,0.45)" : "rgba(0,0,0,0.4)")};
+
+  &:not(:first-child) {
+    margin-top: 0.4rem;
+    border-top: 1px solid ${(props) => (props.theme.mode === "dark" ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.06)")};
+    padding-top: 0.75rem;
+  }
+`;
+
+const MobileSettingsRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.4rem 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: ${(props) => props.theme.textColor};
+`;
+
 const mobileNavLinkStyle = (props) => `
   padding: 0.65rem 0.5rem;
   border-radius: 0.5rem;
@@ -313,22 +338,26 @@ function Header({
             <span className="hidden md:inline">{translations.header.demo.titleButton}</span>
           </DemoButton>
 
-          <IconToggleButton
-            theme={theme}
-            onClick={toggleMode}
-            aria-label={mode === "dark" ? "Switch to light mode" : "Switch to dark mode"}
-            data-umami-event="setTheme"
-          >
-            {mode === "dark" ? <Brightness4Icon /> : <LightModeIcon />}
-          </IconToggleButton>
+          {/* Theme + language stay inline from lg up (alongside NavRow); below
+              that they'd be two more icons crowding an already-busy mobile
+              bar, so they move into the hamburger menu's Settings section
+              instead of disappearing. */}
+          <div className="hidden lg:flex items-center">
+            <IconToggleButton
+              theme={theme}
+              onClick={toggleMode}
+              aria-label={mode === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+              data-umami-event="setTheme"
+            >
+              {mode === "dark" ? <Brightness4Icon /> : <LightModeIcon />}
+            </IconToggleButton>
+          </div>
 
-          <LanguageSelectorWrap>
-            <LanguageSelector theme={theme} variant="compact" />
-          </LanguageSelectorWrap>
-
-          <AccediButton theme={theme} onClick={handleAuthNavigation}>
-            {translations.header.signIn}
-          </AccediButton>
+          <div className="hidden lg:flex items-center">
+            <LanguageSelectorWrap>
+              <LanguageSelector theme={theme} variant="compact" />
+            </LanguageSelectorWrap>
+          </div>
 
           <MobileMenuButton
             theme={theme}
@@ -339,11 +368,16 @@ function Header({
           >
             {mobileNavOpen ? <CloseIcon /> : <MenuIcon />}
           </MobileMenuButton>
+
+          <AccediButton theme={theme} onClick={handleAuthNavigation}>
+            {translations.header.signIn}
+          </AccediButton>
         </HeaderActions>
       </div>
 
       <MobileNavPanel theme={theme} $open={mobileNavOpen}>
         <MobileNavList>
+          <MobileNavSectionLabel theme={theme}>{nav.pages}</MobileNavSectionLabel>
           <MobileNavButton theme={theme} onClick={scrollToSection("features")}>
             {nav.features}
           </MobileNavButton>
@@ -356,6 +390,25 @@ function Header({
           <MobileNavButton theme={theme} onClick={scrollToSection("open-source")}>
             {nav.openSource}
           </MobileNavButton>
+
+          <MobileNavSectionLabel theme={theme}>{nav.settings}</MobileNavSectionLabel>
+          <MobileSettingsRow theme={theme}>
+            {nav.theme}
+            <IconToggleButton
+              theme={theme}
+              onClick={toggleMode}
+              aria-label={mode === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+              data-umami-event="setTheme"
+            >
+              {mode === "dark" ? <Brightness4Icon /> : <LightModeIcon />}
+            </IconToggleButton>
+          </MobileSettingsRow>
+          <MobileSettingsRow theme={theme}>
+            {nav.language}
+            <LanguageSelectorWrap>
+              <LanguageSelector theme={theme} variant="compact" />
+            </LanguageSelectorWrap>
+          </MobileSettingsRow>
         </MobileNavList>
       </MobileNavPanel>
     </div>

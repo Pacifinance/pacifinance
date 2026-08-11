@@ -38,46 +38,37 @@ export default function LandingHero({ theme }: LandingHeroProps) {
       className="relative min-h-screen flex items-center overflow-hidden px-4 sm:px-6 lg:pl-12 lg:pr-8 xl:pl-20 py-16 md:py-20"
       style={{ backgroundColor: theme.backgroundColor }}
     >
-      {isDark ? (
-        <>
-          <div
-            className="hidden lg:block absolute inset-y-0 right-0 w-[58%] max-w-4xl"
-            aria-hidden="true"
-            style={{
-              backgroundImage: `url(${BACKGROUND_ART})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 65%)',
-              maskImage: 'linear-gradient(to right, transparent 0%, black 65%)',
-            }}
-          />
-          {/* Mobile/tablet: same idea as the desktop panel above, but anchored
-              top-right and masked with a corner radial fade instead of a side
-              panel - a side mask would either hide under the full-width text
-              column or, if narrow, leave barely any tree visible. */}
-          <div
-            className="lg:hidden absolute inset-0"
-            aria-hidden="true"
-            style={{
-              backgroundImage: `url(${BACKGROUND_ART})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'right top',
-              WebkitMaskImage: 'radial-gradient(circle at 100% 0%, black 0%, black 38%, transparent 72%)',
-              maskImage: 'radial-gradient(circle at 100% 0%, black 0%, black 38%, transparent 72%)',
-            }}
-          />
-        </>
-      ) : (
-        <div className="absolute inset-0 opacity-5" aria-hidden="true">
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundImage: `radial-gradient(circle at 25% 25%, ${theme.secondaryColor} 2px, transparent 2px), radial-gradient(circle at 75% 75%, ${theme.secondaryColor} 2px, transparent 2px)`,
-              backgroundSize: '60px 60px',
-            }}
-          />
-        </div>
-      )}
+      {/* The art is a painted night scene; in light mode it's lightened via
+          filter (brighter, desaturated) instead of hidden, so the hero
+          keeps its identity in both themes instead of going blank. */}
+      <div
+        className="hidden lg:block absolute inset-y-0 right-0 w-[58%] max-w-4xl"
+        aria-hidden="true"
+        style={{
+          backgroundImage: `url(${BACKGROUND_ART})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'right center',
+          filter: isDark ? undefined : 'brightness(1.5) saturate(0.55) contrast(0.95)',
+          WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 65%)',
+          maskImage: 'linear-gradient(to right, transparent 0%, black 65%)',
+        }}
+      />
+      {/* Mobile/tablet: same idea as the desktop panel above, but anchored
+          top-right and masked with a corner radial fade instead of a side
+          panel - a side mask would either hide under the full-width text
+          column or, if narrow, leave barely any tree visible. */}
+      <div
+        className="lg:hidden absolute inset-0"
+        aria-hidden="true"
+        style={{
+          backgroundImage: `url(${BACKGROUND_ART})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'right top',
+          filter: isDark ? undefined : 'brightness(1.5) saturate(0.55) contrast(0.95)',
+          WebkitMaskImage: 'radial-gradient(circle at 100% 0%, black 0%, black 38%, transparent 72%)',
+          maskImage: 'radial-gradient(circle at 100% 0%, black 0%, black 38%, transparent 72%)',
+        }}
+      />
 
       <div className="relative z-10 w-full max-w-7xl">
         <div className="lg:max-w-xl">

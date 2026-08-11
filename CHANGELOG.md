@@ -24,12 +24,31 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   (GitHub issues are triaged in English regardless of the reporter's UI
   language).
 - Landing hero: softened the desktop background fade so it reads as a
-  gradual blend instead of a hard edge partway across the screen.
+  gradual blend instead of a hard edge partway across the screen; the art
+  now stays visible (lightened via filter) in light mode too, instead of
+  disappearing behind a plain dotted background.
 - Landing footer: moved the "Support Pacifinance" button into the
   Community column, next to the text that's actually about supporting the
   project, instead of sitting under the logo.
+- `todo.md`: reconciled the backlog against the actual code — checked off
+  the onboarding checklist and roadmap voting (fully shipped but left
+  unchecked), corrected push notifications back to in-progress (backend is
+  scaffolded — VAPID, cron scheduler, reminder types — but not working
+  end-to-end yet) and OFX/QIF support back to not-started (no code behind
+  it despite being marked in-progress), added a real entry for 2FA
+  (doesn't exist yet — this also fixed a false "completed" on the public
+  roadmap, see below), and removed two stale/duplicate lines (a superseded
+  per-bank-template entry, an old one-off bundle-size check for a feature
+  shipped long ago).
 
 ### Fixed
+- Public roadmap: the "Two-Factor Authentication" item showed as completed
+  because `scripts/generateRoadmap.js`'s fallback text-match
+  (`todoMatch: "2FA"`) landed on an unrelated, already-checked `todo.md`
+  line about mandatory 2FA for GitHub org members — 2FA for user accounts
+  doesn't exist yet. Added a real `todo.md` entry with a stable
+  `<!-- roadmap:2fa -->` marker, which takes priority over the text-match
+  fallback and resolves this correctly.
 - `vitest.config.mjs` coverage `include` globs only matched `.js`/`.jsx`,
   silently excluding `src/utils`, `src/contexts`, `src/hooks` and
   `src/services` (100% TypeScript today) from coverage measurement — the
@@ -37,6 +56,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   reset the thresholds to the real, now-measured baseline (55/47/48/55);
   wired `npm run test:coverage` into CI in place of the plain `npm test`
   step, so a regression below today's actual coverage now fails a PR.
+- Landing hero: the desktop artwork was cropping off the tree and moon
+  because it was center-positioned inside a panel narrower than the source
+  image — repositioned so the full subject is visible instead.
 
 ## [0.10.0] - 2026-08-11
 

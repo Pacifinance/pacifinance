@@ -293,6 +293,10 @@
         "signUp": "Registrieren",
         "nav": {
             "menu": "Menü",
+            "pages": "Seiten",
+            "settings": "Einstellungen",
+            "theme": "Design",
+            "language": "Sprache",
             "features": "Funktionen",
             "whyUs": "Warum PaciFinance",
             "roadmap": "Roadmap",

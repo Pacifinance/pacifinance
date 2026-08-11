@@ -93,7 +93,6 @@
 - [x] Paste-and-recognize: client-side parsing (smartPasteParser.ts) of free text into amount+category, inside quick-add — 100% client-side, zero server involvement
 - [x] Voice input = OS dictation in the paste-and-recognize field (the phone's keyboard mic transcribes, our parser recognizes it; the audio never touches our servers)
 - [ ] Auto-link recurring outflows created from the "subscription/periodic payment" payment type (prompt "make it recurring" on save) — not done this round, for now these are only created from the dedicated panel
-- [ ] Per-bank mapping templates for import (Fineco, Intesa, Revolut, N26) — a privacy-friendly substitute for open banking
 - [ ] Receipt photo: client-side OCR with tesseract.js (WASM in the browser) → pre-fills quick-add; the image never leaves the device. Not done this round: needs a new heavyweight dependency (tesseract.js, a few MB of WASM + trained data) — deserves its own round to evaluate the bundle-size impact, not a rushed addition
 
 ### Phase 2 — Data consistency
@@ -153,21 +152,21 @@
      reintroduces the identifying-data exposure that the anonymous account
      model avoids. The recovery code (see above, done) solves the same
      problem while staying consistent with "no personal data, ever". -->
+- [ ] Two-factor authentication for user accounts (e.g. TOTP) — distinct from account recovery (block code + word phrase, done above): 2FA is a second factor at login, recovery is what gets you back in if you lose the password <!-- roadmap:2fa -->
 
 
 ### Features
-- [ ] Push notifications (PWA) as a monthly data-entry reminder <!-- roadmap:push-notifications -->
+- [~] Push notifications (PWA): VAPID keys + a pg_cron/pg_net scheduler + 5 reminder types are scaffolded (monthly data-entry summary, data-update nudge, recurring-due, etc.), broader in scope than the original one-liner, but not working end-to-end yet <!-- roadmap:push-notifications -->
 - [ ] Quick summary widget on the home: net worth + change vs previous month
 - [x] Historical net-worth trend charts (timeline) <!-- roadmap:trend-charts -->
 - [ ] Export PDF: improve the layout, include charts <!-- roadmap:pdf-reports -->
 - [x] Flexible goals and limits: fixed and percentage thresholds that can be combined, emergency fund in months, per-category and concentration limits, debts and passive income (backend + UI + analysis) <!-- roadmap:goals-limits -->
-- [~] Guided onboarding for new users: 4-step wizard with a progress bar <!-- roadmap:onboarding -->
-- [ ] Make the demo account avoid DB requests entirely and use mock data instead, so it can quickly showcase every feature and convince the user to sign up (right now it hits the DB, which doesn't scale with many concurrent users)
+- [x] Guided onboarding for new users: inline 4-step checklist card with a progress bar, auto-dismisses on completion (`OnboardingWelcome.tsx`) <!-- roadmap:onboarding -->
 
 ### Community and Feedback
 - [~] User feedback system (Phase 1): in-app form -> GitHub Issue via the backend <!-- roadmap:feedback-system -->
 - [~] "Contribute" section: how to donate, report bugs, propose ideas <!-- roadmap:contribute-section -->
-- [~] Roadmap priority voting system (needs a backend) <!-- roadmap:roadmap-voting -->
+- [x] Roadmap priority voting system: per-user toggle vote + public counts, backed by `roadmapVotes` table and routes <!-- roadmap:roadmap-voting -->
 
 ### Testing
 <!-- From a coverage audit (2026-08): well covered overall (~1755 tests,
@@ -181,13 +180,10 @@
 - [ ] No accessibility (a11y) testing anywhere (no `jest-axe`/`@axe-core`)
 - [ ] Consider 3-5 targeted Playwright smoke tests for the true black-box gaps unit tests can't reach (login→dashboard render, CSV import happy path, comparison page not leaking PII) instead of a full e2e suite
 
-### Performance
-- [ ] Check bundle size after adding BottomNavBar + MUI icons
-
 ### Data Import (evolution)
 - [ ] Support updating the balance via import
 - [ ] Chart preview of imported transactions (histogram by month/category)
 - [ ] Per-bank mapping templates (UniCredit, Revolut, N26...) with community sharing <!-- roadmap:bank-templates -->
 - [~] Auto-detect known bank formats (Fineco, Intesa, Revolut, N26) <!-- roadmap:auto-detect-bank-format -->
-- [~] OFX/QIF file support <!-- roadmap:OFX/QIF-support -->
+- [ ] OFX/QIF file support <!-- roadmap:OFX/QIF-support -->
 - [ ] Recurring import: remember the last file and suggest an update

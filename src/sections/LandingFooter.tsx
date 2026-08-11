@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { LocalizedLink } from '../components/LocalizedLink';
 import { LanguageContext } from '../contexts/LanguageContext';
-import LogoPaci from '../components/Logo';
+import PacifinanceLogo from '../components/PacifinanceLogo';
 import BuyMeACoffeeWidget from '../components/BuyMeACoffeeWidget';
 import { APP_VERSION } from '../data/appVersion';
 
@@ -24,7 +24,7 @@ export default function LandingFooter({ theme }) {
 
           {/* Company Info */}
           <div className="col-span-1 md:col-span-1">
-            <LogoPaci />
+            <PacifinanceLogo />
             <p className="mt-3 text-sm opacity-80">
               {translations.footer.description}
             </p>

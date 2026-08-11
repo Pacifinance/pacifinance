@@ -1,5 +1,5 @@
 /**
- * Tests for Logo Component
+ * Tests for PacifinanceLogo Component
  * Logo display and navigation
  */
 
@@ -26,7 +26,7 @@ vi.mock('../assets/brand/logo-mark.webp', () => ({
   default: 'mock-logo.webp'
 }));
 
-import LogoPaci from '../../components/Logo';
+import PacifinanceLogo from '../../components/PacifinanceLogo';
 
 // Wrapper with LanguageContext
 const Wrapper = ({ children }) => {
@@ -46,41 +46,53 @@ const Wrapper = ({ children }) => {
   );
 };
 
-describe('Logo Component', () => {
+describe('PacifinanceLogo Component', () => {
   beforeEach(() => {
     mockNavigate.mockClear();
   });
 
   describe('rendering', () => {
     it('should render the logo', () => {
-      render(<LogoPaci />, { wrapper: Wrapper });
-      
+      render(<PacifinanceLogo />, { wrapper: Wrapper });
+
       const logo = screen.getByAltText('Pacifinance Logo');
       expect(logo).toBeInTheDocument();
     });
 
     it('should have correct alt text', () => {
-      render(<LogoPaci />, { wrapper: Wrapper });
-      
+      render(<PacifinanceLogo />, { wrapper: Wrapper });
+
       const logo = screen.getByAltText('Pacifinance Logo');
       expect(logo).toHaveAttribute('alt', 'Pacifinance Logo');
     });
 
     it('should have src attribute', () => {
-      render(<LogoPaci />, { wrapper: Wrapper });
-      
+      render(<PacifinanceLogo />, { wrapper: Wrapper });
+
       const logo = screen.getByAltText('Pacifinance Logo');
       expect(logo).toHaveAttribute('src');
+    });
+
+    it('should show the wordmark by default', () => {
+      render(<PacifinanceLogo />, { wrapper: Wrapper });
+
+      expect(screen.getByText('Pacifinance')).toBeInTheDocument();
+    });
+
+    it('should hide the wordmark when showText is false', () => {
+      render(<PacifinanceLogo showText={false} />, { wrapper: Wrapper });
+
+      expect(screen.queryByText('Pacifinance')).not.toBeInTheDocument();
     });
   });
 
   describe('navigation', () => {
     it('should navigate to home on click', () => {
-      render(<LogoPaci />, { wrapper: Wrapper });
-      
+      render(<PacifinanceLogo />, { wrapper: Wrapper });
+
       const logo = screen.getByAltText('Pacifinance Logo');
       fireEvent.click(logo.parentElement);
-      
+
       expect(mockNavigate).toHaveBeenCalledWith('/en', undefined);
     });
 
@@ -91,7 +103,7 @@ describe('Logo Component', () => {
         </UserContext.Provider>
       );
 
-      render(<LogoPaci />, { wrapper: AuthenticatedWrapper });
+      render(<PacifinanceLogo />, { wrapper: AuthenticatedWrapper });
 
       const logo = screen.getByAltText('Pacifinance Logo');
       fireEvent.click(logo.parentElement);
@@ -100,43 +112,43 @@ describe('Logo Component', () => {
     });
 
     it('should navigate only once per click', () => {
-      render(<LogoPaci />, { wrapper: Wrapper });
-      
+      render(<PacifinanceLogo />, { wrapper: Wrapper });
+
       const logo = screen.getByAltText('Pacifinance Logo');
       fireEvent.click(logo.parentElement);
-      
+
       expect(mockNavigate).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('styling', () => {
     it('should have cursor pointer on container', () => {
-      render(<LogoPaci />, { wrapper: Wrapper });
-      
+      render(<PacifinanceLogo />, { wrapper: Wrapper });
+
       const logo = screen.getByAltText('Pacifinance Logo');
       const container = logo.parentElement;
-      
+
       expect(container).toHaveStyle({ cursor: 'pointer' });
     });
   });
 
   describe('hover interactions', () => {
     it('should handle mouse enter event', () => {
-      render(<LogoPaci />, { wrapper: Wrapper });
-      
+      render(<PacifinanceLogo />, { wrapper: Wrapper });
+
       const logo = screen.getByAltText('Pacifinance Logo');
       const container = logo.parentElement;
-      
+
       // Should not throw on hover
       fireEvent.mouseEnter(container);
     });
 
     it('should handle mouse leave event', () => {
-      render(<LogoPaci />, { wrapper: Wrapper });
-      
+      render(<PacifinanceLogo />, { wrapper: Wrapper });
+
       const logo = screen.getByAltText('Pacifinance Logo');
       const container = logo.parentElement;
-      
+
       // Should not throw on hover leave
       fireEvent.mouseEnter(container);
       fireEvent.mouseLeave(container);

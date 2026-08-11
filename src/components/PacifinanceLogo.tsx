@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useLocalizedNavigate } from '../hooks/useLocalizedNavigate';
 import { useAuth } from '../hooks/useAuth';
-import LogoPacifinance from '../assets/brand/logo-mark.webp';
+import logoMark from '../assets/brand/logo-mark.webp';
 
-interface LogoPaciProps {
+interface PacifinanceLogoProps {
   /** Hide the "Pacifinance" wordmark and show only the icon - for tight
    * spaces like the icon-rail sidebar, where the full logo doesn't fit
    * and clips against neighboring content. Defaults to showing it, for
@@ -11,7 +11,7 @@ interface LogoPaciProps {
   showText?: boolean;
 }
 
-export default function LogoPaci({ showText = true }: LogoPaciProps) {
+export default function PacifinanceLogo({ showText = true }: PacifinanceLogoProps) {
   const navigate = useLocalizedNavigate();
   const { isAuthenticated } = useAuth();
   const [hovered, setHovered] = useState(false);
@@ -39,7 +39,7 @@ export default function LogoPaci({ showText = true }: LogoPaciProps) {
       }}
     >
       <img
-        src={LogoPacifinance}
+        src={logoMark}
         alt="Pacifinance Logo"
         style={{
           height: '40px',

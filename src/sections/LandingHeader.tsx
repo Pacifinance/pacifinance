@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { useLocation } from "react-router-dom";
 import LanguageSelector from "../components/LanguageSelector";
 import { useLocalizedNavigate } from "../hooks/useLocalizedNavigate";
-import LogoPaci from "../components/Logo";
+import PacifinanceLogo from "../components/PacifinanceLogo";
 import LocalizedLink from "../components/LocalizedLink";
 import { LanguageContext } from "../contexts/LanguageContext";
 import { useAuth } from "../hooks/useAuth";
@@ -313,7 +313,7 @@ function Header({
         }}
       >
         <div className="flex-shrink-0">
-          <LogoPaci />
+          <PacifinanceLogo />
         </div>
 
         <NavRow theme={theme}>

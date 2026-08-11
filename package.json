@@ -48,7 +48,7 @@
     "@fortawesome/react-fontawesome": "^3.0.2",
     "@mui/icons-material": "^7.3.2",
     "@mui/material": "^7.3.8",
-    "@supabase/supabase-js": "^2.45.4",
+    "@supabase/supabase-js": "^2.112.2",
     "@types/cookie-parser": "^1.4.9",
     "@types/express": "^5.0.3",
     "@types/node": "^24.5.2",

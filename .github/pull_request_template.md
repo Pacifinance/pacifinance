@@ -24,6 +24,10 @@
 - [ ] New user-facing strings are translated in all locale files
 - [ ] Demo/mock data was updated if API/userData shape changed
 
+## AI-assisted contributions
+
+- [ ] If AI tools helped write this PR, I've read [AI_POLICY.md](../AI_POLICY.md), disclosed it above, and personally reviewed and tested every change
+
 ## Screenshots
 
 <!-- Add before/after screenshots for UI changes, hiding personal values. -->

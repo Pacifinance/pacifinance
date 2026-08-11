@@ -47,8 +47,8 @@ export default function LandingHero({ theme }: LandingHeroProps) {
               backgroundImage: `url(${BACKGROUND_ART})`,
               backgroundSize: 'cover',
               backgroundPosition: 'center',
-              WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 32%)',
-              maskImage: 'linear-gradient(to right, transparent 0%, black 32%)',
+              WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 65%)',
+              maskImage: 'linear-gradient(to right, transparent 0%, black 65%)',
             }}
           />
           {/* Mobile/tablet: same idea as the desktop panel above, but anchored

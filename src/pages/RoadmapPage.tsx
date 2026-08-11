@@ -507,8 +507,9 @@ const RoadmapPage = () => {
   const statusOrder = ['planned', 'in-progress', 'completed'];
 
   const buildBugReportUrl = (item) => {
-    const title = item.title[language] || item.title.en;
-    return `${GITHUB_REPO_URL}/issues/new?template=bug_report.md&title=${encodeURIComponent(`[Bug] ${title}`)}`;
+    // GitHub issues are triaged in English regardless of the reporter's UI
+    // language, so the pre-filled title always uses the English title.
+    return `${GITHUB_REPO_URL}/issues/new?template=bug_report.md&title=${encodeURIComponent(`[Bug] ${item.title.en}`)}`;
   };
 
   const toggleColumnExpanded = (status) => {

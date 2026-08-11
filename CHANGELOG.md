@@ -9,7 +9,34 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
-Nothing yet.
+### Added
+- `AI_POLICY.md`: AI-assisted contributions are welcome, but must be
+  disclosed, reviewed, tested, and aligned with the project's vision before
+  a PR — linked from `CONTRIBUTING.md` and a checklist item in the PR
+  template.
+
+### Changed
+- Consolidated `CLAUDE.md`, `AGENTS.md` and `.github/copilot-instructions.md`
+  into one source of truth (`AGENTS.md`); the other two now just import it.
+  Dropped a stale "server/ is off-limits" line that contradicted `AGENTS.md`
+  and no longer reflected how the project actually works.
+- Roadmap page: the pre-filled bug-report title is always in English now
+  (GitHub issues are triaged in English regardless of the reporter's UI
+  language).
+- Landing hero: softened the desktop background fade so it reads as a
+  gradual blend instead of a hard edge partway across the screen.
+- Landing footer: moved the "Support Pacifinance" button into the
+  Community column, next to the text that's actually about supporting the
+  project, instead of sitting under the logo.
+
+### Fixed
+- `vitest.config.mjs` coverage `include` globs only matched `.js`/`.jsx`,
+  silently excluding `src/utils`, `src/contexts`, `src/hooks` and
+  `src/services` (100% TypeScript today) from coverage measurement — the
+  60/60/50/60 thresholds were checking almost nothing. Fixed the globs and
+  reset the thresholds to the real, now-measured baseline (55/47/48/55);
+  wired `npm run test:coverage` into CI in place of the plain `npm test`
+  step, so a regression below today's actual coverage now fails a PR.
 
 ## [0.10.0] - 2026-08-11
 

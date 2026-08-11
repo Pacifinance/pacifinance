@@ -63,7 +63,8 @@
       "Bash(echo \"EXITCODE:$?\")",
       "Bash(node scripts/setVersion.js 0.10.0)",
       "Bash(set -e)",
-      "Bash(git tag *)"
+      "Bash(git tag *)",
+      "Bash(echo \"exit:$?\")"
     ]
   }
 }

@@ -1,14 +1,16 @@
 # Pacifinance Agent Instructions
 
-These instructions apply to the entire repository. Keep work correct, scoped,
-and economical in tool calls, elapsed time, and tokens.
+These instructions apply to the entire repository and to every AI coding
+tool working in it (this file is read natively by most of them; see
+"For tool-specific files" at the bottom for the rest). Keep work correct,
+scoped, and economical in tool calls, elapsed time, and tokens.
 
 ## Start Here
 
 1. Read the user's request, `git status --short`, the latest relevant commit,
    and the current diff before editing. Preserve all pre-existing work.
-2. Inspect only files needed for the task. Prefer `rg`/`rg --files`; if `rg` is
-   unavailable, use `grep`/`find`. Do not dump large files when a targeted
+2. Inspect only files needed for the task. Prefer `rg`/`rg --files`; if `rg`
+   is unavailable, use `grep`/`find`. Do not dump large files when a targeted
    range or search is enough.
 3. Read the matching scoped rule only when touching its area:
    - React UI: `.github/instructions/react-components.instructions.md`
@@ -39,28 +41,134 @@ and economical in tool calls, elapsed time, and tokens.
 - Keep commentary short: state discoveries, blockers, and verification results;
   do not narrate routine commands. Keep the final response outcome-first.
 
+## Architecture
+
+```
+src/
+  components/   # Generic UI, reusable across unrelated features
+  pages/        # Routes — assembles contexts + sections
+  sections/     # Feature blocks tied to one domain/page
+  contexts/     # Global state
+  hooks/        # Reusable logic
+  utils/        # Pure functions (selectors, routing, math)
+  data/         # Static config (colors, icons, currencies, tags)
+  i18n/         # locales/it.json, en.json, es.json, de.json, fr.json, pt-BR.json
+  __tests__/    # Mirrors src/
+scripts/        # Build-time automation (roadmap, versioning)
+server/         # Express + Supabase backend — a normal part of the codebase,
+                # not off-limits; see "Project Rules" below for its own bar
+```
+
+**components/ vs sections/ — the test isn't "does it use a context?", it's
+"which domain does it belong to?"** A component can live in `components/`
+even while reading a context, as long as that context is cross-cutting/UI-level
+(`LanguageContext`, `ThemeContext`, `ToastContext`) and not business data
+(`UserContext`, data from a specific domain like investments/transactions).
+The real criterion:
+- **`components/`** — generic, reusable across unrelated features (e.g.
+  `LocalizedLink`, `ThemedSelect`, `AvatarIcon`, `CategoryPicker`,
+  `LanguageSelector`, `ScrollNavigationIndicator`, `PWAInstallGuide`,
+  `ImportPlatformGuide`). If it reads a context, it must be only for a
+  cross-cutting need (language/theme/toast), never to fetch domain data (e.g.
+  `useDemoServices`, calls to `services/*`).
+- **`sections/`** — tied to a specific domain/feature (transactions,
+  investments, goals), even if reused in 2+ places within the same domain
+  (e.g. `InvestmentHoldingsPanel` is reused but stays investment-specific →
+  stays in `sections/`).
+
+When adding a new file or moving an existing one, apply this test instead of
+just checking whether it imports a context.
+
+**Context hierarchy (fixed order):**
+```
+MediaQuery > Language > Theme > DevMode > User > Currency > Page > Privacy > Toast
+```
+
 ## Project Rules
 
-- TypeScript: no new `any`; type props and API boundaries explicitly.
-- UI text: never hardcode user-facing strings. Add identical key structures to
-  every locale under `src/i18n/locales/` and run translation completeness tests.
-- Routing: use `LocalizedLink` and `useLocalizedNavigate` for localized routes.
-- Currency: database values are EUR; use `CurrencyContext` conversion/formatting
-  helpers and never hardcode currency symbols.
-- `userData`: access through `src/utils/userDataSelectors.ts`; mirror new fields
-  in mock data.
-- Preserve the context provider hierarchy documented in the scoped rules.
-- API access belongs in services/contexts, not directly in components.
-- Backend changes are allowed when required by the user's request; include
-  validation, model/route tests, and an idempotent Supabase migration for schema
-  changes.
-- Never use destructive Git/filesystem commands without explicit authorization.
-- Never run `git commit` or `git push` autonomously. The user performs both.
+1. **i18n** — every UI string in all six `src/i18n/locales/*.json` files
+   (`it`, `en`, `es`, `de`, `fr`, `pt-BR`). Never hardcoded. Run the
+   translation-completeness tests after adding keys.
+2. **Routing** — `LocalizedLink` (not `Link`), `useLocalizedNavigate` (not
+   `useNavigate`).
+3. **Currency** — DB is always EUR. Display via `formatAmount()` from
+   `CurrencyContext`. Never hardcode `€`.
+4. **Selectors** — access `userData` only via
+   `src/utils/userDataSelectors.ts`.
+5. **Mock** — every new `userData` field → update `MockAuthContext.tsx`.
+6. **Colors/Icons** — `getAssetColor()`, `getCategoryColor()` from
+   `src/data/`. Never hardcoded.
+7. **Outflows not expenses** — always "outflows". Use "expenses" only when
+   investments are excluded.
+8. **Roadmap** — completed user-facing feature → `roadmap-items.json` +
+   `todo.md` + `npm run roadmap`.
+9. **Changelog** — every user-facing change → a line under `[Unreleased]` in
+   `CHANGELOG.md`. Release steps (version bump + tag) are documented there
+   under "Versioning policy".
+10. **No `any`** — TypeScript strict. Props as `interface`.
+11. **Backend** — `server/` is a normal part of the codebase, not
+    off-limits. Backend changes are allowed when the request needs them;
+    include validation, model/route tests, and an idempotent Supabase
+    migration for schema changes.
+12. **Git** — never run `git commit`, `git push`, or create/push git tags
+    autonomously; the user performs all three. The final line of every
+    completed update must be a single concise, imperative,
+    open-source-friendly English commit message, no prefix, bullets, code
+    formatting, or text after it.
+
+## Key Files
+
+| File | Purpose |
+|---|---|
+| `src/AppRouter.tsx` | All routes (lazy-loaded for non-critical pages) |
+| `src/contexts/UserContext.tsx` | All API calls + the `userData` shape |
+| `src/contexts/MockAuthContext.tsx` | Dev mock — mirrors `UserContext` |
+| `src/utils/userDataSelectors.ts` | The only access point for `userData` |
+| `src/utils/i18nRouting.ts` | `LocalizedLink`, `useLocalizedNavigate` |
+| `src/i18n/languagesConfig.js` | Single source of truth for supported languages |
+| `src/data/currencyConfig.ts` | 19 currencies + fallback rates |
+| `scripts/roadmap-items.json` | Public roadmap source |
+| `CHANGELOG.md` | Version history + release process |
+
+## userData Shape
+
+```ts
+{ userId, userType, currency,
+  profile: { nationality, job, age, preferredCurrency: { key, value } },
+  balances: [{ date, balance: { bank, cash, stocks, etf, crypto, realEstate, other } }],
+  expenses: { allOutflows, outflowsArray, totalOutflowsPerCategoryPerMonth },
+  incomes: { allIncomes, incomesArray },
+  tags: { outflowsTags, incomesTags, paymentTags, currencyTags },
+  rankings: { balance, incomes, outflows, balanceSimilar, ... },
+  dates: { current, preMonth, preYearSameMonth },
+  goals, limits, assets, averages }
+```
+
+## Do Not
+
+- Use `Link` or `useNavigate` directly (use the localized wrappers).
+- Hardcode `€`, `EUR`, or hex colors for financial data or UI text.
+- Access `userData.property` without a selector.
+- Make API calls outside `UserContext.tsx`.
+- Add success toasts for normal operations.
+- Use `.toISOString().split('T')[0]` (UTC midnight bug).
+- End an update without a final commit message in English.
+- Never run `git commit`, `git push`, or create/push git tags autonomously.The user performs both.
+- Start the dev server / browser on your own initiative for extra checks —
+  only if explicitly requested.
 
 ## Handoff
 
-- State what changed, verification performed, warnings or required migrations,
-  and any genuinely unfinished work.
+- State what changed, verification performed, warnings or required
+  migrations, and any genuinely unfinished work.
 - The final line of every completed update must be a single concise,
   imperative, open-source-friendly English commit message with no prefix,
   bullets, code formatting, or text after it.
+
+## For tool-specific files
+
+`CLAUDE.md` and `.github/copilot-instructions.md` both just import this file
+(`@AGENTS.md`) plus whatever their tool needs on top of it (Copilot also
+uses path-scoped `.github/instructions/*.instructions.md` and reusable
+`.github/prompts/*.prompt.md`, which AGENTS.md doesn't have a mechanism
+for). If your tool doesn't read AGENTS.md natively, read this file directly.

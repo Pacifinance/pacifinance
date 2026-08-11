@@ -118,7 +118,7 @@
 - [ ] Launch: Hacker News, r/selfhosted, r/ItaliaPersonalFinance
 
 ### Phase 3b — Hosted + self-hosted architecture
-- [ ] Dual distribution: hosted web app (pacifinance.com, free) + free self-hosted (AGPL) — same codebase; the competition is NOT hosted-vs-self-hosted (someone who self-hosts would never have paid anyway — they contribute code, bug reports, and credibility instead)
+- [ ] Dual distribution: hosted web app (pacifinance.com, free) + free self-hosted (AGPL) — same codebase; the competition is NOT hosted-vs-self-hosted
 - [ ] Anonymous comparison for self-hosted instances: an opt-in "community stats" service — the self-hosted instance sends ONLY anonymous aggregates (profile bucket: age range/job/country + rounded monthly totals), NEVER raw transactions; it receives percentiles back. Anyone who opts out gets everything except the comparison. This is the network effect that stays with the project even with open code
 - [ ] Note on Vercel: the Hobby plan prohibits commercial use — the day a paid tier launches, Vercel Pro (or a host migration) becomes necessary; budget for it then, not before
 
@@ -155,16 +155,6 @@
      problem while staying consistent with "no personal data, ever". -->
 
 
-### Mobile
-- [ ] Test BottomNavBar on devices with a notch/Dynamic Island (safe-area-inset)
-- [ ] Scroll navigation: evaluate disabling it on mobile (interferes with natural scrolling)
-- [ ] Emergency fund card alone: resize to half-width
-- [ ] Chart legend on mobile: verify on ~320px screens
-
-### Desktop
-- [ ] Sidebar: tooltip for Goals and Limits
-- [ ] Sidebar: verify active-link highlighting with the new routing
-
 ### Features
 - [ ] Push notifications (PWA) as a monthly data-entry reminder <!-- roadmap:push-notifications -->
 - [ ] Quick summary widget on the home: net worth + change vs previous month
@@ -178,6 +168,18 @@
 - [~] User feedback system (Phase 1): in-app form -> GitHub Issue via the backend <!-- roadmap:feedback-system -->
 - [~] "Contribute" section: how to donate, report bugs, propose ideas <!-- roadmap:contribute-section -->
 - [~] Roadmap priority voting system (needs a backend) <!-- roadmap:roadmap-voting -->
+
+### Testing
+<!-- From a coverage audit (2026-08): well covered overall (~1755 tests,
+     real authFlow integration suite, all contexts, most of utils/), these
+     are the gaps worth closing, roughly by risk. -->
+- [ ] Comparison/Leaderboard: no frontend test verifies the anonymous-comparison UI never renders another user's identifying fields (`src/pages/ComparisonPage.tsx`, `src/sections/Comparison.tsx`, `src/sections/Leaderboard.tsx`) — highest-priority gap, this is the privacy-sensitive surface
+- [ ] `CurrencyContext`: no test on the actual EUR↔display-currency conversion math, only on the static rate table (`currencyConfig.test.js`)
+- [ ] `server/src/services/ranking.ts`: thin test coverage (27 lines) for a service computing percentile placement
+- [ ] Page-level smoke tests: only `DashboardPage` has one; `AuthPage`, `ProfilePage`, `GoalsAndLimitsPage`, `SettingsPage` etc. have none
+- [ ] Component tests for high-traffic forms: `SignInForm`, `SignUpForm`, `RecoveryForm`, `DataImportWizard`, `InvestmentImportWizard`, `GoalTracker`, `RecurringTransactionsPanel`
+- [ ] No accessibility (a11y) testing anywhere (no `jest-axe`/`@axe-core`)
+- [ ] Consider 3-5 targeted Playwright smoke tests for the true black-box gaps unit tests can't reach (login→dashboard render, CSV import happy path, comparison page not leaking PII) instead of a full e2e suite
 
 ### Performance
 - [ ] Check bundle size after adding BottomNavBar + MUI icons

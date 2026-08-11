@@ -28,9 +28,6 @@ export default function LandingFooter({ theme }) {
             <p className="mt-3 text-sm opacity-80">
               {translations.footer.description}
             </p>
-            <div className="mt-4">
-              <BuyMeACoffeeWidget />
-            </div>
           </div>
 
           {/* Legal Links */}
@@ -150,6 +147,7 @@ export default function LandingFooter({ theme }) {
                   {translations.footer.community.supportDescription}
                 </p>
               </div>
+              <BuyMeACoffeeWidget />
             </div>
           </div>
         </div>

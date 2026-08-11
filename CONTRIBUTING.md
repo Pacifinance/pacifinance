@@ -6,6 +6,8 @@ This guide explains how to set up the project, what to check before opening a pu
 
 Looking for a bigger idea to work on than a single bug fix? [docs/PRODUCT_VISION.md](docs/PRODUCT_VISION.md) is the long-term product vision — simulations, generic assets, a financial context engine, optional AI — organized Now/Next/Later/Research so it's clear which pieces are ready to start and which still need groundwork.
 
+Using AI tools to help write your contribution is welcome — see [AI_POLICY.md](AI_POLICY.md) for what that means in practice.
+
 ## Getting Started
 
 ```bash

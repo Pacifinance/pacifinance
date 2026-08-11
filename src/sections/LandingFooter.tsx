@@ -1,26 +1,13 @@
-
 import React, { useContext } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
 import { LocalizedLink } from '../components/LocalizedLink';
 import { LanguageContext } from '../contexts/LanguageContext';
 import LogoPaci from '../components/Logo';
 import BuyMeACoffeeWidget from '../components/BuyMeACoffeeWidget';
-import { SUPPORTED_LANGUAGES } from '../i18n/languagesConfig';
-import { addLanguageToPath, removeLanguageFromPath } from '../utils/i18nRouting';
 import { APP_VERSION } from '../data/appVersion';
 
 export default function LandingFooter({ theme }) {
-  const { language, translations, setLanguage } = useContext(LanguageContext);
-  const rawNavigate = useNavigate();
-  const location = useLocation();
-
-  const switchLanguage = (code) => {
-    if (code === language) return;
-    setLanguage(code);
-    const currentPath = removeLanguageFromPath(location.pathname);
-    const newPath = addLanguageToPath(currentPath, code);
-    rawNavigate(newPath, { replace: true });
-  };
+  const { language, translations } = useContext(LanguageContext);
+  const dividerColor = theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)';
 
   return (
     <footer
@@ -28,33 +15,33 @@ export default function LandingFooter({ theme }) {
       style={{
         backgroundColor: theme.backgroundColor,
         color: theme.textColor,
-        borderColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'
+        borderColor: dividerColor
       }}
     >
-      <div className="max-w-7xl mx-auto px-4 py-12">
+      <div className="max-w-7xl mx-auto px-4 py-9">
         {/* Main Footer Content */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-          
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+
           {/* Company Info */}
           <div className="col-span-1 md:col-span-1">
             <LogoPaci />
-            <p className="mt-4 text-sm opacity-80">
+            <p className="mt-3 text-sm opacity-80">
               {translations.footer.description}
             </p>
-            <div className="mt-6">
+            <div className="mt-4">
               <BuyMeACoffeeWidget />
             </div>
           </div>
 
           {/* Legal Links */}
           <div>
-            <h3 className="font-semibold text-lg mb-4" style={{ color: theme.secondaryColor }}>
+            <h3 className="font-semibold text-lg mb-3" style={{ color: theme.secondaryColor }}>
               {translations.footer.legal.title}
             </h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <LocalizedLink 
-                  to="/privacy-policy" 
+                <LocalizedLink
+                  to="/privacy-policy"
                   className="hover:opacity-70 transition-opacity"
                   style={{ color: theme.textColor }}
                 >
@@ -62,8 +49,8 @@ export default function LandingFooter({ theme }) {
                 </LocalizedLink>
               </li>
               <li>
-                <LocalizedLink 
-                  to="/terms-of-service" 
+                <LocalizedLink
+                  to="/terms-of-service"
                   className="hover:opacity-70 transition-opacity"
                   style={{ color: theme.textColor }}
                 >
@@ -71,8 +58,8 @@ export default function LandingFooter({ theme }) {
                 </LocalizedLink>
               </li>
               <li>
-                <LocalizedLink 
-                  to="/cookie-policy" 
+                <LocalizedLink
+                  to="/cookie-policy"
                   className="hover:opacity-70 transition-opacity"
                   style={{ color: theme.textColor }}
                 >
@@ -80,8 +67,8 @@ export default function LandingFooter({ theme }) {
                 </LocalizedLink>
               </li>
               <li>
-                <LocalizedLink 
-                  to="/disclaimer" 
+                <LocalizedLink
+                  to="/disclaimer"
                   className="hover:opacity-70 transition-opacity"
                   style={{ color: theme.textColor }}
                 >
@@ -93,13 +80,13 @@ export default function LandingFooter({ theme }) {
 
           {/* Support Links */}
           <div>
-            <h3 className="font-semibold text-lg mb-4" style={{ color: theme.secondaryColor }}>
+            <h3 className="font-semibold text-lg mb-3" style={{ color: theme.secondaryColor }}>
               {translations.footer.support.title}
             </h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <LocalizedLink 
-                  to="/faq" 
+                <LocalizedLink
+                  to="/faq"
                   className="hover:opacity-70 transition-opacity"
                   style={{ color: theme.textColor }}
                 >
@@ -107,8 +94,8 @@ export default function LandingFooter({ theme }) {
                 </LocalizedLink>
               </li>
               <li>
-                <LocalizedLink 
-                  to="/pricing" 
+                <LocalizedLink
+                  to="/pricing"
                   className="hover:opacity-70 transition-opacity"
                   style={{ color: theme.textColor }}
                 >
@@ -125,8 +112,8 @@ export default function LandingFooter({ theme }) {
                 </LocalizedLink>
               </li>
               <li>
-                <LocalizedLink 
-                  to="/roadmap" 
+                <LocalizedLink
+                  to="/roadmap"
                   className="hover:opacity-70 transition-opacity"
                   style={{ color: theme.textColor }}
                 >
@@ -148,18 +135,18 @@ export default function LandingFooter({ theme }) {
 
           {/* Community & Donation */}
           <div>
-            <h3 className="font-semibold text-lg mb-4" style={{ color: theme.secondaryColor }}>
+            <h3 className="font-semibold text-lg mb-3" style={{ color: theme.secondaryColor }}>
               {translations.footer.community.title}
             </h3>
-            <div className="space-y-4">
+            <div className="space-y-3">
               <p className="text-sm opacity-80">
                 {translations.footer.community.donationText}
               </p>
-              <div className="p-4 rounded-lg border" style={{ borderColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : `${theme.secondaryColor}25`, backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.045)' : theme.primaryColor }}>
-                <p className="text-xs mb-2 font-medium" style={{ color: theme.secondaryColor }}>
+              <div className="p-3.5 rounded-lg border" style={{ borderColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : `${theme.secondaryColor}25`, backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.045)' : theme.primaryColor }}>
+                <p className="text-xs mb-1.5 font-medium" style={{ color: theme.secondaryColor }}>
                   {translations.footer.community.supportTitle}
                 </p>
-                <p className="text-xs opacity-80 mb-3">
+                <p className="text-xs opacity-80">
                   {translations.footer.community.supportDescription}
                 </p>
               </div>
@@ -167,63 +154,18 @@ export default function LandingFooter({ theme }) {
           </div>
         </div>
 
-        {/* Languages Section */}
-        <div className="pt-8 border-t mb-8" style={{ borderColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)' }}>
-          <div className="text-center">
-            <h3 className="font-semibold text-lg mb-3" style={{ color: theme.secondaryColor }}>
-              {translations.footer.languages.title}
-            </h3>
-            <p className="text-sm opacity-70 mb-4">
-              {translations.footer.languages.description}
-            </p>
-            <div className="flex flex-wrap justify-center gap-3">
-              {SUPPORTED_LANGUAGES.map((lang) => (
-                <button
-                  key={lang.code}
-                  onClick={() => switchLanguage(lang.code)}
-                  data-umami-event={`footer-lang-${lang.code}`}
-                  className={`
-                    inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm
-                    transition-all duration-200 cursor-pointer
-                    ${language === lang.code 
-                      ? 'ring-2 ring-offset-2' 
-                      : 'opacity-80 hover:opacity-100 hover:scale-105'
-                    }
-                  `}
-                  style={{ 
-                    backgroundColor: language === lang.code 
-                      ? theme.secondaryColor 
-                      : theme.primaryColor,
-                    color: language === lang.code 
-                      ? '#fff' 
-                      : theme.textColor,
-                    borderColor: theme.borderColor,
-                    ringColor: theme.secondaryColor,
-                    border: 'none',
-                  }}
-                >
-                  <span className="text-lg">{lang.flag}</span>
-                  <span className="font-medium">{lang.name}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-
         {/* Bottom Bar */}
-        <div className="pt-8 border-t" style={{ borderColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)' }}>
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="pt-6 border-t" style={{ borderColor: dividerColor }}>
+          <div className="flex flex-col md:flex-row justify-between items-center gap-3">
             <p className="text-sm opacity-70">
               © {new Date().getFullYear()} Pacifinance. {translations.footer.rights}
             </p>
             <span className="text-xs opacity-50 order-last md:order-none">
               v{APP_VERSION}
             </span>
-            <div className="flex space-x-4">
-              <span className="text-xs opacity-60">
-                {translations.footer.madeWith} ❤️ {translations.footer.forPrivacy}
-              </span>
-            </div>
+            <span className="text-xs opacity-60">
+              {translations.footer.madeWith} ❤️ {translations.footer.forPrivacy}
+            </span>
           </div>
         </div>
       </div>

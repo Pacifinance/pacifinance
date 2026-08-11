@@ -193,6 +193,18 @@ const LanguageRoutes = () => {
   const navigate = useNavigate();
   const { language, setLanguage } = useContext(LanguageContext);
   
+  // Scroll to top on every real page change — without this, navigating from
+  // deep in a long page (e.g. the footer) lands on the new page still
+  // scrolled down, which reads as if nothing happened. Skipped when the
+  // destination carries a hash (e.g. landing-page section anchors), which
+  // handle their own scroll target.
+  useEffect(() => {
+    if (!location.hash) {
+      window.scrollTo(0, 0);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.pathname]);
+
   // Validate language parameter
   useEffect(() => {
     if (!availableLanguages.includes(lang)) {

@@ -40,7 +40,7 @@ export default function LandingHero({ theme }: LandingHeroProps) {
     >
       {isDark ? (
         <div
-          className="hidden lg:block absolute right-0 top-1/2 -translate-y-1/2 w-[58%] max-w-4xl aspect-[3/2]"
+          className="hidden lg:block absolute inset-y-0 right-0 w-[58%] max-w-4xl"
           aria-hidden="true"
           style={{
             backgroundImage: `url(${BACKGROUND_ART})`,

@@ -16,7 +16,7 @@ import { useDemoServices } from "../hooks/useDemoServices";
 import { useAccountActions } from "../hooks/useAccountActions";
 import { useToast } from "../contexts/ToastContext";
 import { useLocalizedNavigate } from "../hooks/useLocalizedNavigate";
-import LogoPaci from "../components/Logo";
+import PacifinanceLogo from "../components/PacifinanceLogo";
 import SidebarMobile from "../components/SidebarMobile";
 import BottomNavBar from "./BottomNavBar";
 import QuickAddTransaction from "./QuickAddTransaction";
@@ -351,7 +351,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                         : {}),
                 }}
             >
-                <LogoPaci />
+                <PacifinanceLogo showText={false} />
                 {isMobileScreen ? (
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginLeft: 'auto' }}>
                         <button

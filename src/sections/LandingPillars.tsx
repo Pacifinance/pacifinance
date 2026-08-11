@@ -56,14 +56,15 @@ function PillarCard({
 }) {
   return (
     <div
-      className="group p-6 md:p-7 rounded-2xl border border-opacity-20 hover:shadow-lg transition-all duration-300 flex flex-col"
+      className="group p-6 md:p-7 rounded-2xl border hover:-translate-y-1 transition-all duration-300 flex flex-col"
       style={{
-        borderColor: theme.secondaryColor,
-        backgroundColor: theme.mode === 'dark' ? `${theme.secondaryColor}10` : 'rgba(255,255,255,0.6)',
+        borderColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : `${theme.secondaryColor}30`,
+        backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.045)' : 'rgba(255,255,255,0.7)',
+        boxShadow: theme.mode === 'dark' ? '0 1px 2px rgba(0,0,0,0.2)' : '0 1px 2px rgba(0,0,0,0.04)',
       }}
     >
       <div
-        className="flex items-center justify-center w-12 h-12 rounded-full mb-4 group-hover:scale-110 transition-transform duration-300"
+        className="flex items-center justify-center w-11 h-11 rounded-xl mb-4 group-hover:scale-110 transition-transform duration-300"
         style={{ backgroundColor: theme.secondaryColor }}
       >
         {children}

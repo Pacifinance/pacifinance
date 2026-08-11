@@ -12,6 +12,7 @@ import { IconButton, InputAdornment, TextField } from '@mui/material';
 import { Calendar } from 'react-calendar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import { appBackgroundValue } from './appBackground';
 
 // UNUSED STYLED COMPONENTS (commented out for future cleanup)
 export const PageWrapper = styled.div`
@@ -33,7 +34,7 @@ export const Section = styled.section `
   margin-left: 0;
   padding-top: 2rem;
   min-height: 100vh;
-  background-color: ${(props) => (props.theme.backgroundColor)};
+  background: ${(props) => appBackgroundValue(props.theme)};
   line-height: 1.6;
 
   /* For screens with a maximum width of 768px (e.g. mobile devices) */

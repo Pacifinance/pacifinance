@@ -1,9 +1,8 @@
-// Service Worker per cache ottimizzato mobile
+// Service worker for mobile-optimized caching
 const CACHE_NAME = 'pacifinance-v1';
 const CRITICAL_RESOURCES = [
   '/',
-  '/src/assets/LandingPage/hero.webp',
-  '/src/assets/Brand/PacifinanceLogoPNG3NoBg.webp'
+  '/og-image.webp'
 ];
 
 // Install event - Cache critical resources
@@ -34,7 +33,7 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   
-  // Cache first per immagini
+  // Cache first for images
   if (request.destination === 'image') {
     event.respondWith(
       caches.match(request).then((response) => {
@@ -49,7 +48,7 @@ self.addEventListener('fetch', (event) => {
     );
   }
   
-  // Network first per tutto il resto
+  // Network first for everything else
   else {
     event.respondWith(
       fetch(request)
@@ -65,8 +64,8 @@ self.addEventListener('push', (event) => {
   const title = payload.title || 'Pacifinance';
   event.waitUntil(self.registration.showNotification(title, {
     body: payload.body || '',
-    icon: '/faviconLogo/android-chrome-192x192.png',
-    badge: '/faviconLogo/favicon-32x32.png',
+    icon: '/android-chrome-192x192.png',
+    badge: '/favicon-32x32.png',
     tag: payload.tag || 'pacifinance-reminder',
     data: {url: payload.url || '/dashboard'},
   }));

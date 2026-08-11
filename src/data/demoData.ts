@@ -1,6 +1,15 @@
 /**
- * Demo Data Generator — produces rich, realistic financial data
- * for the demo account, entirely client-side.
+ * Demo Data Generator — produces the bulk `userData` snapshot (balances,
+ * transactions, rankings, averages, profile, limits, custom categories)
+ * that UserContext loads once at startup, entirely client-side.
+ *
+ * This is the demo-mode counterpart of the app's initial bulk data fetch
+ * (userService/financeService for a real account). Per-feature data that a
+ * real account fetches separately on demand — goals, investment holdings,
+ * recurring transactions, liquidity sub-accounts, shared expenses — lives
+ * in `useDemoServices.ts` instead, mirroring how those stay separate
+ * service calls outside demo mode too. When adding demo data for a new
+ * feature, check there first if the feature has its own service.
  *
  * All dates are dynamically computed relative to the current date,
  * so the data always appears fresh and covers the last 13 months.
@@ -300,14 +309,42 @@ export const generateDemoData = () => {
     },
   };
 
-  // ── Goals & Limits (feature in development — leave empty) ──
+  // ── Goals & Limits ──
+  // Goals themselves come from goalService.getGoals() (see useDemoServices.ts,
+  // DEMO_GOALS) - this array isn't read by GoalTracker, kept only because
+  // it's part of the UserData shape.
   const goals = [];
   const limits = {
-    monthlySpendingLimit: null,
-    savingsGoalPercentage: null,
-    emergencyFundTarget: null,
-    notificationsEnabled: false,
+    monthlySpendingLimit: 2200,
+    monthlySpendingLimitEnabled: true,
+    savingsGoalPercentage: 20,
+    savingsGoalPercentageEnabled: true,
+    emergencyFundTarget: 15000,
+    emergencyFundTargetEnabled: true,
+    notificationsEnabled: true,
+    expensesLimitPercent: 75,
+    expensesLimitPercentEnabled: true,
+    savingsAmountGoal: 500,
+    savingsAmountGoalEnabled: true,
+    emergencyFundMonths: 6,
+    emergencyFundMonthsEnabled: true,
+    fixedExpensesPercent: 45,
+    // Keys are "off:<official category index>" or "cus:<custom category id>",
+    // matching encodeCategoryLimitSelection in GoalsAndLimits.tsx.
+    categorySpendingLimits: { 'off:4': 400, 'off:6': 150 },
+    debtReductionGoal: null,
+    positionConcentrationLimit: 30,
+    assetCategoryConcentrationLimit: 60,
+    annualPassiveIncomeGoal: 1200,
   };
+
+  // ── Custom categories/subcategories, so the "create your own category"
+  // flow has real examples instead of only the fixed official tags. ──
+  const customCategories = [
+    { id: -501, parentIndex: 9, label: 'Palestra' },
+    { id: -502, parentIndex: 4, label: 'Ristoranti' },
+    { id: -503, parentIndex: 8, label: 'Crypto DCA' },
+  ];
 
   // ── Dates ──
   const now = new Date();
@@ -349,6 +386,7 @@ export const generateDemoData = () => {
     rankings,
     goals,
     limits,
+    customCategories,
     assets,
     averages,
 

@@ -59,7 +59,6 @@ const TermsOfServicePage = React.lazy(() => import("./pages/TermsOfServicePage")
 const SitemapPage = React.lazy(() => import("./pages/SitemapPage"));
 const CookiePolicyPage = React.lazy(() => import("./pages/CookiePolicyPage"));
 const DisclaimerPage = React.lazy(() => import("./pages/DisclaimerPage"));
-const ContactPage = React.lazy(() => import("./pages/ContactPage"));
 const RoadmapPage = React.lazy(() => import("./pages/RoadmapPage"));
 const ContributePage = React.lazy(() => import("./pages/ContributePage"));
 
@@ -194,6 +193,18 @@ const LanguageRoutes = () => {
   const navigate = useNavigate();
   const { language, setLanguage } = useContext(LanguageContext);
   
+  // Scroll to top on every real page change — without this, navigating from
+  // deep in a long page (e.g. the footer) lands on the new page still
+  // scrolled down, which reads as if nothing happened. Skipped when the
+  // destination carries a hash (e.g. landing-page section anchors), which
+  // handle their own scroll target.
+  useEffect(() => {
+    if (!location.hash) {
+      window.scrollTo(0, 0);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.pathname]);
+
   // Validate language parameter
   useEffect(() => {
     if (!availableLanguages.includes(lang)) {
@@ -228,7 +239,6 @@ const LanguageRoutes = () => {
       <Route path="/terms-of-service" element={<TermsOfServicePage />} />
       <Route path="/cookie-policy" element={<CookiePolicyPage />} />
       <Route path="/disclaimer" element={<DisclaimerPage />} />
-      <Route path="/contact" element={<ContactPage />} />
       <Route path="/roadmap" element={<RoadmapPage />} />
       <Route path="/contribute" element={<ContributePage />} />
       <Route path="/sitemap" element={<SitemapPage />} />

@@ -34,7 +34,6 @@ const NO_AUTH_CHECK_PATHS = [
   '/terms-of-service',
   '/cookie-policy',
   '/disclaimer',
-  '/contact',
   '/sitemap',
 ];
 

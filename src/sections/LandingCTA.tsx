@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { useLocalizedNavigate } from '../hooks/useLocalizedNavigate';
+import { useAuth } from '../hooks/useAuth';
 import type { PacifinanceTheme } from '../types/theme';
 
 interface LandingCTAProps {
@@ -10,14 +11,23 @@ interface LandingCTAProps {
 export default function LandingCTA({ theme }: LandingCTAProps) {
   const { translations } = useContext(LanguageContext);
   const navigate = useLocalizedNavigate();
+  const { handleSetIsAuthenticated } = useAuth();
   const t = translations.landing.new;
   const cta = t.cta;
   const trust = t.trust;
 
   const handleGetStarted = () => navigate('/auth');
 
+  const handleTryDemo = () => {
+    // Demo mode: entirely client-side, no API calls - same flow as the
+    // header's demo button (see LandingHeader.tsx).
+    sessionStorage.setItem('pacifinance-demo', 'true');
+    handleSetIsAuthenticated(true);
+    navigate('/dashboard');
+  };
+
   return (
-    <section className="py-12 md:py-20 px-4" style={{ backgroundColor: theme.primaryColor }}>
+    <section className="py-14 md:py-20 px-4" style={{ backgroundColor: theme.backgroundColor }}>
       <div className="max-w-4xl mx-auto text-center">
         <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-4 md:mb-6">
           {cta.title} <span style={{ color: theme.secondaryColor }}>{cta.subtitle}</span>?
@@ -34,10 +44,28 @@ export default function LandingCTA({ theme }: LandingCTAProps) {
             {cta.button}
           </button>
           <p className="text-xs md:text-sm opacity-60">{cta.disclaimer}</p>
+
+          <p className="text-sm md:text-base pt-2">
+            <span className="opacity-70">{cta.demoPrompt} </span>
+            <button
+              onClick={handleTryDemo}
+              className="font-semibold hover:underline underline-offset-4"
+              style={{ color: theme.secondaryColor, background: 'transparent' }}
+              data-umami-event="cta-try-demo"
+            >
+              {cta.demoButton} →
+            </button>
+          </p>
         </div>
 
         {/* Trust signals: real, verifiable claims only */}
-        <div className="mt-8 md:mt-12 grid grid-cols-3 gap-4 md:gap-8 opacity-70">
+        <div
+          className="mt-10 md:mt-14 grid grid-cols-3 gap-3 md:gap-6 rounded-2xl px-4 py-5 md:px-8 md:py-6 mx-auto max-w-2xl"
+          style={{
+            backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.045)' : theme.primaryColor,
+            border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.09)' : theme.borderColor + '30'}`,
+          }}
+        >
           <StatBlock theme={theme} value="AGPLv3" label={trust.license} />
           <StatBlock theme={theme} value="0%" label={trust.dataSold} />
           <StatBlock theme={theme} value="100%" label={trust.freeForever} />
@@ -50,10 +78,10 @@ export default function LandingCTA({ theme }: LandingCTAProps) {
 function StatBlock({ theme, value, label }: { theme: PacifinanceTheme; value: string; label: string }) {
   return (
     <div className="text-center">
-      <div className="text-xl md:text-3xl font-bold" style={{ color: theme.secondaryColor }}>
+      <div className="text-lg md:text-2xl font-bold" style={{ color: theme.secondaryColor }}>
         {value}
       </div>
-      <div className="text-xs md:text-sm">{label}</div>
+      <div className="text-[11px] md:text-xs opacity-70">{label}</div>
     </div>
   );
 }

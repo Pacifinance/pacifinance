@@ -73,13 +73,14 @@ import { canRegenerateAvatar, regenerateAvatar } from '../utils/avatarGenerator'
 import { useToast } from '../contexts/ToastContext';
 import { useDemoServices } from '../hooks/useDemoServices';
 import { getLevelColor, getLevelProgress } from '../utils/gamificationLevel';
+import { appBackgroundValue } from '../styles/appBackground';
 
 // ─── Styled Components ───────────────────────────────────────────────
 
 const PageWrapper = styled.div`
   width: ${props => props.$isMobile ? '100%' : 'calc(100% - 5.5rem)'};
   min-height: 100vh;
-  background-color: ${props => props.theme.backgroundColor};
+  background: ${props => appBackgroundValue(props.theme)};
   margin-left: ${props => props.$isMobile ? '0' : '5.5rem'};
   max-width: 100vw;
   overflow-x: hidden;
@@ -92,7 +93,7 @@ const ContentSection = styled.div`
   align-items: stretch;
   width: 100%;
   min-height: 100vh;
-  background-color: ${props => props.theme.backgroundColor};
+  background: transparent;
   padding: ${props => props.$isMobile ? '1rem' : '2rem 3rem'};
   padding-top: ${props => props.$isMobile ? '100px' : '2rem'};
   max-width: 1200px;

@@ -179,6 +179,17 @@ const roadmapData: RoadmapItem[] = [
     completedDate: '2026-08',
   },
   {
+    id: 'onboarding',
+    title: { it: 'Tour Guidato per Nuovi Utenti', en: 'Guided Tour for New Users' },
+    description: {
+      it: 'Un tour interattivo che ti guida nella configurazione iniziale e nelle funzionalità principali.',
+      en: 'An interactive tour that guides you through initial setup and main features.'
+    },
+    status: 'completed',
+    category: 'ux',
+    icon: '🚀',
+  },
+  {
     id: 'stability',
     title: { it: 'App Più Stabile e Affidabile', en: 'More Stable & Reliable App' },
     description: {
@@ -201,6 +212,17 @@ const roadmapData: RoadmapItem[] = [
     category: 'ux',
     icon: '📲',
     completedDate: '2026-02',
+  },
+  {
+    id: 'roadmap-voting',
+    title: { it: 'Voto Priorità Roadmap', en: 'Roadmap Priority Voting' },
+    description: {
+      it: 'Vota le funzionalità che vuoi vedere per prime e influenza la direzione dello sviluppo.',
+      en: 'Vote on features you want to see first and influence the development direction.'
+    },
+    status: 'completed',
+    category: 'community',
+    icon: '🗳️',
   },
   {
     id: 'inline-edit',
@@ -396,15 +418,15 @@ const roadmapData: RoadmapItem[] = [
   },
   /* ──────────── IN PROGRESS ──────────── */
   {
-    id: 'onboarding',
-    title: { it: 'Tour Guidato per Nuovi Utenti', en: 'Guided Tour for New Users' },
+    id: 'push-notifications',
+    title: { it: 'Promemoria Mensili', en: 'Monthly Reminders' },
     description: {
-      it: 'Un tour interattivo che ti guida nella configurazione iniziale e nelle funzionalità principali.',
-      en: 'An interactive tour that guides you through initial setup and main features.'
+      it: 'Ricevi un promemoria quando è il momento di aggiornare i tuoi dati finanziari.',
+      en: 'Get a reminder when it\'s time to update your financial data.'
     },
     status: 'in-progress',
-    category: 'ux',
-    icon: '🚀',
+    category: 'feature',
+    icon: '🔔',
   },
   {
     id: 'feedback-system',
@@ -429,17 +451,6 @@ const roadmapData: RoadmapItem[] = [
     icon: '🤝',
   },
   {
-    id: 'roadmap-voting',
-    title: { it: 'Voto Priorità Roadmap', en: 'Roadmap Priority Voting' },
-    description: {
-      it: 'Vota le funzionalità che vuoi vedere per prime e influenza la direzione dello sviluppo.',
-      en: 'Vote on features you want to see first and influence the development direction.'
-    },
-    status: 'in-progress',
-    category: 'community',
-    icon: '🗳️',
-  },
-  {
     id: 'auto-detect-bank-format',
     title: { it: 'Riconoscimento Automatico Banca', en: 'Auto-Detect Bank Format' },
     description: {
@@ -449,17 +460,6 @@ const roadmapData: RoadmapItem[] = [
     status: 'in-progress',
     category: 'feature',
     icon: '🏧',
-  },
-  {
-    id: 'OFX/QIF-support',
-    title: { it: 'Supporto File OFX/QIF', en: 'OFX/QIF File Support' },
-    description: {
-      it: 'Importa le transazioni nel formato standard OFX e QIF usato da molte banche e software finanziari.',
-      en: 'Import transactions in standard OFX and QIF format used by many banks and financial software.'
-    },
-    status: 'in-progress',
-    category: 'feature',
-    icon: '📂',
   },
   /* ──────────── PLANNED ──────────── */
   {
@@ -472,17 +472,6 @@ const roadmapData: RoadmapItem[] = [
     status: 'planned',
     category: 'feature',
     icon: '📤',
-  },
-  {
-    id: 'push-notifications',
-    title: { it: 'Promemoria Mensili', en: 'Monthly Reminders' },
-    description: {
-      it: 'Ricevi un promemoria quando è il momento di aggiornare i tuoi dati finanziari.',
-      en: 'Get a reminder when it\'s time to update your financial data.'
-    },
-    status: 'planned',
-    category: 'feature',
-    icon: '🔔',
   },
   {
     id: 'bank-templates',
@@ -538,6 +527,17 @@ const roadmapData: RoadmapItem[] = [
     status: 'planned',
     category: 'security',
     icon: '🔐',
+  },
+  {
+    id: 'OFX/QIF-support',
+    title: { it: 'Supporto File OFX/QIF', en: 'OFX/QIF File Support' },
+    description: {
+      it: 'Importa le transazioni nel formato standard OFX e QIF usato da molte banche e software finanziari.',
+      en: 'Import transactions in standard OFX and QIF format used by many banks and financial software.'
+    },
+    status: 'planned',
+    category: 'feature',
+    icon: '📂',
   },
 ];
 

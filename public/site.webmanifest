@@ -1,7 +1,7 @@
 {
   "name": "Pacifinance - Personal Finance",
   "short_name": "Pacifinance",
-  "description": "Gestisci le tue finanze personali con dashboard, grafici e statistiche avanzate",
+  "description": "Manage your personal finances with a dashboard, charts, and advanced statistics",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
@@ -23,6 +23,6 @@
     }
   ],
   "categories": ["finance", "productivity"],
-  "lang": "it",
+  "lang": "en",
   "prefer_related_applications": false
 }

@@ -135,6 +135,7 @@
     "landing": {
         "new": {
             "hero": {
+                "eyebrow": "Personal finance, with peace of mind.",
                 "title": "Understand Your Finances",
                 "subtitle": "Without Showing Them to Anyone",
                 "description": "Talking about money is taboo. Pacifinance helps you see where you stand, by comparing anonymously with people like you.",
@@ -142,9 +143,15 @@
                 "learnMore": "Learn More"
             },
             "benefits": {
-                "anonymousComparison": "Anonymous Comparison",
-                "privacyFirst": "Privacy First",
-                "openSource": "Open Source"
+                "anonymousComparison": { "title": "Anonymous Comparison", "subtitle": "No personal data" },
+                "privacyFirst": { "title": "Privacy First", "subtitle": "Your data stays yours" },
+                "openSource": { "title": "Open Source", "subtitle": "Transparent and verifiable" }
+            },
+            "stats": {
+                "anonymous": { "value": "100%", "label": "Anonymous" },
+                "control": { "value": "You", "label": "Control your data" },
+                "peace": { "value": "Peace of mind", "label": "in every choice" },
+                "awareness": { "value": "Awareness", "label": "to grow" }
             },
             "pillars": {
                 "title": "How Pacifinance Solves Your Problems",
@@ -177,11 +184,24 @@
                     ]
                 }
             },
-            "featureBadges": {
-                "free": "100% Free",
-                "marketPrices": "Real-Time Market Prices",
-                "currencies": "19 Currencies Supported",
-                "import": "Quick CSV & Excel Import"
+            "features": {
+                "badge": "🧭 Features",
+                "title": "Everything You Can Do",
+                "subtitle": "Pacifinance's core features, built for everyday financial management.",
+                "items": [
+                    { "title": "Custom Dashboard", "description": "Drag, reorder and hide sections: your view, your way." },
+                    { "title": "Investments Under Control", "description": "Interactive charts, dividends and performance for every asset." },
+                    { "title": "19 Currencies Supported", "description": "Track and compare in EUR, USD, GBP and many more." },
+                    { "title": "Fast Import", "description": "Upload bank statements from CSV or Excel in a few clicks." },
+                    { "title": "Recurring Transactions", "description": "Salary, rent, subscriptions: they log themselves every month." },
+                    { "title": "Goals & Limits", "description": "Set a target or a spending cap and track your progress." },
+                    { "title": "Real-Time Market Prices", "description": "Stocks and crypto prices, kept accurate by the community." },
+                    { "title": "Gamification", "description": "Badges and milestones that make consistency easier." }
+                ],
+                "future": {
+                    "text": "🔭 Coming up: complete net worth, financial simulations and optional AI, always offline-first.",
+                    "cta": "See the roadmap"
+                }
             },
             "openSource": {
                 "badge": "Open Source",
@@ -214,7 +234,9 @@
                 "subtitle": "Financial Life",
                 "description": "Join users who have already gained complete control over their scattered finances with Pacifinance. See your complete financial picture today.",
                 "button": "Start Your Free Account",
-                "disclaimer": "No credit card required • Takes less than 2 minutes • Start immediately"
+                "disclaimer": "No credit card required • Takes less than 2 minutes • Start immediately",
+                "demoPrompt": "Not sure yet?",
+                "demoButton": "Try the demo, no sign-up needed"
             },
             "trust": {
                 "license": "Open Source License",
@@ -280,6 +302,16 @@
     "header": {
         "signIn": "Sign In",
         "signUp": "Sign Up",
+        "nav": {
+            "menu": "Menu",
+            "pages": "Pages",
+            "settings": "Settings",
+            "features": "Features",
+            "whyUs": "Why PaciFinance",
+            "roadmap": "Roadmap",
+            "privacy": "Privacy",
+            "openSource": "Open Source"
+        },
         "login": {
             "title": "Login",
             "titleButton": "Login",
@@ -387,15 +419,20 @@
     "roadmap": {
         "title": "Roadmap",
         "subtitle": "Discover where Pacifinance is heading. Every feature is designed with the community in mind, also thanks to user feedback.",
+        "kicker": "Community-driven roadmap",
         "all": "All",
         "features": "Features",
         "community": "Community",
         "security": "Security",
         "noItems": "No items",
+        "showAll": "Show all",
+        "showLess": "Show less",
+        "reportBug": "Report bug",
         "vote": {
             "cta": "Vote",
             "voted": "Voted",
-            "loginPrompt": "Sign in to vote"
+            "loginPrompt": "Sign in to vote",
+            "frozen": "Voting closed: already shipped"
         }
     },
     "sidebar": {

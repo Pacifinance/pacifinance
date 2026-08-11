@@ -135,6 +135,7 @@
     "landing": {
         "new": {
             "hero": {
+                "eyebrow": "La finanza personale, con serenità.",
                 "title": "Capisci le Tue Finanze",
                 "subtitle": "Senza Mostrarle a Nessuno",
                 "description": "Parlare di soldi è un tabù. Pacifinance ti aiuta a capire se stai andando bene, confrontandoti in modo anonimo con chi è nella tua stessa situazione.",
@@ -142,9 +143,15 @@
                 "learnMore": "Scopri di Più"
             },
             "benefits": {
-                "anonymousComparison": "Confronto Anonimo",
-                "privacyFirst": "Privacy Prima di Tutto",
-                "openSource": "Open Source"
+                "anonymousComparison": { "title": "Confronto Anonimo", "subtitle": "Nessun dato personale" },
+                "privacyFirst": { "title": "Privacy Prima di Tutto", "subtitle": "I tuoi dati restano tuoi" },
+                "openSource": { "title": "Open Source", "subtitle": "Trasparente e verificabile" }
+            },
+            "stats": {
+                "anonymous": { "value": "100%", "label": "Anonimo" },
+                "control": { "value": "Tu", "label": "Controlli i tuoi dati" },
+                "peace": { "value": "Serenità", "label": "nelle tue scelte" },
+                "awareness": { "value": "Consapevolezza", "label": "per crescere" }
             },
             "pillars": {
                 "title": "Perché Hai Bisogno di Pacifinance?",
@@ -177,11 +184,24 @@
                     ]
                 }
             },
-            "featureBadges": {
-                "free": "100% Gratuito",
-                "marketPrices": "Prezzi di Mercato in Tempo Reale",
-                "currencies": "19 Valute Supportate",
-                "import": "Importazione Rapida da CSV e Excel"
+            "features": {
+                "badge": "🧭 Funzionalità",
+                "title": "Tutto quello che puoi fare",
+                "subtitle": "Le funzionalità principali di Pacifinance, pensate per la gestione quotidiana delle tue finanze.",
+                "items": [
+                    { "title": "Dashboard su misura", "description": "Trascina, riordina e nascondi le sezioni: la tua vista, come la vuoi tu." },
+                    { "title": "Investimenti sotto controllo", "description": "Grafici interattivi, dividendi e performance per ogni asset." },
+                    { "title": "19 valute supportate", "description": "Registra e confronta in EUR, USD, GBP e molte altre." },
+                    { "title": "Importazione rapida", "description": "Carica estratti conto da CSV o Excel in pochi click." },
+                    { "title": "Transazioni ricorrenti", "description": "Stipendio, affitto, abbonamenti: si registrano da soli ogni mese." },
+                    { "title": "Obiettivi e limiti", "description": "Fissa un traguardo o un tetto di spesa e monitora i progressi." },
+                    { "title": "Prezzi di mercato in tempo reale", "description": "Azioni e crypto aggiornati, verificati dalla community." },
+                    { "title": "Gamification", "description": "Badge e traguardi che rendono la costanza più semplice." }
+                ],
+                "future": {
+                    "text": "🔭 In arrivo: patrimonio netto completo, simulazioni finanziarie e AI opzionale, sempre offline-first.",
+                    "cta": "Guarda la roadmap"
+                }
             },
             "openSource": {
                 "badge": "Open Source",
@@ -214,7 +234,9 @@
                 "subtitle": "Finanze",
                 "description": "Basta conti sparsi e confusione. Unifica tutto in Pacifinance e scopri finalmente dove stanno davvero i tuoi soldi. È gratis e bastano 2 minuti.",
                 "button": "Apri il Tuo Account Gratuito",
-                "disclaimer": "Nessuna carta di credito richiesta • Bastano meno di 2 minuti • Inizia immediatamente"
+                "disclaimer": "Nessuna carta di credito richiesta • Bastano meno di 2 minuti • Inizia immediatamente",
+                "demoPrompt": "Non sei ancora sicuro?",
+                "demoButton": "Prova la demo senza registrarti"
             },
             "trust": {
                 "license": "Licenza Open Source",
@@ -280,6 +302,16 @@
     "header": {
         "signIn": "Accedi",
         "signUp": "Registrati",
+        "nav": {
+            "menu": "Menu",
+            "pages": "Pagine",
+            "settings": "Impostazioni",
+            "features": "Funzionalità",
+            "whyUs": "Perché PaciFinance",
+            "roadmap": "Roadmap",
+            "privacy": "Privacy",
+            "openSource": "Open Source"
+        },
         "login": {
             "title": "Accedi",
             "titleButton": "Accedi",
@@ -387,15 +419,20 @@
     "roadmap": {
         "title": "Roadmap",
         "subtitle": "Scopri dove sta andando Pacifinance. Ogni funzionalità è pensata in ottica community, anche grazie ai feedback degli utenti.",
+        "kicker": "Roadmap community-driven",
         "all": "Tutto",
         "features": "Funzionalità",
         "community": "Community",
         "security": "Sicurezza",
         "noItems": "Nessun elemento",
+        "showAll": "Mostra tutti",
+        "showLess": "Mostra meno",
+        "reportBug": "Segnala bug",
         "vote": {
             "cta": "Vota",
             "voted": "Votato",
-            "loginPrompt": "Accedi per votare"
+            "loginPrompt": "Accedi per votare",
+            "frozen": "Votazione chiusa: già rilasciata"
         }
     },
     "sidebar": {

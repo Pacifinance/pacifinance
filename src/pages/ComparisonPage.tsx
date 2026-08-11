@@ -11,6 +11,7 @@ import Comparison from '../sections/Comparison';
 import ScrollNavigationIndicator from '../components/ScrollNavigationIndicator';
 import SEOHead from '../components/SEOHead';
 import { useScrollNavigation } from '../hooks/useScrollNavigation';
+import { appBackgroundValue } from '../styles/appBackground';
 
 function ComparisonPage() {
   const { theme } = useContext(ThemeContext);
@@ -66,7 +67,7 @@ function ComparisonPage() {
           marginLeft: isMobileScreen ? '0' : '5.5rem', 
           paddingTop: isMobileScreen ? '70px' : '0',
           width: '100%',
-          backgroundColor: theme.backgroundColor,
+          background: appBackgroundValue(theme),
           minHeight: '100vh'
         }}>
           <Comparison theme={theme} userData={userData} handleSetIsUpdated={handleSetIsUpdated} isHidden={isHidden}/>

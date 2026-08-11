@@ -6,6 +6,8 @@ This guide explains how to set up the project, what to check before opening a pu
 
 Looking for a bigger idea to work on than a single bug fix? [docs/PRODUCT_VISION.md](docs/PRODUCT_VISION.md) is the long-term product vision — simulations, generic assets, a financial context engine, optional AI — organized Now/Next/Later/Research so it's clear which pieces are ready to start and which still need groundwork.
 
+Using AI tools to help write your contribution is welcome — see [AI_POLICY.md](AI_POLICY.md) for what that means in practice.
+
 ## Getting Started
 
 ```bash
@@ -108,6 +110,7 @@ business/domain data (`UserContext`, a service call, a domain-specific hook like
 8. TypeScript: avoid `any`; declare props as interfaces.
 9. Dates: avoid UTC-midnight date bugs; use `toDateOnly` in server code.
 10. Balance keys: use helpers from `src/constants/balanceSchema.ts` instead of hand-indexing snapshots.
+11. Changelog: note any user-facing change under `[Unreleased]` in [CHANGELOG.md](CHANGELOG.md), in the same PR.
 
 ## Submitting Changes
 
@@ -140,6 +143,10 @@ and open a pull request against `Pacifinance/pacifinance:main`.
 6. Delete the short-lived branch after its pull request is merged.
 
 For larger features, open an issue first so the design can be discussed before implementation.
+
+## Releasing
+
+Version numbers and tags follow [CHANGELOG.md](CHANGELOG.md#versioning-policy) - see that section for the exact steps when cutting a release.
 
 ## Reporting Security Issues
 

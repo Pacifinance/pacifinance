@@ -1,9 +1,97 @@
 # Changelog - Pacifinance
 
 All notable changes to the project are documented in this file.
-The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project adheres to [Semantic Versioning](https://semver.org/).
+The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project adheres to [Semantic Versioning](https://semver.org/) (`MAJOR.MINOR.PATCH`; pre-1.0.0, `MINOR` bumps can still include breaking changes).
+
+> **A note on the version numbers below `[0.10.0]`:** entries from `[0.9.0] - 2024 (Early)` through `[0.9.9] - 2026-04-17` were written narratively, grouping features into a `0.9.x` sequence that was never actually reflected in `package.json` (which really went `0.1.0` → `0.5.1` → `0.9.0` → `0.9.9`, confirmed from `git log -- package.json`, and only became `0.9.9` in February 2026 — a year after this file's own `[0.9.3] - 2024-10` entry). They're kept as-is below for the feature-level detail, which is accurate and worth having, but treat their version *numbers* as approximate rather than git-tag-accurate. Starting with `[0.10.0]`, every entry here corresponds to one real `package.json` bump and one git tag — see "Versioning policy" at the bottom.
 
 ---
+
+## [Unreleased]
+
+### Added
+- `AI_POLICY.md`: AI-assisted contributions are welcome, but must be
+  disclosed, reviewed, tested, and aligned with the project's vision before
+  a PR — linked from `CONTRIBUTING.md` and a checklist item in the PR
+  template.
+- Demo account: investment holdings (stocks/ETF/crypto with real
+  quantities, cost basis, transactions and dividends), liquidity
+  sub-accounts, recurring transactions, a shared-expense receivable, and
+  populated spending/savings limits with custom categories — previously
+  most of these returned empty arrays or nulls in demo mode, so several
+  shipped features (portfolio insights, balance reconciliation, recurring
+  transactions, shared expenses, goals & limits, custom categories) had
+  nothing to show a visitor trying the demo. Documented in `AGENTS.md`
+  (rule 5) as a standing requirement: new demo-reachable features need
+  real seed data, not just a structurally-correct empty state.
+
+### Changed
+- Consolidated `CLAUDE.md`, `AGENTS.md` and `.github/copilot-instructions.md`
+  into one source of truth (`AGENTS.md`); the other two now just import it.
+  Dropped a stale "server/ is off-limits" line that contradicted `AGENTS.md`
+  and no longer reflected how the project actually works.
+- Roadmap page: the pre-filled bug-report title is always in English now
+  (GitHub issues are triaged in English regardless of the reporter's UI
+  language).
+- Landing hero: softened the desktop background fade so it reads as a
+  gradual blend instead of a hard edge partway across the screen; the art
+  now stays visible (lightened via filter) in light mode too, instead of
+  disappearing behind a plain dotted background.
+- Landing footer: moved the "Support Pacifinance" button into the
+  Community column, next to the text that's actually about supporting the
+  project, instead of sitting under the logo.
+- `todo.md`: reconciled the backlog against the actual code — checked off
+  the onboarding checklist and roadmap voting (fully shipped but left
+  unchecked), corrected push notifications back to in-progress (backend is
+  scaffolded — VAPID, cron scheduler, reminder types — but not working
+  end-to-end yet) and OFX/QIF support back to not-started (no code behind
+  it despite being marked in-progress), added a real entry for 2FA
+  (doesn't exist yet — this also fixed a false "completed" on the public
+  roadmap, see below), and removed two stale/duplicate lines (a superseded
+  per-bank-template entry, an old one-off bundle-size check for a feature
+  shipped long ago).
+
+### Fixed
+- Public roadmap: the "Two-Factor Authentication" item showed as completed
+  because `scripts/generateRoadmap.js`'s fallback text-match
+  (`todoMatch: "2FA"`) landed on an unrelated, already-checked `todo.md`
+  line about mandatory 2FA for GitHub org members — 2FA for user accounts
+  doesn't exist yet. Added a real `todo.md` entry with a stable
+  `<!-- roadmap:2fa -->` marker, which takes priority over the text-match
+  fallback and resolves this correctly.
+- `vitest.config.mjs` coverage `include` globs only matched `.js`/`.jsx`,
+  silently excluding `src/utils`, `src/contexts`, `src/hooks` and
+  `src/services` (100% TypeScript today) from coverage measurement — the
+  60/60/50/60 thresholds were checking almost nothing. Fixed the globs and
+  reset the thresholds to the real, now-measured baseline (55/47/48/55);
+  wired `npm run test:coverage` into CI in place of the plain `npm test`
+  step, so a regression below today's actual coverage now fails a PR.
+- Landing hero: the desktop artwork was cropping off the tree and moon
+  because it was center-positioned inside a panel narrower than the source
+  image — repositioned so the full subject is visible instead.
+
+## [0.10.0] - 2026-08-11
+
+### Added
+- Landing page: dedicated **Features** section (dashboard, investments, multi-currency, import, recurring transactions, goals/limits, market prices, gamification), distinct from the existing "why Pacifinance" pillars, with a link into the roadmap for what's coming next.
+- Roadmap page: "show more" per column instead of one long list, and a bug-report link on completed items (opens a pre-filled GitHub issue).
+
+### Changed
+- Roadmap page: modernized card/column styling; voting on already-completed items is now read-only (voting is for prioritizing what's next, not re-litigating what already shipped).
+- Landing hero: the mobile background artwork is now a real full-bleed background (matching the desktop treatment) instead of a separate boxed image sitting above the text.
+
+### Fixed
+- `scripts/setVersion.js` was writing `src/data/appVersion.js`, but the file actually imported by the app is `appVersion.ts` — every past version bump silently created a stray, unused `.js` file instead of updating the real one. The script now targets the correct file.
+
+## [0.9.9] (continued) - 2026-07 to 2026-08
+
+`package.json` stayed at `0.9.9` through this entire window (see the note above the [0.10.0] entry, and "Versioning policy" — this gap is exactly what that process now prevents). Shipped in that time, grouped by month:
+
+**2026-08** — Net worth trend charts, account recovery code (block code + word phrase, printable/regenerable), income & outflow explorer, balance and holdings reconciliation.
+
+**2026-07** — Interactive investment charts (collapsible legends, asset detail), recurring transactions, quick add, goals & spending limits, duplicate-entry detection on manual input, shared expenses, live market prices for stocks/ETFs, adaptive portfolio insights, monthly investment target, community-verified historical prices.
+
+**2026-04** (between this and the `[0.9.9] - 2026-04-17` entry below) — multi-insert and detailed outflow analysis, already covered there.
 
 ## [0.9.9] - 2026-04-17
 
@@ -143,3 +231,22 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - Tests: BottomNavBar (10), useScrollNavigation (10), SettingsPage order (2)
 - Tests for removeLanguageFromPath edge cases (8 tests)
 - Tests for DataImportWizard processRowDual (15 tests)
+
+---
+
+## Before this file existed
+
+`git log -- package.json` shows `package.json`'s version field actually went `0.1.0` (2023-06-11, first commit) → `0.5.1` (2023-10-18) → `0.9.0` (2025-07-12, real infra cycle: dependency injection, Redis-based sessions/cache, CRA→Vite migration, the roadmap generation script, first Vitest suite) → `0.9.9` (2026-02-17). `v0.1.0`, `v0.5.1` and `v0.9.0` are tagged on those exact commits for the record, even though the entries above don't cover that period in detail.
+
+---
+
+## Versioning policy
+
+- **Every commit that changes user-facing behavior** gets a line under `[Unreleased]` above, in the same PR/commit as the change — not reconstructed later from memory or from `git log`.
+- **Cutting a release**: run `npm run version:bump:<patch|minor|major>` (updates `package.json`, `package-lock.json` and `src/data/appVersion.ts` together), move the `[Unreleased]` entries under a new `## [x.y.z] - YYYY-MM-DD` heading, commit, then tag:
+  ```
+  git tag -a vX.Y.Z -m "vX.Y.Z"
+  git push origin vX.Y.Z
+  ```
+- Use `MAJOR` for breaking changes (self-hosters, API consumers), `MINOR` for new user-facing features, `PATCH` for fixes only.
+- This is what the `[0.9.9] (continued)` entry above exists to prevent: six months of real feature work landed without a single version bump, so `package.json`'s `0.9.9` stopped meaning anything specific. From `[0.10.0]` on, a version number always identifies one exact commit.

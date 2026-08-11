@@ -22,16 +22,14 @@ import {
   Info, ArrowLeft, ChevronRight, Activity, AlertTriangle,
   DollarSign
 } from 'lucide-react';
+import { appBackgroundValue } from '../styles/appBackground';
 
 /* ═══════════════════════════════════════════════════════════════
    Styled Components
    ═══════════════════════════════════════════════════════════════ */
 
 const PageContainer = styled.div`
-  background: ${p => p.theme.mode === 'dark'
-    ? 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%)'
-    : 'linear-gradient(135deg, #f8fafc 0%, #ffffff 50%, #f1f5f9 100%)'
-  };
+  background: ${p => appBackgroundValue(p.theme)};
   min-height: 100vh;
   padding: 0;
   margin: 0;
@@ -39,19 +37,6 @@ const PageContainer = styled.div`
   position: relative;
   overflow-x: hidden;
   padding-bottom: 14rem;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 300px;
-    background: ${p => p.theme.mode === 'dark'
-      ? 'radial-gradient(ellipse at top, rgba(7, 145, 100, 0.15) 0%, transparent 70%)'
-      : 'radial-gradient(ellipse at top, rgba(7, 145, 100, 0.08) 0%, transparent 70%)'
-    };
-    pointer-events: none;
-    z-index: 0;
-  }
 
   @media (max-width: 768px) {
     padding-top: 4rem;

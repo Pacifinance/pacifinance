@@ -33,26 +33,32 @@ export default mergeConfig(
         reporter: ['text', 'json', 'html', 'lcov'],
         reportsDirectory: './coverage',
         include: [
-          'src/utils/**/*.{js,jsx}',
-          'src/contexts/**/*.{js,jsx}',
-          'src/components/**/*.{js,jsx}',
-          'src/hooks/**/*.{js,jsx}',
-          'src/services/**/*.{js,jsx}'
+          'src/utils/**/*.{js,jsx,ts,tsx}',
+          'src/contexts/**/*.{js,jsx,ts,tsx}',
+          'src/components/**/*.{js,jsx,ts,tsx}',
+          'src/hooks/**/*.{js,jsx,ts,tsx}',
+          'src/services/**/*.{js,jsx,ts,tsx}'
         ],
         exclude: [
           'node_modules',
           'src/__tests__',
-          'src/**/*.test.{js,jsx}',
-          'src/**/*.spec.{js,jsx}',
+          'src/**/*.test.{js,jsx,ts,tsx}',
+          'src/**/*.spec.{js,jsx,ts,tsx}',
+          'src/**/*.d.ts',
           'src/data/**',
           'src/assets/**',
           'src/styles/**'
         ],
+        // Baseline = actual coverage measured right after fixing the `include`
+        // globs below (they only matched .js/.jsx and silently excluded this
+        // now-all-TypeScript codebase, so the old 60/60/50/60 numbers were
+        // never really being checked). This floor blocks regressions below
+        // today's real level; raise it as gaps close, don't lower it.
         thresholds: {
-          lines: 60,
-          functions: 60,
-          branches: 50,
-          statements: 60
+          lines: 55,
+          functions: 47,
+          branches: 48,
+          statements: 55
         }
       },
       

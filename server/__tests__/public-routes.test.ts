@@ -183,7 +183,11 @@ describe("public backend routes", () => {
 
             expect(response.status).toBe(200)
             expect(mockDb.users.setPasswordOfUserId).toHaveBeenCalledWith("user-uuid", "brandNewPassword1")
-            expect(mockDb.users.setRecoveryCodeHash).toHaveBeenCalledWith("user-uuid", null)
+            // Single-use: the old code is invalidated and a fresh one is rotated in immediately
+            // (see the route's comment), not just nulled out.
+            expect(mockDb.users.setRecoveryCodeHash).toHaveBeenCalledWith("user-uuid", expect.any(String))
+            expect(response.json.recovery_code_base32).toEqual(expect.any(String))
+            expect(response.json.recovery_code_words).toEqual(expect.any(String))
         })
 
         it("resets the password when the recovery code matches (word-phrase format)", async () => {

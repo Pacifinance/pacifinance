@@ -7,7 +7,7 @@ const semverRegex = /^\d+\.\d+\.\d+$/;
 const rootDir = path.resolve(__dirname, '..');
 const packageJsonPath = path.join(rootDir, 'package.json');
 const packageLockPath = path.join(rootDir, 'package-lock.json');
-const appVersionPath = path.join(rootDir, 'src', 'data', 'appVersion.js');
+const appVersionPath = path.join(rootDir, 'src', 'data', 'appVersion.ts');
 
 const updateJsonFile = (filePath, updater) => {
   const raw = fs.readFileSync(filePath, 'utf8');
@@ -38,7 +38,7 @@ const setVersion = (versionArg) => {
   fs.writeFileSync(appVersionPath, appVersionContent, 'utf8');
 
   console.log(`✅ App version updated to ${versionArg}`);
-  console.log('Updated: package.json, package-lock.json, src/data/appVersion.js');
+  console.log('Updated: package.json, package-lock.json, src/data/appVersion.ts');
 };
 
 if (require.main === module) {

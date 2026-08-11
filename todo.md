@@ -93,12 +93,10 @@
 - [x] Paste-and-recognize: client-side parsing (smartPasteParser.ts) of free text into amount+category, inside quick-add — 100% client-side, zero server involvement
 - [x] Voice input = OS dictation in the paste-and-recognize field (the phone's keyboard mic transcribes, our parser recognizes it; the audio never touches our servers)
 - [ ] Auto-link recurring outflows created from the "subscription/periodic payment" payment type (prompt "make it recurring" on save) — not done this round, for now these are only created from the dedicated panel
-- [ ] Per-bank mapping templates for import (Fineco, Intesa, Revolut, N26) — a privacy-friendly substitute for open banking
 - [ ] Receipt photo: client-side OCR with tesseract.js (WASM in the browser) → pre-fills quick-add; the image never leaves the device. Not done this round: needs a new heavyweight dependency (tesseract.js, a few MB of WASM + trained data) — deserves its own round to evaluate the bundle-size impact, not a rushed addition
-- [ ] No Telegram/WhatsApp bot for data entry (financial data would pass through third-party servers — against the privacy positioning; revisit only as an explicit opt-in bridge in the future)
 
 ### Phase 2 — Data consistency
-- [ ] Income/outflows: select the source at the sub-account level, with a nested dropdown (sub-accounts indented under the parent account, not flat "Bank / Revolut" entries)
+- [x] Income/outflows: select the source at the sub-account level, with a nested dropdown (sub-accounts indented under the parent account, not flat "Bank / Revolut" entries)
 - [ ] Persist the transaction→source link to the DB: deleting an outflow (or income) with a specified source should propose auto-reversing that exact field, with user confirmation
 - [ ] Compact dashboard view: % of each sub-account relative to its parent account
 - [ ] Compact view: expand "Category Summary" and "Income|Outflows" with more detail (%, change vs previous month, saving rate — a quick snapshot of the financial situation)
@@ -109,17 +107,17 @@
 - [x] Chose a license: AGPLv3 — forces hosted forks to publish their changes back
 - [x] Transferred the serverless repo into the Pacifinance GitHub organization (a transfer, not a copy: GitHub creates automatic redirects); archived the legacy repo with a README pointing to the new one
 - [x] Vercel deploy from the org repo WITHOUT Vercel Pro: `.github/workflows/deploy-vercel.yml` workflow (Vercel CLI, not the native import — importing from an org pushes you toward the paid Team plan, deploying via CLI + personal token doesn't). Push to `main` → production, PR → preview with a URL comment. Still open: create the 3 secrets (VERCEL_TOKEN/VERCEL_ORG_ID/VERCEL_PROJECT_ID via a local `vercel link`) and disconnect Vercel's native Git integration to avoid deploying twice
-- [ ] GitHub org: mandatory 2FA for members, branch protection on main (PR + review), CODEOWNERS, secrets only in deploy environments (Vercel/Supabase), never in the repo
+- [x] GitHub org: mandatory 2FA for members, branch protection on main (PR + review), CODEOWNERS, secrets only in deploy environments (Vercel/Supabase), never in the repo
 - [x] Co-owner: added a second maintainer as an org Owner (bus factor ≥ 2)
 - [x] Removed the global floating BuyMeACoffee widget (a script injected outside the React tree that stayed visible on every page, including the authenticated app, after the first visit to Landing/Pricing/Info — invasive and inconsistent with the privacy-first positioning); replaced with a static "☕ Support Pacifinance" link only where a dedicated support section already exists
 - [x] FUNDING.yml: BuyMeACoffee as the initial static channel; GitHub Sponsors can be added once active
 - [x] README + CONTRIBUTING in English, public CI (GitHub Actions: lint+test+build on PR — free for public repos)
 - [ ] Landing page "self-host in 10 minutes" with Docker (docker-compose: static frontend + Express server + Postgres; Redis optional)
-- [ ] Demo account with mock data and no DB requests (planned below too, becomes a launch prerequisite)
+- [x] Demo account with mock data and no DB requests (planned below too, becomes a launch prerequisite)
 - [ ] Launch: Hacker News, r/selfhosted, r/ItaliaPersonalFinance
 
 ### Phase 3b — Hosted + self-hosted architecture
-- [ ] Dual distribution: hosted web app (pacifinance.com, free) + free self-hosted (AGPL) — same codebase; the competition is NOT hosted-vs-self-hosted (someone who self-hosts would never have paid anyway — they contribute code, bug reports, and credibility instead)
+- [ ] Dual distribution: hosted web app (pacifinance.com, free) + free self-hosted (AGPL) — same codebase; the competition is NOT hosted-vs-self-hosted
 - [ ] Anonymous comparison for self-hosted instances: an opt-in "community stats" service — the self-hosted instance sends ONLY anonymous aggregates (profile bucket: age range/job/country + rounded monthly totals), NEVER raw transactions; it receives percentiles back. Anyone who opts out gets everything except the comparison. This is the network effect that stays with the project even with open code
 - [ ] Note on Vercel: the Hobby plan prohibits commercial use — the day a paid tier launches, Vercel Pro (or a host migration) becomes necessary; budget for it then, not before
 
@@ -148,52 +146,44 @@
 
 ---
 
-## To Do
-
-### Known Bugs
-- [ ] BuyMeACoffee widget: verify positioning across all devices (CSS `!important` workaround)
-- [ ] Chart `renderCustomizedLabel`: check for overlap with a reduced radius on mobile
-- [ ] Floating point and cents: the DB will send integer values (`* 100`), handle the conversion
-
 ### Security
 <!-- Encrypted recovery-email idea evaluated and dropped: even as an optional
      field it wouldn't stop a user from typing firstname.lastname@..., which
      reintroduces the identifying-data exposure that the anonymous account
      model avoids. The recovery code (see above, done) solves the same
      problem while staying consistent with "no personal data, ever". -->
+- [ ] Two-factor authentication for user accounts (e.g. TOTP) — distinct from account recovery (block code + word phrase, done above): 2FA is a second factor at login, recovery is what gets you back in if you lose the password <!-- roadmap:2fa -->
 
-
-### Mobile
-- [ ] Test BottomNavBar on devices with a notch/Dynamic Island (safe-area-inset)
-- [ ] Scroll navigation: evaluate disabling it on mobile (interferes with natural scrolling)
-- [ ] Emergency fund card alone: resize to half-width
-- [ ] Chart legend on mobile: verify on ~320px screens
-
-### Desktop
-- [ ] Sidebar: tooltip for Goals and Limits
-- [ ] Sidebar: verify active-link highlighting with the new routing
 
 ### Features
-- [ ] Push notifications (PWA) as a monthly data-entry reminder <!-- roadmap:push-notifications -->
+- [~] Push notifications (PWA): VAPID keys + a pg_cron/pg_net scheduler + 5 reminder types are scaffolded (monthly data-entry summary, data-update nudge, recurring-due, etc.), broader in scope than the original one-liner, but not working end-to-end yet <!-- roadmap:push-notifications -->
 - [ ] Quick summary widget on the home: net worth + change vs previous month
 - [x] Historical net-worth trend charts (timeline) <!-- roadmap:trend-charts -->
 - [ ] Export PDF: improve the layout, include charts <!-- roadmap:pdf-reports -->
 - [x] Flexible goals and limits: fixed and percentage thresholds that can be combined, emergency fund in months, per-category and concentration limits, debts and passive income (backend + UI + analysis) <!-- roadmap:goals-limits -->
-- [~] Guided onboarding for new users: 4-step wizard with a progress bar <!-- roadmap:onboarding -->
-- [ ] Make the demo account avoid DB requests entirely and use mock data instead, so it can quickly showcase every feature and convince the user to sign up (right now it hits the DB, which doesn't scale with many concurrent users)
+- [x] Guided onboarding for new users: inline 4-step checklist card with a progress bar, auto-dismisses on completion (`OnboardingWelcome.tsx`) <!-- roadmap:onboarding -->
 
 ### Community and Feedback
 - [~] User feedback system (Phase 1): in-app form -> GitHub Issue via the backend <!-- roadmap:feedback-system -->
 - [~] "Contribute" section: how to donate, report bugs, propose ideas <!-- roadmap:contribute-section -->
-- [~] Roadmap priority voting system (needs a backend) <!-- roadmap:roadmap-voting -->
+- [x] Roadmap priority voting system: per-user toggle vote + public counts, backed by `roadmapVotes` table and routes <!-- roadmap:roadmap-voting -->
 
-### Performance
-- [ ] Check bundle size after adding BottomNavBar + MUI icons
+### Testing
+<!-- From a coverage audit (2026-08): well covered overall (~1755 tests,
+     real authFlow integration suite, all contexts, most of utils/), these
+     are the gaps worth closing, roughly by risk. -->
+- [ ] Comparison/Leaderboard: no frontend test verifies the anonymous-comparison UI never renders another user's identifying fields (`src/pages/ComparisonPage.tsx`, `src/sections/Comparison.tsx`, `src/sections/Leaderboard.tsx`) — highest-priority gap, this is the privacy-sensitive surface
+- [ ] `CurrencyContext`: no test on the actual EUR↔display-currency conversion math, only on the static rate table (`currencyConfig.test.js`)
+- [ ] `server/src/services/ranking.ts`: thin test coverage (27 lines) for a service computing percentile placement
+- [ ] Page-level smoke tests: only `DashboardPage` has one; `AuthPage`, `ProfilePage`, `GoalsAndLimitsPage`, `SettingsPage` etc. have none
+- [ ] Component tests for high-traffic forms: `SignInForm`, `SignUpForm`, `RecoveryForm`, `DataImportWizard`, `InvestmentImportWizard`, `GoalTracker`, `RecurringTransactionsPanel`
+- [ ] No accessibility (a11y) testing anywhere (no `jest-axe`/`@axe-core`)
+- [ ] Consider 3-5 targeted Playwright smoke tests for the true black-box gaps unit tests can't reach (login→dashboard render, CSV import happy path, comparison page not leaking PII) instead of a full e2e suite
 
 ### Data Import (evolution)
 - [ ] Support updating the balance via import
 - [ ] Chart preview of imported transactions (histogram by month/category)
 - [ ] Per-bank mapping templates (UniCredit, Revolut, N26...) with community sharing <!-- roadmap:bank-templates -->
 - [~] Auto-detect known bank formats (Fineco, Intesa, Revolut, N26) <!-- roadmap:auto-detect-bank-format -->
-- [~] OFX/QIF file support <!-- roadmap:OFX/QIF-support -->
+- [ ] OFX/QIF file support <!-- roadmap:OFX/QIF-support -->
 - [ ] Recurring import: remember the last file and suggest an update

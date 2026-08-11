@@ -11,6 +11,7 @@ import CodeIcon from '@mui/icons-material/Code';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import SEOHead from '../components/SEOHead';
 import { GITHUB_REPO_URL } from '../data/externalLinks';
+import heroBackground from '../assets/landing/hero-background.webp';
 import type { PacifinanceTheme } from '../types/theme';
 
 export default function AuthPage() {
@@ -37,10 +38,34 @@ export default function AuthPage() {
         <Header theme={theme} mode={mode} toggleMode={toggleMode} toggleLanguage={toggleLanguage} />
 
         <div
-          className="flex-1 w-full flex items-center justify-center px-4 py-10 md:py-16"
+          className="relative flex-1 w-full flex items-center justify-center px-4 py-10 md:py-16 overflow-hidden"
           style={{ backgroundColor: theme.backgroundColor, color: theme.textColor }}
         >
-          <div className="max-w-5xl w-full">
+          {mode === 'dark' && (
+            <>
+              <div
+                className="absolute inset-0"
+                aria-hidden="true"
+                style={{
+                  backgroundImage: `url(${heroBackground})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center 30%',
+                  opacity: 0.16,
+                }}
+              />
+              {/* Vignette keeps the form legible — the art shows mainly at the edges. */}
+              <div
+                className="absolute inset-0"
+                aria-hidden="true"
+                style={{
+                  background: `radial-gradient(ellipse at center, ${theme.backgroundColor} 25%, transparent 75%)`,
+                  opacity: 0.92,
+                }}
+              />
+            </>
+          )}
+
+          <div className="relative z-10 max-w-5xl w-full">
             <div className="text-center mb-8 md:mb-10">
               <h1 className="text-3xl md:text-4xl font-bold mb-3">
                 {isSignUp ? (

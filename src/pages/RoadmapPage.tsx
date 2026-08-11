@@ -14,15 +14,31 @@ import { useLocalizedNavigate } from '../hooks/useLocalizedNavigate';
 import { useServices } from '../contexts/ServiceContext';
 import { GITHUB_REPO_URL } from '../data/externalLinks';
 
+const CARDS_PER_COLUMN = 4;
+
 /* ─── Styled Components ─── */
 
 const PageWrapper = styled.div`
+  position: relative;
   min-height: 100vh;
+  overflow: hidden;
   background: ${p => p.theme.mode === 'dark'
     ? `linear-gradient(135deg, ${p.theme.backgroundColor} 0%, #0a0a1a 100%)`
     : `linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)`};
   padding: 2rem;
   padding-top: ${p => p.$withTopOffset ? 'calc(2rem + 72px)' : '2rem'};
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(600px circle at 12% 0%, ${p => p.theme.secondaryColor}${p => p.theme.mode === 'dark' ? '1c' : '12'}, transparent 55%),
+      radial-gradient(500px circle at 90% 15%, #10b981${p => p.theme.mode === 'dark' ? '14' : '0d'}, transparent 50%);
+  }
+
+  > * { position: relative; z-index: 1; }
 
   @media (max-width: 768px) {
     padding: 1rem;
@@ -122,10 +138,11 @@ const ColumnsGrid = styled.div`
 
 const Column = styled.div`
   background: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.7)'};
-  border-radius: 16px;
+  border-radius: 20px;
   border: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'};
+  box-shadow: ${p => p.theme.mode === 'dark' ? 'none' : '0 4px 24px rgba(15,23,42,0.04)'};
   padding: 1.25rem;
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(10px);
 `;
 
 const ColumnHeader = styled.div`
@@ -133,11 +150,19 @@ const ColumnHeader = styled.div`
   align-items: center;
   gap: 0.6rem;
   margin-bottom: 1rem;
-  padding-bottom: 0.75rem;
+  padding-bottom: 0.85rem;
   border-bottom: 2px solid ${p => p.$accentColor}40;
 
+  .status-dot {
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 50%;
+    background: ${p => p.$accentColor};
+    box-shadow: 0 0 0 4px ${p => p.$accentColor}22;
+  }
+
   h2 {
-    font-size: 1.1rem;
+    font-size: 1.05rem;
     font-weight: 700;
     color: ${p => p.theme.mode === 'dark' ? '#fff' : '#1a1a2e'};
     margin: 0;
@@ -155,32 +180,55 @@ const ColumnHeader = styled.div`
 `;
 
 const Card = styled.div`
+  position: relative;
   background: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : '#ffffff'};
   border: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'};
-  border-radius: 12px;
-  padding: 1rem;
+  border-radius: 14px;
+  padding: 1rem 1rem 1rem 1.1rem;
   margin-bottom: 0.75rem;
+  overflow: hidden;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: ${p => CATEGORY_COLORS[p.$cat] || CATEGORY_COLORS.default};
+  }
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    box-shadow: 0 10px 24px rgba(0,0,0,0.1);
   }
 `;
 
 const CardTitle = styled.div`
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  align-items: flex-start;
+  gap: 0.6rem;
   margin-bottom: 0.4rem;
 
-  .icon { font-size: 1.2rem; }
+  .icon {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.9rem;
+    height: 1.9rem;
+    border-radius: 9px;
+    font-size: 1rem;
+    background: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)'};
+  }
 
   h3 {
     font-size: 0.95rem;
     font-weight: 650;
     color: ${p => p.theme.mode === 'dark' ? '#fff' : '#1a1a2e'};
     margin: 0;
+    padding-top: 0.15rem;
   }
 `;
 
@@ -262,6 +310,72 @@ const GithubIssueLink = styled.a`
   &:hover { text-decoration: underline; }
 `;
 
+const VoteCountBadge = styled.span`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border: 1.5px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)'};
+  color: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.4)'};
+`;
+
+const BugReportLink = styled.a`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: ${p => p.theme.mode === 'dark' ? 'rgba(239,68,68,0.85)' : '#dc2626'};
+  text-decoration: none;
+
+  &:hover { text-decoration: underline; }
+`;
+
+const CardActions = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+`;
+
+const ShowMoreButton = styled.button`
+  display: block;
+  width: 100%;
+  margin-top: 0.25rem;
+  padding: 0.55rem;
+  border-radius: 10px;
+  border: 1.5px dashed ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.12)'};
+  background: transparent;
+  color: ${p => p.theme.secondaryColor};
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: ${p => p.theme.secondaryColor};
+    background: ${p => `${p.theme.secondaryColor}12`};
+  }
+`;
+
+const HeaderKicker = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.9rem;
+  margin-bottom: 1rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  color: ${p => p.theme.secondaryColor};
+  background: ${p => `${p.theme.secondaryColor}15`};
+  border: 1px solid ${p => `${p.theme.secondaryColor}30`};
+`;
+
 const FeedbackCTA = styled.div`
   text-align: center;
   margin-top: 3rem;
@@ -311,6 +425,14 @@ const STATUS_CONFIG = {
   planned: { labelIt: 'Pianificato', labelEn: 'Planned', color: '#3b82f6', emoji: '📋' },
 };
 
+const CATEGORY_COLORS = {
+  feature: '#3b82f6',
+  ux: '#a855f7',
+  community: '#10b981',
+  security: '#ef4444',
+  default: '#6b7280',
+};
+
 const CATEGORY_LABELS = {
   feature: { it: 'Funzionalità', en: 'Feature' },
   ux: { it: 'Esperienza', en: 'Experience' },
@@ -330,6 +452,7 @@ const RoadmapPage = () => {
   const navigate = useLocalizedNavigate();
   const [voteCounts, setVoteCounts] = useState({});
   const [myVotes, setMyVotes] = useState([]);
+  const [expandedColumns, setExpandedColumns] = useState({});
 
   const { mode } = theme;
 
@@ -383,43 +506,94 @@ const RoadmapPage = () => {
 
   const statusOrder = ['planned', 'in-progress', 'completed'];
 
+  const buildBugReportUrl = (item) => {
+    // GitHub issues are triaged in English regardless of the reporter's UI
+    // language, so the pre-filled title always uses the English title.
+    return `${GITHUB_REPO_URL}/issues/new?template=bug_report.md&title=${encodeURIComponent(`[Bug] ${item.title.en}`)}`;
+  };
+
+  const toggleColumnExpanded = (status) => {
+    setExpandedColumns(prev => ({ ...prev, [status]: !prev[status] }));
+  };
+
   const renderCards = (status) => {
     const items = filtered.filter(i => i.status === status);
     if (!items.length) return <CardDesc theme={theme}>{t.noItems || (isIt ? 'Nessun elemento' : 'No items')}</CardDesc>;
-    return items.map(item => (
-      <Card key={item.id} theme={theme}>
-        <CardTitle theme={theme}>
-          <span className="icon">{item.icon}</span>
-          <h3>{item.title[language] || item.title.en}</h3>
-        </CardTitle>
-        <CardDesc theme={theme}>
-          {item.description[language] || item.description.en}
-        </CardDesc>
-        <CategoryBadge $cat={item.category}>
-          {CATEGORY_LABELS[item.category]?.[language] || item.category}
-        </CategoryBadge>
-        <CardFooter>
-          <VoteButton
-            theme={theme}
-            $voted={myVotes.includes(item.id)}
-            onClick={() => handleToggleVote(item.id)}
-            title={isAuthenticated ? undefined : (t.vote?.loginPrompt || (isIt ? 'Accedi per votare' : 'Sign in to vote'))}
-          >
-            🗳️ {voteCounts[item.id] || 0}
-          </VoteButton>
-          {item.githubIssue && (
-            <GithubIssueLink
-              theme={theme}
-              href={`${GITHUB_REPO_URL}/issues/${item.githubIssue}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              GitHub #{item.githubIssue}
-            </GithubIssueLink>
-          )}
-        </CardFooter>
-      </Card>
-    ));
+
+    const isExpanded = !!expandedColumns[status];
+    const visibleItems = isExpanded ? items : items.slice(0, CARDS_PER_COLUMN);
+    const hiddenCount = items.length - visibleItems.length;
+
+    const cards = visibleItems.map(item => {
+      const isCompleted = item.status === 'completed';
+      return (
+        <Card key={item.id} theme={theme} $cat={item.category}>
+          <CardTitle theme={theme}>
+            <span className="icon">{item.icon}</span>
+            <h3>{item.title[language] || item.title.en}</h3>
+          </CardTitle>
+          <CardDesc theme={theme}>
+            {item.description[language] || item.description.en}
+          </CardDesc>
+          <CategoryBadge $cat={item.category}>
+            {CATEGORY_LABELS[item.category]?.[language] || item.category}
+          </CategoryBadge>
+          <CardFooter>
+            {isCompleted ? (
+              <VoteCountBadge
+                theme={theme}
+                title={t.vote?.frozen || (isIt ? 'Votazione chiusa: già rilasciata' : 'Voting closed: already shipped')}
+              >
+                🗳️ {voteCounts[item.id] || 0}
+              </VoteCountBadge>
+            ) : (
+              <VoteButton
+                theme={theme}
+                $voted={myVotes.includes(item.id)}
+                onClick={() => handleToggleVote(item.id)}
+                title={isAuthenticated ? undefined : (t.vote?.loginPrompt || (isIt ? 'Accedi per votare' : 'Sign in to vote'))}
+              >
+                🗳️ {voteCounts[item.id] || 0}
+              </VoteButton>
+            )}
+            <CardActions>
+              {isCompleted && (
+                <BugReportLink
+                  theme={theme}
+                  href={buildBugReportUrl(item)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  🐛 {t.reportBug || (isIt ? 'Segnala bug' : 'Report bug')}
+                </BugReportLink>
+              )}
+              {item.githubIssue && (
+                <GithubIssueLink
+                  theme={theme}
+                  href={`${GITHUB_REPO_URL}/issues/${item.githubIssue}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  GitHub #{item.githubIssue}
+                </GithubIssueLink>
+              )}
+            </CardActions>
+          </CardFooter>
+        </Card>
+      );
+    });
+
+    if (hiddenCount > 0 || isExpanded) {
+      cards.push(
+        <ShowMoreButton key={`${status}-toggle`} theme={theme} onClick={() => toggleColumnExpanded(status)}>
+          {isExpanded
+            ? (t.showLess || (isIt ? 'Mostra meno' : 'Show less'))
+            : `${t.showAll || (isIt ? 'Mostra tutti' : 'Show all')} (${items.length})`}
+        </ShowMoreButton>
+      );
+    }
+
+    return cards;
   };
 
   const t = translations?.roadmap || {};
@@ -436,6 +610,9 @@ const RoadmapPage = () => {
       />
 
       <PageHeader theme={theme}>
+        <HeaderKicker theme={theme}>
+          🤝 {t.kicker || (isIt ? 'Roadmap community-driven' : 'Community-driven roadmap')}
+        </HeaderKicker>
         <h1>🗺️ {t.title || (isIt ? 'Roadmap' : 'Roadmap')}</h1>
         <p>
           {t.subtitle || (isIt
@@ -484,6 +661,7 @@ const RoadmapPage = () => {
             return (
               <div key={status} style={{ marginBottom: '1.5rem' }}>
                 <ColumnHeader theme={theme} $accentColor={cfg.color}>
+                  <span className="status-dot" />
                   <span>{cfg.emoji}</span>
                   <h2>{isIt ? cfg.labelIt : cfg.labelEn}</h2>
                   <span className="count">{items.length}</span>
@@ -502,6 +680,7 @@ const RoadmapPage = () => {
             return (
               <Column key={status} theme={theme}>
                 <ColumnHeader theme={theme} $accentColor={cfg.color}>
+                  <span className="status-dot" />
                   <span>{cfg.emoji}</span>
                   <h2>{isIt ? cfg.labelIt : cfg.labelEn}</h2>
                   <span className="count">{items.length}</span>

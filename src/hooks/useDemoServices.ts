@@ -3,10 +3,17 @@
  *
  * In normal mode, returns real services unchanged.
  * In demo mode, wraps write methods to return simulated success
- * responses without making any API calls.
+ * responses without making any API calls, and wraps per-feature read
+ * methods (goals, investment holdings, recurring transactions, liquidity
+ * sub-accounts, shared expenses) to return realistic seed data instead of
+ * hitting a backend. These are features a real account fetches separately
+ * on demand, unlike the bulk `userData` snapshot UserContext loads once at
+ * startup — that one's demo counterpart is `generateDemoData()` in
+ * `src/data/demoData.ts`, not here.
  *
  * Usage: replace `useServices()` with `useDemoServices()` in components
- * that perform write operations (InsertValues, ProfilePage, etc.).
+ * that perform write operations (InsertValues, ProfilePage, etc.) or read
+ * one of the per-feature services listed above.
  *
  * @module hooks/useDemoServices
  */

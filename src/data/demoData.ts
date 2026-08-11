@@ -1,6 +1,15 @@
 /**
- * Demo Data Generator — produces rich, realistic financial data
- * for the demo account, entirely client-side.
+ * Demo Data Generator — produces the bulk `userData` snapshot (balances,
+ * transactions, rankings, averages, profile, limits, custom categories)
+ * that UserContext loads once at startup, entirely client-side.
+ *
+ * This is the demo-mode counterpart of the app's initial bulk data fetch
+ * (userService/financeService for a real account). Per-feature data that a
+ * real account fetches separately on demand — goals, investment holdings,
+ * recurring transactions, liquidity sub-accounts, shared expenses — lives
+ * in `useDemoServices.ts` instead, mirroring how those stay separate
+ * service calls outside demo mode too. When adding demo data for a new
+ * feature, check there first if the feature has its own service.
  *
  * All dates are dynamically computed relative to the current date,
  * so the data always appears fresh and covers the last 13 months.

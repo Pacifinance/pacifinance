@@ -234,7 +234,9 @@
                 "subtitle": "Financial Life",
                 "description": "Join users who have already gained complete control over their scattered finances with Pacifinance. See your complete financial picture today.",
                 "button": "Start Your Free Account",
-                "disclaimer": "No credit card required • Takes less than 2 minutes • Start immediately"
+                "disclaimer": "No credit card required • Takes less than 2 minutes • Start immediately",
+                "demoPrompt": "Not sure yet?",
+                "demoButton": "Try the demo, no sign-up needed"
             },
             "trust": {
                 "license": "Open Source License",
@@ -304,8 +306,6 @@
             "menu": "Menu",
             "pages": "Pages",
             "settings": "Settings",
-            "theme": "Theme",
-            "language": "Language",
             "features": "Features",
             "whyUs": "Why PaciFinance",
             "roadmap": "Roadmap",

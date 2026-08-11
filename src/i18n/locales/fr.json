@@ -225,7 +225,9 @@
                 "subtitle": "vie financière",
                 "description": "Rejoins les utilisateurs qui ont déjà pris le contrôle total de leurs finances dispersées avec Pacifinance. Découvre ta situation financière complète dès aujourd'hui.",
                 "button": "Crée ton compte gratuit",
-                "disclaimer": "Aucune carte bancaire requise • Prend moins de 2 minutes • Commence immédiatement"
+                "disclaimer": "Aucune carte bancaire requise • Prend moins de 2 minutes • Commence immédiatement",
+                "demoPrompt": "Pas encore convaincu ?",
+                "demoButton": "Essaie la démo sans inscription"
             },
             "trust": {
                 "license": "Licence open source",
@@ -295,8 +297,6 @@
             "menu": "Menu",
             "pages": "Pages",
             "settings": "Paramètres",
-            "theme": "Thème",
-            "language": "Langue",
             "features": "Fonctionnalités",
             "whyUs": "Pourquoi PaciFinance",
             "roadmap": "Roadmap",

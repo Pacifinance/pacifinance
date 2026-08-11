@@ -225,7 +225,9 @@
                 "subtitle": "vida financeira",
                 "description": "Junte-se a usuários que já ganharam controle completo sobre suas finanças espalhadas com o Pacifinance. Veja seu panorama financeiro completo hoje.",
                 "button": "Criar conta gratuita",
-                "disclaimer": "Sem cartão de crédito necessário • Leva menos de 2 minutos • Comece imediatamente"
+                "disclaimer": "Sem cartão de crédito necessário • Leva menos de 2 minutos • Comece imediatamente",
+                "demoPrompt": "Ainda não tem certeza?",
+                "demoButton": "Experimente a demo sem se cadastrar"
             },
             "trust": {
                 "license": "Licença Open Source",
@@ -295,8 +297,6 @@
             "menu": "Menu",
             "pages": "Páginas",
             "settings": "Configurações",
-            "theme": "Tema",
-            "language": "Idioma",
             "features": "Funcionalidades",
             "whyUs": "Por que o PaciFinance",
             "roadmap": "Roadmap",

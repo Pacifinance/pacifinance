@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { useLocalizedNavigate } from '../hooks/useLocalizedNavigate';
+import { useAuth } from '../hooks/useAuth';
 import type { PacifinanceTheme } from '../types/theme';
 
 interface LandingCTAProps {
@@ -10,11 +11,20 @@ interface LandingCTAProps {
 export default function LandingCTA({ theme }: LandingCTAProps) {
   const { translations } = useContext(LanguageContext);
   const navigate = useLocalizedNavigate();
+  const { handleSetIsAuthenticated } = useAuth();
   const t = translations.landing.new;
   const cta = t.cta;
   const trust = t.trust;
 
   const handleGetStarted = () => navigate('/auth');
+
+  const handleTryDemo = () => {
+    // Demo mode: entirely client-side, no API calls - same flow as the
+    // header's demo button (see LandingHeader.tsx).
+    sessionStorage.setItem('pacifinance-demo', 'true');
+    handleSetIsAuthenticated(true);
+    navigate('/dashboard');
+  };
 
   return (
     <section className="py-14 md:py-20 px-4" style={{ backgroundColor: theme.backgroundColor }}>
@@ -34,6 +44,18 @@ export default function LandingCTA({ theme }: LandingCTAProps) {
             {cta.button}
           </button>
           <p className="text-xs md:text-sm opacity-60">{cta.disclaimer}</p>
+
+          <p className="text-sm md:text-base pt-2">
+            <span className="opacity-70">{cta.demoPrompt} </span>
+            <button
+              onClick={handleTryDemo}
+              className="font-semibold hover:underline underline-offset-4"
+              style={{ color: theme.secondaryColor, background: 'transparent' }}
+              data-umami-event="cta-try-demo"
+            >
+              {cta.demoButton} →
+            </button>
+          </p>
         </div>
 
         {/* Trust signals: real, verifiable claims only */}

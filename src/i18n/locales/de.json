@@ -225,7 +225,9 @@
                 "subtitle": "Finanzleben zu vereinen",
                 "description": "Schließen Sie sich Nutzern an, die bereits die volle Kontrolle über ihre verstreuten Finanzen mit Pacifinance gewonnen haben. Sehen Sie Ihr vollständiges Finanzbild heute.",
                 "button": "Kostenloses Konto erstellen",
-                "disclaimer": "Keine Kreditkarte erforderlich • Dauert weniger als 2 Minuten • Sofort starten"
+                "disclaimer": "Keine Kreditkarte erforderlich • Dauert weniger als 2 Minuten • Sofort starten",
+                "demoPrompt": "Noch unsicher?",
+                "demoButton": "Demo ohne Registrierung testen"
             },
             "trust": {
                 "license": "Open-Source-Lizenz",
@@ -295,8 +297,6 @@
             "menu": "Menü",
             "pages": "Seiten",
             "settings": "Einstellungen",
-            "theme": "Design",
-            "language": "Sprache",
             "features": "Funktionen",
             "whyUs": "Warum PaciFinance",
             "roadmap": "Roadmap",

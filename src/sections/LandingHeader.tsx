@@ -170,8 +170,8 @@ const MobileMenuButton = styled(IconToggleButton)`
 
 const MobileNavPanel = styled.div`
   width: 100%;
-  overflow: hidden;
-  max-height: ${(props) => (props.$open ? "20rem" : "0")};
+  overflow-y: auto;
+  max-height: ${(props) => (props.$open ? "24rem" : "0")};
   transition: max-height 0.25s ease;
   border-top: ${(props) => (props.$open ? `1px solid ${props.theme.mode === "dark" ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.08)"}` : "none")};
 
@@ -180,36 +180,49 @@ const MobileNavPanel = styled.div`
   }
 `;
 
+// Two columns instead of one long stacked list: Pages (needs width for
+// longer labels) next to a narrow Settings column - keeps total height to
+// whichever column is taller instead of stacking both, which is what was
+// clipping the last row against MobileNavPanel's max-height.
+const MobileNavColumns = styled.div`
+  display: flex;
+  align-items: stretch;
+  padding: 0.75rem 1rem 1rem;
+  gap: 0.75rem;
+`;
+
 const MobileNavList = styled.div`
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  padding: 0.75rem 1rem 1rem;
   gap: 0.25rem;
 `;
 
+const MobileSettingsCol = styled.div`
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding-left: 0.75rem;
+  border-left: 1px solid ${(props) => (props.theme.mode === "dark" ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.06)")};
+`;
+
 const MobileNavSectionLabel = styled.div`
-  padding: 0.6rem 0.5rem 0.3rem;
+  padding: 0.3rem 0.5rem 0.3rem;
   font-size: 0.72rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: ${(props) => (props.theme.mode === "dark" ? "rgba(255,255,255,0.45)" : "rgba(0,0,0,0.4)")};
-
-  &:not(:first-child) {
-    margin-top: 0.4rem;
-    border-top: 1px solid ${(props) => (props.theme.mode === "dark" ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.06)")};
-    padding-top: 0.75rem;
-  }
 `;
 
-const MobileSettingsRow = styled.div`
+const MobileSettingsControls = styled.div`
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.4rem 0.5rem;
-  font-size: 0.95rem;
-  font-weight: 500;
-  color: ${(props) => props.theme.textColor};
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0 0.5rem;
 `;
 
 const mobileNavLinkStyle = (props) => `
@@ -376,40 +389,40 @@ function Header({
       </div>
 
       <MobileNavPanel theme={theme} $open={mobileNavOpen}>
-        <MobileNavList>
-          <MobileNavSectionLabel theme={theme}>{nav.pages}</MobileNavSectionLabel>
-          <MobileNavButton theme={theme} onClick={scrollToSection("features")}>
-            {nav.features}
-          </MobileNavButton>
-          <MobileNavButton theme={theme} onClick={scrollToSection("pillars")}>
-            {nav.whyUs}
-          </MobileNavButton>
-          <MobileNavAnchor theme={theme} to="/roadmap" onClick={() => setMobileNavOpen(false)}>
-            {nav.roadmap}
-          </MobileNavAnchor>
-          <MobileNavButton theme={theme} onClick={scrollToSection("open-source")}>
-            {nav.openSource}
-          </MobileNavButton>
+        <MobileNavColumns>
+          <MobileNavList>
+            <MobileNavSectionLabel theme={theme}>{nav.pages}</MobileNavSectionLabel>
+            <MobileNavButton theme={theme} onClick={scrollToSection("features")}>
+              {nav.features}
+            </MobileNavButton>
+            <MobileNavButton theme={theme} onClick={scrollToSection("pillars")}>
+              {nav.whyUs}
+            </MobileNavButton>
+            <MobileNavAnchor theme={theme} to="/roadmap" onClick={() => setMobileNavOpen(false)}>
+              {nav.roadmap}
+            </MobileNavAnchor>
+            <MobileNavButton theme={theme} onClick={scrollToSection("open-source")}>
+              {nav.openSource}
+            </MobileNavButton>
+          </MobileNavList>
 
-          <MobileNavSectionLabel theme={theme}>{nav.settings}</MobileNavSectionLabel>
-          <MobileSettingsRow theme={theme}>
-            {nav.theme}
-            <IconToggleButton
-              theme={theme}
-              onClick={toggleMode}
-              aria-label={mode === "dark" ? "Switch to light mode" : "Switch to dark mode"}
-              data-umami-event="setTheme"
-            >
-              {mode === "dark" ? <Brightness4Icon /> : <LightModeIcon />}
-            </IconToggleButton>
-          </MobileSettingsRow>
-          <MobileSettingsRow theme={theme}>
-            {nav.language}
-            <LanguageSelectorWrap>
-              <LanguageSelector theme={theme} variant="compact" />
-            </LanguageSelectorWrap>
-          </MobileSettingsRow>
-        </MobileNavList>
+          <MobileSettingsCol theme={theme}>
+            <MobileNavSectionLabel theme={theme}>{nav.settings}</MobileNavSectionLabel>
+            <MobileSettingsControls>
+              <IconToggleButton
+                theme={theme}
+                onClick={toggleMode}
+                aria-label={mode === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+                data-umami-event="setTheme"
+              >
+                {mode === "dark" ? <Brightness4Icon /> : <LightModeIcon />}
+              </IconToggleButton>
+              <LanguageSelectorWrap>
+                <LanguageSelector theme={theme} variant="compact" />
+              </LanguageSelectorWrap>
+            </MobileSettingsControls>
+          </MobileSettingsCol>
+        </MobileNavColumns>
       </MobileNavPanel>
     </div>
   );

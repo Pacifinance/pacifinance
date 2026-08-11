@@ -234,7 +234,9 @@
                 "subtitle": "Finanze",
                 "description": "Basta conti sparsi e confusione. Unifica tutto in Pacifinance e scopri finalmente dove stanno davvero i tuoi soldi. È gratis e bastano 2 minuti.",
                 "button": "Apri il Tuo Account Gratuito",
-                "disclaimer": "Nessuna carta di credito richiesta • Bastano meno di 2 minuti • Inizia immediatamente"
+                "disclaimer": "Nessuna carta di credito richiesta • Bastano meno di 2 minuti • Inizia immediatamente",
+                "demoPrompt": "Non sei ancora sicuro?",
+                "demoButton": "Prova la demo senza registrarti"
             },
             "trust": {
                 "license": "Licenza Open Source",
@@ -304,8 +306,6 @@
             "menu": "Menu",
             "pages": "Pagine",
             "settings": "Impostazioni",
-            "theme": "Tema",
-            "language": "Lingua",
             "features": "Funzionalità",
             "whyUs": "Perché PaciFinance",
             "roadmap": "Roadmap",

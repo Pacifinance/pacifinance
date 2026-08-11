@@ -1,4 +1,5 @@
 import styled, { keyframes } from 'styled-components';
+import { appBackgroundValue } from './appBackground';
 
 // Animazioni
 const fadeInUp = keyframes`
@@ -43,10 +44,7 @@ const shimmer = keyframes`
 // Main layout for the dashboard
 export const MainDashboardLayout = styled.div`
   min-height: 100vh;
-  background:
-    radial-gradient(circle at 85% 2%, ${props => props.theme.buttonBackgroundColor}14 0, transparent 28rem),
-    radial-gradient(circle at 8% 32%, ${props => props.theme.mode === 'dark' ? 'rgba(59,130,246,0.07)' : 'rgba(59,130,246,0.05)'} 0, transparent 24rem),
-    ${props => props.theme.backgroundColor};
+  background: ${props => appBackgroundValue(props.theme)};
   position: relative;
   overflow-x: hidden;
   

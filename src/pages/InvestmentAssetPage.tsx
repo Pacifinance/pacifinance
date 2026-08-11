@@ -15,6 +15,7 @@ import InvestmentHoldingsPanel from '../sections/InvestmentHoldingsPanel';
 import type { InvestmentAssetKey, InvestmentHoldingDto } from '../types/api';
 import type { PacifinanceTheme } from '../types/theme';
 import type enTranslations from '../i18n/locales/en.json';
+import { appBackgroundValue } from '../styles/appBackground';
 
 /**
  * One page per verified asset (stocks, ETF, bitcoin, crypto, bonds, funds,
@@ -36,7 +37,7 @@ const PageContainer = styled.div`
 `;
 
 const ContentWrapper = styled.div`
-  background-color: ${(p) => p.theme.backgroundColor};
+  background: ${(p) => appBackgroundValue(p.theme)};
   min-height: 100vh;
   margin-left: 0;
   margin-top: 80px;

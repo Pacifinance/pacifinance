@@ -6,13 +6,14 @@ import SEOHead from '../components/SEOHead';
 import Sidebar from '../sections/Sidebar';
 import { useAuth } from '../hooks/useAuth';
 import styled from 'styled-components';
+import { appBackgroundValue } from '../styles/appBackground';
 
 const ProfilePageContainer = styled.div`
   position: relative;
 `;
 
 const ContentWrapper = styled.div`
-  background-color: ${(props) => props.theme.backgroundColor};
+  background: ${(props) => appBackgroundValue(props.theme)};
   min-height: 100vh;
   margin-left: 0;
   margin-top: 80px;

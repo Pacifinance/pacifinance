@@ -351,7 +351,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                         : {}),
                 }}
             >
-                <LogoPaci />
+                <LogoPaci showText={false} />
                 {isMobileScreen ? (
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginLeft: 'auto' }}>
                         <button

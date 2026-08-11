@@ -2,7 +2,7 @@ import React, {useEffect, useContext, useState} from 'react';
 import { useLocalizedNavigate } from '../hooks/useLocalizedNavigate';
 import { useAuth } from '../hooks/useAuth';
 import { ThemeContext } from '../contexts/ThemeContext';
-import { PageWrapper } from '../styles/MyStyled';
+import { appBackgroundValue } from '../styles/appBackground';
 import { PrivacyContext } from '../contexts/PrivacyContext';
 import Sidebar from '../sections/Sidebar';
 import InsertValues from '../sections/InsertValues.tsx';
@@ -59,7 +59,7 @@ function InsertPage() {
         maxWidth: '100vw',
         minHeight: '150vh',
         paddingBottom: '60vh',
-        backgroundColor: theme.backgroundColor,
+        background: appBackgroundValue(theme),
         overflowX: 'hidden',
         boxSizing: 'border-box'
       }}>

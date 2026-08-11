@@ -3,7 +3,15 @@ import { useLocalizedNavigate } from '../hooks/useLocalizedNavigate';
 import { useAuth } from '../hooks/useAuth';
 import LogoPacifinance from '../assets/brand/logo-mark.webp';
 
-export default function LogoPaci() {
+interface LogoPaciProps {
+  /** Hide the "Pacifinance" wordmark and show only the icon - for tight
+   * spaces like the icon-rail sidebar, where the full logo doesn't fit
+   * and clips against neighboring content. Defaults to showing it, for
+   * the marketing header/footer where the wordmark belongs. */
+  showText?: boolean;
+}
+
+export default function LogoPaci({ showText = true }: LogoPaciProps) {
   const navigate = useLocalizedNavigate();
   const { isAuthenticated } = useAuth();
   const [hovered, setHovered] = useState(false);
@@ -41,18 +49,20 @@ export default function LogoPaci() {
           transform: hovered ? 'scale(1.06)' : 'scale(1)',
         }}
       />
-      <span
-        style={{
-          fontWeight: 700,
-          fontSize: '1.15rem',
-          letterSpacing: '-0.01em',
-          whiteSpace: 'nowrap',
-          transition: 'opacity 0.2s ease',
-          opacity: hovered ? 0.75 : 1,
-        }}
-      >
-        Pacifinance
-      </span>
+      {showText && (
+        <span
+          style={{
+            fontWeight: 700,
+            fontSize: '1.15rem',
+            letterSpacing: '-0.01em',
+            whiteSpace: 'nowrap',
+            transition: 'opacity 0.2s ease',
+            opacity: hovered ? 0.75 : 1,
+          }}
+        >
+          Pacifinance
+        </span>
+      )}
     </div>
   );
 }

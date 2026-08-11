@@ -6,6 +6,7 @@ import { MediaQueryContext } from '../contexts/MediaQueryContext';
 import styled from 'styled-components';
 import Sidebar from '../sections/Sidebar';
 import Knowledge from '../sections/Knowledge';
+import { appBackgroundValue } from '../styles/appBackground';
 
 function KnowledgePage() {
   useContext(ThemeContext);
@@ -33,6 +34,7 @@ const PageLayout = styled.div`
 const ContentWrapper = styled.div`
   width: 100%;
   min-height: 100vh;
+  background: ${p => appBackgroundValue(p.theme)};
   margin-left: ${p => p.$isMobile ? '0' : '5.5rem'};
   padding-top: ${p => p.$isMobile ? '72px' : '0'};
 

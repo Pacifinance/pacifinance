@@ -47,8 +47,8 @@ export default function NewLandingContent({ theme }: LandingContentProps) {
       <LandingHero theme={theme} />
 
       <Suspense fallback={<div />}>
-        <LandingPillars theme={theme} />
         <LandingFeatureList theme={theme} />
+        <LandingPillars theme={theme} />
         <LandingOpenSource theme={theme} />
         <LandingCTA theme={theme} />
       </Suspense>

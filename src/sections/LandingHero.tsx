@@ -31,7 +31,7 @@ export default function LandingHero({ theme }: LandingHeroProps) {
 
   const handleGetStarted = () => navigate('/auth');
   const handleLearnMore = () =>
-    document.getElementById('pillars')?.scrollIntoView({ behavior: 'smooth' });
+    document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });
 
   return (
     <section
@@ -39,17 +39,34 @@ export default function LandingHero({ theme }: LandingHeroProps) {
       style={{ backgroundColor: theme.backgroundColor }}
     >
       {isDark ? (
-        <div
-          className="hidden lg:block absolute inset-y-0 right-0 w-[58%] max-w-4xl"
-          aria-hidden="true"
-          style={{
-            backgroundImage: `url(${BACKGROUND_ART})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 32%)',
-            maskImage: 'linear-gradient(to right, transparent 0%, black 32%)',
-          }}
-        />
+        <>
+          <div
+            className="hidden lg:block absolute inset-y-0 right-0 w-[58%] max-w-4xl"
+            aria-hidden="true"
+            style={{
+              backgroundImage: `url(${BACKGROUND_ART})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 32%)',
+              maskImage: 'linear-gradient(to right, transparent 0%, black 32%)',
+            }}
+          />
+          {/* Mobile/tablet: same idea as the desktop panel above, but anchored
+              top-right and masked with a corner radial fade instead of a side
+              panel - a side mask would either hide under the full-width text
+              column or, if narrow, leave barely any tree visible. */}
+          <div
+            className="lg:hidden absolute inset-0"
+            aria-hidden="true"
+            style={{
+              backgroundImage: `url(${BACKGROUND_ART})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'right top',
+              WebkitMaskImage: 'radial-gradient(circle at 100% 0%, black 0%, black 38%, transparent 72%)',
+              maskImage: 'radial-gradient(circle at 100% 0%, black 0%, black 38%, transparent 72%)',
+            }}
+          />
+        </>
       ) : (
         <div className="absolute inset-0 opacity-5" aria-hidden="true">
           <div
@@ -64,16 +81,6 @@ export default function LandingHero({ theme }: LandingHeroProps) {
 
       <div className="relative z-10 w-full max-w-7xl">
         <div className="lg:max-w-xl">
-          {isDark && (
-            <img
-              src={BACKGROUND_ART}
-              alt=""
-              aria-hidden="true"
-              loading="eager"
-              className="lg:hidden w-full h-48 sm:h-64 object-cover rounded-2xl mb-6 shadow-xl"
-            />
-          )}
-
           <div
             className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium mb-5 md:mb-6"
             style={{

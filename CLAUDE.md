@@ -57,6 +57,7 @@ MediaQuery > Language > Theme > DevMode > User > Currency > Page > Privacy > Toa
 8. **Roadmap** — completed user-facing feature → `roadmap-items.json` + `todo.md` + `npm run roadmap`
 9. **No `any`** — TypeScript strict. Props as `interface`.
 10. **Commit messages only** — after each finished update, include a short commit message in English as the very last line of the assistant response. Keep it concise, imperative, and open-source friendly. Never run `git commit` or `git push` autonomously: the user performs both operations.
+11. **Changelog** — every user-facing change gets a line under `[Unreleased]` in `CHANGELOG.md`. Release steps (version bump + tag) are documented there under "Versioning policy".
 
 ## Key Files
 | File | Purpose |
@@ -69,6 +70,7 @@ MediaQuery > Language > Theme > DevMode > User > Currency > Page > Privacy > Toa
 | `src/i18n/languagesConfig.js` | Single source of truth for supported languages |
 | `src/data/currencyConfig.ts` | 19 currencies + fallback rates |
 | `scripts/roadmap-items.json` | Public roadmap source |
+| `CHANGELOG.md` | Version history + release process |
 
 ## userData Shape
 ```ts
@@ -91,5 +93,5 @@ MediaQuery > Language > Theme > DevMode > User > Currency > Page > Privacy > Toa
 - Add success toasts for normal operations
 - Use `.toISOString().split('T')[0]` (UTC midnight bug)
 - End an update without a final commit message in English
-- Run `git commit` or `git push` autonomously
+- Run `git commit`, `git push`, or create/push git tags autonomously — always ask first
 - Start the dev server / browser on your own initiative for extra checks — only if explicitly requested

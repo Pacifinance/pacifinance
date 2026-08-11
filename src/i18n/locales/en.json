@@ -184,11 +184,24 @@
                     ]
                 }
             },
-            "featureBadges": {
-                "free": "100% Free",
-                "marketPrices": "Real-Time Market Prices",
-                "currencies": "19 Currencies Supported",
-                "import": "Quick CSV & Excel Import"
+            "features": {
+                "badge": "🧭 Features",
+                "title": "Everything You Can Do",
+                "subtitle": "Pacifinance's core features, built for everyday financial management.",
+                "items": [
+                    { "title": "Custom Dashboard", "description": "Drag, reorder and hide sections: your view, your way." },
+                    { "title": "Investments Under Control", "description": "Interactive charts, dividends and performance for every asset." },
+                    { "title": "19 Currencies Supported", "description": "Track and compare in EUR, USD, GBP and many more." },
+                    { "title": "Fast Import", "description": "Upload bank statements from CSV or Excel in a few clicks." },
+                    { "title": "Recurring Transactions", "description": "Salary, rent, subscriptions: they log themselves every month." },
+                    { "title": "Goals & Limits", "description": "Set a target or a spending cap and track your progress." },
+                    { "title": "Real-Time Market Prices", "description": "Stocks and crypto prices, kept accurate by the community." },
+                    { "title": "Gamification", "description": "Badges and milestones that make consistency easier." }
+                ],
+                "future": {
+                    "text": "🔭 Coming up: complete net worth, financial simulations and optional AI, always offline-first.",
+                    "cta": "See the roadmap"
+                }
             },
             "openSource": {
                 "badge": "Open Source",
@@ -402,15 +415,20 @@
     "roadmap": {
         "title": "Roadmap",
         "subtitle": "Discover where Pacifinance is heading. Every feature is designed with the community in mind, also thanks to user feedback.",
+        "kicker": "Community-driven roadmap",
         "all": "All",
         "features": "Features",
         "community": "Community",
         "security": "Security",
         "noItems": "No items",
+        "showAll": "Show all",
+        "showLess": "Show less",
+        "reportBug": "Report bug",
         "vote": {
             "cta": "Vote",
             "voted": "Voted",
-            "loginPrompt": "Sign in to vote"
+            "loginPrompt": "Sign in to vote",
+            "frozen": "Voting closed: already shipped"
         }
     },
     "sidebar": {

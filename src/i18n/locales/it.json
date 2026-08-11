@@ -184,11 +184,24 @@
                     ]
                 }
             },
-            "featureBadges": {
-                "free": "100% Gratuito",
-                "marketPrices": "Prezzi di Mercato in Tempo Reale",
-                "currencies": "19 Valute Supportate",
-                "import": "Importazione Rapida da CSV e Excel"
+            "features": {
+                "badge": "🧭 Funzionalità",
+                "title": "Tutto quello che puoi fare",
+                "subtitle": "Le funzionalità principali di Pacifinance, pensate per la gestione quotidiana delle tue finanze.",
+                "items": [
+                    { "title": "Dashboard su misura", "description": "Trascina, riordina e nascondi le sezioni: la tua vista, come la vuoi tu." },
+                    { "title": "Investimenti sotto controllo", "description": "Grafici interattivi, dividendi e performance per ogni asset." },
+                    { "title": "19 valute supportate", "description": "Registra e confronta in EUR, USD, GBP e molte altre." },
+                    { "title": "Importazione rapida", "description": "Carica estratti conto da CSV o Excel in pochi click." },
+                    { "title": "Transazioni ricorrenti", "description": "Stipendio, affitto, abbonamenti: si registrano da soli ogni mese." },
+                    { "title": "Obiettivi e limiti", "description": "Fissa un traguardo o un tetto di spesa e monitora i progressi." },
+                    { "title": "Prezzi di mercato in tempo reale", "description": "Azioni e crypto aggiornati, verificati dalla community." },
+                    { "title": "Gamification", "description": "Badge e traguardi che rendono la costanza più semplice." }
+                ],
+                "future": {
+                    "text": "🔭 In arrivo: patrimonio netto completo, simulazioni finanziarie e AI opzionale, sempre offline-first.",
+                    "cta": "Guarda la roadmap"
+                }
             },
             "openSource": {
                 "badge": "Open Source",
@@ -402,15 +415,20 @@
     "roadmap": {
         "title": "Roadmap",
         "subtitle": "Scopri dove sta andando Pacifinance. Ogni funzionalità è pensata in ottica community, anche grazie ai feedback degli utenti.",
+        "kicker": "Roadmap community-driven",
         "all": "Tutto",
         "features": "Funzionalità",
         "community": "Community",
         "security": "Sicurezza",
         "noItems": "Nessun elemento",
+        "showAll": "Mostra tutti",
+        "showLess": "Mostra meno",
+        "reportBug": "Segnala bug",
         "vote": {
             "cta": "Vota",
             "voted": "Votato",
-            "loginPrompt": "Accedi per votare"
+            "loginPrompt": "Accedi per votare",
+            "frozen": "Votazione chiusa: già rilasciata"
         }
     },
     "sidebar": {

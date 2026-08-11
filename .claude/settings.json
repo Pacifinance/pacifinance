@@ -59,7 +59,11 @@
       "Bash(python3 -c \"import json; json.load\\(open\\('.claude/settings.json'\\)\\); print\\('valid JSON'\\)\")",
       "Bash(gh pr *)",
       "Bash(gh run *)",
-      "Bash(curl -sIL --max-time 10 https://pacifinance.com)"
+      "Bash(curl -sIL --max-time 10 https://pacifinance.com)",
+      "Bash(echo \"EXITCODE:$?\")",
+      "Bash(node scripts/setVersion.js 0.10.0)",
+      "Bash(set -e)",
+      "Bash(git tag *)"
     ]
   }
 }

@@ -175,11 +175,24 @@
                     ]
                 }
             },
-            "featureBadges": {
-                "free": "100% Gratis",
-                "marketPrices": "Precios de mercado en tiempo real",
-                "currencies": "19 monedas soportadas",
-                "import": "Importación rápida CSV y Excel"
+            "features": {
+                "badge": "🧭 Funcionalidades",
+                "title": "Todo lo que puedes hacer",
+                "subtitle": "Las funciones principales de Pacifinance, pensadas para la gestión diaria de tus finanzas.",
+                "items": [
+                    { "title": "Panel personalizado", "description": "Arrastra, reordena y oculta secciones: tu vista, a tu manera." },
+                    { "title": "Inversiones bajo control", "description": "Gráficos interactivos, dividendos y rendimiento de cada activo." },
+                    { "title": "19 monedas admitidas", "description": "Registra y compara en EUR, USD, GBP y muchas más." },
+                    { "title": "Importación rápida", "description": "Sube extractos bancarios en CSV o Excel en pocos clics." },
+                    { "title": "Transacciones recurrentes", "description": "Salario, alquiler, suscripciones: se registran solas cada mes." },
+                    { "title": "Objetivos y límites", "description": "Fija una meta o un tope de gasto y sigue tu progreso." },
+                    { "title": "Precios de mercado en tiempo real", "description": "Acciones y cripto actualizados y verificados por la comunidad." },
+                    { "title": "Gamificación", "description": "Insignias y logros que hacen más fácil la constancia." }
+                ],
+                "future": {
+                    "text": "🔭 Próximamente: patrimonio neto completo, simulaciones financieras e IA opcional, siempre offline-first.",
+                    "cta": "Ver la hoja de ruta"
+                }
             },
             "openSource": {
                 "badge": "Open source",
@@ -393,15 +406,20 @@
     "roadmap": {
         "title": "Hoja de ruta",
         "subtitle": "Descubre hacia dónde se dirige Pacifinance. Cada función está diseñada pensando en la comunidad, también gracias a los comentarios de los usuarios.",
+        "kicker": "Hoja de ruta impulsada por la comunidad",
         "all": "Todos",
         "features": "Funciones",
         "community": "Comunidad",
         "security": "Seguridad",
         "noItems": "Sin elementos",
+        "showAll": "Mostrar todos",
+        "showLess": "Mostrar menos",
+        "reportBug": "Reportar error",
         "vote": {
             "cta": "Votar",
             "voted": "Votado",
-            "loginPrompt": "Inicia sesión para votar"
+            "loginPrompt": "Inicia sesión para votar",
+            "frozen": "Votación cerrada: ya lanzado"
         }
     },
     "sidebar": {

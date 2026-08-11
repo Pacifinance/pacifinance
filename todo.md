@@ -95,10 +95,9 @@
 - [ ] Auto-link recurring outflows created from the "subscription/periodic payment" payment type (prompt "make it recurring" on save) — not done this round, for now these are only created from the dedicated panel
 - [ ] Per-bank mapping templates for import (Fineco, Intesa, Revolut, N26) — a privacy-friendly substitute for open banking
 - [ ] Receipt photo: client-side OCR with tesseract.js (WASM in the browser) → pre-fills quick-add; the image never leaves the device. Not done this round: needs a new heavyweight dependency (tesseract.js, a few MB of WASM + trained data) — deserves its own round to evaluate the bundle-size impact, not a rushed addition
-- [ ] No Telegram/WhatsApp bot for data entry (financial data would pass through third-party servers — against the privacy positioning; revisit only as an explicit opt-in bridge in the future)
 
 ### Phase 2 — Data consistency
-- [ ] Income/outflows: select the source at the sub-account level, with a nested dropdown (sub-accounts indented under the parent account, not flat "Bank / Revolut" entries)
+- [x] Income/outflows: select the source at the sub-account level, with a nested dropdown (sub-accounts indented under the parent account, not flat "Bank / Revolut" entries)
 - [ ] Persist the transaction→source link to the DB: deleting an outflow (or income) with a specified source should propose auto-reversing that exact field, with user confirmation
 - [ ] Compact dashboard view: % of each sub-account relative to its parent account
 - [ ] Compact view: expand "Category Summary" and "Income|Outflows" with more detail (%, change vs previous month, saving rate — a quick snapshot of the financial situation)
@@ -109,13 +108,13 @@
 - [x] Chose a license: AGPLv3 — forces hosted forks to publish their changes back
 - [x] Transferred the serverless repo into the Pacifinance GitHub organization (a transfer, not a copy: GitHub creates automatic redirects); archived the legacy repo with a README pointing to the new one
 - [x] Vercel deploy from the org repo WITHOUT Vercel Pro: `.github/workflows/deploy-vercel.yml` workflow (Vercel CLI, not the native import — importing from an org pushes you toward the paid Team plan, deploying via CLI + personal token doesn't). Push to `main` → production, PR → preview with a URL comment. Still open: create the 3 secrets (VERCEL_TOKEN/VERCEL_ORG_ID/VERCEL_PROJECT_ID via a local `vercel link`) and disconnect Vercel's native Git integration to avoid deploying twice
-- [ ] GitHub org: mandatory 2FA for members, branch protection on main (PR + review), CODEOWNERS, secrets only in deploy environments (Vercel/Supabase), never in the repo
+- [x] GitHub org: mandatory 2FA for members, branch protection on main (PR + review), CODEOWNERS, secrets only in deploy environments (Vercel/Supabase), never in the repo
 - [x] Co-owner: added a second maintainer as an org Owner (bus factor ≥ 2)
 - [x] Removed the global floating BuyMeACoffee widget (a script injected outside the React tree that stayed visible on every page, including the authenticated app, after the first visit to Landing/Pricing/Info — invasive and inconsistent with the privacy-first positioning); replaced with a static "☕ Support Pacifinance" link only where a dedicated support section already exists
 - [x] FUNDING.yml: BuyMeACoffee as the initial static channel; GitHub Sponsors can be added once active
 - [x] README + CONTRIBUTING in English, public CI (GitHub Actions: lint+test+build on PR — free for public repos)
 - [ ] Landing page "self-host in 10 minutes" with Docker (docker-compose: static frontend + Express server + Postgres; Redis optional)
-- [ ] Demo account with mock data and no DB requests (planned below too, becomes a launch prerequisite)
+- [x] Demo account with mock data and no DB requests (planned below too, becomes a launch prerequisite)
 - [ ] Launch: Hacker News, r/selfhosted, r/ItaliaPersonalFinance
 
 ### Phase 3b — Hosted + self-hosted architecture
@@ -147,13 +146,6 @@
 - New languages beyond the current 6 / exotic assets
 
 ---
-
-## To Do
-
-### Known Bugs
-- [ ] BuyMeACoffee widget: verify positioning across all devices (CSS `!important` workaround)
-- [ ] Chart `renderCustomizedLabel`: check for overlap with a reduced radius on mobile
-- [ ] Floating point and cents: the DB will send integer values (`* 100`), handle the conversion
 
 ### Security
 <!-- Encrypted recovery-email idea evaluated and dropped: even as an optional

@@ -175,11 +175,24 @@
                     ]
                 }
             },
-            "featureBadges": {
-                "free": "100% Kostenlos",
-                "marketPrices": "Echtzeit-Marktpreise",
-                "currencies": "19 Währungen unterstützt",
-                "import": "Schneller CSV & Excel Import"
+            "features": {
+                "badge": "🧭 Funktionen",
+                "title": "Alles, was du tun kannst",
+                "subtitle": "Die wichtigsten Funktionen von Pacifinance für die tägliche Finanzverwaltung.",
+                "items": [
+                    { "title": "Individuelles Dashboard", "description": "Abschnitte ziehen, neu anordnen und ausblenden: deine Ansicht, dein Weg." },
+                    { "title": "Investitionen im Griff", "description": "Interaktive Charts, Dividenden und Performance für jedes Asset." },
+                    { "title": "19 unterstützte Währungen", "description": "Erfasse und vergleiche in EUR, USD, GBP und vielen weiteren." },
+                    { "title": "Schneller Import", "description": "Kontoauszüge per CSV oder Excel in wenigen Klicks hochladen." },
+                    { "title": "Wiederkehrende Transaktionen", "description": "Gehalt, Miete, Abos: sie tragen sich jeden Monat von selbst ein." },
+                    { "title": "Ziele & Limits", "description": "Setze ein Ziel oder eine Ausgabengrenze und verfolge den Fortschritt." },
+                    { "title": "Marktpreise in Echtzeit", "description": "Aktien- und Krypto-Preise, von der Community geprüft." },
+                    { "title": "Gamification", "description": "Abzeichen und Meilensteine, die Kontinuität leichter machen." }
+                ],
+                "future": {
+                    "text": "🔭 Demnächst: vollständiges Nettovermögen, Finanzsimulationen und optionale KI, immer offline-first.",
+                    "cta": "Roadmap ansehen"
+                }
             },
             "openSource": {
                 "badge": "Open Source",
@@ -393,15 +406,20 @@
     "roadmap": {
         "title": "Roadmap",
         "subtitle": "Entdecke worauf wir hinarbeiten",
+        "kicker": "Community-getriebene Roadmap",
         "all": "Alle",
         "features": "Funktionen",
         "community": "Community",
         "security": "Sicherheit",
         "noItems": "Noch keine Roadmap-Einträge.",
+        "showAll": "Alle anzeigen",
+        "showLess": "Weniger anzeigen",
+        "reportBug": "Fehler melden",
         "vote": {
             "cta": "Abstimmen",
             "voted": "Abgestimmt",
-            "loginPrompt": "Zum Abstimmen anmelden"
+            "loginPrompt": "Zum Abstimmen anmelden",
+            "frozen": "Abstimmung geschlossen: bereits veröffentlicht"
         }
     },
     "sidebar": {

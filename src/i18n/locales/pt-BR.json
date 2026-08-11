@@ -175,11 +175,24 @@
                     ]
                 }
             },
-            "featureBadges": {
-                "free": "100% Gratuito",
-                "marketPrices": "Preços de mercado em tempo real",
-                "currencies": "19 moedas suportadas",
-                "import": "Importação rápida de CSV e Excel"
+            "features": {
+                "badge": "🧭 Funcionalidades",
+                "title": "Tudo o que você pode fazer",
+                "subtitle": "Os principais recursos do Pacifinance, pensados para a gestão financeira do dia a dia.",
+                "items": [
+                    { "title": "Dashboard personalizável", "description": "Arraste, reordene e oculte seções: sua visão, do seu jeito." },
+                    { "title": "Investimentos sob controle", "description": "Gráficos interativos, dividendos e desempenho de cada ativo." },
+                    { "title": "19 moedas suportadas", "description": "Registre e compare em EUR, USD, GBP e muitas outras." },
+                    { "title": "Importação rápida", "description": "Envie extratos bancários em CSV ou Excel em poucos cliques." },
+                    { "title": "Transações recorrentes", "description": "Salário, aluguel, assinaturas: são lançadas sozinhas todo mês." },
+                    { "title": "Metas e limites", "description": "Defina uma meta ou um teto de gastos e acompanhe seu progresso." },
+                    { "title": "Preços de mercado em tempo real", "description": "Ações e criptos atualizadas e verificadas pela comunidade." },
+                    { "title": "Gamificação", "description": "Badges e conquistas que tornam a constância mais fácil." }
+                ],
+                "future": {
+                    "text": "🔭 Em breve: patrimônio líquido completo, simulações financeiras e IA opcional, sempre offline-first.",
+                    "cta": "Ver o roadmap"
+                }
             },
             "openSource": {
                 "badge": "Open Source",
@@ -393,15 +406,20 @@
     "roadmap": {
         "title": "Roadmap",
         "subtitle": "Descubra para onde o Pacifinance está indo. Cada recurso é projetado pensando na comunidade, também graças ao feedback dos usuários.",
+        "kicker": "Roadmap conduzido pela comunidade",
         "all": "Todos",
         "features": "Recursos",
         "community": "Comunidade",
         "security": "Segurança",
         "noItems": "Nenhum item",
+        "showAll": "Mostrar todos",
+        "showLess": "Mostrar menos",
+        "reportBug": "Reportar bug",
         "vote": {
             "cta": "Votar",
             "voted": "Votado",
-            "loginPrompt": "Entre para votar"
+            "loginPrompt": "Entre para votar",
+            "frozen": "Votação encerrada: já lançado"
         }
     },
     "sidebar": {

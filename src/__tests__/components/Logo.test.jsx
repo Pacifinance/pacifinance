@@ -8,6 +8,7 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter, MemoryRouter } from 'react-router-dom';
 import { LanguageContext } from '../../contexts/LanguageContext';
+import { UserContext } from '../../contexts/UserContext';
 
 // Mock the navigate function
 const mockNavigate = vi.fn();
@@ -81,6 +82,21 @@ describe('Logo Component', () => {
       fireEvent.click(logo.parentElement);
       
       expect(mockNavigate).toHaveBeenCalledWith('/en', undefined);
+    });
+
+    it('should navigate to the dashboard instead of home when the user is authenticated', () => {
+      const AuthenticatedWrapper = ({ children }) => (
+        <UserContext.Provider value={{ isAuthenticated: true }}>
+          <Wrapper>{children}</Wrapper>
+        </UserContext.Provider>
+      );
+
+      render(<LogoPaci />, { wrapper: AuthenticatedWrapper });
+
+      const logo = screen.getByAltText('Pacifinance Logo');
+      fireEvent.click(logo.parentElement);
+
+      expect(mockNavigate).toHaveBeenCalledWith('/en/dashboard', undefined);
     });
 
     it('should navigate only once per click', () => {

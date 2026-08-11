@@ -59,7 +59,6 @@ const TermsOfServicePage = React.lazy(() => import("./pages/TermsOfServicePage")
 const SitemapPage = React.lazy(() => import("./pages/SitemapPage"));
 const CookiePolicyPage = React.lazy(() => import("./pages/CookiePolicyPage"));
 const DisclaimerPage = React.lazy(() => import("./pages/DisclaimerPage"));
-const ContactPage = React.lazy(() => import("./pages/ContactPage"));
 const RoadmapPage = React.lazy(() => import("./pages/RoadmapPage"));
 const ContributePage = React.lazy(() => import("./pages/ContributePage"));
 
@@ -228,7 +227,6 @@ const LanguageRoutes = () => {
       <Route path="/terms-of-service" element={<TermsOfServicePage />} />
       <Route path="/cookie-policy" element={<CookiePolicyPage />} />
       <Route path="/disclaimer" element={<DisclaimerPage />} />
-      <Route path="/contact" element={<ContactPage />} />
       <Route path="/roadmap" element={<RoadmapPage />} />
       <Route path="/contribute" element={<ContributePage />} />
       <Route path="/sitemap" element={<SitemapPage />} />

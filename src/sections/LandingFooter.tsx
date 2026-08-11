@@ -23,12 +23,12 @@ export default function LandingFooter({ theme }) {
   };
 
   return (
-    <footer 
-      className="w-full mt-auto border-t-2"
-      style={{ 
-        backgroundColor: theme.backgroundColor, 
+    <footer
+      className="w-full mt-auto border-t"
+      style={{
+        backgroundColor: theme.backgroundColor,
         color: theme.textColor,
-        borderColor: theme.borderColor
+        borderColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'
       }}
     >
       <div className="max-w-7xl mx-auto px-4 py-12">
@@ -116,17 +116,8 @@ export default function LandingFooter({ theme }) {
                 </LocalizedLink>
               </li>
               <li>
-                <LocalizedLink 
-                  to="/contact" 
-                  className="hover:opacity-70 transition-opacity"
-                  style={{ color: theme.textColor }}
-                >
-                  {translations.footer.support.contact}
-                </LocalizedLink>
-              </li>
-              <li>
-                <LocalizedLink 
-                  to="/sitemap" 
+                <LocalizedLink
+                  to="/sitemap"
                   className="hover:opacity-70 transition-opacity"
                   style={{ color: theme.textColor }}
                 >
@@ -164,7 +155,7 @@ export default function LandingFooter({ theme }) {
               <p className="text-sm opacity-80">
                 {translations.footer.community.donationText}
               </p>
-              <div className="p-4 rounded-lg border" style={{ borderColor: theme.borderColor, backgroundColor: theme.primaryColor }}>
+              <div className="p-4 rounded-lg border" style={{ borderColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : `${theme.secondaryColor}25`, backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.045)' : theme.primaryColor }}>
                 <p className="text-xs mb-2 font-medium" style={{ color: theme.secondaryColor }}>
                   {translations.footer.community.supportTitle}
                 </p>
@@ -177,7 +168,7 @@ export default function LandingFooter({ theme }) {
         </div>
 
         {/* Languages Section */}
-        <div className="pt-8 border-t mb-8" style={{ borderColor: theme.borderColor }}>
+        <div className="pt-8 border-t mb-8" style={{ borderColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)' }}>
           <div className="text-center">
             <h3 className="font-semibold text-lg mb-3" style={{ color: theme.secondaryColor }}>
               {translations.footer.languages.title}
@@ -220,7 +211,7 @@ export default function LandingFooter({ theme }) {
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-8 border-t" style={{ borderColor: theme.borderColor }}>
+        <div className="pt-8 border-t" style={{ borderColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)' }}>
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-sm opacity-70">
               © {new Date().getFullYear()} Pacifinance. {translations.footer.rights}

@@ -22,18 +22,30 @@ export default function LandingFeatureList({ theme }: LandingFeatureListProps) {
   ];
 
   return (
-    <section id="features" className="py-8 md:py-10 px-4" style={{ backgroundColor: theme.backgroundColor }}>
-      <div className="max-w-5xl mx-auto flex flex-wrap items-center justify-center gap-3 md:gap-4">
+    <section
+      id="features"
+      className="py-10 md:py-14 px-4 border-t"
+      style={{
+        backgroundColor: theme.backgroundColor,
+        borderColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
+      }}
+    >
+      <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
         {items.map(({ icon: Icon, label }) => (
           <div
             key={label}
-            className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium"
+            className="flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-medium"
             style={{
-              backgroundColor: theme.mode === 'dark' ? `${theme.secondaryColor}15` : `${theme.secondaryColor}10`,
-              border: `1px solid ${theme.secondaryColor}30`,
+              backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.045)' : `${theme.secondaryColor}08`,
+              border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : `${theme.secondaryColor}25`}`,
             }}
           >
-            <Icon style={{ color: theme.secondaryColor }} sx={{ fontSize: 18 }} />
+            <div
+              className="flex items-center justify-center w-8 h-8 rounded-lg flex-shrink-0"
+              style={{ backgroundColor: `${theme.secondaryColor}20` }}
+            >
+              <Icon style={{ color: theme.secondaryColor }} sx={{ fontSize: 17 }} />
+            </div>
             {label}
           </div>
         ))}

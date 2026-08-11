@@ -1,12 +1,14 @@
 import React, { useState, useContext, useEffect } from "react";
 import styled from "styled-components";
 
+import { useLocation } from "react-router-dom";
 import LanguageSelector from "../components/LanguageSelector";
 import { useLocalizedNavigate } from "../hooks/useLocalizedNavigate";
 import LogoPaci from "../components/Logo";
 import LocalizedLink from "../components/LocalizedLink";
 import { LanguageContext } from "../contexts/LanguageContext";
 import { useAuth } from "../hooks/useAuth";
+import { removeLanguageFromPath } from "../utils/i18nRouting";
 import Brightness4Icon from "@mui/icons-material/Brightness3";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -122,18 +124,6 @@ const AccediButton = styled(PillButton)`
 
   &:hover {
     filter: brightness(1.06);
-  }
-`;
-
-const Wordmark = styled.span`
-  font-weight: 700;
-  font-size: 1.05rem;
-  letter-spacing: -0.01em;
-  color: ${(props) => props.theme.textColor};
-  white-space: nowrap;
-
-  @media (min-width: 768px) {
-    font-size: 1.2rem;
   }
 `;
 
@@ -258,8 +248,17 @@ function Header({
     localizedNavigate("/auth");
   };
 
+  const location = useLocation();
+  const isOnLandingPage = removeLanguageFromPath(location.pathname) === "/";
+
   const scrollToSection = (id) => () => {
     setMobileNavOpen(false);
+    // These anchors only exist on the landing page itself — from anywhere
+    // else (e.g. /auth), jump back there and let it pick up the hash.
+    if (!isOnLandingPage) {
+      localizedNavigate(`/#${id}`);
+      return;
+    }
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   };
 
@@ -275,9 +274,8 @@ function Header({
           color: theme.textColor,
         }}
       >
-        <div className="flex items-center gap-2 flex-shrink-0">
+        <div className="flex-shrink-0">
           <LogoPaci />
-          <Wordmark theme={theme}>Pacifinance</Wordmark>
         </div>
 
         <NavRow theme={theme}>
@@ -290,26 +288,30 @@ function Header({
           <NavAnchor theme={theme} to="/roadmap" data-umami-event="nav-roadmap">
             {nav.roadmap}
           </NavAnchor>
-          <NavAnchor theme={theme} to="/privacy-policy" data-umami-event="nav-privacy">
-            {nav.privacy}
-          </NavAnchor>
           <NavButton theme={theme} onClick={scrollToSection("open-source")} data-umami-event="nav-open-source">
             {nav.openSource}
           </NavButton>
         </NavRow>
 
         <HeaderActions theme={theme}>
-          {showDemoButton && (
-            <DemoButton
-              theme={theme}
-              className="animate-slide-down"
-              data-umami-event="tryDemo"
-              onClick={DemoLogin}
-            >
-              <span className="md:hidden">Demo</span>
-              <span className="hidden md:inline">{translations.header.demo.titleButton}</span>
-            </DemoButton>
-          )}
+          {/* Always mounted so its width is reserved from the first paint —
+              toggling only opacity/interactivity avoids the header reflowing
+              (and the nav row jumping left) the moment this fades in. */}
+          <DemoButton
+            theme={theme}
+            data-umami-event="tryDemo"
+            onClick={DemoLogin}
+            aria-hidden={!showDemoButton}
+            tabIndex={showDemoButton ? 0 : -1}
+            style={{
+              opacity: showDemoButton ? 1 : 0,
+              pointerEvents: showDemoButton ? 'auto' : 'none',
+              transition: 'opacity 0.4s ease',
+            }}
+          >
+            <span className="md:hidden">Demo</span>
+            <span className="hidden md:inline">{translations.header.demo.titleButton}</span>
+          </DemoButton>
 
           <IconToggleButton
             theme={theme}
@@ -350,9 +352,6 @@ function Header({
           </MobileNavButton>
           <MobileNavAnchor theme={theme} to="/roadmap" onClick={() => setMobileNavOpen(false)}>
             {nav.roadmap}
-          </MobileNavAnchor>
-          <MobileNavAnchor theme={theme} to="/privacy-policy" onClick={() => setMobileNavOpen(false)}>
-            {nav.privacy}
           </MobileNavAnchor>
           <MobileNavButton theme={theme} onClick={scrollToSection("open-source")}>
             {nav.openSource}

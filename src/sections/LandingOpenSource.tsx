@@ -16,12 +16,12 @@ export default function LandingOpenSource({ theme }: LandingOpenSourceProps) {
   const os = t.openSource;
 
   const cardStyle = {
-    borderColor: theme.secondaryColor,
-    backgroundColor: theme.mode === 'dark' ? `${theme.secondaryColor}10` : 'rgba(255,255,255,0.5)',
+    borderColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : `${theme.secondaryColor}30`,
+    backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.045)' : 'rgba(255,255,255,0.7)',
   };
 
   return (
-    <section id="open-source" className="py-14 md:py-20 px-4" style={{ backgroundColor: theme.backgroundColor }}>
+    <section id="open-source" className="py-14 md:py-20 px-4" style={{ backgroundColor: theme.primaryColor }}>
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-8 md:mb-12">
           <span
@@ -83,9 +83,9 @@ function OpenSourcePillar({
   children: React.ReactNode;
 }) {
   return (
-    <div className="p-4 md:p-6 rounded-2xl border border-opacity-20 text-center" style={cardStyle}>
+    <div className="p-4 md:p-6 rounded-2xl border text-center" style={cardStyle}>
       <div
-        className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full mb-3 md:mb-4 mx-auto"
+        className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-xl mb-3 md:mb-4 mx-auto"
         style={{ backgroundColor: theme.secondaryColor }}
       >
         {children}

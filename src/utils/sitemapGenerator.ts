@@ -21,7 +21,6 @@ export const appRoutes = [
   { path: '/knowledge', priority: '0.8', changefreq: 'weekly' },
   { path: '/pricing', priority: '0.9', changefreq: 'monthly' },
   { path: '/faq', priority: '0.7', changefreq: 'monthly' },
-  { path: '/contact', priority: '0.6', changefreq: 'monthly' },
   { path: '/tips-and-updates', priority: '0.7', changefreq: 'weekly' },
   
   // Legal pages

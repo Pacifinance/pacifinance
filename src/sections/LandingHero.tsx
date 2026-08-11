@@ -35,12 +35,12 @@ export default function LandingHero({ theme }: LandingHeroProps) {
 
   return (
     <section
-      className="relative min-h-screen flex items-center overflow-hidden px-4 sm:px-6 lg:px-8 py-16 md:py-20"
+      className="relative min-h-screen flex items-center overflow-hidden px-4 sm:px-6 lg:pl-12 lg:pr-8 xl:pl-20 py-16 md:py-20"
       style={{ backgroundColor: theme.backgroundColor }}
     >
       {isDark ? (
         <div
-          className="hidden lg:block absolute inset-y-0 right-0 w-[60%]"
+          className="hidden lg:block absolute right-0 top-1/2 -translate-y-1/2 w-[58%] max-w-4xl aspect-[3/2]"
           aria-hidden="true"
           style={{
             backgroundImage: `url(${BACKGROUND_ART})`,
@@ -62,7 +62,7 @@ export default function LandingHero({ theme }: LandingHeroProps) {
         </div>
       )}
 
-      <div className="relative z-10 max-w-7xl mx-auto w-full">
+      <div className="relative z-10 w-full max-w-7xl">
         <div className="lg:max-w-xl">
           {isDark && (
             <img

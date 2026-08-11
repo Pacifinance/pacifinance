@@ -95,7 +95,7 @@ MediaQuery > Language > Theme > DevMode > User > Currency > Page > Privacy > Toa
    `CurrencyContext`. Never hardcode `€`.
 4. **Selectors** — access `userData` only via
    `src/utils/userDataSelectors.ts`.
-5. **Mock** — every new `userData` field → update `MockAuthContext.tsx`.
+5. **Mock & demo data** — every new `userData` field → update `MockAuthContext.tsx` (local dev). Every new feature that reads through `useDemoServices()` (`src/hooks/useDemoServices.ts`) or `generateDemoData()` (`src/data/demoData.ts`) → add realistic populated data for it there too, not an empty array. The public demo account (`/dashboard` via "Try Demo") is how a stranger decides whether to sign up — it must stay full, not just structurally correct. An empty state in the demo isn't neutral, it reads as "this feature doesn't work."
 6. **Colors/Icons** — `getAssetColor()`, `getCategoryColor()` from
    `src/data/`. Never hardcoded.
 7. **Outflows not expenses** — always "outflows". Use "expenses" only when

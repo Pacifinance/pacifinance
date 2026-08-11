@@ -14,6 +14,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   disclosed, reviewed, tested, and aligned with the project's vision before
   a PR — linked from `CONTRIBUTING.md` and a checklist item in the PR
   template.
+- Demo account: investment holdings (stocks/ETF/crypto with real
+  quantities, cost basis, transactions and dividends), liquidity
+  sub-accounts, recurring transactions, a shared-expense receivable, and
+  populated spending/savings limits with custom categories — previously
+  most of these returned empty arrays or nulls in demo mode, so several
+  shipped features (portfolio insights, balance reconciliation, recurring
+  transactions, shared expenses, goals & limits, custom categories) had
+  nothing to show a visitor trying the demo. Documented in `AGENTS.md`
+  (rule 5) as a standing requirement: new demo-reachable features need
+  real seed data, not just a structurally-correct empty state.
 
 ### Changed
 - Consolidated `CLAUDE.md`, `AGENTS.md` and `.github/copilot-instructions.md`

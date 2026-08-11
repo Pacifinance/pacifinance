@@ -65,7 +65,8 @@
       "Bash(set -e)",
       "Bash(git tag *)",
       "Bash(echo \"exit:$?\")",
-      "Bash(identify /workspaces/pacifinance-serverless/src/assets/landing/hero-background.webp)"
+      "Bash(identify /workspaces/pacifinance-serverless/src/assets/landing/hero-background.webp)",
+      "Bash(grep -n \"goals,\\\\n    limits,\\\\|goals,$\\\\|limits,$\" /workspaces/pacifinance-serverless/src/data/demoData.ts)"
     ]
   }
 }

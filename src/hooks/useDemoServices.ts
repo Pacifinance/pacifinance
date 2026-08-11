@@ -23,6 +23,15 @@ import type {
   GoalDto, SharedExpenseReceivableDto,
 } from '../types/api';
 
+// A recent date a few days in the past, so "last updated"/"last paid"
+// fields never look stale no matter when the demo is opened.
+const daysAgoISO = (days: number) => {
+  const d = new Date();
+  d.setDate(d.getDate() - days);
+  return d.toISOString();
+};
+const daysAgoDate = (days: number) => daysAgoISO(days).slice(0, 10);
+
 const FAKE_SUCCESS = { status: 200, data: { success: true } };
 
 /** Sample goals so the feature is visible in demo mode (no real backend session to fetch from). */
@@ -38,6 +47,57 @@ const DEMO_INSTRUMENTS: InvestmentInstrumentDto[] = [
   { id: -2, kind: 'etf', symbol: 'SWDA', exchange: 'LSE', name: 'iShares Core MSCI World UCITS ETF', currency: 'USD', country: null, sector: null, industry: null, figi: 'BBG00B3TQBJ6', isin: 'IE00B4L5Y983', coingeckoId: null, provider: 'openfigi', verified: true, active: true, metadata: {} },
   { id: -3, kind: 'crypto', symbol: 'BTC', exchange: null, name: 'Bitcoin', currency: null, country: null, sector: null, industry: null, figi: null, isin: null, coingeckoId: 'bitcoin', provider: 'coingecko', verified: true, active: true, metadata: {} },
   { id: -4, kind: 'crypto', symbol: 'ETH', exchange: null, name: 'Ethereum', currency: null, country: null, sector: null, industry: null, figi: null, isin: null, coingeckoId: 'ethereum', provider: 'coingecko', verified: true, active: true, metadata: {} },
+];
+
+/** One holding per DEMO_INSTRUMENTS entry, so investment charts, portfolio
+ * insights and balance reconciliation all have something real to show. */
+const DEMO_HOLDINGS: InvestmentHoldingDto[] = [
+  { id: -201, assetKey: 'stocks', positionType: 'single', quantity: 15, averagePrice: 155.30, currentValue: 2850, investedAmount: 2329.50, currency: 'USD', notes: '', updatedAt: daysAgoISO(2), importSource: null, instrument: DEMO_INSTRUMENTS[0] },
+  { id: -202, assetKey: 'etf', positionType: 'pac', quantity: 120, averagePrice: 85.40, currentValue: 11500, investedAmount: 10248, currency: 'USD', notes: 'PAC mensile', updatedAt: daysAgoISO(2), importSource: null, instrument: DEMO_INSTRUMENTS[1] },
+  { id: -203, assetKey: 'bitcoin', positionType: 'single', quantity: 0.15, averagePrice: 38000, currentValue: 9800, investedAmount: 5700, currency: null, notes: '', updatedAt: daysAgoISO(5), importSource: null, instrument: DEMO_INSTRUMENTS[2] },
+  { id: -204, assetKey: 'crypto', positionType: 'single', quantity: 2.5, averagePrice: 2400, currentValue: 6200, investedAmount: 6000, currency: null, notes: '', updatedAt: daysAgoISO(5), importSource: null, instrument: DEMO_INSTRUMENTS[3] },
+];
+
+const DEMO_INVESTMENT_SETTINGS: InvestmentSettingsDto = { monthlyTarget: 300, monthlyTargetPercent: null };
+
+/** A couple of buy trades per holding, so transaction history and
+ * cost-basis reconciliation have something to reconcile against. */
+const DEMO_TRANSACTIONS_SUMMARY = [
+  { instrumentId: -1, isin: null, symbol: 'AAPL', name: 'Apple Inc', side: 'buy' as const, quantity: 10, price: 148.20, currency: 'USD', total: 1482, totalCurrency: 'USD', tradeDate: daysAgoDate(210), externalId: null, source: 'manual' },
+  { instrumentId: -1, isin: null, symbol: 'AAPL', name: 'Apple Inc', side: 'buy' as const, quantity: 5, price: 169.50, currency: 'USD', total: 847.50, totalCurrency: 'USD', tradeDate: daysAgoDate(60), externalId: null, source: 'manual' },
+  { instrumentId: -2, isin: 'IE00B4L5Y983', symbol: 'SWDA', name: 'iShares Core MSCI World UCITS ETF', side: 'buy' as const, quantity: 120, price: 85.40, currency: 'USD', total: 10248, totalCurrency: 'USD', tradeDate: daysAgoDate(300), externalId: null, source: 'trading212' },
+  { instrumentId: -3, isin: null, symbol: 'BTC', name: 'Bitcoin', side: 'buy' as const, quantity: 0.15, price: 38000, currency: 'EUR', total: 5700, totalCurrency: 'EUR', tradeDate: daysAgoDate(150), externalId: null, source: 'manual' },
+];
+
+/** AAPL and the world ETF both pay real dividends - lets the dividend tracker show something. */
+const DEMO_DIVIDENDS_SUMMARY = [
+  { instrumentId: -1, symbol: 'AAPL', name: 'Apple Inc', totalAmount: 21.60, paymentCount: 4, lastPaidDate: daysAgoDate(45) },
+  { instrumentId: -2, symbol: 'SWDA', name: 'iShares Core MSCI World UCITS ETF', totalAmount: 68.40, paymentCount: 2, lastPaidDate: daysAgoDate(80) },
+];
+
+/** Sub-accounts under bank/cash/emergency-fund, so the nested source picker
+ * (Phase 2's sub-account dropdown) has real entries to show instead of just
+ * the flat account-type totals. */
+const DEMO_LIQUIDITY_ACCOUNTS: LiquidityAccountDto[] = [
+  { id: -301, assetKey: 'bank', label: 'Conto Corrente Principale', currentValue: 8200, currency: 'EUR', notes: '', updatedAt: daysAgoISO(1) },
+  { id: -302, assetKey: 'bank', label: 'Revolut', currentValue: 1450, currency: 'EUR', notes: 'Spese quotidiane', updatedAt: daysAgoISO(1) },
+  { id: -303, assetKey: 'cash', label: 'Contanti', currentValue: 180, currency: 'EUR', notes: '', updatedAt: daysAgoISO(3) },
+  { id: -304, assetKey: 'emergencyFund', label: 'Fondo Emergenza', currentValue: 5000, currency: 'EUR', notes: '5 mesi di spese', updatedAt: daysAgoISO(10) },
+];
+
+/** Salary + rent + a couple of subscriptions - covers both directions
+ * (income/outflow) and both the fixed-category and custom-category paths. */
+const DEMO_RECURRING: RecurringTransactionDto[] = [
+  { id: -401, direction: 'income', purpose: 'income', amount: 2850, notes: 'Stipendio mensile', paymentType: null, categoryTag: { label: 'salary', index: 0, type: 1 }, userCategory: null, dayOfMonth: 27, active: true, nextRunDate: daysAgoDate(-12) },
+  { id: -402, direction: 'outflow', purpose: 'expense', amount: 750, notes: 'Affitto', paymentType: { label: 'periodic payment', index: 4, type: 0 }, categoryTag: { label: 'house', index: 5, type: 0 }, userCategory: null, dayOfMonth: 1, active: true, nextRunDate: daysAgoDate(-16) },
+  { id: -403, direction: 'outflow', purpose: 'expense', amount: 15.99, notes: 'Netflix', paymentType: { label: 'subscription', index: 2, type: 0 }, categoryTag: { label: 'digital service', index: 1, type: 0 }, userCategory: null, dayOfMonth: 5, active: true, nextRunDate: daysAgoDate(-20) },
+  { id: -404, direction: 'outflow', purpose: 'expense', amount: 42, notes: 'Abbonamento palestra', paymentType: { label: 'subscription', index: 2, type: 0 }, categoryTag: null, userCategory: { id: -501, label: 'Palestra' }, dayOfMonth: 3, active: true, nextRunDate: daysAgoDate(-18) },
+];
+
+/** One pending shared-expense receivable ("I paid for the group") so the
+ * feature shows a real balance instead of an empty state. */
+const DEMO_SHARED_EXPENSES: SharedExpenseReceivableDto[] = [
+  { id: -601, date: daysAgoDate(6), notes: 'Cena di compleanno - gruppo di 4', totalAmount: 160, ownShare: 40, receivableAmount: 120, settledAmount: 0, status: 'pending', expenseId: null },
 ];
 
 export const useDemoServices = () => {
@@ -115,14 +175,15 @@ export const useDemoServices = () => {
           active: true,
           metadata: {},
         }),
-        getHoldings: async (): Promise<InvestmentHoldingDto[]> => [],
-        // Demo mode's getHoldings() always returns [] - nothing to refresh.
-        refreshPrices: async (): Promise<InvestmentHoldingDto[]> => [],
-        // Demo mode's getHoldings() always returns [] - nothing to backfill.
+        getHoldings: async (): Promise<InvestmentHoldingDto[]> => DEMO_HOLDINGS,
+        // Prices don't actually move in demo mode - echo the same holdings
+        // back instead of clearing the portfolio the user is looking at.
+        refreshPrices: async (): Promise<InvestmentHoldingDto[]> => DEMO_HOLDINGS,
+        // No historical price provider call happens in demo mode.
         backfillHistoricalPrices: async () => [],
-        // Demo mode's getHoldings() always returns [], so a holding for this
-        // instrument can never already exist here - the merge/replace conflict
-        // path is unreachable in demo, same as with the real backend's first save.
+        // DEMO_HOLDINGS already covers every DEMO_INSTRUMENTS entry, so this
+        // never actually needs to merge against an existing row from the UI's
+        // own add-holding flow - same as the real backend's first save.
         saveHolding: async (data: InvestmentHoldingSaveRequest): Promise<InvestmentHoldingDto> => ({
           id: data.id ?? -Date.now(),
           assetKey: data.asset_key,
@@ -159,9 +220,7 @@ export const useDemoServices = () => {
         }),
         // Same reasoning as saveHoldingHistory above - unreachable from the UI in demo mode.
         saveHoldingHistoryBatch: async (data) => ({ savedCount: data.entries.length, errors: [] }),
-        // No session-backed setting to persist in demo mode - echoes the save
-        // back (like saveHolding above) without actually remembering it.
-        getSettings: async (): Promise<InvestmentSettingsDto> => ({ monthlyTarget: null, monthlyTargetPercent: null }),
+        getSettings: async (): Promise<InvestmentSettingsDto> => DEMO_INVESTMENT_SETTINGS,
         saveSettings: async (data): Promise<InvestmentSettingsDto> => ({ monthlyTarget: data.monthly_target, monthlyTargetPercent: data.monthly_target_percent ?? null }),
         // No session-backed dividend ledger in demo mode - echoes the save back
         // (like saveHolding/saveHoldingHistory above) without persisting it.
@@ -179,8 +238,7 @@ export const useDemoServices = () => {
         }),
         // No session-backed dividend ledger in demo mode - same reasoning as saveDividend above.
         saveDividendsBatch: async (data) => ({ savedCount: data.entries.length, errors: [] }),
-        // Demo mode's getHoldings() always returns [] - nothing to summarize.
-        getDividendsSummary: async (): Promise<InvestmentDividendSummaryResponse> => [],
+        getDividendsSummary: async (): Promise<InvestmentDividendSummaryResponse> => DEMO_DIVIDENDS_SUMMARY,
         // No session-backed transaction ledger in demo mode - echoes the save back
         // (like saveDividend above) without persisting it.
         saveTransaction: async (data): Promise<InvestmentTransactionDto> => ({
@@ -200,8 +258,7 @@ export const useDemoServices = () => {
         }),
         // No session-backed transaction ledger in demo mode - same reasoning as saveTransaction above.
         saveTransactionsBatch: async (data) => ({ savedCount: data.entries.length, errors: [] }),
-        // Demo mode has no persisted transaction history to reconcile against.
-        getTransactions: async (): Promise<InvestmentTransactionsGetResponse> => [],
+        getTransactions: async (): Promise<InvestmentTransactionsGetResponse> => DEMO_TRANSACTIONS_SUMMARY,
         // No session-backed community-price queue in demo mode - simulate an
         // immediate pending submission without persisting or requiring review.
         submitCommunityPrice: async (data): Promise<CommunityPriceDto> => ({
@@ -224,7 +281,7 @@ export const useDemoServices = () => {
       },
       liquidityAccountService: {
         ...services.liquidityAccountService,
-        getAccounts: async (): Promise<LiquidityAccountDto[]> => [],
+        getAccounts: async (): Promise<LiquidityAccountDto[]> => DEMO_LIQUIDITY_ACCOUNTS,
         saveAccount: async (data: {
           id?: number; asset_key: LiquidityAccountDto['assetKey']; label: string;
           current_value: number; currency?: string; notes?: string;
@@ -239,7 +296,6 @@ export const useDemoServices = () => {
         }),
         deleteAccount: async () => FAKE_SUCCESS,
         getAccountHistory: async () => [],
-        // Demo mode's getAccounts() always returns [] - see saveHoldingHistory above.
         saveAccountHistory: async (data): Promise<LiquidityAccountHistoryDto> => ({
           id: -Date.now(),
           accountId: data.account_id,
@@ -253,7 +309,7 @@ export const useDemoServices = () => {
       },
       recurringTransactionService: {
         ...services.recurringTransactionService,
-        getRecurring: async (): Promise<RecurringTransactionDto[]> => [],
+        getRecurring: async (): Promise<RecurringTransactionDto[]> => DEMO_RECURRING,
         saveRecurring: async (data): Promise<RecurringTransactionDto> => ({
           id: data.id ?? -Date.now(),
           direction: data.direction,
@@ -304,7 +360,7 @@ export const useDemoServices = () => {
       },
       sharedExpenseService: {
         ...services.sharedExpenseService,
-        getReceivables: async (): Promise<SharedExpenseReceivableDto[]> => [],
+        getReceivables: async (): Promise<SharedExpenseReceivableDto[]> => DEMO_SHARED_EXPENSES,
         addReceivable: async (data: {
           date: string; notes?: string; total_amount: number; own_share: number;
         }): Promise<SharedExpenseReceivableDto> => ({
@@ -317,7 +373,9 @@ export const useDemoServices = () => {
           settledAmount: 0,
           status: 'pending',
         }),
-        // Demo mode's getReceivables() always returns [] - see saveHoldingHistory above.
+        // Settling doesn't look the settled receivable back up against
+        // DEMO_SHARED_EXPENSES - it just echoes back a settled shell, same
+        // pattern as saveHoldingHistory above.
         settleReceivable: async (data): Promise<SharedExpenseReceivableDto> => ({
           id: data.id,
           date: new Date().toISOString().slice(0, 10),

@@ -109,7 +109,15 @@ MediaQuery > Language > Theme > DevMode > User > Currency > Page > Privacy > Toa
 11. **Backend** — `server/` is a normal part of the codebase, not
     off-limits. Backend changes are allowed when the request needs them;
     include validation, model/route tests, and an idempotent Supabase
-    migration for schema changes.
+    migration for schema changes. Apply that same change to
+    `supabase/schema.sql` too, in the same PR, in its final-state form (a
+    `create table` with the new column already in it, not a bolted-on
+    `alter table`) — README.md and CONTRIBUTING.md both tell self-hosters
+    and new contributors to bootstrap a database by applying `schema.sql`
+    directly, not by replaying the full migration history, so a schema
+    change that ships only as a migration silently breaks that path. If a
+    migration renames or drops something, `schema.sql` must reflect the
+    end state, not the old name.
 12. **User-owned data domains** — a new table with a `user_id`/owner FK to
     `auth.users` (a new feature's data) must: (a) get an entry in
     `server/src/libs/userDataDomains.ts` (`USER_DATA_DOMAINS`, or

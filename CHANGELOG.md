@@ -10,6 +10,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 ## [Unreleased]
 
 ### Added
+- `server/src/libs/userDataDomains.ts`: a single registry of every
+  user-owned data domain, now driving the "Export Data" endpoint
+  (`POST /api/user/alldata`), which previously only ever returned balances
+  and transactions (truncated at that — even those were missing several
+  columns) while silently omitting the other 20 domains (investments,
+  custom categories, liquidity sub-accounts, goals, recurring transactions,
+  shared expenses, notification preferences, roadmap votes...). Two new
+  tests (`userDataDomains.test.ts`, `userDataCascadeGuard.test.ts`) fail if
+  a future data domain is ever added to the database without being either
+  registered for export or explicitly excluded with a reason, and if any
+  user-owned table's foreign key isn't `ON DELETE CASCADE`. Documented as
+  a standing rule in `AGENTS.md` (rule 12) and `CONTRIBUTING.md` (rule 12).
 - Notification settings: a "Send test notification" button (shown once
   reminders are enabled) that triggers an immediate push through the same
   delivery path as real reminders, for the user to confirm push actually
@@ -73,6 +85,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - Landing hero: the desktop artwork was cropping off the tree and moon
   because it was center-positioned inside a panel narrower than the source
   image — repositioned so the full subject is visible instead.
+- Account deletion could fail for an admin account that had ever
+  approved/rejected another user's community price submission:
+  `instrument_historical_prices.verified_by` referenced `auth.users(id)`
+  without `ON DELETE CASCADE` (every other user reference in the schema
+  has it), so deleting that admin's Supabase Auth user hit a foreign-key
+  violation. Fixed via a migration setting it to `ON DELETE SET NULL`
+  (it records who reviewed a submission, not who owns it — `submitted_by`,
+  already cascading, is the real owner reference).
 - Notification settings: enabling reminders always blamed a failure on
   browser notification permission, even when the actual cause was
   something else (a subscribe/network failure), which was misleading when

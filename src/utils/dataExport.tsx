@@ -112,6 +112,53 @@ function filterDataByDateRange(data, filterOptions) {
   return filteredData;
 }
 
+// Every /user/alldata domain beyond profile/balances/transactions (those three
+// get bespoke treatment above for the existing charts/stats). Title here
+// drives the section/sheet/file name in every export format generically -
+// see buildExtraDomains and its consumers in exportToCSV/Excel/JSON/PDF. A
+// new domain the backend registers (server/src/libs/userDataDomains.ts) only
+// needs a line here to show up in every export format; omitting it just
+// means that domain's data is still in the JSON export (which includes the
+// raw API payload) but not broken out as its own CSV/sheet/PDF section.
+const EXTRA_DOMAIN_TITLES = {
+  categories: 'Custom Categories',
+  investmentHoldings: 'Investment Holdings',
+  investmentHoldingHistory: 'Investment Holding History',
+  investmentTransactions: 'Investment Transactions',
+  investmentDividends: 'Dividends',
+  investmentSettings: 'Investment Settings',
+  manualInstruments: 'Manually Added Instruments',
+  communityPriceSubmissions: 'Community Price Submissions',
+  liquidityAccounts: 'Liquidity Sub-Accounts',
+  liquidityAccountHistory: 'Liquidity Sub-Account History',
+  goals: 'Goals',
+  recurringTransactions: 'Recurring Transactions',
+  sharedExpenseReceivables: 'Shared Expense Receivables',
+  sharedExpenseReimbursements: 'Shared Expense Reimbursements',
+  notificationPreferences: 'Notification Preferences',
+  pushSubscriptions: 'Push Subscriptions',
+  roadmapVotes: 'Roadmap Votes',
+  benchmarkSnapshots: 'Community Benchmark Snapshots',
+};
+
+// Normalizes every extra domain to {key, title, rows: array-of-objects},
+// skipping anything empty/absent so every export format only ever renders
+// sections that actually have data. A domain that comes back as a single
+// object (e.g. investmentSettings, notificationPreferences - one row per
+// user, not a list) is wrapped as a 1-row array so the same table/sheet
+// renderer works for every domain regardless of its shape.
+function buildExtraDomains(userData) {
+  return Object.entries(EXTRA_DOMAIN_TITLES)
+    .map(([key, title]) => {
+      const value = userData?.[key];
+      if (value === null || value === undefined) return null;
+      const rows = Array.isArray(value) ? value : [value];
+      if (rows.length === 0) return null;
+      return { key, title, rows };
+    })
+    .filter(Boolean);
+}
+
 // Main function to prepare data for export
 export function prepareUserDataForExport(userData, _language = 'en', filterOptions = null) {
   // Initial safety check
@@ -147,20 +194,27 @@ export function prepareUserDataForExport(userData, _language = 'en', filterOptio
 
   // Handles data from the /user/alldata API
   const apiTransactions = userData?.transactions ?? userData?.expenses;
-  if (userData?.user && userData?.balances && apiTransactions) {
+  if (userData?.profile && userData?.balances && apiTransactions) {
     // Data from the API - process directly, no recursion
+    const profile = userData.profile;
+    // Demographic fields come back as tag-join objects ({label, index, type})
+    // from db.users.getPublicInfoByUserId, not plain strings - unwrap .label,
+    // tolerating a plain string too in case a field is ever simplified later.
+    const tagLabel = (field) => (field && typeof field === 'object' ? field.label : field) || 'N/A';
 
     const userInfo = {
-      userId: userData.user.userId || 'N/A',
-      creationDate: userData.user.creationDate ? new Date(userData.user.creationDate).toLocaleDateString() : 'N/A',
-      country: typeof userData.user.country === 'object' ? (userData.user.country?.name || userData.user.country?.code || 'N/A') : (userData.user.country || 'N/A'),
-      job: typeof userData.user.job === 'object' ? (userData.user.job?.name || userData.user.job?.title || 'N/A') : (userData.user.job || 'N/A'),
-      jobType: typeof userData.user.jobType === 'object' ? (userData.user.jobType?.name || userData.user.jobType?.type || 'N/A') : (userData.user.jobType || 'N/A'),
-      jobCountry: typeof userData.user.jobCountry === 'object' ? (userData.user.jobCountry?.name || userData.user.jobCountry?.code || 'N/A') : (userData.user.jobCountry || 'N/A'),
-      workTime: typeof userData.user.workTime === 'object' ? (userData.user.workTime?.name || userData.user.workTime?.type || 'N/A') : (userData.user.workTime || 'N/A'),
-      remoteType: typeof userData.user.remoteType === 'object' ? (userData.user.remoteType?.name || userData.user.remoteType?.type || 'N/A') : (userData.user.remoteType || 'N/A'),
+      userId: profile.userId || 'N/A',
+      creationDate: profile.creationDate ? new Date(profile.creationDate).toLocaleDateString() : 'N/A',
+      country: tagLabel(profile.country),
+      job: tagLabel(profile.job),
+      jobType: tagLabel(profile.jobType),
+      jobCountry: tagLabel(profile.jobCountry),
+      workTime: tagLabel(profile.workTime),
+      remoteType: tagLabel(profile.remoteType),
       userType: 'real'
     };
+
+    const extraDomains = buildExtraDomains(userData);
 
     // Process balances with total calculation
     const balances = Array.isArray(userData.balances) ? userData.balances.map((balance, index) => {
@@ -247,7 +301,7 @@ export function prepareUserDataForExport(userData, _language = 'en', filterOptio
 
     const monthCount = Math.max(1, userData.balances.length || 1);
     const demographics = {
-      accountAge: `${Math.floor((new Date() - new Date(userData.user.creationDate)) / (1000 * 60 * 60 * 24))} days`,
+      accountAge: `${Math.floor((new Date() - new Date(profile.creationDate)) / (1000 * 60 * 60 * 24))} days`,
       totalBalance: Number(totalBalance || 0).toFixed(2),
       totalIncome: Number(totalIncome || 0).toFixed(2),
       totalExpenses: Number(totalExpenses || 0).toFixed(2),
@@ -272,7 +326,8 @@ export function prepareUserDataForExport(userData, _language = 'en', filterOptio
       detailedOutflows: transactions.filter(transaction => transaction.type === 'Expense'),
       categoryExpenses,
       monthlyStats,
-      demographics
+      demographics,
+      extraDomains
     };
 
     // Apply filters if specified
@@ -576,6 +631,60 @@ function generateMockDetailedOutflows() {
   return transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
 }
 
+// Renders any value into a flat, human-readable string for a spreadsheet
+// cell or PDF table. Primitives pass through as-is; objects/arrays (e.g. an
+// investment holding's nested instrument, or goals' categorySpendingLimits)
+// are JSON-stringified rather than becoming "[object Object]".
+function stringifyCellValue(value) {
+  if (value === null || value === undefined) return '';
+  if (typeof value === 'object') return JSON.stringify(value);
+  return String(value);
+}
+
+// Adds one worksheet for a generic extra data domain (see buildExtraDomains)
+// - same header-row styling as every other sheet this file builds, just
+// driven by whatever keys the domain's rows actually have instead of a
+// hand-picked column list per domain.
+function addDomainWorksheet(workbook, domain) {
+  // Excel sheet names: max 31 chars, and none of \ / ? * [ ] : - collisions
+  // from truncation are unlikely given how distinct EXTRA_DOMAIN_TITLES are.
+  const sheetName = domain.title.replace(/[\\/?*[\]:]/g, '').slice(0, 31);
+  const worksheet = workbook.addWorksheet(sheetName);
+  const headers = Object.keys(domain.rows[0] || {});
+  if (headers.length === 0) return;
+
+  worksheet.addRow(headers);
+  domain.rows.forEach((row) => {
+    worksheet.addRow(headers.map((header) => stringifyCellValue(row?.[header])));
+  });
+
+  worksheet.getRow(1).font = { bold: true, color: { argb: 'FFFFFFFF' } };
+  worksheet.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF079164' } };
+  headers.forEach((header, index) => {
+    worksheet.getColumn(index + 1).width = Math.max(header.length, 15);
+  });
+}
+
+// Renders one PDF <section> for a generic extra data domain (see
+// buildExtraDomains) - a plain table driven by whatever keys the domain's
+// rows actually have, consistent with the bespoke sections above it.
+function renderDomainSectionHTML(domain) {
+  const headers = Object.keys(domain.rows[0] || {});
+  if (headers.length === 0) return '';
+  const formattedHeaders = headers.map((header) => header.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase()).trim());
+  return `
+    <div class="section">
+        <h2>${domain.title}</h2>
+        <table>
+            <tr>${formattedHeaders.map((header) => `<th>${header}</th>`).join('')}</tr>
+            ${domain.rows.map((row) => `
+                <tr>${headers.map((header) => `<td>${stringifyCellValue(row?.[header])}</td>`).join('')}</tr>
+            `).join('')}
+        </table>
+    </div>
+  `;
+}
+
 // Export functions
 
 export const exportToCSV = async (userData, language, filterOptions = null) => {
@@ -661,7 +770,16 @@ export const exportToCSV = async (userData, language, filterOptions = null) => {
       zip.file('07_Account_Performance.csv', demographicsCSV);
     }
 
-    // 8. Sheet: Export Information
+    // 8+. One sheet per additional data domain (investments, categories,
+    // goals, recurring transactions, shared expenses, notifications, ...) -
+    // see buildExtraDomains/EXTRA_DOMAIN_TITLES for the full list.
+    (data.extraDomains || []).forEach((domain, index) => {
+      const fileNumber = String(8 + index).padStart(2, '0');
+      const slug = domain.title.replace(/\s+/g, '_');
+      zip.file(`${fileNumber}_${slug}.csv`, convertSingleArrayToCSV(domain.rows, domain.title));
+    });
+
+    // Last sheet: Export Information
     const exportInfo = {
       exportDate: new Date().toISOString(),
       exportTime: new Date().toLocaleString(),
@@ -852,6 +970,13 @@ export const exportToExcel = async (userData, language, filterOptions = null) =>
     });
   }
   
+  // One worksheet per additional data domain (investments, categories,
+  // goals, recurring transactions, shared expenses, notifications, ...) -
+  // see buildExtraDomains/EXTRA_DOMAIN_TITLES for the full list.
+  (data.extraDomains || []).forEach((domain) => {
+    addDomainWorksheet(workbook, domain);
+  });
+
   // Auto-size columns for all sheets
   userInfoHeaders.forEach((header, index) => {
     const column = userInfoWS.getColumn(index + 1);
@@ -1194,7 +1319,9 @@ export const exportToPDF = async (userData, language, filterOptions = null, form
               </table>
           </div>
           ` : ''}
-          
+
+          ${(data.extraDomains || []).map(renderDomainSectionHTML).join('')}
+
           ${data.demographics && Object.keys(data.demographics).length > 0 ? `
           <div class="section">
               <h2>Account Performance Summary</h2>
@@ -1275,14 +1402,15 @@ const convertSingleArrayToCSV = (data, title) => {
         const value = row[header];
         if (value === null || value === undefined) return '';
 
-        // Special handling for string values that contain commas
-        if (typeof value === 'string') {
-          if (value.includes(',') || value.includes('"') || value.includes('\n')) {
-            return `"${value.replace(/"/g, '""')}"`;
-          }
+        // Quote/escape anything (a string, or a JSON-stringified object -
+        // see stringifyCellValue) containing characters that would otherwise
+        // break the CSV structure.
+        const stringValue = stringifyCellValue(value);
+        if (stringValue.includes(',') || stringValue.includes('"') || stringValue.includes('\n')) {
+          return `"${stringValue.replace(/"/g, '""')}"`;
         }
 
-        return String(value);
+        return stringValue;
       }).join(',');
     }).filter(row => row !== '') // Remove blank rows
   ];

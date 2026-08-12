@@ -110,7 +110,20 @@ MediaQuery > Language > Theme > DevMode > User > Currency > Page > Privacy > Toa
     off-limits. Backend changes are allowed when the request needs them;
     include validation, model/route tests, and an idempotent Supabase
     migration for schema changes.
-12. **Git** — never run `git commit`, `git push`, or create/push git tags
+12. **User-owned data domains** — a new table with a `user_id`/owner FK to
+    `auth.users` (a new feature's data) must: (a) get an entry in
+    `server/src/libs/userDataDomains.ts` (`USER_DATA_DOMAINS`, or
+    `EXCLUDED_MODELS` with a stated reason) — this is what drives the GDPR
+    data-export endpoint (`POST /api/user/alldata`) and is checked by
+    `server/__tests__/userDataDomains.test.ts`, which fails if a `db/db.ts`
+    model is registered in neither list; (b) use `on delete cascade` on that
+    FK, checked by `server/__tests__/userDataCascadeGuard.test.ts` (account
+    deletion is one Supabase Auth delete relying entirely on cascades — no
+    per-table cleanup code exists to remember to write). Both tests exist
+    because both flows silently drifted out of sync with the schema over
+    time before this rule; don't let it happen again by skipping either
+    entry when adding a table.
+13. **Git** — never run `git commit`, `git push`, or create/push git tags
     autonomously; the user performs all three. The final line of every
     completed update must be a single concise, imperative,
     open-source-friendly English commit message, no prefix, bullets, code
@@ -129,6 +142,7 @@ MediaQuery > Language > Theme > DevMode > User > Currency > Page > Privacy > Toa
 | `src/data/currencyConfig.ts` | 19 currencies + fallback rates |
 | `scripts/roadmap-items.json` | Public roadmap source |
 | `CHANGELOG.md` | Version history + release process |
+| `server/src/libs/userDataDomains.ts` | Registry of every user-owned data domain — drives GDPR export + cascade-delete guard tests |
 
 ## userData Shape
 

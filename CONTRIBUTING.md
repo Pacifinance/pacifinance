@@ -111,6 +111,7 @@ business/domain data (`UserContext`, a service call, a domain-specific hook like
 9. Dates: avoid UTC-midnight date bugs; use `toDateOnly` in server code.
 10. Balance keys: use helpers from `src/constants/balanceSchema.ts` instead of hand-indexing snapshots.
 11. Changelog: note any user-facing change under `[Unreleased]` in [CHANGELOG.md](CHANGELOG.md), in the same PR.
+12. User-owned data: a new table with a `user_id`/owner FK to `auth.users` needs (a) an entry in `server/src/libs/userDataDomains.ts` so it's included in the GDPR data-export endpoint, and (b) `on delete cascade` on that FK so account deletion actually removes it. See AGENTS.md rule 12 for the tests that enforce both.
 
 ## Submitting Changes
 

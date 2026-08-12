@@ -447,6 +447,20 @@ async function createManualInstrument(user_id: string, input: ManualInstrumentIn
 }
 
 /**
+ * Lists the private "manual" instruments a user has created (owner_user_id
+ * scoped) — used by the data-export endpoint; never returned to any other user.
+ */
+async function getManualInstrumentsByUserId(user_id: string) {
+    const {data, error} = await supabase.from("investment_instruments")
+        .select(INSTRUMENT_SELECT)
+        .eq("owner_user_id", user_id)
+        .order("id", {ascending: true})
+    if (error) console.error("investments.getManualInstrumentsByUserId: failed to read manual instruments", error)
+    if (error || !data) return []
+    return (data as unknown as InstrumentRow[]).map(toInstrument)
+}
+
+/**
  * Resolves a canonical instrument by id.
  */
 /**
@@ -1629,6 +1643,63 @@ async function getTransactionsByUserId(user_id: string): Promise<TransactionSumm
         .filter((entry): entry is TransactionSummaryEntry => entry !== null)
 }
 
+export interface DividendDetailEntry {
+    instrumentId: number
+    symbol: string
+    name: string
+    holdingId: number | null
+    amount: number
+    currency: string | null
+    grossAmount: number | null
+    paidDate: string
+    externalId: string | null
+    source: string
+}
+
+/**
+ * All of the user's recorded dividend payments, raw (not aggregated per
+ * instrument like getDividendsSummaryByUserId) — used by the data-export
+ * endpoint, which needs every individual payment, not a rollup.
+ */
+async function getDividendsByUserId(user_id: string): Promise<DividendDetailEntry[]> {
+    const {data, error} = await supabase.from("user_investment_dividends")
+        .select(`instrument_id, holding_id, amount, currency, gross_amount, paid_date, external_id, source, instrument:investment_instruments(symbol, name)`)
+        .eq("user_id", user_id)
+        .order("paid_date", {ascending: false})
+    if (error) console.error("investments.getDividendsByUserId: failed to read dividends", error)
+    if (error || !data) return []
+
+    type Row = {
+        instrument_id: number
+        holding_id: number | null
+        amount: number
+        currency: string | null
+        gross_amount: number | null
+        paid_date: string
+        external_id: string | null
+        source: string
+        instrument: {symbol: string; name: string} | {symbol: string; name: string}[] | null
+    }
+    return (data as unknown as Row[])
+        .map((row): DividendDetailEntry | null => {
+            const instrument = Array.isArray(row.instrument) ? row.instrument[0] : row.instrument
+            if (!instrument) return null
+            return {
+                instrumentId: row.instrument_id,
+                symbol: instrument.symbol,
+                name: instrument.name,
+                holdingId: row.holding_id,
+                amount: row.amount,
+                currency: row.currency,
+                grossAmount: row.gross_amount,
+                paidDate: row.paid_date,
+                externalId: row.external_id,
+                source: row.source,
+            }
+        })
+        .filter((entry): entry is DividendDetailEntry => entry !== null)
+}
+
 async function deleteTransactionsForInstrument(user_id: string, instrument_id: number) {
     const {error, count} = await supabase.from("user_investment_transactions")
         .delete({count: "exact"}).eq("user_id", user_id).eq("instrument_id", instrument_id)
@@ -1947,6 +2018,7 @@ export default {
     searchInstrumentsByIsins,
     upsertInstrument,
     createManualInstrument,
+    getManualInstrumentsByUserId,
     getInstrumentById,
     getHoldingsByUserId,
     getOwnedInstrumentIds,
@@ -1965,6 +2037,7 @@ export default {
     upsertDividend,
     upsertDividendsBatch,
     getDividendsSummaryByUserId,
+    getDividendsByUserId,
     upsertTransaction,
     saveTransactionsBatch,
     getTransactionsByUserId,

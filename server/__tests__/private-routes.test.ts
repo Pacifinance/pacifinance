@@ -1467,4 +1467,50 @@ describe("private backend routes", () => {
             expect(response.json).toEqual({configured: true, generated_at: "2026-08-01T00:00:00.000Z"})
         })
     })
+
+    describe("/user/alldata", () => {
+        it("returns every registered user-data domain, keyed by domain", async () => {
+            mockDb.users.getPublicInfoByUserId.mockResolvedValue({userId: "123456"})
+            mockDb.balances.getAllByUserId.mockResolvedValue([{userDate: "2026-01-01", bank: 100}])
+            mockDb.transactions.getAllByUserId.mockResolvedValue([{date: "2026-01-05", amount: 42}])
+            mockDb.investments.getHoldingsByUserId.mockResolvedValue([{id: 1}])
+            mockDb.goals.getGoalsByUserId.mockResolvedValue([{id: 1}])
+
+            const response = await request(app, "/api/user/alldata", {
+                method: "POST",
+                headers: {cookie: authCookie},
+                body: {}
+            })
+
+            expect(response.status).toBe(200)
+            // Every domain the registry declares must be present as a top-level
+            // key - this is what would have caught the pre-fix bug where
+            // /alldata only ever returned {user, balances, transactions}.
+            expect(Object.keys(response.json).sort()).toEqual([
+                "balances", "benchmarkSnapshots", "categories", "communityPriceSubmissions",
+                "goals", "investmentDividends", "investmentHoldingHistory", "investmentHoldings",
+                "investmentSettings", "investmentTransactions", "liquidityAccountHistory",
+                "liquidityAccounts", "manualInstruments", "notificationPreferences", "profile",
+                "pushSubscriptions", "recurringTransactions", "roadmapVotes",
+                "sharedExpenseReceivables", "sharedExpenseReimbursements", "transactions",
+            ])
+            expect(response.json.profile).toEqual({userId: "123456"})
+            expect(response.json.balances).toEqual([{userDate: "2026-01-01", bank: 100}])
+            expect(response.json.investmentHoldings).toEqual([{id: 1}])
+            expect(response.json.goals).toEqual([{id: 1}])
+            expect(mockDb.investments.getHoldingsByUserId).toHaveBeenCalledWith("user-uuid", false)
+        })
+
+        it("fails with 500 only when the profile itself can't be read", async () => {
+            mockDb.users.getPublicInfoByUserId.mockResolvedValue(null)
+
+            const response = await request(app, "/api/user/alldata", {
+                method: "POST",
+                headers: {cookie: authCookie},
+                body: {}
+            })
+
+            expect(response.status).toBe(500)
+        })
+    })
 })

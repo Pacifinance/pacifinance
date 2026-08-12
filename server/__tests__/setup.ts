@@ -100,6 +100,7 @@ const mocks = vi.hoisted(() => {
             searchInstruments: vi.fn(),
             searchInstrumentsByIsins: vi.fn(),
             createManualInstrument: vi.fn(),
+            getManualInstrumentsByUserId: vi.fn(),
             getInstrumentById: vi.fn(),
             getHoldingsByUserId: vi.fn(),
             refreshHoldingPrices: vi.fn(),
@@ -116,6 +117,7 @@ const mocks = vi.hoisted(() => {
             upsertDividend: vi.fn(),
             upsertDividendsBatch: vi.fn(),
             getDividendsSummaryByUserId: vi.fn(),
+            getDividendsByUserId: vi.fn(),
             upsertTransaction: vi.fn(),
             saveTransactionsBatch: vi.fn(),
             getTransactionsByUserId: vi.fn(),
@@ -161,7 +163,8 @@ const mocks = vi.hoisted(() => {
         benchmarkSnapshots: {
             getProfiles: vi.fn(),
             saveProfiles: vi.fn(),
-            deleteProfilesByUserId: vi.fn()
+            deleteProfilesByUserId: vi.fn(),
+            getSnapshotsByUserId: vi.fn()
         },
         sharedExpenses: {
             getReceivablesByUserId: vi.fn(),
@@ -171,7 +174,8 @@ const mocks = vi.hoisted(() => {
             insertImportedReceivables: vi.fn(),
             insertImportedReimbursements: vi.fn(),
             linkExistingExpense: vi.fn(),
-            linkExistingReimbursement: vi.fn()
+            linkExistingReimbursement: vi.fn(),
+            getReimbursementsByUserId: vi.fn()
         },
         roadmapVotes: {
             getVoteCounts: vi.fn(),
@@ -345,6 +349,11 @@ export function resetServerMocks() {
     mockDb.investments.upsertHoldingHistoryBatch.mockResolvedValue({savedCount: 0, errors: []})
     mockDb.investments.upsertDividendsBatch.mockResolvedValue({savedCount: 0, errors: []})
     mockDb.investments.saveTransactionsBatch.mockResolvedValue({savedCount: 0, errors: []})
+    mockDb.investments.getDividendsByUserId.mockResolvedValue([])
+    mockDb.investments.getManualInstrumentsByUserId.mockResolvedValue([])
+    mockDb.investments.getTransactionsByUserId.mockResolvedValue([])
+    mockDb.investments.getInvestmentSettings.mockResolvedValue({monthlyTarget: null, monthlyTargetPercent: null})
+    mockDb.investments.getMyCommunityPriceSubmissions.mockResolvedValue([])
 
     mockDb.liquidityAccounts.getAccountsByUserId.mockResolvedValue([])
     mockDb.liquidityAccounts.insertAccount.mockResolvedValue({id: 1})
@@ -371,6 +380,7 @@ export function resetServerMocks() {
     mockDb.benchmarkSnapshots.getProfiles.mockResolvedValue([])
     mockDb.benchmarkSnapshots.saveProfiles.mockResolvedValue(undefined)
     mockDb.benchmarkSnapshots.deleteProfilesByUserId.mockResolvedValue(undefined)
+    mockDb.benchmarkSnapshots.getSnapshotsByUserId.mockResolvedValue([])
 
     mockDb.sharedExpenses.getReceivablesByUserId.mockResolvedValue([])
     mockDb.sharedExpenses.insertReceivable.mockResolvedValue({id: 1})
@@ -378,6 +388,7 @@ export function resetServerMocks() {
     mockDb.sharedExpenses.deleteReceivable.mockResolvedValue({deletedCount: 1})
     mockDb.sharedExpenses.linkExistingExpense.mockResolvedValue({id: 1})
     mockDb.sharedExpenses.linkExistingReimbursement.mockResolvedValue([])
+    mockDb.sharedExpenses.getReimbursementsByUserId.mockResolvedValue([])
 
     mockDb.roadmapVotes.getVoteCounts.mockResolvedValue({})
     mockDb.roadmapVotes.getVotesByUserId.mockResolvedValue([])

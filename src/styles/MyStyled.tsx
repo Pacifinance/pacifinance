@@ -1311,12 +1311,14 @@ const privacyIconPop = keyframes`
 `;
 
 /**
- * Mobile header privacy toggle. Hiding sensitive amounts is a protective
- * feature the user turns on deliberately, not an error state, so its "on"
- * look uses the brand accent (not theme.dangerColor's red, which used to sit
- * there and read as a permanent warning every time privacy mode was active).
+ * Privacy toggle shared by the mobile header and the desktop sidebar, so the
+ * two don't drift into different-looking buttons for the same action. Hiding
+ * sensitive amounts is a protective feature the user turns on deliberately,
+ * not an error state, so its "on" look uses the brand accent (not
+ * theme.dangerColor's red, which used to sit there and read as a permanent
+ * warning every time privacy mode was active).
  */
-export const MobilePrivacyToggleButton = styled.button<{ $active: boolean }>`
+export const PrivacyToggleButton = styled.button<{ $active: boolean }>`
   background: ${({ $active, theme }) =>
     $active ? `${theme.buttonBackgroundColor}20` : 'transparent'};
   border: 1.5px solid ${({ $active, theme }) =>

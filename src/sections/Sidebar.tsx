@@ -30,13 +30,11 @@ import { sortTagsByLanguage } from '../utils/sortingUtils';
 import { useGamification } from '../hooks/useGamification';
 import { getLevelColor, getLevelProgress } from '../utils/gamificationLevel';
 import {
-    SidebarPrivacyToggleModeButton,
     SidebarSection,
     Notification,
     DropdownContainer,
     Top,
-    ToggleButton,
-    MobilePrivacyToggleButton,
+    PrivacyToggleButton,
 } from "../styles/MyStyled";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSignOutAlt, faUserCog, faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
@@ -355,7 +353,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                 <PacifinanceLogo showText={false} />
                 {isMobileScreen ? (
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginLeft: 'auto' }}>
-                        <MobilePrivacyToggleButton
+                        <PrivacyToggleButton
                             theme={theme}
                             $active={isHidden}
                             onClick={toggleHidden}
@@ -363,7 +361,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                             aria-label={translations?.sidebar?.settings?.privacy || 'Privacy'}
                         >
                             <FontAwesomeIcon key={isHidden ? 'hidden' : 'visible'} icon={isHidden ? faEyeSlash : faEye} />
-                        </MobilePrivacyToggleButton>
+                        </PrivacyToggleButton>
                         <button
                             type="button"
                             className="account-container"
@@ -771,14 +769,16 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                             </DropdownContainer>
                         </Notification>
 
-                        <ToggleButton title={translations.sidebar.settings.privacy}>
-                            <SidebarPrivacyToggleModeButton
-                                theme={theme}
-                                mode={mode}
-                                toggleHidden={toggleHidden}
-                                isHidden={isHidden}
-                            />
-                        </ToggleButton>
+                        <PrivacyToggleButton
+                            theme={theme}
+                            $active={isHidden}
+                            onClick={toggleHidden}
+                            data-umami-event="setPrivacy"
+                            title={translations.sidebar.settings.privacy}
+                            aria-label={translations.sidebar.settings.privacy}
+                        >
+                            <FontAwesomeIcon key={isHidden ? 'hidden' : 'visible'} icon={isHidden ? faEyeSlash : faEye} />
+                        </PrivacyToggleButton>
                     </>
                 )}
             </Top>

@@ -177,6 +177,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   the browser had already granted permission. Now only a genuine
   permission denial shows that message; other failures show a distinct,
   actionable one.
+- Desktop sidebar's privacy (eye) toggle was a leftover, differently-styled
+  button (plain dark/light square, no animation) instead of the same
+  brand-accent button with the pop animation already used in the mobile
+  header. Both now render the same shared `PrivacyToggleButton`.
 
 ## [0.10.0] - 2026-08-11
 

@@ -6,8 +6,6 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import ToggleModeButton from '../components/ToggleModeButton';
-import PrivacyToggleModeButton from '../components/PrivacyToggleModeButton'; 
 import { IconButton, InputAdornment, TextField } from '@mui/material';
 import { Calendar } from 'react-calendar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -1267,43 +1265,6 @@ export const Icon = styled.div`
   text-color: ${(props) => (props.theme.jollyColor)};
 `;
 
-export const SidebarToggleModeButton = styled(ToggleModeButton)`
-      padding: 0.3em 0.5em;
-      font-size: 0.8em;
-      gap: 0.1em;
-
-      /* For screens with a maximum width of 768px (e.g. mobile devices) */
-      @media (max-width: 768px) {
-        margin-top: 0.5em;
-        padding: 1px 1px;
-        font-size: 2px;
-
-        svg {
-          font-size: 2em; 
-        }
-      }
-`;
-
-export const SidebarPrivacyToggleModeButton = styled(PrivacyToggleModeButton)`
-      padding: 0.3em 0.5em;
-      font-size: 4px;
-      gap: 0.1em;
-
-      /* For screens with a maximum width of 768px (e.g. mobile devices) */
-
-      @media (max-width: 768px) {
-        margin-top: 0.5em;
-        padding: 1px 1px;
-        font-size: 2px;
-
-        svg {
-          font-size: 2em; 
-        }
-      }
-`;
-
-
-
 const privacyIconPop = keyframes`
   0% { transform: scale(0.7) rotate(-6deg); opacity: 0; }
   60% { transform: scale(1.15) rotate(2deg); opacity: 1; }
@@ -1579,49 +1540,6 @@ export const Links = styled.div`
         }
 
       }
-  }
-`;
-
-export const ToggleButton = styled.div`
-  display: flex;
-  justify-content: center;
-
-
-  svg {
-      font-size: 2.2em; 
-  }
-
-  @media (max-width: 768px) {
-    position: absolute;
-    top: 1.2em;
-    right: 6em;
-    svg {
-      font-size: 7em; 
-    }
-  }
-`;
-
-export const SettingsToggleButton = styled.div`
-  margin-top: 0.5em;
-  margin-bottom: 0.5em;
-  margin: 0.5em;
-  display: flex;
-  padding: 0.5em 1em;
-  border: 0.1em solid ${(props) => (props.theme.buttonBackgroundColor)};
-  border-radius: 0.2em;
-  justify-content: center;
-  align-items: center;
-  cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
-
-  /* For screens with a maximum width of 768px (e.g. mobile devices) */
-  @media (max-width: 768px) {
-    padding: 0.2em 0.2em;
-    border-radius: 0.2em;
-    font-size: 1.1rem;
-
-    svg {
-      font-size: em; 
-    }
   }
 `;
 
@@ -2705,23 +2623,6 @@ export const MuiCustomDialogContentText = styled(DialogContentText)`
     @media (min-width: 768px) {
       font-size: 0.8rem;
     }
-  }
-`;
-
-export const DeleteAccountConsequences = styled.ul`
-  margin: 0.5em 0 1em;
-  padding-left: 1.2em;
-  font-family: Roboto, sans-serif;
-  font-size: 0.85rem;
-  color: black;
-
-  li {
-    margin-bottom: 0.4em;
-    line-height: 1.4;
-  }
-
-  @media (min-width: 768px) {
-    font-size: 0.8rem;
   }
 `;
 

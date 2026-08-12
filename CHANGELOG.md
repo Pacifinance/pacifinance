@@ -177,10 +177,27 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   the browser had already granted permission. Now only a genuine
   permission denial shows that message; other failures show a distinct,
   actionable one.
-- Desktop sidebar's privacy (eye) toggle was a leftover, differently-styled
-  button (plain dark/light square, no animation) instead of the same
-  brand-accent button with the pop animation already used in the mobile
-  header. Both now render the same shared `PrivacyToggleButton`.
+- Desktop sidebar's and Settings page's privacy (eye) toggles were leftover,
+  differently-styled buttons (plain dark/light square, no animation) instead
+  of the same brand-accent button with the pop animation already used in the
+  mobile header. All three now render the same shared `PrivacyToggleButton`.
+- Settings page's privacy-toggle description said only "hide amounts in
+  charts", understating what the mode actually does: it hides values
+  everywhere in the app, and in charts it also randomizes percentages/values
+  and desaturates colors to grayscale so the hidden data can't be guessed
+  from shape or hue. Rewritten to say so, in all six languages (previously
+  hardcoded it/en only).
+- Removed a fully unreachable legacy "Settings" popup in `SidebarModals.tsx`
+  (its trigger button no longer existed anywhere in the UI) together with
+  the duplicate delete-account confirmation flow it was the only way to
+  reach — account deletion has been fully served by the redesigned,
+  itemized-consequences flow on the Settings page for a while, so this was
+  a second, unreachable copy of the same feature. Also deleted two
+  components this left orphaned with zero remaining callers
+  (`SidebarMobile`, `PrivacyToggleModeButton`) and their now-dead styled
+  helpers, and dropped a dozen imports in `Sidebar.tsx` and
+  `SidebarModals.tsx` left over from before this code was split into its
+  own file.
 
 ## [0.10.0] - 2026-08-11
 

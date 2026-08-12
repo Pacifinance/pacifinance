@@ -613,6 +613,7 @@
             "title": "Ajustes",
             "light": "Modo claro/oscuro",
             "privacy": "Modo privacidad",
+            "privacySubtitle": "Oculta los importes en toda la app — en los gráficos, los valores se aleatorizan y los colores se vuelven blanco y negro para que no se puedan adivinar.",
             "language": "Cambiar idioma",
             "languageSubtitle": "Cambiar idioma de la interfaz",
             "currency": "Moneda",

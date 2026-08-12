@@ -622,6 +622,7 @@
             "title": "Settings",
             "light": "Light/Dark mode",
             "privacy": "Privacy mode",
+            "privacySubtitle": "Hides amounts everywhere in the app — in charts, values are randomized and colors turned grayscale so nothing can be guessed.",
             "language": "Change Language",
             "languageSubtitle": "Change interface language",
             "currency": "Currency",

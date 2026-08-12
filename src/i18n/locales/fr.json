@@ -613,6 +613,7 @@
             "title": "Settings",
             "light": "Light/Dark mode",
             "privacy": "Privacy mode",
+            "privacySubtitle": "Masque les montants dans toute l'application — dans les graphiques, les valeurs sont aléatoires et les couleurs passent en noir et blanc pour qu'on ne puisse rien deviner.",
             "language": "Changer la langue",
             "languageSubtitle": "Changer la langue de l'interface",
             "currency": "Currency",

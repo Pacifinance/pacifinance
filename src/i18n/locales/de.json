@@ -613,6 +613,7 @@
             "title": "Einstellungen",
             "light": "Hell/Dunkel-Modus",
             "privacy": "Datenschutzmodus",
+            "privacySubtitle": "Blendet Beträge in der gesamten App aus — in Diagrammen werden Werte randomisiert und Farben in Graustufen umgewandelt, damit nichts erraten werden kann.",
             "language": "Sprache ändern",
             "languageSubtitle": "Sprache der Benutzeroberfläche ändern",
             "currency": "Währung",

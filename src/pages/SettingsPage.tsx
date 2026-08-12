@@ -18,7 +18,6 @@ import { translateTag } from "../data/tagTranslations";
 
 import Sidebar from "../sections/Sidebar";
 import ToggleModeButton from "../components/ToggleModeButton";
-import PrivacyToggleModeButton from "../components/PrivacyToggleModeButton";
 import PWAInstallGuide from "../components/PWAInstallGuide";
 import NotificationPreferences from "../sections/NotificationPreferences";
 import LanguageSelector from "../components/LanguageSelector";
@@ -36,6 +35,7 @@ import {
     MuiCustomTextField,
     MuiCustomIconButton,
     MuiCustomInputAdornment,
+    PrivacyToggleButton,
 } from "../styles/MyStyled";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -632,14 +632,17 @@ const SettingsPage = () => {
                             <SettingsRow
                                 theme={theme}
                                 label={translations.sidebar.settings.privacy}
-                                subtitle={language === "it" ? "Nascondi importi nei grafici" : "Hide amounts in charts"}
+                                subtitle={translations.sidebar.settings.privacySubtitle || (language === "it" ? "Nascondi importi nei grafici" : "Hide amounts in charts")}
                             >
-                                <PrivacyToggleModeButton
+                                <PrivacyToggleButton
                                     theme={theme}
-                                    mode={mode}
-                                    toggleHidden={toggleHidden}
-                                    isHidden={isHidden}
-                                />
+                                    $active={isHidden}
+                                    onClick={toggleHidden}
+                                    data-umami-event="setPrivacy-settings"
+                                    aria-label={translations.sidebar.settings.privacy}
+                                >
+                                    <FontAwesomeIcon key={isHidden ? 'hidden' : 'visible'} icon={isHidden ? faEyeSlash : faEye} />
+                                </PrivacyToggleButton>
                             </SettingsRow>
 
                             <SettingsDivider theme={theme} />

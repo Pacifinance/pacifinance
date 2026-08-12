@@ -1,8 +1,6 @@
 import React, { useState, useContext, useEffect } from "react";
-import { Select, MenuItem } from "@mui/material";
 import { BiTrendingUp } from "react-icons/bi";
 import {
-    AiOutlineTrophy,
     AiOutlineDotChart,
 } from "react-icons/ai";
 import { BsBook, BsInfoCircle, BsGraphUp } from "react-icons/bs";
@@ -17,7 +15,6 @@ import { useAccountActions } from "../hooks/useAccountActions";
 import { useToast } from "../contexts/ToastContext";
 import { useLocalizedNavigate } from "../hooks/useLocalizedNavigate";
 import PacifinanceLogo from "../components/PacifinanceLogo";
-import SidebarMobile from "../components/SidebarMobile";
 import BottomNavBar from "./BottomNavBar";
 import QuickAddTransaction from "./QuickAddTransaction";
 import SidebarModals from "../components/SidebarModals";
@@ -39,28 +36,11 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSignOutAlt, faUserCog, faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
-import {
-    SidebarToggleModeButton,
-    SettingsToggleButton,
-    MuiFixedDimDialog,
-    MuiCustomButton,
-    MuiCustomDialogTitle,
-    MuiCustomDialogContent,
-    MuiCustomDialogProfileContent,
-    MuiCustomDialogContentText,
-    MuiCustomDialogActions,
-    MuiCustomTextField,
-    MuiCustomIconButton,
-    MuiCustomInputAdornment,
-    EyeVisibility,
-    EyeVisibilityOff,
-} from "../styles/MyStyled";
 
 function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
-    const { theme, toggleMode } = useContext(ThemeContext);
-    const { mode } = theme;
+    const { theme } = useContext(ThemeContext);
     const { isHidden, toggleHidden } = useContext(PrivacyContext);
-    const { language, translations, toggleLanguage } = useContext(LanguageContext);
+    const { language, translations } = useContext(LanguageContext);
     const { isMobileScreen } = useContext(MediaQueryContext);
     const { userService } = useDemoServices();
     const { setActiveIcon } = useContext(IconContext);
@@ -68,7 +48,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
 
     // User data states
     const [userId, setUserId] = useState("");
-    const [userType, setUserType] = useState("");
+    const [, setUserType] = useState("");
     const [, setUsername] = useState("");
     const [userNationality, setUserNationality] = useState({ key: "", value: "" });
     const [userWhereWorks, setUserWhereWorks] = useState({ key: "", value: "" });
@@ -93,11 +73,8 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [showUpdateProfileSuccess, setShowUpdateProfileSuccess] = useState(false);
-    const [showModalDeleteAccount, setShowModalDeleteAccount] = useState(false);
-    const [showSuccessDeleteAccount, setShowSuccessDeleteAccount] = useState(false);
     const [showChangeUsernameModal, setShowChangeUsernameModal] = useState(false);
     const [showChangePWDModal, setShowChangePWDModal] = useState(false);
-    const [showSettingsPopup, setShowSettingsPopup] = useState(false);
     const [showChangePWDSuccess, setShowChangePWDSuccess] = useState(false);
     const [showChangePWDError, setShowChangePWDError] = useState(false);
     const [showDropdown, setShowDropdown] = useState(false);
@@ -145,11 +122,6 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
             } else {
                 showError(translations.sidebar?.account?.errorGeneric || 'Operation failed');
             }
-        },
-        onLogout: () => {
-            handleSetIsAuthenticated(false);
-            navigate("/");
-            setShowSuccessDeleteAccount(true);
         },
     });
 
@@ -227,13 +199,6 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
     const handleTogglePasswordVisibility = () => setShowPassword(!showPassword);
     const handleToggleConfirmPasswordVisibility = () => setShowConfirmPassword(!showConfirmPassword);
     const handleMouseDownPassword = (event) => event.preventDefault();
-    const handleShowModalDeleteAccount = () => setShowModalDeleteAccount(true);
-
-    // API handlers
-    const handleDeleteAccount = async (event) => {
-        event.preventDefault();
-        await accountActions.deleteAccount();
-    };
 
     const handleCopyToClipboard = (copiedID) => (event) => {
         event.preventDefault();
@@ -271,8 +236,6 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
         setShowChangeUsernameModal(false);
         setShowChangePWDModal(false);
         setShowUpdateProfileSuccess(false);
-        setShowSettingsPopup(false);
-        setShowSuccessDeleteAccount(false);
     };
 
     const handleCloseSecondaryModal = () => {
@@ -799,11 +762,6 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                 theme={theme}
                 language={language}
                 isHidden={isHidden}
-                userType={userType}
-                mode={mode}
-                toggleMode={toggleMode}
-                toggleHidden={toggleHidden}
-                toggleLanguage={toggleLanguage}
                 showAccountModal={showAccountModal}
                 userId={userId}
                 userNationality={userNationality}
@@ -849,15 +807,10 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                 showUsername={showUsername}
                 newUsername={newUsername}
                 showUpdateProfileSuccess={showUpdateProfileSuccess}
-                showModalDeleteAccount={showModalDeleteAccount}
-                handleDeleteAccount={handleDeleteAccount}
-                showSuccessDeleteAccount={showSuccessDeleteAccount}
                 showChangePWDSuccess={showChangePWDSuccess}
                 showChangePWDError={showChangePWDError}
-                showSettingsPopup={showSettingsPopup}
                 selectedOption={selectedOption}
                 showPopup={showPopup}
-                handleShowModalDeleteAccount={handleShowModalDeleteAccount}
                 handleCloseModal={handleCloseModal}
                 handleCloseSecondaryModal={handleCloseSecondaryModal}
                 handleCloseModalAndLogout={handleCloseModalAndLogout}

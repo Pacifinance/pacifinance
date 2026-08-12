@@ -613,6 +613,7 @@
             "title": "Settings",
             "light": "Light/Dark mode",
             "privacy": "Privacy mode",
+            "privacySubtitle": "Oculta os valores em todo o app — nos gráficos, os valores são randomizados e as cores viram preto e branco para que nada possa ser adivinhado.",
             "language": "Alterar Idioma",
             "languageSubtitle": "Alterar idioma da interface",
             "currency": "Currency",

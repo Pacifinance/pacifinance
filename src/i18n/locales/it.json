@@ -622,6 +622,7 @@
             "title": "Impostazioni",
             "light": "Modalità chiara/scura",
             "privacy": "Modalità privacy",
+            "privacySubtitle": "Nasconde gli importi in tutta l'app — nei grafici, i valori vengono randomizzati e i colori resi in bianco e nero per non essere intuibili.",
             "language": "Cambia Lingua",
             "languageSubtitle": "Cambia lingua interfaccia",
             "currency": "Valuta",

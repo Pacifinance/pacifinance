@@ -24,6 +24,7 @@ import {
     SidebarToggleModeButton,
     SidebarPrivacyToggleModeButton,
     SettingsToggleButton,
+    DeleteAccountConsequences,
 } from "../styles/MyStyled";
 
 const SidebarModals = ({
@@ -854,11 +855,15 @@ const SidebarModals = ({
                     </MuiCustomDialogTitle>
                     <MuiCustomDialogContent theme={theme}>
                         <MuiCustomDialogContentText id="alert-dialog-description">
-                            {
-                                translations.sidebar
-                                    .deleteAccount.info
-                            }{" "}
-                            <br></br>
+                            {translations.sidebar.deleteAccount.info}
+                        </MuiCustomDialogContentText>
+                        <DeleteAccountConsequences theme={theme}>
+                            {translations.sidebar.deleteAccount.consequences.map((item, index) => (
+                                <li key={index}>{item}</li>
+                            ))}
+                        </DeleteAccountConsequences>
+                        <MuiCustomDialogContentText>
+                            {translations.sidebar.deleteAccount.dataKept}
                         </MuiCustomDialogContentText>
                     </MuiCustomDialogContent>
                     <MuiCustomDialogActions>

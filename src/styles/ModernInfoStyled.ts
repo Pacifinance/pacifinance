@@ -41,27 +41,15 @@ const shimmer = keyframes`
   }
 `;
 
-// Container principale
+// Container principale — deliberately no background of its own: the parent
+// (InfoPage.tsx) already paints the shared appBackgroundValue() every other
+// authenticated page uses. This container used to paint its own opaque
+// gradient here, silently overriding the parent's and making Info the one
+// page in the app with a visibly different background.
 export const ModernInfoContainer = styled.div`
   min-height: 100vh;
-  background: ${props => props.theme.mode === 'dark' 
-    ? 'linear-gradient(135deg, #0D0F13 0%, #1A1D23 100%)'
-    : 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)'
-  };
   position: relative;
   overflow-x: hidden;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 200px;
-    background: linear-gradient(135deg, #079164 0%, #27ae60 100%);
-    opacity: 0.1;
-    z-index: 0;
-  }
 `;
 
 export const ModernInfoContent = styled.div`

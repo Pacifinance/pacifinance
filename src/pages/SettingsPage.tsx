@@ -1731,14 +1731,35 @@ const SettingsPage = () => {
                                 >
                                     <p
                                         style={{
-                                            color: "#dc3545",
-                                            marginBottom: "1rem",
+                                            color: theme.textColor,
+                                            marginBottom: "0.5rem",
                                         }}
                                     >
                                         {
                                             translations.sidebar
                                                 .deleteAccount.info
                                         }
+                                    </p>
+                                    <ul
+                                        style={{
+                                            color: theme.textColor,
+                                            fontSize: "0.85rem",
+                                            paddingLeft: "1.2rem",
+                                            marginBottom: "0.75rem",
+                                        }}
+                                    >
+                                        {translations.sidebar.deleteAccount.consequences.map((item, index) => (
+                                            <li key={index} style={{ marginBottom: "0.35rem", lineHeight: 1.4 }}>{item}</li>
+                                        ))}
+                                    </ul>
+                                    <p
+                                        style={{
+                                            color: theme.textColor,
+                                            fontSize: "0.85rem",
+                                            marginBottom: "1rem",
+                                        }}
+                                    >
+                                        {translations.sidebar.deleteAccount.dataKept}
                                     </p>
                                     <div
                                         style={{ display: "flex", gap: "1rem" }}

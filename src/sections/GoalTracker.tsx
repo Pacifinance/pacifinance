@@ -16,10 +16,11 @@ import {
     FaEuroSign,
     FaCog
 } from 'react-icons/fa';
-import { 
-    BsTrophyFill, 
+import {
+    BsTrophyFill,
     BsCalendarCheck,
-    BsPercent
+    BsPercent,
+    BsChevronDown
 } from 'react-icons/bs';
 import { MdSavings, MdTrendingUp } from 'react-icons/md';
 
@@ -65,6 +66,22 @@ const GoalsHeader = styled.div`
     margin: 0;
     display: flex;
     align-items: center;
+  }
+`;
+
+const CollapseToggleButton = styled.button`
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 0.4rem;
+  color: ${props => props.theme.mode === 'dark' ? '#ffffff' : '#1a1a1a'};
+  font-size: 1rem;
+
+  svg {
+    transition: transform 0.25s ease;
+    transform: rotate(${props => props.$collapsed ? '-90deg' : '0deg'});
   }
 `;
 
@@ -214,7 +231,7 @@ const EmptyState = styled.div`
   }
 `;
 
-const GoalTracker = ({ theme, isHidden = false }) => {
+const GoalTracker = ({ theme, isHidden = false, collapsed = false, onToggleCollapsed }) => {
   const { language } = useContext(LanguageContext);
   const { formatAmount } = useContext(CurrencyContext);
   useContext(MediaQueryContext);
@@ -285,20 +302,33 @@ const GoalTracker = ({ theme, isHidden = false }) => {
             <FaPlus />
             {language === 'it' ? 'Gestisci Obiettivi' : 'Manage Goals'}
           </AddGoalButton>
+          <CollapseToggleButton
+            type="button"
+            theme={theme}
+            $collapsed={collapsed}
+            onClick={onToggleCollapsed}
+            aria-expanded={!collapsed}
+            aria-label={collapsed ? (language === 'it' ? 'Espandi' : 'Expand') : (language === 'it' ? 'Comprimi' : 'Collapse')}
+            title={collapsed ? (language === 'it' ? 'Espandi' : 'Expand') : (language === 'it' ? 'Comprimi' : 'Collapse')}
+          >
+            <BsChevronDown />
+          </CollapseToggleButton>
         </GoalsHeader>
-        
+
+        {!collapsed && (
         <EmptyState theme={theme}>
           <FaBullseye className="empty-icon" />
           <div className="empty-title">
             {language === 'it' ? 'Nessun obiettivo impostato' : 'No goals set'}
           </div>
           <div className="empty-description">
-            {language === 'it' 
+            {language === 'it'
               ? 'Inizia a impostare i tuoi obiettivi finanziari per tracciare i progressi e rimanere motivato.'
               : 'Start setting your financial goals to track progress and stay motivated.'
             }
           </div>
         </EmptyState>
+        )}
       </GoalsContainer>
     );
   }
@@ -314,8 +344,20 @@ const GoalTracker = ({ theme, isHidden = false }) => {
           <FaCog />
           {language === 'it' ? 'Gestisci Obiettivi' : 'Manage Goals'}
         </AddGoalButton>
+        <CollapseToggleButton
+          type="button"
+          theme={theme}
+          $collapsed={collapsed}
+          onClick={onToggleCollapsed}
+          aria-expanded={!collapsed}
+          aria-label={collapsed ? (language === 'it' ? 'Espandi' : 'Expand') : (language === 'it' ? 'Comprimi' : 'Collapse')}
+          title={collapsed ? (language === 'it' ? 'Espandi' : 'Expand') : (language === 'it' ? 'Comprimi' : 'Collapse')}
+        >
+          <BsChevronDown />
+        </CollapseToggleButton>
       </GoalsHeader>
-      
+
+      {!collapsed && (
       <GoalsGrid>
         {goals.map((goal) => {
           const progress = calculateProgress(goal.current, goal.target);
@@ -360,6 +402,7 @@ const GoalTracker = ({ theme, isHidden = false }) => {
           );
         })}
       </GoalsGrid>
+      )}
     </GoalsContainer>
   );
 };

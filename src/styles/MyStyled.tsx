@@ -1304,6 +1304,40 @@ export const SidebarPrivacyToggleModeButton = styled(PrivacyToggleModeButton)`
 
 
 
+const privacyIconPop = keyframes`
+  0% { transform: scale(0.7) rotate(-6deg); opacity: 0; }
+  60% { transform: scale(1.15) rotate(2deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+`;
+
+/**
+ * Mobile header privacy toggle. Hiding sensitive amounts is a protective
+ * feature the user turns on deliberately, not an error state, so its "on"
+ * look uses the brand accent (not theme.dangerColor's red, which used to sit
+ * there and read as a permanent warning every time privacy mode was active).
+ */
+export const MobilePrivacyToggleButton = styled.button<{ $active: boolean }>`
+  background: ${({ $active, theme }) =>
+    $active ? `${theme.buttonBackgroundColor}20` : 'transparent'};
+  border: 1.5px solid ${({ $active, theme }) =>
+    $active ? `${theme.buttonBackgroundColor}70` : (theme.mode === 'dark' ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)')};
+  border-radius: 9px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: ${({ $active, theme }) =>
+    $active ? theme.buttonBackgroundColor : (theme.mode === 'dark' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.5)')};
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+
+  svg {
+    animation: ${privacyIconPop} 0.35s ease;
+  }
+`;
+
 export const DropdownContainer = styled.div`
   position: relative;
   margin-bottom: 2em;
@@ -2669,6 +2703,23 @@ export const MuiCustomDialogContentText = styled(DialogContentText)`
     @media (min-width: 768px) {
       font-size: 0.8rem;
     }
+  }
+`;
+
+export const DeleteAccountConsequences = styled.ul`
+  margin: 0.5em 0 1em;
+  padding-left: 1.2em;
+  font-family: Roboto, sans-serif;
+  font-size: 0.85rem;
+  color: black;
+
+  li {
+    margin-bottom: 0.4em;
+    line-height: 1.4;
+  }
+
+  @media (min-width: 768px) {
+    font-size: 0.8rem;
   }
 `;
 

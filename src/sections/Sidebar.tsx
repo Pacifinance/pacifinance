@@ -36,6 +36,7 @@ import {
     DropdownContainer,
     Top,
     ToggleButton,
+    MobilePrivacyToggleButton,
 } from "../styles/MyStyled";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSignOutAlt, faUserCog, faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
@@ -354,28 +355,15 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                 <PacifinanceLogo showText={false} />
                 {isMobileScreen ? (
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginLeft: 'auto' }}>
-                        <button
+                        <MobilePrivacyToggleButton
+                            theme={theme}
+                            $active={isHidden}
                             onClick={toggleHidden}
                             data-umami-event="mobile-privacy-toggle"
                             aria-label={translations?.sidebar?.settings?.privacy || 'Privacy'}
-                            style={{
-                                background: 'none',
-                                border: `1.5px solid ${isHidden ? 'rgba(239,68,68,0.4)' : (theme.mode === 'dark' ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)')}`,
-                                borderRadius: '9px',
-                                width: '36px',
-                                height: '36px',
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                color: isHidden ? theme.dangerColor : (theme.mode === 'dark' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.5)'),
-                                fontSize: '1rem',
-                                transition: 'all 0.2s ease',
-                                backgroundColor: isHidden ? 'rgba(239,68,68,0.08)' : 'transparent',
-                            }}
                         >
-                            <FontAwesomeIcon icon={isHidden ? faEyeSlash : faEye} />
-                        </button>
+                            <FontAwesomeIcon key={isHidden ? 'hidden' : 'visible'} icon={isHidden ? faEyeSlash : faEye} />
+                        </MobilePrivacyToggleButton>
                         <button
                             type="button"
                             className="account-container"

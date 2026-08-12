@@ -6,3 +6,4 @@
 
 export const GITHUB_REPO_URL = 'https://github.com/Pacifinance/Pacifinance';
 export const GITHUB_ISSUES_URL = `${GITHUB_REPO_URL}/issues/new/choose`;
+export const GITHUB_VISION_URL = `${GITHUB_REPO_URL}/blob/main/docs/PRODUCT_VISION.md`;

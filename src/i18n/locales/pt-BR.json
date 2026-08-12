@@ -510,21 +510,28 @@
             }
         },
         "deleteAccount": {
-            "title": "Delete account",
-            "info": "Are you sure you want to delete your account? all data will be lost.",
-            "deleteButton": "Delete Account",
-            "confirmButton": "I want delete my account",
-            "cancelButton": "Cancel",
+            "title": "Excluir conta",
+            "info": "Você está prestes a excluir sua conta. Antes de continuar, veja o que acontece:",
+            "consequences": [
+                "Você será desconectado imediatamente e a conta será desativada.",
+                "Todos os seus dados — transações, saldos, investimentos, metas, categorias personalizadas, despesas compartilhadas, lembretes — serão excluídos definitivamente após 30 dias.",
+                "Se você fizer login novamente dentro de 30 dias, a exclusão é cancelada automaticamente.",
+                "Após os 30 dias, a exclusão é definitiva e irreversível."
+            ],
+            "dataKept": "Uma exceção: os preços que você verificou para a comunidade continuam visíveis para outros usuários que os utilizam, sem nenhum vínculo com sua conta.",
+            "deleteButton": "Excluir conta",
+            "confirmButton": "Quero excluir minha conta",
+            "cancelButton": "Cancelar",
             "errorPopup": {
-                "title": "Error during account deletion",
-                "message": "An error occurred while deleting your account.",
-                "message2": "Please try again in a moment.",
-                "okButton": "ok fine"
+                "title": "Erro ao excluir a conta",
+                "message": "Ocorreu um erro ao excluir sua conta.",
+                "message2": "Tente novamente em instantes.",
+                "okButton": "ok"
             },
             "successPopup": {
-                "title": "Account deleted successfully",
-                "message": "You will be redirected to the registration page. The actual deletion of the account will take place in 30 days, starting from today. To cancel the deletion, you just need to log in even once within these 30 days.",
-                "okButton": "ok fine"
+                "title": "Conta excluída com sucesso",
+                "message": "Você será redirecionado para a página de cadastro. A exclusão efetiva da conta ocorrerá em 30 dias a partir de hoje. Para cancelar a exclusão, basta fazer login pelo menos uma vez dentro desses 30 dias.",
+                "okButton": "ok"
             }
         },
         "changeUsername": {
@@ -1777,24 +1784,22 @@
         }
     },
     "info": {
-        "title": "Informações e Perguntas Frequentes",
-        "title2": "Projeto Pacifinance",
-        "description": "Pacifinance é uma plataforma de finanças pessoais e comparação que tem como principal objetivo a privacidade e permite que você entenda sua situação financeira.",
-        "description2": "A comparação com outros usuários é possível de forma anônima e não sensível.",
-        "description3": "Os dados inseridos pelo usuário são anônimos, protegidos e não acessíveis por terceiros.",
-        "description4": "O projeto é livre de anúncios e sem fins lucrativos, sendo mantido exclusivamente por doações voluntárias.",
-        "description5": "A plataforma está em desenvolvimento contínuo e novas funcionalidades serão adicionadas no futuro.",
+        "title": "Informações e FAQ",
+        "title2": "O projeto Pacifinance",
+        "description": "Pacifinance é uma plataforma de finanças pessoais gratuita e de código aberto, feita para ajudar você a entender sua situação financeira sem abrir mão da privacidade.",
+        "description2": "A comparação com outros usuários é sempre anônima: você vê onde está sem nunca expor seus dados.",
+        "description3": "Seus dados continuam seus: protegidos, nunca vendidos, nunca compartilhados com terceiros.",
         "calltoaction": "Apoie o projeto",
         "roadmapLink": "Conheça nosso Roadmap",
         "features": {
             "title": "Principais Funcionalidades",
             "security": {
                 "title": "Privacidade e Segurança",
-                "description": "Seus dados são completamente anônimos e protegidos. Nenhuma informação pessoal é compartilhada."
+                "description": "Seus dados financeiros são protegidos e nunca compartilhados com terceiros nem usados para publicidade."
             },
             "analytics": {
                 "title": "Análises Avançadas",
-                "description": "Gráficos e estatísticas detalhados para entender melhor suas finanças pessoais."
+                "description": "Gráficos e estatísticas detalhadas para entender de verdade para onde vai o seu dinheiro, mês a mês."
             },
             "responsive": {
                 "title": "Design Responsivo",
@@ -1802,47 +1807,61 @@
             },
             "customization": {
                 "title": "Personalização",
-                "description": "Tema claro/escuro, modo de privacidade e personalização da interface."
+                "description": "Tema claro/escuro, modo privacidade para ocultar valores e uma interface que se adapta a você."
             },
             "insights": {
-                "title": "Insights Financeiros",
-                "description": "Comparações anônimas com outros usuários para melhorar sua gestão financeira."
+                "title": "Comparação Anônima",
+                "description": "Compare-se de forma anônima com usuários parecidos com você para saber se está indo na direção certa."
             },
-            "support": {
-                "title": "Suporte Contínuo",
-                "description": "Desenvolvimento constante de novas funcionalidades com base no feedback dos usuários."
+            "openSource": {
+                "title": "Código Aberto",
+                "description": "O código é público no GitHub: qualquer pessoa pode revisá-lo, contribuir ou instalá-lo em seus próprios servidores."
             }
         },
-        "about": {
-            "title": "Nosso Compromisso"
+        "vision": {
+            "title": "Para onde estamos indo",
+            "intro": "O Pacifinance está em desenvolvimento constante. Aqui estão algumas das direções em que estamos trabalhando — uma direção, não uma promessa com data.",
+            "readMore": "Leia a visão completa",
+            "netWorth": {
+                "title": "Patrimônio completo",
+                "description": "Não só contas e investimentos: também imóveis, veículos e outros bens, para um retrato real do seu patrimônio."
+            },
+            "simulations": {
+                "title": "Simulações",
+                "description": "Teste suas decisões antes de tomá-las: um aumento salarial, uma nova despesa fixa, menos dívida. Veja o impacto antes que seja real."
+            },
+            "explainable": {
+                "title": "Saúde financeira explicável",
+                "description": "Nada de pontuações misteriosas: cada indicador mostra o que significa, como mudou e por quê."
+            },
+            "ai": {
+                "title": "IA opcional, nunca obrigatória",
+                "description": "O Pacifinance funciona 100% sem inteligência artificial. Se um dia você quiser ativá-la, será uma escolha explícita, nunca um requisito."
+            }
         },
         "faq": {
             "title": "Perguntas frequentes",
-            "question1": "Como posso adicionar uma receita ou uma saída?",
-            "answer1": "Para adicionar uma receita ou uma saída, vá até a seção 'Inserir dados' e selecione o tipo de lançamento que deseja fazer. Preencha os campos obrigatórios e confirme o lançamento. ",
-            "question2": "Como posso atualizar meu saldo?",
-            "answer2": "Para atualizar seu saldo, vá até a seção 'Inserir dados' e selecione a seção 'Atualizar Saldo'. Preencha os campos obrigatórios e confirme a atualização. ",
-            "question3": "Como posso excluir uma receita ou uma saída?",
-            "answer3": "Para excluir uma receita ou uma saída, vá até a seção 'Inserir dados' e selecione a seção 'Adicionar Receitas' ou 'Adicionar Saídas'. Na tabela de receitas ou saídas, selecione o item que deseja excluir e clique em 'Excluir'. ",
-            "question4": "Como posso alterar meu ID?",
-            "answer4": "Para alterar seu ID, vá até a seção 'Seu Perfil' e selecione a seção 'Alterar ID'. Preencha os campos obrigatórios e confirme a alteração do ID. ",
-            "question5": "Como posso alterar minha senha?",
-            "answer5": "Para alterar sua senha, vá até a seção 'Seu Perfil' e selecione a seção 'Alterar senha'. Preencha os campos obrigatórios e confirme a alteração da senha. ",
-            "question6": "Como posso apoiar o projeto?",
-            "answer6": "O projeto é sem fins lucrativos e é mantido por doações voluntárias. Se você acha que o serviço oferecido é útil e deseja contribuir, pode deixar um feedback e/ou nos apoiar por meio de uma doação.",
-            "answer6CallToAction": "Em todas as páginas, no canto inferior direito, você encontrará um pop-up para apoiar o projeto. Obrigado de toda a equipe!",
-            "question7": "Como posso excluir minha conta?",
-            "answer7": "Para excluir sua conta, vá até a seção 'Seu Perfil' e selecione a seção 'Excluir conta'. Confirme a exclusão e pronto. ",
-            "question8": "Posso instalar o Pacifinance como um aplicativo?",
-            "answer8": "Sim! O Pacifinance é um Progressive Web App (PWA) e pode ser instalado em qualquer dispositivo — iPhone, Android ou desktop — diretamente do seu navegador. Acesse as Configurações para instruções passo a passo para o seu dispositivo."
+            "question1": "Meus dados são realmente privados?",
+            "answer1": "Sim. Seus dados financeiros nunca são vendidos nem compartilhados com terceiros. As comparações com outros usuários são sempre anônimas e agregadas: ninguém consegue rastreá-las até seus dados específicos.",
+            "question2": "Posso baixar todos os meus dados?",
+            "answer2": "Sim, a qualquer momento. Nas Configurações você pode exportar todo o seu histórico — transações, saldos, investimentos, metas e muito mais — em CSV, Excel, JSON ou PDF.",
+            "question3": "O que acontece se eu excluir minha conta?",
+            "answer3": "A conta é desativada imediatamente e os dados são excluídos definitivamente após 30 dias; fazer login novamente dentro desse período cancela a exclusão. Você encontra todos os detalhes nas Configurações antes de confirmar.",
+            "question4": "O Pacifinance é gratuito?",
+            "answer4": "Sim, e a ideia é continuar assim. O projeto não tem fins lucrativos e é sustentado por quem escolhe fazer uma doação voluntária.",
+            "question5": "É de código aberto? Posso hospedar em meus próprios servidores?",
+            "answer5": "Sim. O código-fonte é público no GitHub sob licença AGPL, e você pode instalar o Pacifinance em seus próprios servidores se preferir ter controle total sobre seus dados.",
+            "question6": "Vocês vão usar IA com meus dados financeiros?",
+            "answer6": "Não por padrão. O Pacifinance funciona completamente sem IA. Se um dia você decidir ativá-la, será uma escolha explícita e nunca um requisito para usar o app.",
+            "question7": "Posso instalar o Pacifinance como app no celular?",
+            "answer7": "Sim! O Pacifinance é um Progressive Web App (PWA) e pode ser instalado em qualquer dispositivo — iPhone, Android ou desktop — direto pelo navegador. Acesse as Configurações para ver o passo a passo do seu dispositivo."
         },
         "developers": {
-            "title": "Equipe",
-            "description": "O Pacifinance é desenvolvido, atualizado e mantido por uma equipe de desenvolvedores apaixonados por finanças e desenvolvimento.",
-            "description2": "A equipe de desenvolvimento está sempre disponível para receber feedback e sugestões para melhorar a plataforma. ",
-            "description3": "A plataforma foi criada com o objetivo de oferecer um serviço útil e gratuito para os usuários.",
-            "calltoaction": "O custo de manutenção dos servidores e do serviço é bancado pela equipe. Se você acha que o serviço oferecido é útil e deseja contribuir, pode nos apoiar por meio de uma doação. ",
-            "contact": "Fale conosco"
+            "title": "Apoie o projeto",
+            "description": "O Pacifinance é um projeto de código aberto, desenvolvido no tempo livre e sustentado apenas por quem o considera útil.",
+            "calltoaction": "Se você acha o Pacifinance útil, pode apoiar seu desenvolvimento com uma doação livre ou deixando uma estrela no GitHub.",
+            "coffeeButton": "Apoiar o Pacifinance",
+            "githubButton": "Ver o código no GitHub"
         }
     },
     "pwaInstall": {

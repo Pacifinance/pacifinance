@@ -295,6 +295,75 @@ describe('Savings Badges', () => {
   });
 });
 
+// outflowsArray (buildMonthlyArrays) sums every isExpense transaction,
+// including purpose "investment" and "transfer" — money that isn't spent,
+// just moved. expensesArray excludes both. A user who invests heavily or
+// transfers between their own accounts must not be treated as having
+// overspent their income just because those movements inflate outflowsArray.
+describe('Savings badges use expensesArray, not outflowsArray (investment/transfer money is not "spent")', () => {
+  it('firstSave — unlocks when income > expenses even though outflows (incl. an investment buy) > income', () => {
+    const data = activeUser(1);
+    data.incomes.incomesArray[0] = 2800;
+    data.outflows.outflowsArray[0] = 4000; // 2100 real expenses + a 1900 investment buy
+    data.outflows.expensesArray = Array(13).fill(0);
+    data.outflows.expensesArray[0] = 2100;
+    expect(BADGE_DEFINITIONS.firstSave.check(data)).toBe(true);
+  });
+
+  it('savingsStreak3 — an investment-heavy month does not break the streak', () => {
+    const data = activeUser(3);
+    data.outflows.expensesArray = data.outflows.outflowsArray.slice();
+    // Month 1 (index 1): real spending stays low, but outflowsArray is
+    // inflated by a big investment contribution that must not count against the streak.
+    data.outflows.outflowsArray[1] = 2800;
+    expect(BADGE_DEFINITIONS.savingsStreak3.check(data)).toBe(true);
+  });
+
+  it('bigSaver — unlocks off expense ratio even when the outflow ratio would fail the 30% bar', () => {
+    const data = activeUser(1);
+    data.incomes.incomesArray[0] = 3000;
+    data.outflows.outflowsArray[0] = 2900; // includes a large transfer; would fail 30% if used
+    data.outflows.expensesArray = Array(13).fill(0);
+    data.outflows.expensesArray[0] = 2000; // real expenses: saved 1000/3000 = 33%
+    expect(BADGE_DEFINITIONS.bigSaver.check(data)).toBe(true);
+  });
+
+  it('superSaver — unlocks off expense ratio even when the outflow ratio would fail the 50% bar', () => {
+    const data = activeUser(1);
+    data.incomes.incomesArray[0] = 4000;
+    data.outflows.outflowsArray[0] = 3900;
+    data.outflows.expensesArray = Array(13).fill(0);
+    data.outflows.expensesArray[0] = 1800; // real expenses: saved 2200/4000 = 55%
+    expect(BADGE_DEFINITIONS.superSaver.check(data)).toBe(true);
+  });
+
+  it('budgetMaster — unlocks within the spending limit even when outflows (incl. an investment buy) exceed it', () => {
+    const data = activeUser(1);
+    data.limits.monthlySpendingLimit = 2500;
+    data.outflows.outflowsArray[0] = 3200;
+    data.outflows.expensesArray = Array(13).fill(0);
+    data.outflows.expensesArray[0] = 2200;
+    expect(BADGE_DEFINITIONS.budgetMaster.check(data)).toBe(true);
+  });
+
+  it('frugalMonth — unlocks off falling expenses even when outflows rose (an investment buy that month)', () => {
+    const data = activeUser(2);
+    data.outflows.outflowsArray[0] = 2600; // inflated by an investment buy
+    data.outflows.outflowsArray[1] = 2000;
+    data.outflows.expensesArray = Array(13).fill(0);
+    data.outflows.expensesArray[0] = 1500; // real spending actually fell
+    data.outflows.expensesArray[1] = 2000;
+    expect(BADGE_DEFINITIONS.frugalMonth.check(data)).toBe(true);
+  });
+
+  it('spendingDown — unlocks off falling expenses even when outflows didn\'t consistently fall', () => {
+    const data = activeUser(3);
+    data.outflows.outflowsArray = [2600, 1800, 2100];
+    data.outflows.expensesArray = [1500, 1800, 2100];
+    expect(BADGE_DEFINITIONS.spendingDown.check(data)).toBe(true);
+  });
+});
+
 // ═══════════════════════════════════════════
 // NET WORTH BADGES (7)
 // ═══════════════════════════════════════════

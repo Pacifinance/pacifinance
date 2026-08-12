@@ -10,6 +10,32 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 ## [Unreleased]
 
 ### Added
+- Info page (`/info`): rewritten. Replaced the six UI-tutorial FAQ entries
+  ("how do I add an income", "how do I change my password"...) with actual
+  frequently-asked questions (privacy, data export, account deletion,
+  pricing, self-hosting, AI use); added a "Where we're headed" section
+  summarizing `docs/PRODUCT_VISION.md` (generic assets/complete net worth,
+  scenario simulations, explainable financial health, optional/local-first
+  AI) with links to the Roadmap and the full vision doc on GitHub, since
+  that material previously wasn't surfaced anywhere in the app; replaced the
+  generic "Continuous Support" feature card with an "Open Source" one and
+  added a GitHub link next to the donation button; dropped the redundant
+  "Our Commitment" section (four paragraphs restating things already said
+  elsewhere on the page); fixed the hardcoded English "Support Pacifinance"
+  button label. Also fixed the page's background, which had its own opaque
+  gradient silently overriding the shared background every other page uses
+  — Info was the one page in the app that visibly looked different.
+- Dashboard: Income/Outflow, Balance Analysis, Financial Insights and Goal
+  Tracker sections are now collapsible (Liquidity/Emergency Fund/Investments
+  already were), with the open/closed state remembered per section across
+  visits. Any section with no saved preference yet starts collapsed on
+  mobile and expanded on desktop — the mobile dashboard previously forced
+  everyone to scroll past every large section fully open on every visit.
+- Account deletion confirmation now spells out, before you commit to it: what
+  gets deleted, that it only actually happens after a 30-day grace period,
+  that logging back in during those 30 days cancels it, and that any
+  community prices you've verified stay visible to other users (previously
+  a single generic sentence, with that detail only shown *after* confirming).
 - `server/src/libs/userDataDomains.ts`: a single registry of every
   user-owned data domain, now driving the "Export Data" endpoint
   (`POST /api/user/alldata`), which previously only ever returned balances
@@ -68,6 +94,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   shipped long ago).
 
 ### Fixed
+- Gamification badges (Savings streaks, First Save, Big/Super Saver, Budget
+  Master, Frugal Month, Spending Down) compared income against
+  `outflowsArray`, which sums *every* outflow transaction including money
+  moved into investments and transfers between the user's own accounts (see
+  `buildMonthlyArrays`). A user who invested a large share of their income,
+  or transferred money between accounts, could be told they "hadn't saved"
+  that month even though they clearly had. Switched all of these to
+  `expensesArray` (true discretionary/necessary spending only), with a
+  fallback to `outflowsArray` for callers that haven't computed it.
 - Public roadmap: the "Two-Factor Authentication" item showed as completed
   because `scripts/generateRoadmap.js`'s fallback text-match
   (`todoMatch: "2FA"`) landed on an unrelated, already-checked `todo.md`
@@ -93,6 +128,19 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   violation. Fixed via a migration setting it to `ON DELETE SET NULL`
   (it records who reviewed a submission, not who owns it — `submitted_by`,
   already cascading, is the real owner reference).
+- Deleting an account used to cascade-delete every community price the user
+  had ever submitted, including already-verified ones other users' portfolios
+  actively rely on (`getVerifiedCommunityPricesForInstrument`) — a
+  contributor closing their account shouldn't take that shared data down
+  with them. `instrument_historical_prices.submitted_by` is now nullable and
+  `ON DELETE SET NULL` instead of `CASCADE`; the application already treated
+  it as nullable everywhere (provider-sourced rows already store `null`
+  there), so this was a schema-only fix.
+- Mobile header: the privacy toggle rendered in alarming red with a red-tinted
+  background whenever privacy mode was on — every time, since it's a
+  deliberate protective feature many users leave on by default, not an error
+  state. Restyled to the brand accent color with a subtle pop animation on
+  toggle instead.
 - Notification settings: enabling reminders always blamed a failure on
   browser notification permission, even when the actual cause was
   something else (a subscribe/network failure), which was misleading when

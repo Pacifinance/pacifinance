@@ -11,11 +11,12 @@ import {
     FaArrowUp,
     FaArrowDown
 } from 'react-icons/fa';
-import { 
-    BsArrowUpRight, 
-    BsArrowDownLeft, 
+import {
+    BsArrowUpRight,
+    BsArrowDownLeft,
     BsGraphUp,
-    BsInfoCircle
+    BsInfoCircle,
+    BsChevronDown
 } from 'react-icons/bs';
 import { MdInsights, MdTrendingUp } from 'react-icons/md';
 import { getExpensesArray, getIncomesArray } from '../utils/userDataSelectors';
@@ -53,9 +54,25 @@ const InsightsContainer = styled.div`
 const InsightsHeader = styled.div`
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 0.75rem;
   margin-bottom: 1.5rem;
-  
+  cursor: pointer;
+  user-select: none;
+
+  .insights-header-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .insights-header-chevron {
+    font-size: 0.8em;
+    color: ${props => props.theme.mode === 'dark' ? '#ffffff' : '#1a1a1a'};
+    transition: transform 0.25s ease;
+    transform: rotate(${props => props.$collapsed ? '-90deg' : '0deg'});
+  }
+
   h3 {
     font-size: 1.25rem;
     font-weight: 700;
@@ -231,7 +248,7 @@ const generateInsights = (userData, language, isHidden, translations, currencySy
   return insights.slice(0, 4); // Show at most 4 insights
 };
 
-const FinancialInsights = ({ theme, userData, isHidden = false }) => {
+const FinancialInsights = ({ theme, userData, isHidden = false, collapsed = false, onToggleCollapsed }) => {
   const { language, translations } = useContext(LanguageContext);
   const { currencySymbol, formatAmount } = useContext(CurrencyContext);
   const { isMobileScreen } = useContext(MediaQueryContext);
@@ -252,25 +269,37 @@ const FinancialInsights = ({ theme, userData, isHidden = false }) => {
 
   return (
     <InsightsContainer theme={theme}>
-      <InsightsHeader theme={theme}>
-        <FaBrain style={{ color: theme.secondaryColor, fontSize: '1.4rem' }} />
-        <h3>
-          🧠 {translations.graphs.insights.title}
-        </h3>
+      <InsightsHeader
+        theme={theme}
+        $collapsed={collapsed}
+        onClick={onToggleCollapsed}
+        role="button"
+        aria-expanded={!collapsed}
+        aria-label={collapsed ? translations.dashboard.expandSection : translations.dashboard.collapseSection}
+        title={collapsed ? translations.dashboard.expandSection : translations.dashboard.collapseSection}
+      >
+        <span className="insights-header-title">
+          <FaBrain style={{ color: theme.secondaryColor, fontSize: '1.4rem' }} />
+          <h3>
+            🧠 {translations.graphs.insights.title}
+          </h3>
+        </span>
+        <BsChevronDown className="insights-header-chevron" />
       </InsightsHeader>
-      
+
+      {!collapsed && (<>
       <InsightsGrid>
         {displayedInsights.map((insight, index) => (
-          <InsightCard 
-            key={index} 
-            theme={theme} 
+          <InsightCard
+            key={index}
+            theme={theme}
             insightColor={insight.color}
           >
             <InsightHeader insightColor={insight.color}>
               <insight.icon className="insight-icon" />
               <span className="insight-type">{insight.type}</span>
             </InsightHeader>
-            
+
             <InsightContent theme={theme} insightColor={insight.color}>
               <div className="insight-title">{insight.title}</div>
               <div className="insight-description">{insight.description}</div>
@@ -284,18 +313,19 @@ const FinancialInsights = ({ theme, userData, isHidden = false }) => {
           </InsightCard>
         ))}
       </InsightsGrid>
-      
+
       {insights.length > (isMobileScreen ? 2 : 3) && (
-        <ViewMoreButton 
+        <ViewMoreButton
           theme={theme}
           onClick={() => setShowAll(!showAll)}
         >
-          {showAll 
+          {showAll
             ? (language === 'it' ? 'Mostra meno' : 'Show less')
             : (language === 'it' ? `Mostra tutti (${insights.length})` : `Show all (${insights.length})`)
           }
         </ViewMoreButton>
       )}
+      </>)}
     </InsightsContainer>
   );
 };

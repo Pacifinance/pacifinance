@@ -8,12 +8,13 @@ import SEOHead from '../components/SEOHead';
 
 export default function TermsOfServicePage() {
   const { theme, toggleMode } = useContext(ThemeContext);
-  const { language, toggleLanguage } = useContext(LanguageContext);
+  const { language, translations, toggleLanguage } = useContext(LanguageContext);
   const { mode } = theme;
+  const { terms } = translations.legal;
 
   return (
     <>
-      <SEOHead 
+      <SEOHead
         title={language === 'it' ? 'Termini di Servizio | Pacifinance' : 'Terms of Service | Pacifinance'}
         description={language === 'it' ? 'Termini di Servizio per Pacifinance - Comprendi i tuoi diritti e responsabilità utilizzando la nostra piattaforma finanziaria.' : 'Terms of Service for Pacifinance - Understanding your rights and responsibilities when using our privacy-focused personal finance platform.'}
         keywords={language === 'it' ? 'termini di servizio, condizioni, diritti, open source, AGPL, self-hosted, Pacifinance' : 'terms of service, conditions, rights, open source, AGPL, self-hosted, Pacifinance'}
@@ -27,77 +28,62 @@ export default function TermsOfServicePage() {
           <div className="max-w-4xl mx-auto">
             <PolicyHeader theme={theme}>
               <h1 style={{ color: theme.secondaryColor }}>
-                {language === 'it' ? 'Termini di Servizio' : 'Terms of Service'}
+                {terms.title}
               </h1>
               <div className="last-updated">Last updated: {new Date().toLocaleDateString(language === 'it' ? 'it-IT' : 'en-US')}</div>
             </PolicyHeader>
 
           <div className="space-y-8">
-              <section 
+              <section
                 className="p-6 rounded-xl"
                 style={{
-                  background: theme.mode === 'dark' 
+                  background: theme.mode === 'dark'
                     ? 'rgba(7, 145, 100, 0.1)'
                     : 'rgba(7, 145, 100, 0.05)',
                   border: `2px solid ${theme.mode === 'dark' ? 'rgba(7, 145, 100, 0.2)' : 'rgba(7, 145, 100, 0.15)'}`
                 }}
               >
                 <h2 className="text-3xl font-bold mb-6" style={{ color: theme.secondaryColor }}>
-                  {language === 'it' ? '1. Accettazione dei Termini' : '1. Acceptance of Terms'}
+                  {terms.acceptance.title}
                 </h2>
                 <p className="mb-4 leading-relaxed text-lg">
-                  {language === 'it' 
-                    ? 'Utilizzando Pacifinance, accetti questi termini di servizio. Se non accetti questi termini, non utilizzare la piattaforma.'
-                    : 'By using Pacifinance, you accept these terms of service. If you do not accept these terms, do not use the platform.'
-                  }
+                  {terms.acceptance.content}
                 </p>
               </section>
 
               <section>
                 <h2 className="text-2xl font-semibold mb-4" style={{ color: theme.secondaryColor }}>
-                  {language === 'it' ? '2. Uso del Servizio' : '2. Use of Service'}
+                  {terms.useOfService.title}
                 </h2>
                 <p className="mb-4 leading-relaxed">
-                  {language === 'it'
-                    ? 'Pacifinance è fornito gratuitamente per uso personale. Non è consentito utilizzare la piattaforma per scopi commerciali non autorizzati.'
-                    : 'Pacifinance is provided free of charge for personal use. You may not use the platform for unauthorized commercial purposes.'
-                  }
+                  {terms.useOfService.content}
                 </p>
               </section>
 
               <section>
                 <h2 className="text-2xl font-semibold mb-4" style={{ color: theme.secondaryColor }}>
-                  {language === 'it' ? '3. Privacy e Dati' : '3. Privacy and Data'}
+                  {terms.privacyAndData.title}
                 </h2>
                 <p className="mb-4 leading-relaxed">
-                  {language === 'it'
-                    ? 'I tuoi dati sono sempre anonimi e protetti. Consulta la nostra Privacy Policy per maggiori dettagli.'
-                    : 'Your data is always anonymous and protected. See our Privacy Policy for more details.'
-                  }
+                  {terms.privacyAndData.content}
                 </p>
               </section>
 
               <section>
                 <h2 className="text-2xl font-semibold mb-4" style={{ color: theme.secondaryColor }}>
-                  {language === 'it' ? '4. Limitazione di Responsabilità' : '4. Limitation of Liability'}
+                  {terms.liability.title}
                 </h2>
                 <p className="leading-relaxed">
-                  {language === 'it'
-                    ? 'Pacifinance è fornito "così com\'è". Non garantiamo che il servizio sia sempre disponibile o privo di errori.'
-                    : 'Pacifinance is provided "as is". We do not guarantee that the service will always be available or error-free.'
-                  }
+                  {terms.liability.content}
                 </p>
               </section>
 
               <section>
                 <h2 className="text-2xl font-semibold mb-4" style={{ color: theme.secondaryColor }}>
-                  {language === 'it' ? '5. Open Source e Self-Hosting' : '5. Open Source & Self-Hosting'}
+                  {terms.openSource.title}
                 </h2>
                 <p className="leading-relaxed">
-                  {language === 'it'
-                    ? 'Il codice sorgente di Pacifinance è pubblico su GitHub sotto licenza AGPLv3: puoi ispezionarlo, contribuire o eseguire una tua istanza self-hosted. Questi termini di servizio si applicano solo al servizio ospitato su pacifinance.com. Se esegui una tua istanza self-hosted, sei tu il responsabile dei dati e degli utenti di quell\'istanza.'
-                    : 'Pacifinance\'s source code is public on GitHub under the AGPLv3 license: you may inspect it, contribute to it, or run your own self-hosted instance. These terms of service apply only to the hosted service at pacifinance.com. If you run your own self-hosted instance, you are responsible for the data and users of that instance.'
-                  }
+                  {terms.openSource.content}
                 </p>
               </section>
             </div>

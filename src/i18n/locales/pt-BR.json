@@ -1413,6 +1413,48 @@
                 "content": "Para qualquer dúvida sobre esta política de privacidade, entre em contato conosco através dos canais oficiais da plataforma."
             },
             "lastUpdated": "Última atualização"
+        },
+        "terms": {
+            "title": "Termos de Serviço",
+            "acceptance": {
+                "title": "1. Aceitação dos Termos",
+                "content": "Ao usar o Pacifinance, você aceita estes termos de serviço. Se você não aceita estes termos, não utilize a plataforma."
+            },
+            "useOfService": {
+                "title": "2. Uso do Serviço",
+                "content": "O Pacifinance é fornecido gratuitamente para uso pessoal. Não é permitido usar a plataforma para fins comerciais não autorizados."
+            },
+            "privacyAndData": {
+                "title": "3. Privacidade e Dados",
+                "content": "Seus dados são sempre anônimos e protegidos. Consulte nossa Política de Privacidade para mais detalhes."
+            },
+            "liability": {
+                "title": "4. Limitação de Responsabilidade",
+                "content": "O Pacifinance é fornecido \"como está\". Não garantimos que o serviço esteja sempre disponível ou livre de erros."
+            },
+            "openSource": {
+                "title": "5. Open Source e Auto-Hospedagem",
+                "content": "O código-fonte do Pacifinance é público no GitHub sob a licença AGPLv3: você pode inspecioná-lo, contribuir ou executar sua própria instância auto-hospedada. Estes termos de serviço se aplicam apenas ao serviço hospedado em pacifinance.com. Se você executar sua própria instância auto-hospedada, você é responsável pelos dados e usuários dessa instância."
+            }
+        },
+        "cookies": {
+            "title": "Política de Cookies",
+            "whatAreCookies": {
+                "title": "O que são Cookies",
+                "content": "Cookies são pequenos arquivos de texto armazenados no seu dispositivo quando você visita um site. Eles são usados para melhorar sua experiência de navegação."
+            },
+            "howWeUse": {
+                "title": "Como Usamos os Cookies",
+                "content": "O Pacifinance usa apenas cookies técnicos necessários para o funcionamento do site e cookies analíticos anônimos para melhorar o serviço.",
+                "items": [
+                    "Cookies técnicos necessários",
+                    "Cookies analíticos (Umami Analytics)"
+                ]
+            },
+            "management": {
+                "title": "Gerenciamento de Cookies",
+                "content": "Você pode gerenciar suas preferências de cookies usando o banner de cookies que aparece na sua primeira visita ao site. Você pode alterar suas preferências a qualquer momento."
+            }
         }
     },
     "faq": {

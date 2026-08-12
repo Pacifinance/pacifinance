@@ -6,6 +6,7 @@ import { LanguageContext } from '../contexts/LanguageContext';
 import { Header } from '../sections/LandingHeader';
 import LandingFooter from '../sections/LandingFooter';
 import NewLandingContent from '../sections/LandingContent';
+import StickyMobileCTA from '../components/StickyMobileCTA';
 import SEOHead from '../components/SEOHead';
 import { GITHUB_REPO_URL } from '../data/externalLinks';
 import { useHTMLLang } from '../hooks/useHTMLLang';
@@ -95,11 +96,15 @@ export default function NewLandingPage() {
         </script>
       </Helmet>
 
-      <div className="w-full flex overflow-auto min-h-screen items-center flex-col relative">
+      {/* pb-20 on mobile only: clears StickyMobileCTA, which is fixed to the
+          bottom of the screen there, so the footer doesn't end up partially
+          hidden behind it. */}
+      <div className="w-full flex overflow-auto min-h-screen items-center flex-col relative pb-20 md:pb-0">
         <Header theme={theme} mode={mode} toggleMode={toggleMode}/>
         <NewLandingContent theme={theme}/>
         <LandingFooter theme={theme}/>
       </div>
+      <StickyMobileCTA />
     </>
   );
 }

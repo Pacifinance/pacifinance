@@ -20,19 +20,31 @@
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
 
-    <!-- Open Graph -->
+    <!-- Open Graph — static fallback for crawlers that don't execute JS (most
+         link-preview bots: Slack, WhatsApp, iMessage, many others). SEOHead.tsx
+         (react-helmet) overrides these per-page for real browsers/JS-capable
+         crawlers once the app hydrates. -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Pacifinance" />
+    <meta property="og:title" content="Pacifinance - Open Source, Privacy-First Personal Finance" />
+    <meta property="og:description" content="Understand your financial situation and compare yourself completely anonymously with other users, without sharing your data. Free, AGPLv3 licensed, self-hostable with Docker." />
+    <meta property="og:image" content="https://pacifinance.com/og-image.webp" />
+    <meta property="og:url" content="https://pacifinance.com/" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Pacifinance - Open Source, Privacy-First Personal Finance" />
+    <meta name="twitter:description" content="Understand your financial situation and compare yourself completely anonymously with other users, without sharing your data. Free, AGPLv3 licensed, self-hostable with Docker." />
+    <meta name="twitter:image" content="https://pacifinance.com/og-image.webp" />
 
     <!-- Preconnect for performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://pacifinance.com">
 
-    <!-- Inter font - non-blocking load with reduced weights -->
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"></noscript>
+    <!-- Inter font. Plain stylesheet link rather than the old print-media +
+         onload="this.media='all'" trick: that inline event handler would have
+         required 'unsafe-inline' in the CSP script-src, which we'd rather not
+         grant just to save a few ms of render-blocking on a font. -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
 
     <!-- Hero visual is now an inline SVG mockup (src/sections/LandingHero.tsx), not a raster
          image, so there's no LCP image to preload here anymore — one less network request. -->

@@ -15,75 +15,14 @@ import {
     BsArrowUpRight,
     BsArrowDownLeft,
     BsGraphUp,
-    BsInfoCircle,
-    BsChevronDown
+    BsInfoCircle
 } from 'react-icons/bs';
 import { MdInsights, MdTrendingUp } from 'react-icons/md';
 import { getExpensesArray, getIncomesArray } from '../utils/userDataSelectors';
 import { addCurrency } from '../utils/money';
+import PortfolioSection from '../components/PortfolioSection';
 
 // Styled Components
-const InsightsContainer = styled.div`
-  background: ${props => props.theme.mode === 'dark' 
-    ? `linear-gradient(135deg, ${props.theme.secondaryColor}10 0%, ${props.theme.backgroundColor} 100%)`
-    : `linear-gradient(135deg, ${props.theme.secondaryColor}08 0%, rgba(255,255,255,0.9) 100%)`};
-  border-radius: 16px;
-  padding: 1.5rem;
-  margin: 1.25rem 0;
-  border: 1px solid ${props => `${props.theme.secondaryColor}30`};
-  backdrop-filter: blur(10px);
-  position: relative;
-  overflow: hidden;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, ${props => props.theme.secondaryColor}, ${props => props.theme.secondaryColor}80);
-  }
-
-  @media (max-width: 768px) {
-    padding: 1rem;
-    margin: 0.75rem 0;
-  }
-`;
-
-const InsightsHeader = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  margin-bottom: 1.5rem;
-  cursor: pointer;
-  user-select: none;
-
-  .insights-header-title {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-  }
-
-  .insights-header-chevron {
-    font-size: 0.8em;
-    color: ${props => props.theme.mode === 'dark' ? '#ffffff' : '#1a1a1a'};
-    transition: transform 0.25s ease;
-    transform: rotate(${props => props.$collapsed ? '-90deg' : '0deg'});
-  }
-
-  h3 {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: ${props => props.theme.mode === 'dark' ? '#ffffff' : '#1a1a1a'};
-    margin: 0;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-`;
-
 const InsightsGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -268,26 +207,16 @@ const FinancialInsights = ({ theme, userData, isHidden = false, collapsed = fals
   const displayedInsights = showAll ? insights : insights.slice(0, isMobileScreen ? 2 : 3);
 
   return (
-    <InsightsContainer theme={theme}>
-      <InsightsHeader
-        theme={theme}
-        $collapsed={collapsed}
-        onClick={onToggleCollapsed}
-        role="button"
-        aria-expanded={!collapsed}
-        aria-label={collapsed ? translations.dashboard.expandSection : translations.dashboard.collapseSection}
-        title={collapsed ? translations.dashboard.expandSection : translations.dashboard.collapseSection}
-      >
-        <span className="insights-header-title">
-          <FaBrain style={{ color: theme.secondaryColor, fontSize: '1.4rem' }} />
-          <h3>
-            🧠 {translations.graphs.insights.title}
-          </h3>
-        </span>
-        <BsChevronDown className="insights-header-chevron" />
-      </InsightsHeader>
-
-      {!collapsed && (<>
+    <PortfolioSection
+      theme={theme}
+      icon={FaBrain}
+      title={translations.graphs.insights.title}
+      accent={theme.secondaryColor}
+      collapsed={collapsed}
+      onToggleCollapsed={onToggleCollapsed}
+      expandLabel={translations.dashboard.expandSection}
+      collapseLabel={translations.dashboard.collapseSection}
+    >
       <InsightsGrid>
         {displayedInsights.map((insight, index) => (
           <InsightCard
@@ -325,8 +254,7 @@ const FinancialInsights = ({ theme, userData, isHidden = false, collapsed = fals
           }
         </ViewMoreButton>
       )}
-      </>)}
-    </InsightsContainer>
+    </PortfolioSection>
   );
 };
 

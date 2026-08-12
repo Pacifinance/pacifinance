@@ -5,84 +5,23 @@ import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
 import { MediaQueryContext } from '../contexts/MediaQueryContext';
 import { useDemoServices } from '../hooks/useDemoServices';
-import { 
-    FaBullseye, 
-    FaPiggyBank, 
-    FaCreditCard, 
+import {
+    FaBullseye,
+    FaPiggyBank,
+    FaCreditCard,
     FaChartLine,
     FaPlus,
-    FaEdit,
-    FaTrash,
     FaEuroSign,
     FaCog
 } from 'react-icons/fa';
-import {
-    BsTrophyFill,
-    BsCalendarCheck,
-    BsPercent,
-    BsChevronDown
-} from 'react-icons/bs';
 import { MdSavings, MdTrendingUp } from 'react-icons/md';
+import PortfolioSection from '../components/PortfolioSection';
 
 // Styled Components
-const GoalsContainer = styled.div`
-  background: ${props => props.theme.mode === 'dark' 
-    ? `linear-gradient(135deg, rgba(168, 85, 247, 0.1) 0%, ${props.theme.backgroundColor} 100%)`
-    : `linear-gradient(135deg, rgba(168, 85, 247, 0.08) 0%, rgba(255,255,255,0.9) 100%)`};
-  border-radius: 16px;
-  padding: 2rem;
-  margin: 2rem 0;
-  border: 1px solid rgba(168, 85, 247, 0.3);
-  backdrop-filter: blur(10px);
-  position: relative;
-  overflow: hidden;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, #a855f7, #8b5cf6);
-  }
-
-  @media (max-width: 768px) {
-    padding: 1.5rem;
-    margin: 1rem 0;
-  }
-`;
-
-const GoalsHeader = styled.div`
+const AddGoalRow = styled.div`
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1.5rem;
-  
-  h3 {
-    color: ${props => props.theme.mode === 'dark' ? '#ffffff' : '#1a1a1a'};
-    font-size: 1.4rem;
-    font-weight: 600;
-    margin: 0;
-    display: flex;
-    align-items: center;
-  }
-`;
-
-const CollapseToggleButton = styled.button`
-  background: none;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  padding: 0.4rem;
-  color: ${props => props.theme.mode === 'dark' ? '#ffffff' : '#1a1a1a'};
-  font-size: 1rem;
-
-  svg {
-    transition: transform 0.25s ease;
-    transform: rotate(${props => props.$collapsed ? '-90deg' : '0deg'});
-  }
+  justify-content: flex-end;
+  margin-bottom: 1rem;
 `;
 
 const AddGoalButton = styled(LocalizedLink)`
@@ -232,7 +171,7 @@ const EmptyState = styled.div`
 `;
 
 const GoalTracker = ({ theme, isHidden = false, collapsed = false, onToggleCollapsed }) => {
-  const { language } = useContext(LanguageContext);
+  const { language, translations } = useContext(LanguageContext);
   const { formatAmount } = useContext(CurrencyContext);
   useContext(MediaQueryContext);
   const { goalService } = useDemoServices();
@@ -292,30 +231,22 @@ const GoalTracker = ({ theme, isHidden = false, collapsed = false, onToggleColla
 
   if (!goals || goals.length === 0) {
     return (
-      <GoalsContainer theme={theme}>
-        <GoalsHeader theme={theme}>
-          <h3>
-            <FaBullseye style={{ color: '#a855f7', fontSize: '1.4rem', marginRight: '0.5rem' }} />
-            {language === 'it' ? '🎯 I Tuoi Obiettivi' : '🎯 Your Goals'}
-          </h3>
+      <PortfolioSection
+        theme={theme}
+        icon={FaBullseye}
+        title={language === 'it' ? 'I Tuoi Obiettivi' : 'Your Goals'}
+        accent="#a855f7"
+        collapsed={collapsed}
+        onToggleCollapsed={onToggleCollapsed}
+        expandLabel={translations.dashboard.expandSection}
+        collapseLabel={translations.dashboard.collapseSection}
+      >
+        <AddGoalRow>
           <AddGoalButton to="/goals-limits">
             <FaPlus />
             {language === 'it' ? 'Gestisci Obiettivi' : 'Manage Goals'}
           </AddGoalButton>
-          <CollapseToggleButton
-            type="button"
-            theme={theme}
-            $collapsed={collapsed}
-            onClick={onToggleCollapsed}
-            aria-expanded={!collapsed}
-            aria-label={collapsed ? (language === 'it' ? 'Espandi' : 'Expand') : (language === 'it' ? 'Comprimi' : 'Collapse')}
-            title={collapsed ? (language === 'it' ? 'Espandi' : 'Expand') : (language === 'it' ? 'Comprimi' : 'Collapse')}
-          >
-            <BsChevronDown />
-          </CollapseToggleButton>
-        </GoalsHeader>
-
-        {!collapsed && (
+        </AddGoalRow>
         <EmptyState theme={theme}>
           <FaBullseye className="empty-icon" />
           <div className="empty-title">
@@ -328,36 +259,27 @@ const GoalTracker = ({ theme, isHidden = false, collapsed = false, onToggleColla
             }
           </div>
         </EmptyState>
-        )}
-      </GoalsContainer>
+      </PortfolioSection>
     );
   }
 
   return (
-    <GoalsContainer theme={theme}>
-      <GoalsHeader theme={theme}>
-        <h3>
-          <FaBullseye style={{ color: '#a855f7', fontSize: '1.4rem', marginRight: '0.5rem' }} />
-          {language === 'it' ? '🎯 I Tuoi Obiettivi' : '🎯 Your Goals'}
-        </h3>
+    <PortfolioSection
+      theme={theme}
+      icon={FaBullseye}
+      title={language === 'it' ? 'I Tuoi Obiettivi' : 'Your Goals'}
+      accent="#a855f7"
+      collapsed={collapsed}
+      onToggleCollapsed={onToggleCollapsed}
+      expandLabel={translations.dashboard.expandSection}
+      collapseLabel={translations.dashboard.collapseSection}
+    >
+      <AddGoalRow>
         <AddGoalButton to="/goals-limits">
           <FaCog />
           {language === 'it' ? 'Gestisci Obiettivi' : 'Manage Goals'}
         </AddGoalButton>
-        <CollapseToggleButton
-          type="button"
-          theme={theme}
-          $collapsed={collapsed}
-          onClick={onToggleCollapsed}
-          aria-expanded={!collapsed}
-          aria-label={collapsed ? (language === 'it' ? 'Espandi' : 'Expand') : (language === 'it' ? 'Comprimi' : 'Collapse')}
-          title={collapsed ? (language === 'it' ? 'Espandi' : 'Expand') : (language === 'it' ? 'Comprimi' : 'Collapse')}
-        >
-          <BsChevronDown />
-        </CollapseToggleButton>
-      </GoalsHeader>
-
-      {!collapsed && (
+      </AddGoalRow>
       <GoalsGrid>
         {goals.map((goal) => {
           const progress = calculateProgress(goal.current, goal.target);
@@ -402,8 +324,7 @@ const GoalTracker = ({ theme, isHidden = false, collapsed = false, onToggleColla
           );
         })}
       </GoalsGrid>
-      )}
-    </GoalsContainer>
+    </PortfolioSection>
   );
 };
 

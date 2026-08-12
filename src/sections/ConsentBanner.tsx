@@ -201,6 +201,14 @@ const CookieBannerContainer = styled.div`
     margin: 0;
   }
 
+  /* Leaves room for StickyMobileCTA (src/components/StickyMobileCTA.tsx),
+     which is fixed to the very bottom of the screen on mobile — without
+     this the two fixed bars would overlap for a first-time visitor who
+     hasn't made a cookie choice yet. */
+  @media (max-width: 767px) {
+    bottom: calc(20px + 56px + env(safe-area-inset-bottom));
+  }
+
   .cookie-content {
     padding: 20px;
   }

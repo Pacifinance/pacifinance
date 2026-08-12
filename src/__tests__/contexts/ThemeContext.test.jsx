@@ -3,7 +3,7 @@
  * Theme state management (dark/light mode)
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -190,6 +190,71 @@ describe('ThemeContext', () => {
       // Colors should be different between themes
       expect(lightBg).not.toBe(darkBg);
       expect(lightText).not.toBe(darkText);
+    });
+  });
+
+  describe('persistence and system preference', () => {
+    it('persists the chosen mode to localStorage when toggled', async () => {
+      const user = userEvent.setup();
+      render(
+        <ThemeProvider>
+          <TestConsumer />
+        </ThemeProvider>
+      );
+
+      await user.click(screen.getByTestId('toggle'));
+
+      expect(window.localStorage.setItem).toHaveBeenCalledWith('pacifinance-theme', 'light');
+    });
+
+    it('restores a previously saved mode from localStorage on mount', () => {
+      window.localStorage.getItem.mockReturnValueOnce('light');
+
+      render(
+        <ThemeProvider>
+          <TestConsumer />
+        </ThemeProvider>
+      );
+
+      expect(screen.getByTestId('mode')).toHaveTextContent('light');
+    });
+
+    it('defaults to light when the OS reports prefers-color-scheme: light and nothing is saved', () => {
+      const matchMediaSpy = vi.spyOn(window, 'matchMedia').mockImplementation((query) => ({
+        matches: query.includes('light'),
+        media: query,
+        onchange: null,
+        addListener: vi.fn(),
+        removeListener: vi.fn(),
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        dispatchEvent: vi.fn(),
+      }));
+
+      try {
+        render(
+          <ThemeProvider>
+            <TestConsumer />
+          </ThemeProvider>
+        );
+
+        expect(screen.getByTestId('mode')).toHaveTextContent('light');
+      } finally {
+        matchMediaSpy.mockRestore();
+      }
+    });
+
+    it('keeps the dark default when the OS reports no color-scheme preference', () => {
+      render(
+        <ThemeProvider>
+          <TestConsumer />
+        </ThemeProvider>
+      );
+
+      // The shared test setup's matchMedia mock reports `matches: false` for
+      // every query (see src/__tests__/setup.js), i.e. no explicit OS
+      // preference either way — the app should keep its traditional default.
+      expect(screen.getByTestId('mode')).toHaveTextContent('dark');
     });
   });
 });

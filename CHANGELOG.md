@@ -31,6 +31,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   visits. Any section with no saved preference yet starts collapsed on
   mobile and expanded on desktop — the mobile dashboard previously forced
   everyone to scroll past every large section fully open on every visit.
+  All six sections now share the exact same collapsed/expanded card chrome
+  (`PortfolioSection`) instead of four different ad hoc treatments — Balance
+  Analysis previously had no border at all when collapsed, and Financial
+  Insights was noticeably wider than every other section.
 - Account deletion confirmation now spells out, before you commit to it: what
   gets deleted, that it only actually happens after a 30-day grace period,
   that logging back in during those 30 days cancels it, and that any
@@ -66,6 +70,32 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   nothing to show a visitor trying the demo. Documented in `AGENTS.md`
   (rule 5) as a standing requirement: new demo-reachable features need
   real seed data, not just a structurally-correct empty state.
+- Custom 404 page: unknown routes previously redirected silently to the
+  homepage, giving no feedback that the URL was wrong. Now shows a real
+  not-found page with a CTA back to the dashboard (if logged in) or the
+  homepage, and is excluded from indexing.
+- Sticky "Get Started" call-to-action on mobile landing page, so the
+  primary CTA stays reachable without scrolling back to the hero on small
+  screens.
+- Security headers: Content-Security-Policy, X-Frame-Options,
+  X-Content-Type-Options, Referrer-Policy, Permissions-Policy and
+  Strict-Transport-Security, set via `vercel.json` for the app shell/static
+  pages and via Express middleware for the JSON API.
+- FAQ page: `FAQPage` JSON-LD structured data, so search engines can show
+  the questions as rich results.
+- `scripts/generateSitemap.js`: `public/sitemap.xml` is now generated at
+  build time from the real public route list (`npm run prebuild`), instead
+  of being a hand-maintained file that had drifted — it listed auth-gated
+  routes a crawler could never reach (`/dashboard`, `/comparison`) while
+  missing real public pages added since, and its `<lastmod>` was frozen at
+  a single past date.
+- Dark mode now persists across visits (`localStorage`) and, absent a saved
+  choice, follows the OS `prefers-color-scheme` on first load instead of
+  always defaulting to dark.
+- Terms of Service and Cookie Policy pages are now fully translated in all
+  six supported languages via the standard i18n system, matching how the
+  Privacy Policy already worked — previously both fell back to English for
+  four of the six languages (es/de/fr/pt-BR).
 
 ### Changed
 - Consolidated `CLAUDE.md`, `AGENTS.md` and `.github/copilot-instructions.md`

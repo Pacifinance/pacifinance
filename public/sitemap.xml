@@ -1,129 +1,862 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
-  <!-- Homepage IT -->
   <url>
     <loc>https://pacifinance.com/it/</loc>
     <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/"/>
-    <lastmod>2025-01-30</lastmod>
+    <lastmod>2026-08-12</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
-  <!-- Homepage EN -->
   <url>
     <loc>https://pacifinance.com/en/</loc>
     <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/"/>
-    <lastmod>2025-01-30</lastmod>
+    <lastmod>2026-08-12</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
-  
-  <!-- Dashboard IT -->
   <url>
-    <loc>https://pacifinance.com/it/dashboard</loc>
-    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/dashboard"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/dashboard"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/dashboard"/>
-    <lastmod>2025-01-30</lastmod>
+    <loc>https://pacifinance.com/es/</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/"/>
+    <lastmod>2026-08-12</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
-  <!-- Dashboard EN -->
   <url>
-    <loc>https://pacifinance.com/en/dashboard</loc>
-    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/dashboard"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/dashboard"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/dashboard"/>
-    <lastmod>2025-01-30</lastmod>
+    <loc>https://pacifinance.com/de/</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/"/>
+    <lastmod>2026-08-12</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
-  
-  <!-- Comparison IT -->
   <url>
-    <loc>https://pacifinance.com/it/comparison</loc>
-    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/comparison"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/comparison"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/comparison"/>
-    <lastmod>2025-01-30</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <loc>https://pacifinance.com/fr/</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
   </url>
-  <!-- Comparison EN -->
   <url>
-    <loc>https://pacifinance.com/en/comparison</loc>
-    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/comparison"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/comparison"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/comparison"/>
-    <lastmod>2025-01-30</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <loc>https://pacifinance.com/pt-BR/</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
   </url>
-  
-  <!-- Pricing IT -->
+  <url>
+    <loc>https://pacifinance.com/it/auth</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/auth"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/auth"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/auth"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/auth"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/auth"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/auth"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/auth"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://pacifinance.com/en/auth</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/auth"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/auth"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/auth"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/auth"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/auth"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/auth"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/auth"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://pacifinance.com/es/auth</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/auth"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/auth"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/auth"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/auth"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/auth"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/auth"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/auth"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://pacifinance.com/de/auth</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/auth"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/auth"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/auth"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/auth"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/auth"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/auth"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/auth"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://pacifinance.com/fr/auth</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/auth"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/auth"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/auth"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/auth"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/auth"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/auth"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/auth"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://pacifinance.com/pt-BR/auth</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/auth"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/auth"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/auth"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/auth"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/auth"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/auth"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/auth"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://pacifinance.com/it/faq</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/faq"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/faq"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/faq"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/faq"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/faq"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/faq"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/faq"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://pacifinance.com/en/faq</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/faq"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/faq"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/faq"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/faq"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/faq"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/faq"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/faq"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://pacifinance.com/es/faq</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/faq"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/faq"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/faq"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/faq"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/faq"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/faq"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/faq"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://pacifinance.com/de/faq</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/faq"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/faq"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/faq"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/faq"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/faq"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/faq"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/faq"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://pacifinance.com/fr/faq</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/faq"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/faq"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/faq"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/faq"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/faq"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/faq"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/faq"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://pacifinance.com/pt-BR/faq</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/faq"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/faq"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/faq"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/faq"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/faq"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/faq"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/faq"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
   <url>
     <loc>https://pacifinance.com/it/pricing</loc>
     <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/pricing"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/pricing"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/pricing"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/pricing"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/pricing"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/pricing"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/pricing"/>
-    <lastmod>2025-01-30</lastmod>
+    <lastmod>2026-08-12</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.8</priority>
   </url>
-  <!-- Pricing EN -->
   <url>
     <loc>https://pacifinance.com/en/pricing</loc>
     <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/pricing"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/pricing"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/pricing"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/pricing"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/pricing"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/pricing"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/pricing"/>
-    <lastmod>2025-01-30</lastmod>
+    <lastmod>2026-08-12</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  
-  <!-- Knowledge IT -->
-  <url>
-    <loc>https://pacifinance.com/it/knowledge</loc>
-    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/knowledge"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/knowledge"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/knowledge"/>
-    <lastmod>2025-01-30</lastmod>
-    <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
-  <!-- Knowledge EN -->
   <url>
-    <loc>https://pacifinance.com/en/knowledge</loc>
-    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/knowledge"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/knowledge"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/knowledge"/>
-    <lastmod>2025-01-30</lastmod>
-    <changefreq>weekly</changefreq>
+    <loc>https://pacifinance.com/es/pricing</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/pricing"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/pricing"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/pricing"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/pricing"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/pricing"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/pricing"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/pricing"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-  
-  <!-- Info IT -->
   <url>
-    <loc>https://pacifinance.com/it/info</loc>
-    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/info"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/info"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/info"/>
-    <lastmod>2025-01-30</lastmod>
+    <loc>https://pacifinance.com/de/pricing</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/pricing"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/pricing"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/pricing"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/pricing"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/pricing"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/pricing"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/pricing"/>
+    <lastmod>2026-08-12</lastmod>
     <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://pacifinance.com/fr/pricing</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/pricing"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/pricing"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/pricing"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/pricing"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/pricing"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/pricing"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/pricing"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://pacifinance.com/pt-BR/pricing</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/pricing"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/pricing"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/pricing"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/pricing"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/pricing"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/pricing"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/pricing"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://pacifinance.com/it/roadmap</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/roadmap"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/roadmap"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/roadmap"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/roadmap"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/roadmap"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/roadmap"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/roadmap"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
-  <!-- Info EN -->
   <url>
-    <loc>https://pacifinance.com/en/info</loc>
-    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/info"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/info"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/info"/>
-    <lastmod>2025-01-30</lastmod>
-    <changefreq>monthly</changefreq>
+    <loc>https://pacifinance.com/en/roadmap</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/roadmap"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/roadmap"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/roadmap"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/roadmap"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/roadmap"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/roadmap"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/roadmap"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://pacifinance.com/es/roadmap</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/roadmap"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/roadmap"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/roadmap"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/roadmap"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/roadmap"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/roadmap"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/roadmap"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://pacifinance.com/de/roadmap</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/roadmap"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/roadmap"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/roadmap"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/roadmap"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/roadmap"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/roadmap"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/roadmap"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://pacifinance.com/fr/roadmap</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/roadmap"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/roadmap"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/roadmap"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/roadmap"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/roadmap"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/roadmap"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/roadmap"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://pacifinance.com/pt-BR/roadmap</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/roadmap"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/roadmap"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/roadmap"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/roadmap"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/roadmap"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/roadmap"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/roadmap"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://pacifinance.com/it/contribute</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/contribute"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/contribute"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/contribute"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/contribute"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/contribute"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/contribute"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/contribute"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://pacifinance.com/en/contribute</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/contribute"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/contribute"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/contribute"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/contribute"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/contribute"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/contribute"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/contribute"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://pacifinance.com/es/contribute</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/contribute"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/contribute"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/contribute"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/contribute"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/contribute"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/contribute"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/contribute"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://pacifinance.com/de/contribute</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/contribute"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/contribute"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/contribute"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/contribute"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/contribute"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/contribute"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/contribute"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://pacifinance.com/fr/contribute</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/contribute"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/contribute"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/contribute"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/contribute"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/contribute"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/contribute"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/contribute"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://pacifinance.com/pt-BR/contribute</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/contribute"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/contribute"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/contribute"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/contribute"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/contribute"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/contribute"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/contribute"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://pacifinance.com/it/privacy-policy</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/privacy-policy"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/privacy-policy"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/privacy-policy"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/privacy-policy"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/privacy-policy"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/privacy-policy"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/privacy-policy"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://pacifinance.com/en/privacy-policy</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/privacy-policy"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/privacy-policy"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/privacy-policy"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/privacy-policy"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/privacy-policy"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/privacy-policy"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/privacy-policy"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://pacifinance.com/es/privacy-policy</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/privacy-policy"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/privacy-policy"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/privacy-policy"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/privacy-policy"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/privacy-policy"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/privacy-policy"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/privacy-policy"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://pacifinance.com/de/privacy-policy</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/privacy-policy"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/privacy-policy"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/privacy-policy"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/privacy-policy"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/privacy-policy"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/privacy-policy"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/privacy-policy"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://pacifinance.com/fr/privacy-policy</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/privacy-policy"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/privacy-policy"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/privacy-policy"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/privacy-policy"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/privacy-policy"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/privacy-policy"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/privacy-policy"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://pacifinance.com/pt-BR/privacy-policy</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/privacy-policy"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/privacy-policy"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/privacy-policy"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/privacy-policy"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/privacy-policy"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/privacy-policy"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/privacy-policy"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://pacifinance.com/it/terms-of-service</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/terms-of-service"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/terms-of-service"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/terms-of-service"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/terms-of-service"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/terms-of-service"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/terms-of-service"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/terms-of-service"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://pacifinance.com/en/terms-of-service</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/terms-of-service"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/terms-of-service"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/terms-of-service"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/terms-of-service"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/terms-of-service"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/terms-of-service"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/terms-of-service"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://pacifinance.com/es/terms-of-service</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/terms-of-service"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/terms-of-service"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/terms-of-service"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/terms-of-service"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/terms-of-service"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/terms-of-service"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/terms-of-service"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://pacifinance.com/de/terms-of-service</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/terms-of-service"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/terms-of-service"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/terms-of-service"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/terms-of-service"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/terms-of-service"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/terms-of-service"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/terms-of-service"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://pacifinance.com/fr/terms-of-service</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/terms-of-service"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/terms-of-service"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/terms-of-service"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/terms-of-service"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/terms-of-service"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/terms-of-service"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/terms-of-service"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://pacifinance.com/pt-BR/terms-of-service</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/terms-of-service"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/terms-of-service"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/terms-of-service"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/terms-of-service"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/terms-of-service"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/terms-of-service"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/terms-of-service"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://pacifinance.com/it/cookie-policy</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/cookie-policy"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/cookie-policy"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/cookie-policy"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/cookie-policy"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/cookie-policy"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/cookie-policy"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/cookie-policy"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://pacifinance.com/en/cookie-policy</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/cookie-policy"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/cookie-policy"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/cookie-policy"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/cookie-policy"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/cookie-policy"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/cookie-policy"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/cookie-policy"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://pacifinance.com/es/cookie-policy</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/cookie-policy"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/cookie-policy"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/cookie-policy"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/cookie-policy"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/cookie-policy"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/cookie-policy"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/cookie-policy"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://pacifinance.com/de/cookie-policy</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/cookie-policy"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/cookie-policy"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/cookie-policy"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/cookie-policy"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/cookie-policy"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/cookie-policy"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/cookie-policy"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://pacifinance.com/fr/cookie-policy</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/cookie-policy"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/cookie-policy"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/cookie-policy"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/cookie-policy"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/cookie-policy"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/cookie-policy"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/cookie-policy"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://pacifinance.com/pt-BR/cookie-policy</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/cookie-policy"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/cookie-policy"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/cookie-policy"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/cookie-policy"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/cookie-policy"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/cookie-policy"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/cookie-policy"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://pacifinance.com/it/disclaimer</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/disclaimer"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/disclaimer"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/disclaimer"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/disclaimer"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/disclaimer"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/disclaimer"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/disclaimer"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://pacifinance.com/en/disclaimer</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/disclaimer"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/disclaimer"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/disclaimer"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/disclaimer"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/disclaimer"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/disclaimer"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/disclaimer"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://pacifinance.com/es/disclaimer</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/disclaimer"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/disclaimer"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/disclaimer"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/disclaimer"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/disclaimer"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/disclaimer"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/disclaimer"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://pacifinance.com/de/disclaimer</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/disclaimer"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/disclaimer"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/disclaimer"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/disclaimer"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/disclaimer"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/disclaimer"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/disclaimer"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://pacifinance.com/fr/disclaimer</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/disclaimer"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/disclaimer"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/disclaimer"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/disclaimer"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/disclaimer"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/disclaimer"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/disclaimer"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://pacifinance.com/pt-BR/disclaimer</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/disclaimer"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/disclaimer"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/disclaimer"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/disclaimer"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/disclaimer"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/disclaimer"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/disclaimer"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://pacifinance.com/it/sitemap</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/sitemap"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/sitemap"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/sitemap"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/sitemap"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/sitemap"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/sitemap"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/sitemap"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://pacifinance.com/en/sitemap</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/sitemap"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/sitemap"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/sitemap"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/sitemap"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/sitemap"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/sitemap"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/sitemap"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://pacifinance.com/es/sitemap</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/sitemap"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/sitemap"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/sitemap"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/sitemap"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/sitemap"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/sitemap"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/sitemap"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://pacifinance.com/de/sitemap</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/sitemap"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/sitemap"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/sitemap"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/sitemap"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/sitemap"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/sitemap"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/sitemap"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://pacifinance.com/fr/sitemap</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/sitemap"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/sitemap"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/sitemap"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/sitemap"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/sitemap"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/sitemap"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/sitemap"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://pacifinance.com/pt-BR/sitemap</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://pacifinance.com/it/sitemap"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pacifinance.com/en/sitemap"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://pacifinance.com/es/sitemap"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://pacifinance.com/de/sitemap"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://pacifinance.com/fr/sitemap"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://pacifinance.com/pt-BR/sitemap"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://pacifinance.com/en/sitemap"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
   </url>
 </urlset>

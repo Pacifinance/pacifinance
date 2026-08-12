@@ -13,8 +13,7 @@ import {
     BsGraphUpArrow,
     BsWallet2,
     BsArrowUpRight,
-    BsArrowDownLeft,
-    BsChevronDown
+    BsArrowDownLeft
 } from "react-icons/bs";
 import {
     FaChartLine,
@@ -48,12 +47,10 @@ import {
 import {
     ModernDashboardHeader,
     ModernBalanceOverview,
-    ModernChartsSection,
     ModernChartContainer,
     FloatingElement,
     ModernMetricCard,
     ModernDashboardTitle,
-    ModernIncomeExpenseSection,
     ModernIncomeExpenseCard,
     MainDashboardLayout,
     DashboardContent,
@@ -817,20 +814,16 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                 {/* Sezione Entrate e Uscite */}
                 {isSectionVisible('income-expense') && (
                 <DashboardSectionSlot $order={getSectionOrder('income-expense')}>
-                <ModernIncomeExpenseSection theme={theme}>
-                    <h3
-                        onClick={() => toggleGroupCollapsed('income-expense')}
-                        aria-expanded={!isGroupCollapsed('income-expense')}
-                        aria-label={isGroupCollapsed('income-expense') ? translations.dashboard.expandSection : translations.dashboard.collapseSection}
-                        title={isGroupCollapsed('income-expense') ? translations.dashboard.expandSection : translations.dashboard.collapseSection}
-                        style={{ color: theme.textColor, marginBottom: isGroupCollapsed('income-expense') ? 0 : (isMobileScreen ? '0.75rem' : '1rem'), fontSize: isMobileScreen ? '1.2rem' : '1.8rem', fontWeight: '600', textAlign: 'center', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: isMobileScreen ? '8px' : '12px', userSelect: 'none' }}
-                    >
-                        <FaEuroSign style={{ color: assetColors.savings }} />
-                        {translations.dashboard.titleGraph3}
-                        <BsChevronDown style={{ fontSize: '0.65em', transition: 'transform 0.25s ease', transform: isGroupCollapsed('income-expense') ? 'rotate(-90deg)' : 'rotate(0deg)' }} />
-                    </h3>
-
-                    {!isGroupCollapsed('income-expense') && (<>
+                <PortfolioSection
+                    theme={theme}
+                    icon={FaEuroSign}
+                    title={translations.dashboard.titleGraph3}
+                    accent={assetColors.savings}
+                    collapsed={isGroupCollapsed('income-expense')}
+                    onToggleCollapsed={() => toggleGroupCollapsed('income-expense')}
+                    expandLabel={translations.dashboard.expandSection}
+                    collapseLabel={translations.dashboard.collapseSection}
+                >
                     {/* Card principali: Entrate, Uscite, Risparmiato */}
                     <div style={{
                         display: 'grid',
@@ -1027,28 +1020,23 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                             )}
                         </div>
                     )}
-                    </>)}
-                </ModernIncomeExpenseSection>
+                </PortfolioSection>
                 </DashboardSectionSlot>
                 )}
 
                 {/* Sezione Grafici */}
                 {isSectionVisible('charts') && (
                 <DashboardSectionSlot $order={getSectionOrder('charts')}>
-                <ModernChartsSection theme={theme}>
-                    <h3
-                        onClick={() => toggleGroupCollapsed('charts')}
-                        aria-expanded={!isGroupCollapsed('charts')}
-                        aria-label={isGroupCollapsed('charts') ? translations.dashboard.expandSection : translations.dashboard.collapseSection}
-                        title={isGroupCollapsed('charts') ? translations.dashboard.expandSection : translations.dashboard.collapseSection}
-                        style={{ color: theme.textColor, marginBottom: isGroupCollapsed('charts') ? 0 : (isMobileScreen ? '0.6rem' : '1rem'), fontSize: isMobileScreen ? '1.2rem' : '1.8rem', fontWeight: '600', textAlign: 'center', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: isMobileScreen ? '8px' : '12px', userSelect: 'none' }}
-                    >
-                        <BsGraphUpArrow style={{ color: assetColors.savings }} />
-                        {translations.dashboard.patrimonialAnalysis}
-                        <BsChevronDown style={{ fontSize: '0.65em', transition: 'transform 0.25s ease', transform: isGroupCollapsed('charts') ? 'rotate(-90deg)' : 'rotate(0deg)' }} />
-                    </h3>
-
-                    {!isGroupCollapsed('charts') && (<>
+                <PortfolioSection
+                    theme={theme}
+                    icon={BsGraphUpArrow}
+                    title={translations.dashboard.patrimonialAnalysis}
+                    accent={assetColors.savings}
+                    collapsed={isGroupCollapsed('charts')}
+                    onToggleCollapsed={() => toggleGroupCollapsed('charts')}
+                    expandLabel={translations.dashboard.expandSection}
+                    collapseLabel={translations.dashboard.collapseSection}
+                >
                     <div style={{
                         display: 'grid',
                         gridTemplateColumns: isMobileScreen ? '1fr' : 'repeat(auto-fit, minmax(400px, 1fr))',
@@ -1194,8 +1182,7 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                             </div>
                         </ModernChartContainer>
                     </div>
-                    </>)}
-                </ModernChartsSection>
+                </PortfolioSection>
                 </DashboardSectionSlot>
                 )}
 

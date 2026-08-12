@@ -8,14 +8,20 @@ import path from "path"
  * Supabase Auth delete that relies entirely on every user-owned table's FK to
  * auth.users(id) being ON DELETE CASCADE - there is no per-table cleanup code
  * to forget to write, but there IS a schema convention to forget to follow.
- * This scans every SQL file for `<column> uuid ... references auth.users(id)`
- * declarations (the only style this schema uses for such FKs - see
- * supabase/schema.sql and supabase/migrations/*.sql) and fails if one is
- * missing "on delete cascade", unless it's in ALLOWED_NON_CASCADE_REFERENCES
- * with a stated reason (e.g. a reviewer/moderator reference, not an owner
- * reference - see instrument_historical_prices.verified_by below, the one
- * real instance found and fixed by a later migration rather than by editing
- * the historical CREATE TABLE statement).
+ * This scans every SQL file for references to auth.users(id) in either style
+ * this schema uses:
+ *   - inline column definition: `<column> uuid ... references auth.users(id)`
+ *     (hand-written migrations that CREATE a new table)
+ *   - a separate constraint: `FOREIGN KEY (<column>) REFERENCES auth.users(id)`,
+ *     quoted or not (hand-written ALTER-TABLE migrations, and the whole of
+ *     supabase/schema.sql, which is a `supabase db dump` and always uses this
+ *     style even for a table's very first CREATE)
+ * and fails if one is missing "on delete cascade", unless it's in
+ * ALLOWED_NON_CASCADE_REFERENCES with a stated reason (e.g. a
+ * reviewer/moderator reference, not an owner reference - see
+ * instrument_historical_prices.verified_by below, the one real instance
+ * found and fixed by a later migration rather than by editing the
+ * historical CREATE TABLE statement).
  */
 
 const supabaseDir = fileURLToPath(new URL("../../supabase", import.meta.url))
@@ -26,9 +32,35 @@ const ALLOWED_NON_CASCADE_REFERENCES: {file: string; column: string; reason: str
         column: "verified_by",
         reason: "Records which admin reviewed a submission, not who owns it (submitted_by is CASCADE and is the real owner FK). Corrected to ON DELETE SET NULL by a later ALTER in fix-community-price-verified-by-cascade.sql; this original CREATE TABLE statement is left as historical record rather than edited after the fact.",
     },
+    {
+        file: "fix-community-price-verified-by-cascade.sql",
+        column: "verified_by",
+        reason: "The ALTER that applies the SET NULL correction referenced above - same reasoning, not a bug.",
+    },
+    {
+        file: "fix-community-price-submitted-by-cascade.sql",
+        column: "submitted_by",
+        reason: "submitted_by is the real owner FK and normally CASCADE, but this ALTER intentionally weakens it to SET NULL so that deleting a contributor's account doesn't take down community prices other users' portfolios already rely on (see the migration's own comment). The application already treats submitted_by as nullable for provider-sourced rows.",
+    },
+    {
+        file: "schema.sql",
+        column: "verified_by",
+        reason: "Same as the add-community-historical-prices.sql/fix-community-price-verified-by-cascade.sql entries above - schema.sql is a full dump of the current database, so it shows the corrected ON DELETE SET NULL directly on the CREATE-adjacent constraint rather than as a separate historical ALTER.",
+    },
+    {
+        file: "schema.sql",
+        column: "submitted_by",
+        reason: "Same as the fix-community-price-submitted-by-cascade.sql entry above - schema.sql reflects the already-corrected live database state.",
+    },
 ]
 
-const USER_REFERENCE_PATTERN = /(\w+)\s+uuid\b(?:(?!references|,|;|\n).)*references\s+auth\.users\(id\)([^,;\n]*)/gi
+const INLINE_REFERENCE_PATTERN = /(\w+)\s+uuid\b(?:(?!references|,|;|\n).)*references\s+auth\.users\(id\)([^,;\n]*)/gi
+
+// Matches a separate `FOREIGN KEY (col) REFERENCES auth.users(id)` constraint,
+// with or without double-quoted identifiers and an `auth.`/`"auth".` schema
+// prefix - the form every ALTER-TABLE migration and the whole of the
+// dump-generated schema.sql use (pg_dump never emits the inline column style).
+const CONSTRAINT_REFERENCE_PATTERN = /FOREIGN KEY\s*\(\s*"?(\w+)"?\s*\)\s*REFERENCES\s+"?auth"?\."?users"?\(\s*"?id"?\s*\)([^,;\n]*)/gi
 
 function findSqlFiles(): string[] {
     const migrationsDir = path.join(supabaseDir, "migrations")
@@ -49,9 +81,11 @@ function findUserReferences(): UserReference[] {
     for (const filePath of findSqlFiles()) {
         const content = readFileSync(filePath, "utf-8")
         const fileName = path.basename(filePath)
-        for (const match of content.matchAll(USER_REFERENCE_PATTERN)) {
-            const [, column, tail] = match
-            references.push({file: fileName, column, hasCascade: /on delete cascade/i.test(tail)})
+        for (const pattern of [INLINE_REFERENCE_PATTERN, CONSTRAINT_REFERENCE_PATTERN]) {
+            for (const match of content.matchAll(pattern)) {
+                const [, column, tail] = match
+                references.push({file: fileName, column, hasCascade: /on delete cascade/i.test(tail)})
+            }
         }
     }
     return references

@@ -124,6 +124,27 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   shipped long ago).
 
 ### Fixed
+- `supabase/schema.sql` had silently drifted since 6 August: it still
+  created a `public.expenses` table, but a same-day migration
+  (`use-transactions-domain.sql`) had renamed it to `transactions` — a fresh
+  self-hosted deploy applying `schema.sql` per README.md/CONTRIBUTING.md
+  would get a database the server code couldn't actually use. Also missing
+  entirely: `roadmap_votes`, `notification_preferences`, `push_subscriptions`,
+  `instrument_historical_prices` (community prices) and several investment
+  tables, none of which had ever made it in. Regenerated from a live
+  `supabase db dump --linked --schema public` and re-added the one thing the
+  dump can't export, the `rls_auto_enable` event trigger (a database-level
+  object, created directly against the live project outside any migration,
+  that auto-enables RLS on future tables). `AGENTS.md` (rule 11) now
+  requires every schema-changing migration to update `schema.sql` in the
+  same PR so this can't happen again. Also fixed
+  `userDataCascadeGuard.test.ts`'s FK scanner, which only recognized the
+  old hand-written `column uuid ... references auth.users(id)` style and
+  had gone completely blind to `schema.sql` once it became a raw
+  `pg_dump` (which always expresses foreign keys as separate `ALTER TABLE
+  ... FOREIGN KEY` constraints) — it now recognizes both styles, so the
+  guard is actually checking `schema.sql` again instead of silently passing
+  on an empty match set.
 - Gamification badges (Savings streaks, First Save, Big/Super Saver, Budget
   Master, Frugal Month, Spending Down) compared income against
   `outflowsArray`, which sums *every* outflow transaction including money

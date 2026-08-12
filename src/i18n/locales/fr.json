@@ -3121,6 +3121,7 @@
         "unsupported": "Les notifications push ne sont pas prises en charge par ce navigateur.",
         "configurationError": "Les notifications ne sont pas encore configurées sur le serveur. Réessayez plus tard.",
         "permissionError": "Impossible d'activer les notifications. Vérifiez l'autorisation de notification de votre navigateur pour ce site.",
+        "enableError": "Impossible d'activer les notifications pour le moment. Réessayez dans un instant.",
         "disableError": "Impossible de désactiver les notifications. Veuillez réessayer.",
         "loadError": "Impossible de charger vos préférences de notification.",
         "saved": "Préférences enregistrées.",
@@ -3136,7 +3137,11 @@
         "communityPrices": "Prix communautaires",
         "communityPricesDescription": "Quand un prix soumis par la communauté est vérifié pour un instrument que vous détenez.",
         "day": "Jour",
-        "hour": "Heure"
+        "hour": "Heure",
+        "test": "Envoyer une notification de test",
+        "testSending": "Envoi...",
+        "testSent": "Notification de test envoyée. Vérifiez votre appareil.",
+        "testError": "Impossible d'envoyer la notification de test. Veuillez réessayer."
     },
     "cryptoGrouping": {
         "separate": "Bitcoin séparé",

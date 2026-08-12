@@ -4,6 +4,7 @@ export type ReminderType =
     | "recurringDue"
     | "sharedExpenseUpdates"
     | "communityPriceUpdates"
+    | "test"
 
 const SUPPORTED_LANGUAGES = ["it", "en", "es", "de", "fr", "pt-BR"] as const
 type Language = (typeof SUPPORTED_LANGUAGES)[number]
@@ -39,6 +40,7 @@ interface ContentInputs {
     recurringDue: { count: number }
     sharedExpenseUpdates: Record<string, never>
     communityPriceUpdates: { count: number }
+    test: Record<string, never>
 }
 
 type Builder<T extends ReminderType> = (data: ContentInputs[T]) => { title: string; body: string }
@@ -50,6 +52,7 @@ const TEMPLATES: { [L in Language]: { [T in ReminderType]: Builder<T> } } = {
         recurringDue: (d) => ({ title: "A recurring transaction is coming up", body: d.count === 1 ? "You have 1 recurring transaction due soon." : `You have ${d.count} recurring transactions due soon.` }),
         sharedExpenseUpdates: () => ({ title: "Money still owed to you", body: "You have a pending amount that hasn't been settled yet." }),
         communityPriceUpdates: (d) => ({ title: "New community price available", body: d.count === 1 ? "A verified price was added for an instrument you hold." : `Verified prices were added for ${d.count} instruments you hold.` }),
+        test: () => ({ title: "Test notification", body: "If you can see this, push notifications are working." }),
     },
     it: {
         monthlySummary: (d) => ({ title: `Il tuo riepilogo di ${d.monthLabel} è pronto`, body: `Uscite ${formatEur(d.totalOutflows)} · Entrate ${formatEur(d.totalIncomes)}` }),
@@ -57,6 +60,7 @@ const TEMPLATES: { [L in Language]: { [T in ReminderType]: Builder<T> } } = {
         recurringDue: (d) => ({ title: "Sta per arrivare una transazione ricorrente", body: d.count === 1 ? "Hai 1 transazione ricorrente in scadenza." : `Hai ${d.count} transazioni ricorrenti in scadenza.` }),
         sharedExpenseUpdates: () => ({ title: "Hai ancora un credito da riscuotere", body: "C'è un importo in sospeso che non è ancora stato saldato." }),
         communityPriceUpdates: (d) => ({ title: "Nuovo prezzo community disponibile", body: d.count === 1 ? "È stato verificato un prezzo per uno strumento che possiedi." : `Sono stati verificati prezzi per ${d.count} strumenti che possiedi.` }),
+        test: () => ({ title: "Notifica di prova", body: "Se vedi questo messaggio, le notifiche push funzionano." }),
     },
     es: {
         monthlySummary: (d) => ({ title: `Tu resumen de ${d.monthLabel} ya está listo`, body: `Gastos ${formatEur(d.totalOutflows)} · Ingresos ${formatEur(d.totalIncomes)}` }),
@@ -64,6 +68,7 @@ const TEMPLATES: { [L in Language]: { [T in ReminderType]: Builder<T> } } = {
         recurringDue: (d) => ({ title: "Se acerca una transacción recurrente", body: d.count === 1 ? "Tienes 1 transacción recurrente próxima a vencer." : `Tienes ${d.count} transacciones recurrentes próximas a vencer.` }),
         sharedExpenseUpdates: () => ({ title: "Todavía te deben dinero", body: "Tienes un importe pendiente que aún no se ha saldado." }),
         communityPriceUpdates: (d) => ({ title: "Nuevo precio de la comunidad disponible", body: d.count === 1 ? "Se verificó un precio para un instrumento que posees." : `Se verificaron precios para ${d.count} instrumentos que posees.` }),
+        test: () => ({ title: "Notificación de prueba", body: "Si puedes ver esto, las notificaciones push funcionan." }),
     },
     de: {
         monthlySummary: (d) => ({ title: `Deine Zusammenfassung für ${d.monthLabel} ist bereit`, body: `Ausgaben ${formatEur(d.totalOutflows)} · Einnahmen ${formatEur(d.totalIncomes)}` }),
@@ -71,6 +76,7 @@ const TEMPLATES: { [L in Language]: { [T in ReminderType]: Builder<T> } } = {
         recurringDue: (d) => ({ title: "Eine wiederkehrende Buchung steht an", body: d.count === 1 ? "1 wiederkehrende Buchung steht bald an." : `${d.count} wiederkehrende Buchungen stehen bald an.` }),
         sharedExpenseUpdates: () => ({ title: "Dir wird noch Geld geschuldet", body: "Ein ausstehender Betrag wurde noch nicht beglichen." }),
         communityPriceUpdates: (d) => ({ title: "Neuer Community-Preis verfügbar", body: d.count === 1 ? "Für ein von dir gehaltenes Instrument wurde ein Preis bestätigt." : `Für ${d.count} von dir gehaltene Instrumente wurden Preise bestätigt.` }),
+        test: () => ({ title: "Testbenachrichtigung", body: "Wenn du das siehst, funktionieren Push-Benachrichtigungen." }),
     },
     fr: {
         monthlySummary: (d) => ({ title: `Votre résumé de ${d.monthLabel} est prêt`, body: `Dépenses ${formatEur(d.totalOutflows)} · Revenus ${formatEur(d.totalIncomes)}` }),
@@ -78,6 +84,7 @@ const TEMPLATES: { [L in Language]: { [T in ReminderType]: Builder<T> } } = {
         recurringDue: (d) => ({ title: "Une transaction récurrente approche", body: d.count === 1 ? "1 transaction récurrente arrive bientôt à échéance." : `${d.count} transactions récurrentes arrivent bientôt à échéance.` }),
         sharedExpenseUpdates: () => ({ title: "On vous doit encore de l'argent", body: "Un montant en attente n'a pas encore été réglé." }),
         communityPriceUpdates: (d) => ({ title: "Nouveau prix communautaire disponible", body: d.count === 1 ? "Un prix a été vérifié pour un instrument que vous détenez." : `Des prix ont été vérifiés pour ${d.count} instruments que vous détenez.` }),
+        test: () => ({ title: "Notification de test", body: "Si vous voyez ceci, les notifications push fonctionnent." }),
     },
     "pt-BR": {
         monthlySummary: (d) => ({ title: `Seu resumo de ${d.monthLabel} está pronto`, body: `Despesas ${formatEur(d.totalOutflows)} · Receitas ${formatEur(d.totalIncomes)}` }),
@@ -85,6 +92,7 @@ const TEMPLATES: { [L in Language]: { [T in ReminderType]: Builder<T> } } = {
         recurringDue: (d) => ({ title: "Uma transação recorrente está chegando", body: d.count === 1 ? "Você tem 1 transação recorrente prestes a vencer." : `Você tem ${d.count} transações recorrentes prestes a vencer.` }),
         sharedExpenseUpdates: () => ({ title: "Ainda têm dinheiro a te pagar", body: "Há um valor pendente que ainda não foi quitado." }),
         communityPriceUpdates: (d) => ({ title: "Novo preço da comunidade disponível", body: d.count === 1 ? "Um preço foi verificado para um instrumento que você possui." : `Preços foram verificados para ${d.count} instrumentos que você possui.` }),
+        test: () => ({ title: "Notificação de teste", body: "Se você está vendo isso, as notificações push estão funcionando." }),
     },
 }
 

@@ -3217,6 +3217,7 @@
         "unsupported": "Le notifiche push non sono supportate su questo browser.",
         "configurationError": "Le notifiche non sono ancora configurate sul server. Riprova più tardi.",
         "permissionError": "Impossibile attivare le notifiche. Controlla il permesso per le notifiche del browser per questo sito.",
+        "enableError": "Impossibile attivare le notifiche in questo momento. Riprova tra poco.",
         "disableError": "Impossibile disattivare le notifiche. Riprova.",
         "loadError": "Impossibile caricare le preferenze di notifica.",
         "saved": "Preferenze salvate.",
@@ -3232,7 +3233,11 @@
         "communityPrices": "Prezzi community",
         "communityPricesDescription": "Quando un prezzo inviato dalla community viene verificato per uno strumento che possiedi.",
         "day": "Giorno",
-        "hour": "Ora"
+        "hour": "Ora",
+        "test": "Invia notifica di prova",
+        "testSending": "Invio in corso...",
+        "testSent": "Notifica di prova inviata. Controlla il tuo dispositivo.",
+        "testError": "Impossibile inviare la notifica di prova. Riprova."
     },
     "cryptoGrouping": {
         "separate": "Bitcoin separato",

@@ -15,6 +15,7 @@ type MockDb = {
     benchmarkSnapshots: Record<string, any>
     sharedExpenses: Record<string, any>
     roadmapVotes: Record<string, any>
+    notifications: Record<string, any>
 }
 
 const mocks = vi.hoisted(() => {
@@ -176,6 +177,13 @@ const mocks = vi.hoisted(() => {
             getVoteCounts: vi.fn(),
             getVotesByUserId: vi.fn(),
             toggleVote: vi.fn()
+        },
+        notifications: {
+            getPreferences: vi.fn(),
+            savePreferences: vi.fn(),
+            saveSubscription: vi.fn(),
+            deleteSubscription: vi.fn(),
+            getSubscriptionsForUsers: vi.fn()
         }
     }
 
@@ -374,6 +382,11 @@ export function resetServerMocks() {
     mockDb.roadmapVotes.getVoteCounts.mockResolvedValue({})
     mockDb.roadmapVotes.getVotesByUserId.mockResolvedValue([])
     mockDb.roadmapVotes.toggleVote.mockResolvedValue(true)
+
+    mockDb.notifications.getPreferences.mockResolvedValue(null)
+    mockDb.notifications.saveSubscription.mockResolvedValue({id: 1})
+    mockDb.notifications.deleteSubscription.mockResolvedValue({deleted: true})
+    mockDb.notifications.getSubscriptionsForUsers.mockResolvedValue(new Map())
 
     mockRedis.get.mockResolvedValue(null)
     mockRedis.set.mockResolvedValue("OK")

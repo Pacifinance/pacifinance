@@ -3121,6 +3121,7 @@
         "unsupported": "Notificações push não são suportadas neste navegador.",
         "configurationError": "As notificações ainda não estão configuradas no servidor. Tente novamente mais tarde.",
         "permissionError": "Não foi possível ativar as notificações. Verifique a permissão de notificações do navegador para este site.",
+        "enableError": "Não foi possível ativar as notificações agora. Tente novamente em instantes.",
         "disableError": "Não foi possível desativar as notificações. Tente novamente.",
         "loadError": "Não foi possível carregar suas preferências de notificação.",
         "saved": "Preferências salvas.",
@@ -3136,7 +3137,11 @@
         "communityPrices": "Preços da comunidade",
         "communityPricesDescription": "Quando um preço enviado pela comunidade é verificado para um instrumento que você possui.",
         "day": "Dia",
-        "hour": "Hora"
+        "hour": "Hora",
+        "test": "Enviar notificação de teste",
+        "testSending": "Enviando...",
+        "testSent": "Notificação de teste enviada. Verifique seu dispositivo.",
+        "testError": "Não foi possível enviar a notificação de teste. Tente novamente."
     },
     "cryptoGrouping": {
         "separate": "Bitcoin separado",

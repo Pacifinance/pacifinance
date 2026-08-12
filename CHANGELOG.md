@@ -10,6 +10,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 ## [Unreleased]
 
 ### Added
+- Notification settings: a "Send test notification" button (shown once
+  reminders are enabled) that triggers an immediate push through the same
+  delivery path as real reminders, for the user to confirm push actually
+  works on their device.
 - `AI_POLICY.md`: AI-assisted contributions are welcome, but must be
   disclosed, reviewed, tested, and aligned with the project's vision before
   a PR — linked from `CONTRIBUTING.md` and a checklist item in the PR
@@ -69,6 +73,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - Landing hero: the desktop artwork was cropping off the tree and moon
   because it was center-positioned inside a panel narrower than the source
   image — repositioned so the full subject is visible instead.
+- Notification settings: enabling reminders always blamed a failure on
+  browser notification permission, even when the actual cause was
+  something else (a subscribe/network failure), which was misleading when
+  the browser had already granted permission. Now only a genuine
+  permission denial shows that message; other failures show a distinct,
+  actionable one.
 
 ## [0.10.0] - 2026-08-11
 

@@ -4,7 +4,21 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    groups:
+      npm-minor-patch:
+        applies-to: version-updates
+        update-types:
+          - "minor"
+          - "patch"
+    # Major bumps stay ungrouped (their own PR) - they're the ones actually
+    # worth a human looking at before merging.
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
+    groups:
+      actions-minor-patch:
+        applies-to: version-updates
+        update-types:
+          - "minor"
+          - "patch"

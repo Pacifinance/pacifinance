@@ -9,3 +9,13 @@ export function detectPlatform() {
   if (/android/i.test(ua)) return 'android';
   return 'desktop';
 }
+
+/** Whether the app is currently running installed (added to home screen /
+ * launched as a standalone app) rather than in an ordinary browser tab.
+ * `navigator.standalone` is the iOS Safari-specific flag; `display-mode`
+ * is the standard media query every other platform (and modern Safari) uses. */
+export function isStandalonePwa() {
+  if (typeof window === 'undefined') return false;
+  const nav = navigator as Navigator & { standalone?: boolean };
+  return nav.standalone === true || window.matchMedia?.('(display-mode: standalone)').matches === true;
+}

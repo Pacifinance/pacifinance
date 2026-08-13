@@ -82,7 +82,8 @@
       "Bash(docker version *)",
       "Bash(docker info *)",
       "Bash(tasklist)",
-      "Bash(python3 -c \"import yaml; print\\(yaml.safe_load\\(open\\('.github/dependabot.yml'\\)\\)\\)\")"
+      "Bash(python3 -c \"import yaml; print\\(yaml.safe_load\\(open\\('.github/dependabot.yml'\\)\\)\\)\")",
+      "Bash(python3 -c \"import json; json.load\\(open\\('vercel.json'\\)\\); print\\('vercel.json valid JSON'\\)\")"
     ]
   }
 }

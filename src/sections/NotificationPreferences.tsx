@@ -2,10 +2,14 @@ import React, {useContext, useEffect, useState} from 'react';
 import styled from 'styled-components';
 import NotificationsActiveOutlinedIcon from '@mui/icons-material/NotificationsActiveOutlined';
 import NotificationsOffOutlinedIcon from '@mui/icons-material/NotificationsOffOutlined';
+import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
+import CalendarMonthOutlinedIcon from '@mui/icons-material/CalendarMonthOutlined';
 import {LanguageContext} from '../contexts/LanguageContext';
 import {useServices} from '../contexts/ServiceContext';
 import type {NotificationPreferences as Preferences} from '../services/notificationService';
 import {disableWebPush, enableWebPush, serializePushSubscription, supportsWebPush} from '../utils/pushNotifications';
+import {detectPlatform, isStandalonePwa} from '../utils/platformDetection';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 
 interface NotificationPreferencesProps { theme: Record<string, string> & {mode: string} }
 
@@ -34,13 +38,34 @@ const Choice = styled.label<{$disabled: boolean}>`
   strong { display: block; color: ${({theme}) => theme.textColor}; font-size: .82rem; }
   span { display: block; font-size: .72rem; line-height: 1.4; margin-top: .15rem; }
 `;
+const ScheduleSection = styled.div`
+  display: grid; gap: .5rem; padding-top: .2rem;
+`;
+const ScheduleCaption = styled.p`
+  margin: 0; font-size: .72rem; line-height: 1.45;
+  color: ${({theme}) => theme.mode === 'dark' ? 'rgba(255,255,255,.6)' : 'rgba(15,23,42,.6)'};
+`;
 const Schedule = styled.div`
-  display: flex; gap: .65rem; align-items: end; flex-wrap: wrap;
-  label { display: grid; gap: .25rem; color: ${({theme}) => theme.textColor}; font-size: .72rem; }
-  select { min-height: 36px; border-radius: 8px; padding: 0 .55rem; color: ${({theme}) => theme.textColor}; background: ${({theme}) => theme.backgroundColor}; border: 1px solid ${({theme}) => theme.mode === 'dark' ? 'rgba(255,255,255,.15)' : 'rgba(15,23,42,.13)'}; }
+  display: flex; gap: .6rem; align-items: stretch; flex-wrap: wrap;
+`;
+const ScheduleField = styled.label`
+  display: flex; align-items: center; gap: .55rem; padding: .55rem .75rem; border-radius: 10px;
+  background: ${({theme}) => theme.mode === 'dark' ? 'rgba(0,0,0,.12)' : '#fff'};
+  border: 1px solid ${({theme}) => theme.mode === 'dark' ? 'rgba(255,255,255,.09)' : 'rgba(15,23,42,.08)'};
+  svg { font-size: 1.15rem; color: ${({theme}) => theme.buttonBackgroundColor}; flex: 0 0 auto; }
+`;
+const ScheduleFieldText = styled.span`
+  display: grid; gap: .2rem;
+  strong { font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; color: ${({theme}) => theme.mode === 'dark' ? 'rgba(255,255,255,.55)' : 'rgba(15,23,42,.55)'}; }
+`;
+const ScheduleSelect = styled.select`
+  min-height: 30px; border: none; background: transparent; padding: 0; margin: 0;
+  color: ${({theme}) => theme.textColor}; font-weight: 700; font-size: .85rem; cursor: pointer;
+  &:disabled { cursor: default; }
 `;
 const Timezone = styled.span`
-  color: ${({theme}) => theme.mode === 'dark' ? 'rgba(255,255,255,.72)' : 'rgba(15,23,42,.68)'};
+  display: flex; align-items: center;
+  color: ${({theme}) => theme.mode === 'dark' ? 'rgba(255,255,255,.5)' : 'rgba(15,23,42,.5)'};
   font-size: .7rem;
 `;
 const ToggleRow = styled.div`display: flex; gap: .55rem; flex-wrap: wrap;`;
@@ -51,6 +76,13 @@ const MainToggle = styled.button<{$enabled: boolean}>`
   &:disabled { opacity: .55; cursor: wait; }
 `;
 const Status = styled.p<{$error?: boolean}>`margin: 0; color: ${({$error, theme}) => $error ? (theme.mode === 'dark' ? '#fca5a5' : '#dc2626') : (theme.mode === 'dark' ? '#6ee7b7' : '#047857')}; font-size: .75rem; font-weight: 600;`;
+const InfoNote = styled.div`
+  display: flex; align-items: flex-start; gap: .5rem; padding: .65rem .8rem; border-radius: 10px; font-size: .75rem; line-height: 1.45;
+  color: ${({theme}) => theme.mode === 'dark' ? 'rgba(255,255,255,.78)' : 'rgba(15,23,42,.74)'};
+  background: ${({theme}) => theme.mode === 'dark' ? 'rgba(59,130,246,.1)' : 'rgba(59,130,246,.07)'};
+  border: 1px solid ${({theme}) => theme.mode === 'dark' ? 'rgba(96,165,250,.25)' : 'rgba(59,130,246,.2)'};
+  svg { font-size: 1.05rem; flex: 0 0 auto; margin-top: .05rem; color: ${({theme}) => theme.mode === 'dark' ? '#93c5fd' : '#2563eb'}; }
+`;
 
 const defaults = (language: string): Preferences => ({enabled: false, monthlySummary: true, dataUpdateReminder: true, recurringDue: true, sharedExpenseUpdates: true, communityPriceUpdates: true, reminderDay: 1, reminderHour: 18, timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC', language});
 
@@ -65,6 +97,10 @@ export default function NotificationPreferences({theme}: NotificationPreferences
   const [message, setMessage] = useState<{text: string; error?: boolean} | null>(null);
   const [testing, setTesting] = useState(false);
   const supported = supportsWebPush();
+  // iOS only delivers web push to an installed (home-screen) app, not an
+  // ordinary Safari tab - flagged upfront so an iPhone/iPad visitor knows
+  // what to do before hitting the generic "unavailable" error.
+  const showIosInstallHint = detectPlatform() === 'ios' && !isStandalonePwa();
 
   useEffect(() => {
     Promise.all([notificationService.getPreferences(), notificationService.getPushPublicKey()])
@@ -98,9 +134,21 @@ export default function NotificationPreferences({theme}: NotificationPreferences
       await notificationService.saveSubscription(serializePushSubscription(subscription));
       await persist({...preferences, enabled: true, timezone: defaults(language).timezone, language});
     } catch (error) {
-      console.error('NotificationPreferences: failed to enable push notifications', error);
-      const deniedByBrowser = error instanceof Error && error.message === 'Notification permission denied';
-      setMessage({text: deniedByBrowser ? t.permissionError : t.enableError, error: true});
+      const name = error instanceof DOMException || error instanceof Error ? error.name : undefined;
+      const message = error instanceof Error ? error.message : String(error);
+      console.error(`NotificationPreferences: failed to enable push notifications (${name || 'unknown'}): ${message}`, error);
+      const deniedByBrowser = message === 'Notification permission denied';
+      // AbortError from pushManager.subscribe() almost always means the
+      // browser's own push service refused the registration - most common
+      // cause in the wild is Brave, which disables Google's push messaging
+      // service by default (brave://settings/privacy). Not something a
+      // retry fixes on its own, so point at the actual setting instead of
+      // the generic "try again later".
+      const blockedByBrowser = name === 'AbortError' || name === 'NotAllowedError';
+      setMessage({
+        text: deniedByBrowser ? t.permissionError : blockedByBrowser ? t.pushServiceError : t.enableError,
+        error: true,
+      });
       setSaving(false);
     }
   };
@@ -128,12 +176,36 @@ export default function NotificationPreferences({theme}: NotificationPreferences
   if (loading) return <Panel theme={theme}>{t.loading}</Panel>;
   return <Panel theme={theme}>
     <Hero theme={theme}><div><h3>{t.title}</h3><p>{t.description}</p></div>{preferences.enabled ? <NotificationsActiveOutlinedIcon/> : <NotificationsOffOutlinedIcon/>}</Hero>
+    {showIosInstallHint && <InfoNote theme={theme}><InfoOutlinedIcon/><span>{t.iosInstallHint}</span></InfoNote>}
     <ToggleRow>
       <MainToggle type="button" theme={theme} $enabled={preferences.enabled} disabled={saving} onClick={toggleEnabled}>{preferences.enabled ? t.disable : t.enable}</MainToggle>
       {preferences.enabled && <MainToggle type="button" theme={theme} $enabled disabled={testing} onClick={sendTest}>{testing ? t.testSending : t.test}</MainToggle>}
     </ToggleRow>
     <ChoiceGrid>{choices.map((choice) => <Choice key={choice.key} theme={theme} $disabled={!preferences.enabled || saving}><input type="checkbox" checked={Boolean(preferences[choice.key])} disabled={!preferences.enabled || saving} onChange={(event) => persist({...preferences, [choice.key]: event.target.checked})}/><span><strong>{choice.title}</strong><span>{choice.description}</span></span></Choice>)}</ChoiceGrid>
-    <Schedule theme={theme}><label>{t.day}<select disabled={!preferences.enabled || saving} value={preferences.reminderDay} onChange={(event) => persist({...preferences, reminderDay: Number(event.target.value)})}>{Array.from({length: 28}, (_, index) => index + 1).map((day) => <option key={day} value={day}>{day}</option>)}</select></label><label>{t.hour}<select disabled={!preferences.enabled || saving} value={preferences.reminderHour} onChange={(event) => persist({...preferences, reminderHour: Number(event.target.value)})}>{Array.from({length: 24}, (_, hour) => <option key={hour} value={hour}>{String(hour).padStart(2, '0')}:00</option>)}</select></label><Timezone theme={theme}>{preferences.timezone}</Timezone></Schedule>
+    <ScheduleSection>
+      <ScheduleCaption theme={theme}>{t.scheduleCaption}</ScheduleCaption>
+      <Schedule>
+        <ScheduleField theme={theme}>
+          <AccessTimeOutlinedIcon />
+          <ScheduleFieldText theme={theme}>
+            <strong>{t.hour}</strong>
+            <ScheduleSelect theme={theme} disabled={!preferences.enabled || saving} value={preferences.reminderHour} onChange={(event) => persist({...preferences, reminderHour: Number(event.target.value)})}>
+              {Array.from({length: 24}, (_, hour) => <option key={hour} value={hour}>{String(hour).padStart(2, '0')}:00</option>)}
+            </ScheduleSelect>
+          </ScheduleFieldText>
+        </ScheduleField>
+        <ScheduleField theme={theme}>
+          <CalendarMonthOutlinedIcon />
+          <ScheduleFieldText theme={theme}>
+            <strong>{t.day}</strong>
+            <ScheduleSelect theme={theme} disabled={!preferences.enabled || saving} value={preferences.reminderDay} onChange={(event) => persist({...preferences, reminderDay: Number(event.target.value)})}>
+              {Array.from({length: 28}, (_, index) => index + 1).map((day) => <option key={day} value={day}>{day}</option>)}
+            </ScheduleSelect>
+          </ScheduleFieldText>
+        </ScheduleField>
+        <Timezone theme={theme}>{preferences.timezone}</Timezone>
+      </Schedule>
+    </ScheduleSection>
     {message && <Status theme={theme} $error={message.error}>{message.text}</Status>}
   </Panel>;
 }

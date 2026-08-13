@@ -12,11 +12,12 @@
 4. [Dependency Injection](#dependency-injection)
 5. [State Management](#state-management)
 6. [Service Layer](#service-layer)
-7. [Data Flow](#data-flow)
-8. [Internationalization](#internationalization)
-9. [Testing Strategy](#testing-strategy)
-10. [Code Quality Standards](#code-quality-standards)
-11. [Contributing Guidelines](#contributing-guidelines)
+7. [Caching Layer (Redis/Upstash)](#caching-layer-redisupstash)
+8. [Data Flow](#data-flow)
+9. [Internationalization](#internationalization)
+10. [Testing Strategy](#testing-strategy)
+11. [Code Quality Standards](#code-quality-standards)
+12. [Contributing Guidelines](#contributing-guidelines)
 
 ---
 
@@ -273,6 +274,36 @@ export const createXxxService = (apiClient) => ({
 | `financeService` | `getBalances`, `addBalance`, `getExpensesAndIncomes`, `addExpenseOrIncome`, `deleteExpenseOrIncome` | `/balances/*`, `/expenses/*` |
 | `rankingService` | `getAllRankings` | `/rank/*` |
 | `statsService` | `getAverages` | `/stats/averages` |
+
+---
+
+## Caching Layer (Redis/Upstash)
+
+### Why Upstash and not a normal Redis (e.g. Redis Cloud)
+
+The backend runs as Vercel serverless functions — short-lived, stateless processes that spin up per request. A normal Redis client needs a persistent TCP connection, which doesn't fit that model well (reopen a connection per invocation, or run a separate pooler). `@upstash/redis` ([`server/src/cache/redisClient.ts`](../server/src/cache/redisClient.ts)) talks to Redis over a stateless HTTPS REST API instead — every command is a single HTTP request, exactly what a serverless function needs. This is the reason to use Upstash specifically, not a preference — a conventional Redis host would work fine on a long-running server, but fights the deployment model here.
+
+All Redis usage is optional and degrades gracefully: every call site either fails open (skips the cache/rate limit, logs a warning) or is guarded by `dependencies.redis.configured`, so a missing `UPSTASH_REDIS_REST_URL`/`UPSTASH_REDIS_REST_TOKEN` never breaks a feature, only its caching.
+
+### What's actually cached today
+
+| Use case | File | Keying | TTL |
+|---|---|---|---|
+| Fixed-dictionary app cache (user averages, rankings, crypto prices, exchange rates, GitHub stats, roadmap vote counts) | `cache/cache.ts` | Static key per item | 5 min – 32 days, tracked **in the value itself**, not Redis's native TTL (see below) |
+| Live stock/ETF quotes, shared across every user holding that instrument | `cache/quoteCache.ts` | `quote:<SYMBOL>` | 24h (native TTL) |
+| ISIN → Finnhub symbol resolution | `cache/symbolCache.ts` | `finnhub-symbol:<ISIN>` | 30 days (native TTL) |
+| CoinGecko historical prices | `libs/providers/coingeckoProvider.ts` | `coingecko:history:<coin>:<fromMonth>:<toMonth>` | native TTL |
+| Fixed-window rate limiter for OpenFIGI/CoinGecko (shared across concurrent Vercel instances) | `libs/rateLimiter.ts` | `ratelimit:<bucket>:<windowId>` | 60s (native TTL via `EXPIRE`) |
+| Custom anonymous-comparison results | `services/customBenchmark.ts` | `comparison:custom:v1:<userId>:<factors>` / `comparison:preview:v1:...` | 60–300s (native TTL) |
+| GitHub App installation token | `libs/githubApp.ts` | fixed key | ~1h (native TTL) |
+| Registration anti-replay guard (a Turnstile token can only be redeemed once) | `routes/public/public.ts` | `turnstile:<token>` | `SET NX` + TTL |
+| Dependency health check | `routes/public/public.ts` | — | `PING`, no storage |
+
+### Room to use it more
+
+- `cache/cache.ts` stores its own expiration timestamp inside the value and checks it in application code instead of using Redis's native `EX`/`PEXPIRE`. Every other cache module here uses native TTL; migrating this one too would let Upstash actually evict stale entries instead of keeping them around indefinitely.
+- The `SET NX` + TTL pattern used for the Turnstile anti-replay guard is a general idempotency-key recipe — worth reusing for any other "this must only happen once" flow (e.g. avoiding a double-trigger on the account-deletion grace period if a request is retried).
+- No server-side session/token store exists today beyond Supabase's own auth session handling — if one is ever needed, Upstash is already wired in and doesn't require a new service.
 
 ---
 

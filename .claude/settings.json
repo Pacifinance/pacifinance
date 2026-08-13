@@ -81,7 +81,8 @@
       "Bash(where docker *)",
       "Bash(docker version *)",
       "Bash(docker info *)",
-      "Bash(tasklist)"
+      "Bash(tasklist)",
+      "Bash(python3 -c \"import yaml; print\\(yaml.safe_load\\(open\\('.github/dependabot.yml'\\)\\)\\)\")"
     ]
   }
 }

@@ -98,6 +98,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   four of the six languages (es/de/fr/pt-BR).
 
 ### Changed
+- `.github/dependabot.yml`: minor/patch version-update PRs are now grouped
+  into one PR per ecosystem per week (npm, GitHub Actions) instead of one
+  PR per dependency — major bumps stay ungrouped since those are the ones
+  actually worth a separate look before merging.
 - Consolidated `CLAUDE.md`, `AGENTS.md` and `.github/copilot-instructions.md`
   into one source of truth (`AGENTS.md`); the other two now just import it.
   Dropped a stale "server/ is off-limits" line that contradicted `AGENTS.md`

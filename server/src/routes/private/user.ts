@@ -8,6 +8,7 @@ import authCookies from "../authCookies"
 import supabase from "../../db/supabase"
 import { generateRecoveryCode, hashRecoveryCode } from "../../db/recoveryCode"
 import { logger } from "../../libs/logger"
+import { USER_DATA_DOMAINS } from "../../libs/userDataDomains"
 
 /* === /user/* === */
 
@@ -337,63 +338,26 @@ userRouter.post("/goals", async (req, res) => {
     res.send()
 })
 
+/**
+ * GDPR data-export endpoint: returns every domain of the user's own data,
+ * driven by USER_DATA_DOMAINS (server/src/libs/userDataDomains.ts) so a new
+ * domain only has to be registered once to be included here automatically
+ * (and to be caught by server/__tests__/userDataDomains.test.ts if it isn't).
+ * Only a failed `profile` fetch (the one domain whose model returns null on
+ * error, not an empty array) fails the whole request — every other domain
+ * degrades to an empty result the same way its own feature pages already do,
+ * consistent with how the rest of this codebase treats list-getter failures.
+ */
 userRouter.post("/alldata", async (req, res) => {
     const userId = req.userId as string
-    // Get all user's data. Return status 500 (Internal Server Error) if any
-    // of the query fails
-    const user = await db.users.getPublicInfoByUserId(userId)
-    const balances = await db.balances.getAllByUserId(userId)
-    const transactions = await db.transactions.getAllByUserId(userId)
-    if (user === null || balances === null || transactions === null)
-    {
+    const entries = await Promise.all(
+        USER_DATA_DOMAINS.map(async (domain) => [domain.key, await domain.fetch(userId)] as const),
+    )
+    const userData = Object.fromEntries(entries) as Record<string, unknown>
+    if (userData.profile === null) {
         res.status(500).send()
         return
     }
-    // Build the final object
-    const userData = {
-        user: {
-            userId: user.userId,
-            creationDate: user.creationDate,
-            age: (user.age as any)?.label,
-            livingSituation: (user.livingSituation as any)?.label,
-            housingType: (user.housingType as any)?.label,
-            children: (user.children as any)?.label,
-            country: (user.country as any)?.label,
-            job: (user.job as any)?.label,
-            jobType: (user.jobType as any)?.label,
-            jobCountry: (user.jobCountry as any)?.label,
-            workTime: (user.workTime as any)?.label,
-            remoteType: (user.remoteType as any)?.label,
-            yearsOfExperience: (user.yearsOfExperience as any)?.label
-        },
-
-        balances: balances.map((balance) => {
-            return {
-                date: balance.date,
-                userDate: balance.userDate,
-                bank: balance.bank,
-                cash: balance.cash,
-                digitalServices: balance.digitalServices,
-                stocks: balance.stocks,
-                etf: balance.etf,
-                bitcoin: balance.bitcoin,
-                crypto: balance.crypto
-            }
-        }),
-
-        transactions: transactions.map((transaction) => {
-            return {
-                date: transaction.date,
-                amount: transaction.amount,
-                direction: transaction.direction,
-                purpose: transaction.purpose,
-                notes: transaction.notes,
-                paymentType: (transaction.paymentType as any)?.label,
-                categoryTag: (transaction.categoryTag as any)?.label
-            }
-        })
-    }
-    // Send the data with status code 200 (OK)
     res.status(200).json(userData)
 })
 

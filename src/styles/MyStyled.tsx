@@ -6,8 +6,6 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import ToggleModeButton from '../components/ToggleModeButton';
-import PrivacyToggleModeButton from '../components/PrivacyToggleModeButton'; 
 import { IconButton, InputAdornment, TextField } from '@mui/material';
 import { Calendar } from 'react-calendar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -1267,42 +1265,41 @@ export const Icon = styled.div`
   text-color: ${(props) => (props.theme.jollyColor)};
 `;
 
-export const SidebarToggleModeButton = styled(ToggleModeButton)`
-      padding: 0.3em 0.5em;
-      font-size: 0.8em;
-      gap: 0.1em;
-
-      /* For screens with a maximum width of 768px (e.g. mobile devices) */
-      @media (max-width: 768px) {
-        margin-top: 0.5em;
-        padding: 1px 1px;
-        font-size: 2px;
-
-        svg {
-          font-size: 2em; 
-        }
-      }
+const privacyIconPop = keyframes`
+  0% { transform: scale(0.7) rotate(-6deg); opacity: 0; }
+  60% { transform: scale(1.15) rotate(2deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
 `;
 
-export const SidebarPrivacyToggleModeButton = styled(PrivacyToggleModeButton)`
-      padding: 0.3em 0.5em;
-      font-size: 4px;
-      gap: 0.1em;
+/**
+ * Privacy toggle shared by the mobile header and the desktop sidebar, so the
+ * two don't drift into different-looking buttons for the same action. Hiding
+ * sensitive amounts is a protective feature the user turns on deliberately,
+ * not an error state, so its "on" look uses the brand accent (not
+ * theme.dangerColor's red, which used to sit there and read as a permanent
+ * warning every time privacy mode was active).
+ */
+export const PrivacyToggleButton = styled.button<{ $active: boolean }>`
+  background: ${({ $active, theme }) =>
+    $active ? `${theme.buttonBackgroundColor}20` : 'transparent'};
+  border: 1.5px solid ${({ $active, theme }) =>
+    $active ? `${theme.buttonBackgroundColor}70` : (theme.mode === 'dark' ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)')};
+  border-radius: 9px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: ${({ $active, theme }) =>
+    $active ? theme.buttonBackgroundColor : (theme.mode === 'dark' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.5)')};
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
 
-      /* For screens with a maximum width of 768px (e.g. mobile devices) */
-
-      @media (max-width: 768px) {
-        margin-top: 0.5em;
-        padding: 1px 1px;
-        font-size: 2px;
-
-        svg {
-          font-size: 2em; 
-        }
-      }
+  svg {
+    animation: ${privacyIconPop} 0.35s ease;
+  }
 `;
-
-
 
 export const DropdownContainer = styled.div`
   position: relative;
@@ -1543,49 +1540,6 @@ export const Links = styled.div`
         }
 
       }
-  }
-`;
-
-export const ToggleButton = styled.div`
-  display: flex;
-  justify-content: center;
-
-
-  svg {
-      font-size: 2.2em; 
-  }
-
-  @media (max-width: 768px) {
-    position: absolute;
-    top: 1.2em;
-    right: 6em;
-    svg {
-      font-size: 7em; 
-    }
-  }
-`;
-
-export const SettingsToggleButton = styled.div`
-  margin-top: 0.5em;
-  margin-bottom: 0.5em;
-  margin: 0.5em;
-  display: flex;
-  padding: 0.5em 1em;
-  border: 0.1em solid ${(props) => (props.theme.buttonBackgroundColor)};
-  border-radius: 0.2em;
-  justify-content: center;
-  align-items: center;
-  cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
-
-  /* For screens with a maximum width of 768px (e.g. mobile devices) */
-  @media (max-width: 768px) {
-    padding: 0.2em 0.2em;
-    border-radius: 0.2em;
-    font-size: 1.1rem;
-
-    svg {
-      font-size: em; 
-    }
   }
 `;
 

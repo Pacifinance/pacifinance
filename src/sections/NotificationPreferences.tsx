@@ -43,6 +43,7 @@ const Timezone = styled.span`
   color: ${({theme}) => theme.mode === 'dark' ? 'rgba(255,255,255,.72)' : 'rgba(15,23,42,.68)'};
   font-size: .7rem;
 `;
+const ToggleRow = styled.div`display: flex; gap: .55rem; flex-wrap: wrap;`;
 const MainToggle = styled.button<{$enabled: boolean}>`
   display: inline-flex; align-items: center; justify-content: center; gap: .45rem; border: 0; border-radius: 9px; padding: .6rem .8rem; cursor: pointer; font-weight: 700;
   color: ${({$enabled, theme}) => $enabled ? theme.textColor : '#fff'};
@@ -62,6 +63,7 @@ export default function NotificationPreferences({theme}: NotificationPreferences
   const [saving, setSaving] = useState(false);
   const [pushPublicKey, setPushPublicKey] = useState<string | null>(null);
   const [message, setMessage] = useState<{text: string; error?: boolean} | null>(null);
+  const [testing, setTesting] = useState(false);
   const supported = supportsWebPush();
 
   useEffect(() => {
@@ -97,8 +99,21 @@ export default function NotificationPreferences({theme}: NotificationPreferences
       await persist({...preferences, enabled: true, timezone: defaults(language).timezone, language});
     } catch (error) {
       console.error('NotificationPreferences: failed to enable push notifications', error);
-      setMessage({text: t.permissionError, error: true});
+      const deniedByBrowser = error instanceof Error && error.message === 'Notification permission denied';
+      setMessage({text: deniedByBrowser ? t.permissionError : t.enableError, error: true});
       setSaving(false);
+    }
+  };
+
+  const sendTest = async () => {
+    setTesting(true); setMessage(null);
+    try {
+      const sent = await notificationService.sendTestNotification(language);
+      setMessage(sent > 0 ? {text: t.testSent} : {text: t.testError, error: true});
+    } catch {
+      setMessage({text: t.testError, error: true});
+    } finally {
+      setTesting(false);
     }
   };
 
@@ -113,7 +128,10 @@ export default function NotificationPreferences({theme}: NotificationPreferences
   if (loading) return <Panel theme={theme}>{t.loading}</Panel>;
   return <Panel theme={theme}>
     <Hero theme={theme}><div><h3>{t.title}</h3><p>{t.description}</p></div>{preferences.enabled ? <NotificationsActiveOutlinedIcon/> : <NotificationsOffOutlinedIcon/>}</Hero>
-    <MainToggle type="button" theme={theme} $enabled={preferences.enabled} disabled={saving} onClick={toggleEnabled}>{preferences.enabled ? t.disable : t.enable}</MainToggle>
+    <ToggleRow>
+      <MainToggle type="button" theme={theme} $enabled={preferences.enabled} disabled={saving} onClick={toggleEnabled}>{preferences.enabled ? t.disable : t.enable}</MainToggle>
+      {preferences.enabled && <MainToggle type="button" theme={theme} $enabled disabled={testing} onClick={sendTest}>{testing ? t.testSending : t.test}</MainToggle>}
+    </ToggleRow>
     <ChoiceGrid>{choices.map((choice) => <Choice key={choice.key} theme={theme} $disabled={!preferences.enabled || saving}><input type="checkbox" checked={Boolean(preferences[choice.key])} disabled={!preferences.enabled || saving} onChange={(event) => persist({...preferences, [choice.key]: event.target.checked})}/><span><strong>{choice.title}</strong><span>{choice.description}</span></span></Choice>)}</ChoiceGrid>
     <Schedule theme={theme}><label>{t.day}<select disabled={!preferences.enabled || saving} value={preferences.reminderDay} onChange={(event) => persist({...preferences, reminderDay: Number(event.target.value)})}>{Array.from({length: 28}, (_, index) => index + 1).map((day) => <option key={day} value={day}>{day}</option>)}</select></label><label>{t.hour}<select disabled={!preferences.enabled || saving} value={preferences.reminderHour} onChange={(event) => persist({...preferences, reminderHour: Number(event.target.value)})}>{Array.from({length: 24}, (_, hour) => <option key={hour} value={hour}>{String(hour).padStart(2, '0')}:00</option>)}</select></label><Timezone theme={theme}>{preferences.timezone}</Timezone></Schedule>
     {message && <Status theme={theme} $error={message.error}>{message.text}</Status>}

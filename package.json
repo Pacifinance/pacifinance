@@ -39,7 +39,8 @@
     "test:integration": "vitest run src/__tests__/integration/",
     "test:di": "vitest run src/__tests__/services/ src/__tests__/integration/diCoverage.test.js",
     "roadmap": "node scripts/generateRoadmap.js",
-    "prebuild": "node scripts/generateRoadmap.js"
+    "sitemap": "node scripts/generateSitemap.js",
+    "prebuild": "node scripts/generateRoadmap.js && node scripts/generateSitemap.js"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

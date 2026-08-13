@@ -520,7 +520,14 @@
         },
         "deleteAccount": {
             "title": "Elimina account",
-            "info": "Sei sicuro di voler eliminare il tuo account? tutti i dati andranno persi.",
+            "info": "Stai per eliminare il tuo account. Prima di continuare, ecco cosa succede:",
+            "consequences": [
+                "Verrai disconnesso subito e l'account verrà disattivato.",
+                "Tutti i tuoi dati — transazioni, saldi, investimenti, obiettivi, categorie personalizzate, spese condivise, promemoria — verranno cancellati definitivamente dopo 30 giorni.",
+                "Se accedi di nuovo entro 30 giorni, la cancellazione viene annullata automaticamente.",
+                "Trascorsi i 30 giorni, la cancellazione è definitiva e irreversibile."
+            ],
+            "dataKept": "Fanno eccezione i prezzi che hai eventualmente verificato per la community: restano visibili agli altri utenti che li usano, senza alcun collegamento al tuo account.",
             "deleteButton": "Elimina Account",
             "confirmButton": "Si voglio eliminare il mio account",
             "cancelButton": "Annulla",
@@ -615,6 +622,7 @@
             "title": "Impostazioni",
             "light": "Modalità chiara/scura",
             "privacy": "Modalità privacy",
+            "privacySubtitle": "Nasconde gli importi in tutta l'app — nei grafici, i valori vengono randomizzati e i colori resi in bianco e nero per non essere intuibili.",
             "language": "Cambia Lingua",
             "languageSubtitle": "Cambia lingua interfaccia",
             "currency": "Valuta",
@@ -1789,22 +1797,20 @@
     "info": {
         "title": "Informazioni e FAQ",
         "title2": "Progetto Pacifinance",
-        "description": "Pacifinance è una piattaforma di finanza personale e di confronto che si pone come obiettivo principale la privacy e permettere la comprensione della propria situazione finanziaria.",
-        "description2": "Il confronto con altri utenti è possibile in modo anonimo e non sensibile.",
-        "description3": "I dati inseriti dall'utente sono anonimi, protetti e non accessibili da terzi.",
-        "description4": "Il progetto è no-profit ed è unicamente sostenuto da donazioni volontarie.",
-        "description5": "La piattaforma è in continuo sviluppo e nuove funzionalità verranno aggiunte in futuro.",
+        "description": "Pacifinance è una piattaforma di finanza personale gratuita e open source, pensata per aiutarti a capire la tua situazione finanziaria senza rinunciare alla privacy.",
+        "description2": "Il confronto con altri utenti è sempre anonimo: puoi vedere come ti posizioni senza mai esporre i tuoi dati.",
+        "description3": "I tuoi dati restano tuoi: protetti, non venduti e non condivisi con terzi.",
         "calltoaction": "Supporta il progetto",
         "roadmapLink": "Scopri la nostra Roadmap",
         "features": {
             "title": "Caratteristiche Principali",
             "security": {
                 "title": "Privacy e Sicurezza",
-                "description": "I tuoi dati sono completamente anonimi e protetti. Nessuna informazione personale viene mai condivisa."
+                "description": "I tuoi dati finanziari sono protetti e non vengono mai condivisi con terzi o usati a scopo pubblicitario."
             },
             "analytics": {
                 "title": "Analisi Avanzate",
-                "description": "Grafici e statistiche dettagliate per comprendere meglio le tue finanze personali."
+                "description": "Grafici e statistiche dettagliate per capire davvero dove vanno i tuoi soldi, mese dopo mese."
             },
             "responsive": {
                 "title": "Design Responsivo",
@@ -1812,47 +1818,61 @@
             },
             "customization": {
                 "title": "Personalizzazione",
-                "description": "Tema scuro/chiaro, modalità privacy e personalizzazione dell'interfaccia."
+                "description": "Tema scuro/chiaro, modalità privacy per nascondere gli importi e un'interfaccia che si adatta a te."
             },
             "insights": {
-                "title": "Insights Finanziari",
-                "description": "Confronti anonimi con altri utenti per migliorare la tua gestione finanziaria."
+                "title": "Confronto Anonimo",
+                "description": "Confrontati in modo anonimo con utenti simili a te per capire se stai andando nella direzione giusta."
             },
-            "support": {
-                "title": "Supporto Continuo",
-                "description": "Sviluppo costante di nuove funzionalità basate sui feedback degli utenti."
+            "openSource": {
+                "title": "Open Source",
+                "description": "Il codice è pubblico su GitHub: chiunque può verificarlo, contribuire o installarlo sui propri server."
             }
         },
-        "about": {
-            "title": "Il Nostro Impegno"
+        "vision": {
+            "title": "Dove stiamo andando",
+            "intro": "Pacifinance è in continuo sviluppo. Ecco alcune delle direzioni su cui stiamo lavorando — una direzione, non una promessa con una data.",
+            "readMore": "Leggi la visione completa",
+            "netWorth": {
+                "title": "Patrimonio completo",
+                "description": "Non solo conti e investimenti: anche immobili, veicoli e altri beni, per un quadro reale del tuo patrimonio."
+            },
+            "simulations": {
+                "title": "Simulazioni",
+                "description": "Prova le tue decisioni prima di prenderle: un aumento, una nuova spesa fissa, un debito in meno. Vedi l'impatto prima che sia reale."
+            },
+            "explainable": {
+                "title": "Salute finanziaria spiegabile",
+                "description": "Niente punteggi misteriosi: ogni indicatore mostra cosa significa, come è cambiato e perché."
+            },
+            "ai": {
+                "title": "IA opzionale, mai obbligatoria",
+                "description": "Pacifinance funziona al 100% senza intelligenza artificiale. Se un giorno vorrai attivarla, sarà una scelta esplicita, mai un requisito."
+            }
         },
         "faq": {
             "title": "Domande frequenti",
-            "question1": "Come posso aggiungere un'entrata o un'uscita?",
-            "answer1": "Per aggiungere un'entrata o un'uscita, vai nella sezione 'Inserimento dati' e seleziona il tipo di inserimento che vuoi fare.  Compila i campi richiesti e conferma l'inserimento. ",
-            "question2": "Come posso aggiornare il mio bilancio?",
-            "answer2": "Per aggiornare il tuo bilancio, vai nella sezione 'Inserimento dati' e seleziona la sezione 'Aggiorna Bilancio'.  Compila i campi richiesti e conferma l'aggiornamento. ",
-            "question3": "Come posso eliminare un'entrata o un'uscita?",
-            "answer3": "Per eliminare un'entrata o un'uscita, vai nella sezione 'Inserimento dati' e seleziona la sezione 'Aggiungi Entrate' o 'Aggiungi Uscite'.  Nella tabella delle entrate o delle uscite, seleziona l'entrata o l'uscita che vuoi eliminare e clicca su 'Elimina'. ",
-            "question4": "Come posso cambiare il mio id?",
-            "answer4": "Per cambiare il tuo id, vai nella sezione 'Il tuo Profilo' e seleziona la sezione 'Cambia ID'.  Compila i campi richiesti e conferma il cambio id. ",
-            "question5": "Come posso cambiare la mia password?",
-            "answer5": "Per cambiare la tua password, vai nella sezione 'Il tuo Profilo' e seleziona la sezione 'Cambia password'.  Compila i campi richiesti e conferma il cambio password. ",
-            "question6": "Come posso supportare il progetto?",
-            "answer6": "Il progetto è no-profit e viene sostenuto da donazioni volontarie. Se pensi che il servizio offerto sia utile e vuoi contribuire, puoi lasciare feedback e/o supportarci tramite donazione.",
-            "answer6CallToAction": "In ogni pagina in basso a destra troverai un pop-up per supportare il progetto. Grazie da parte di tutto il team!.",
-            "question7": "Come posso eliminare il mio account?",
-            "answer7": "Per eliminare il tuo account, vai nella sezione 'Il tuo Profilo' e seleziona la sezione 'Elimina account'.  Conferma l'eliminazione e il gioco è fatto. ",
-            "question8": "Posso installare Pacifinance come app?",
-            "answer8": "Sì! Pacifinance è una Progressive Web App (PWA) e può essere installata su qualsiasi dispositivo — iPhone, Android o desktop — direttamente dal browser. Vai nelle Impostazioni per le istruzioni passo-passo per il tuo dispositivo."
+            "question1": "I miei dati sono davvero privati?",
+            "answer1": "Sì. I tuoi dati finanziari non vengono mai venduti né condivisi con terzi. I confronti con altri utenti sono sempre anonimi e aggregati: nessuno può risalire ai tuoi dati specifici.",
+            "question2": "Posso scaricare tutti i miei dati?",
+            "answer2": "Sì, in qualsiasi momento. Dalle Impostazioni puoi esportare l'intero storico — transazioni, saldi, investimenti, obiettivi e molto altro — in formato CSV, Excel, JSON o PDF.",
+            "question3": "Cosa succede se elimino il mio account?",
+            "answer3": "L'account viene disattivato subito e i dati vengono cancellati definitivamente dopo 30 giorni; accedere di nuovo entro quel periodo annulla la cancellazione. Trovi tutti i dettagli nelle Impostazioni, prima di confermare.",
+            "question4": "Pacifinance è gratuito?",
+            "answer4": "Sì, ed è pensato per restare tale. Il progetto è no-profit e viene sostenuto da chi sceglie di fare una donazione volontaria.",
+            "question5": "È open source? Posso installarlo sui miei server?",
+            "answer5": "Sì. Il codice sorgente è pubblico su GitHub con licenza AGPL, e puoi installare Pacifinance sui tuoi server se preferisci avere il controllo completo dei tuoi dati.",
+            "question6": "Userete l'intelligenza artificiale con i miei dati finanziari?",
+            "answer6": "Non di default. Pacifinance funziona completamente senza IA. Se in futuro deciderai di attivarla, sarà una scelta esplicita e mai un requisito per usare l'app.",
+            "question7": "Posso installare Pacifinance come app sul telefono?",
+            "answer7": "Sì! Pacifinance è una Progressive Web App (PWA) e può essere installata su qualsiasi dispositivo — iPhone, Android o desktop — direttamente dal browser. Vai nelle Impostazioni per le istruzioni passo-passo per il tuo dispositivo."
         },
         "developers": {
-            "title": "Team",
-            "description": "Pacifinance è sviluppata e viene aggiornata e mantenuta da un team di sviluppatori appassionati di finanza e di sviluppo.",
-            "description2": "Il team di sviluppo è sempre disponibile a ricevere feedback e suggerimenti per migliorare la piattaforma. ",
-            "description3": "La piattaforma è stata creata con l'obiettivo di offrire un servizio utile e gratuito per gli utenti.",
-            "calltoaction": "Il costo del mantenimento dei server e del servizio è sostenuto dal team, se pensi che il servizio offerto sia utile e vuoi contribuire, puoi supportarci tramite donazione. ",
-            "contact": "Contattaci"
+            "title": "Sostieni il progetto",
+            "description": "Pacifinance è un progetto open source, sviluppato nel tempo libero e sostenuto solo da chi lo trova utile.",
+            "calltoaction": "Se pensi che Pacifinance sia utile, puoi sostenerne lo sviluppo con una donazione libera oppure lasciando una stella su GitHub.",
+            "coffeeButton": "Sostieni Pacifinance",
+            "githubButton": "Guarda il codice su GitHub"
         }
     },
     "pwaInstall": {
@@ -1921,6 +1941,48 @@
                 "content": "Per qualsiasi domanda riguardo questa privacy policy, contattaci tramite i canali ufficiali della piattaforma."
             },
             "lastUpdated": "Ultimo aggiornamento"
+        },
+        "terms": {
+            "title": "Termini di Servizio",
+            "acceptance": {
+                "title": "1. Accettazione dei Termini",
+                "content": "Utilizzando Pacifinance, accetti questi termini di servizio. Se non accetti questi termini, non utilizzare la piattaforma."
+            },
+            "useOfService": {
+                "title": "2. Uso del Servizio",
+                "content": "Pacifinance è fornito gratuitamente per uso personale. Non è consentito utilizzare la piattaforma per scopi commerciali non autorizzati."
+            },
+            "privacyAndData": {
+                "title": "3. Privacy e Dati",
+                "content": "I tuoi dati sono sempre anonimi e protetti. Consulta la nostra Privacy Policy per maggiori dettagli."
+            },
+            "liability": {
+                "title": "4. Limitazione di Responsabilità",
+                "content": "Pacifinance è fornito \"così com'è\". Non garantiamo che il servizio sia sempre disponibile o privo di errori."
+            },
+            "openSource": {
+                "title": "5. Open Source e Self-Hosting",
+                "content": "Il codice sorgente di Pacifinance è pubblico su GitHub sotto licenza AGPLv3: puoi ispezionarlo, contribuire o eseguire una tua istanza self-hosted. Questi termini di servizio si applicano solo al servizio ospitato su pacifinance.com. Se esegui una tua istanza self-hosted, sei tu il responsabile dei dati e degli utenti di quell'istanza."
+            }
+        },
+        "cookies": {
+            "title": "Politica sui Cookie",
+            "whatAreCookies": {
+                "title": "Cosa sono i Cookie",
+                "content": "I cookie sono piccoli file di testo che vengono memorizzati sul tuo dispositivo quando visiti un sito web. Vengono utilizzati per migliorare la tua esperienza di navigazione."
+            },
+            "howWeUse": {
+                "title": "Come Utilizziamo i Cookie",
+                "content": "Pacifinance utilizza solo cookie tecnici necessari per il funzionamento del sito e cookie analitici anonimi per migliorare il servizio.",
+                "items": [
+                    "Cookie tecnici necessari",
+                    "Cookie analitici (Umami Analytics)"
+                ]
+            },
+            "management": {
+                "title": "Gestione dei Cookie",
+                "content": "Puoi gestire le tue preferenze sui cookie utilizzando il banner dei cookie che appare alla prima visita del sito. Puoi modificare le tue preferenze in qualsiasi momento."
+            }
         }
     },
     "faq": {
@@ -3217,6 +3279,7 @@
         "unsupported": "Le notifiche push non sono supportate su questo browser.",
         "configurationError": "Le notifiche non sono ancora configurate sul server. Riprova più tardi.",
         "permissionError": "Impossibile attivare le notifiche. Controlla il permesso per le notifiche del browser per questo sito.",
+        "enableError": "Impossibile attivare le notifiche in questo momento. Riprova tra poco.",
         "disableError": "Impossibile disattivare le notifiche. Riprova.",
         "loadError": "Impossibile caricare le preferenze di notifica.",
         "saved": "Preferenze salvate.",
@@ -3232,7 +3295,11 @@
         "communityPrices": "Prezzi community",
         "communityPricesDescription": "Quando un prezzo inviato dalla community viene verificato per uno strumento che possiedi.",
         "day": "Giorno",
-        "hour": "Ora"
+        "hour": "Ora",
+        "test": "Invia notifica di prova",
+        "testSending": "Invio in corso...",
+        "testSent": "Notifica di prova inviata. Controlla il tuo dispositivo.",
+        "testError": "Impossibile inviare la notifica di prova. Riprova."
     },
     "cryptoGrouping": {
         "separate": "Bitcoin separato",

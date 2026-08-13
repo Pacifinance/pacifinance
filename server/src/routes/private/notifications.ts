@@ -1,5 +1,7 @@
 import express from "express"
 import db from "../../db/db"
+import webPush from "../../libs/webPush"
+import { buildContent } from "../../libs/notificationContent"
 
 const router = express.Router()
 
@@ -44,6 +46,29 @@ router.delete("/subscriptions", async (req, res) => {
     const deleted = await db.notifications.deleteSubscription(req.userId as string, req.body.endpoint)
     if (!deleted) return res.status(500).send()
     res.status(200).json(deleted)
+})
+
+/**
+ * Sends a one-off push to every device the user has subscribed on, so they
+ * (and we, while debugging) can confirm push delivery actually works without
+ * waiting for a real reminder to become due.
+ */
+router.post("/test", async (req, res) => {
+    const language = typeof req.body?.language === "string" && req.body.language.length <= 10 ? req.body.language : "en"
+    const subscriptionsByUser = await db.notifications.getSubscriptionsForUsers([req.userId as string])
+    const subscriptions = subscriptionsByUser.get(req.userId as string) || []
+    if (subscriptions.length === 0) return res.status(404).send()
+
+    const {title, body} = buildContent("test", language, {})
+    let sent = 0
+    for (const subscription of subscriptions) {
+        const delivered = await webPush.sendPush(
+            {userId: req.userId as string, endpoint: subscription.endpoint, p256dh: subscription.p256dh, auth: subscription.auth},
+            {title, body, url: "/settings", tag: "test"},
+        )
+        if (delivered) sent++
+    }
+    res.status(200).json({sent})
 })
 
 export default router

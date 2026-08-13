@@ -24,6 +24,7 @@ export interface NotificationService {
   savePreferences(preferences: NotificationPreferences): Promise<NotificationPreferences>;
   saveSubscription(subscription: BrowserPushSubscription): Promise<void>;
   deleteSubscription(endpoint: string): Promise<void>;
+  sendTestNotification(language: string): Promise<number>;
 }
 
 export const createNotificationService = (apiClient: AxiosInstance): NotificationService => ({
@@ -44,5 +45,9 @@ export const createNotificationService = (apiClient: AxiosInstance): Notificatio
   },
   async deleteSubscription(endpoint) {
     await apiClient.delete('/api/notifications/subscriptions', {data: {endpoint}});
+  },
+  async sendTestNotification(language) {
+    const response = await apiClient.post<{sent: number}>('/api/notifications/test', {language});
+    return response.data.sent;
   },
 });

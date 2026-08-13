@@ -18,7 +18,6 @@ import { translateTag } from "../data/tagTranslations";
 
 import Sidebar from "../sections/Sidebar";
 import ToggleModeButton from "../components/ToggleModeButton";
-import PrivacyToggleModeButton from "../components/PrivacyToggleModeButton";
 import PWAInstallGuide from "../components/PWAInstallGuide";
 import NotificationPreferences from "../sections/NotificationPreferences";
 import LanguageSelector from "../components/LanguageSelector";
@@ -36,6 +35,7 @@ import {
     MuiCustomTextField,
     MuiCustomIconButton,
     MuiCustomInputAdornment,
+    PrivacyToggleButton,
 } from "../styles/MyStyled";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -632,14 +632,17 @@ const SettingsPage = () => {
                             <SettingsRow
                                 theme={theme}
                                 label={translations.sidebar.settings.privacy}
-                                subtitle={language === "it" ? "Nascondi importi nei grafici" : "Hide amounts in charts"}
+                                subtitle={translations.sidebar.settings.privacySubtitle || (language === "it" ? "Nascondi importi nei grafici" : "Hide amounts in charts")}
                             >
-                                <PrivacyToggleModeButton
+                                <PrivacyToggleButton
                                     theme={theme}
-                                    mode={mode}
-                                    toggleHidden={toggleHidden}
-                                    isHidden={isHidden}
-                                />
+                                    $active={isHidden}
+                                    onClick={toggleHidden}
+                                    data-umami-event="setPrivacy-settings"
+                                    aria-label={translations.sidebar.settings.privacy}
+                                >
+                                    <FontAwesomeIcon key={isHidden ? 'hidden' : 'visible'} icon={isHidden ? faEyeSlash : faEye} />
+                                </PrivacyToggleButton>
                             </SettingsRow>
 
                             <SettingsDivider theme={theme} />
@@ -1731,14 +1734,35 @@ const SettingsPage = () => {
                                 >
                                     <p
                                         style={{
-                                            color: "#dc3545",
-                                            marginBottom: "1rem",
+                                            color: theme.textColor,
+                                            marginBottom: "0.5rem",
                                         }}
                                     >
                                         {
                                             translations.sidebar
                                                 .deleteAccount.info
                                         }
+                                    </p>
+                                    <ul
+                                        style={{
+                                            color: theme.textColor,
+                                            fontSize: "0.85rem",
+                                            paddingLeft: "1.2rem",
+                                            marginBottom: "0.75rem",
+                                        }}
+                                    >
+                                        {translations.sidebar.deleteAccount.consequences.map((item, index) => (
+                                            <li key={index} style={{ marginBottom: "0.35rem", lineHeight: 1.4 }}>{item}</li>
+                                        ))}
+                                    </ul>
+                                    <p
+                                        style={{
+                                            color: theme.textColor,
+                                            fontSize: "0.85rem",
+                                            marginBottom: "1rem",
+                                        }}
+                                    >
+                                        {translations.sidebar.deleteAccount.dataKept}
                                     </p>
                                     <div
                                         style={{ display: "flex", gap: "1rem" }}

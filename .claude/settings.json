@@ -70,7 +70,18 @@
       "Bash(xargs -n1 basename)",
       "Bash(grep -n \"styled.div\\\\`\" -A 15 /workspaces/pacifinance-serverless/src/sections/MarketPrices.tsx)",
       "Bash(grep -n \"background-color: \\\\${\\(props\\) => \\(props.theme.backgroundColor\\)};\" -B 5 /workspaces/pacifinance-serverless/src/styles/MyStyled.tsx)",
-      "Bash(grep -n \"background-color: \\\\${\\(props\\) => \\(props.theme.backgroundColor\\)}\" -B 6 /workspaces/pacifinance-serverless/src/styles/MyStyled.tsx)"
+      "Bash(grep -n \"background-color: \\\\${\\(props\\) => \\(props.theme.backgroundColor\\)}\" -B 6 /workspaces/pacifinance-serverless/src/styles/MyStyled.tsx)",
+      "Bash(npx eslint *)",
+      "Bash(npm test *)",
+      "Bash(xargs grep -l \"Dialog\")",
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('vercel.json','utf8'\\)\\); console.log\\('vercel.json OK'\\)\")",
+      "Bash(grep -n \"path=\\\\\"\\\\\\\\*\\\\\"\\\\|LanguageRedirect\" src/AppRouter.tsx)",
+      "Bash(npx vitest *)",
+      "Bash(where pg_dump)",
+      "Bash(where docker *)",
+      "Bash(docker version *)",
+      "Bash(docker info *)",
+      "Bash(tasklist)"
     ]
   }
 }

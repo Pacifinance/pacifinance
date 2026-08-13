@@ -76,4 +76,20 @@ async function deleteProfilesByUserId(userId: string) {
     return !error
 }
 
-export default { getProfiles, saveProfiles, deleteProfilesByUserId }
+/**
+ * All monthly community-benchmark profile-bucket snapshots stored for a
+ * user — used by the data-export endpoint. getProfiles above is scoped by
+ * month (for computing one month's cohorts); this is scoped by user, the
+ * same way deleteProfilesByUserId already reads this table.
+ */
+async function getSnapshotsByUserId(user_id: string) {
+    const {data, error} = await supabase.from("benchmark_profile_snapshots")
+        .select(`month_start, account_type, ${PROFILE_COLUMNS.join(", ")}`)
+        .eq("user_id", user_id)
+        .order("month_start", {ascending: false})
+    if (error) console.error("benchmarkSnapshots.getSnapshotsByUserId: failed to read snapshots", error)
+    if (error || !data) return []
+    return data
+}
+
+export default { getProfiles, saveProfiles, deleteProfilesByUserId, getSnapshotsByUserId }

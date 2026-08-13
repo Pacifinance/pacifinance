@@ -1,10 +1,6 @@
 
 import React from 'react';
-import { LocalizedLink } from './LocalizedLink';
 import { Select, MenuItem } from "@mui/material";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
-import { FaBullseye } from 'react-icons/fa';
 import { sortTagsByLanguage } from '../utils/sortingUtils';
 import { translateTag } from '../data/tagTranslations';
 import {
@@ -21,9 +17,6 @@ import {
     MuiCustomInputAdornment,
     EyeVisibility,
     EyeVisibilityOff,
-    SidebarToggleModeButton,
-    SidebarPrivacyToggleModeButton,
-    SettingsToggleButton,
 } from "../styles/MyStyled";
 
 const SidebarModals = ({
@@ -31,11 +24,6 @@ const SidebarModals = ({
     language,
     translations,
     isHidden,
-    userType,
-    mode,
-    toggleMode,
-    toggleHidden,
-    toggleLanguage,
     // Account Modal
     showAccountModal,
     userId,
@@ -86,13 +74,8 @@ const SidebarModals = ({
     showUsername,
     newUsername,
     showUpdateProfileSuccess,
-    showModalDeleteAccount,
-    handleDeleteAccount,
-    showSuccessDeleteAccount,
     showChangePWDSuccess,
     showChangePWDError,
-    showSettingsPopup,
-    handleShowModalDeleteAccount,
     // Close handlers
     handleCloseModal,
     handleCloseSecondaryModal,
@@ -838,89 +821,6 @@ const SidebarModals = ({
                 </MuiCustomDialog>
             )}
 
-            {showModalDeleteAccount && (
-                <MuiCustomDialog
-                    theme={theme}
-                    open={showModalDeleteAccount}
-                    onClose={handleCloseModal}
-                    aria-labelledby="alert-dialog-title"
-                    aria-describedby="alert-dialog-description"
-                >
-                    <MuiCustomDialogTitle id="alert-dialog-title">
-                        {
-                            translations.sidebar.deleteAccount
-                                .title
-                        }
-                    </MuiCustomDialogTitle>
-                    <MuiCustomDialogContent theme={theme}>
-                        <MuiCustomDialogContentText id="alert-dialog-description">
-                            {
-                                translations.sidebar
-                                    .deleteAccount.info
-                            }{" "}
-                            <br></br>
-                        </MuiCustomDialogContentText>
-                    </MuiCustomDialogContent>
-                    <MuiCustomDialogActions>
-                        <MuiCustomButton
-                            onClick={handleDeleteAccount}
-                            autoFocus
-                        >
-                            {
-                                translations.sidebar
-                                    .deleteAccount.confirmButton
-                            }
-                        </MuiCustomButton>
-                        <MuiCustomButton
-                            onClick={handleCloseModal}
-                            autoFocus
-                        >
-                            {
-                                translations.sidebar
-                                    .deleteAccount.cancelButton
-                            }
-                        </MuiCustomButton>
-                    </MuiCustomDialogActions>
-                </MuiCustomDialog>
-            )}
-
-            {showSuccessDeleteAccount && (
-                <MuiCustomDialog
-                    theme={theme}
-                    open={showSuccessDeleteAccount}
-                    onClose={handleCloseModalAndLogout}
-                    aria-labelledby="alert-dialog-title"
-                    aria-describedby="alert-dialog-description"
-                >
-                    <MuiCustomDialogTitle id="alert-dialog-title">
-                        {
-                            translations.sidebar.deleteAccount
-                                .successPopup.title
-                        }
-                    </MuiCustomDialogTitle>
-                    <MuiCustomDialogContent theme={theme}>
-                        <MuiCustomDialogContentText id="alert-dialog-description">
-                            {
-                                translations.sidebar
-                                    .deleteAccount.successPopup.message
-                            }{" "}
-                            <br></br>
-                        </MuiCustomDialogContentText>
-                    </MuiCustomDialogContent>
-                    <MuiCustomDialogActions>
-                        <MuiCustomButton
-                            onClick={handleCloseModalAndLogout}
-                            autoFocus
-                        >
-                            {
-                                translations.sidebar
-                                    .deleteAccount.successPopup.okButton
-                            }
-                        </MuiCustomButton>
-                    </MuiCustomDialogActions>
-                </MuiCustomDialog>
-            )}
-
             {showChangePWDSuccess && (
                 <MuiCustomDialog
                     theme={theme}
@@ -996,155 +896,6 @@ const SidebarModals = ({
                 </MuiCustomDialog>
             )}
 
-            {showSettingsPopup && (
-                <MuiCustomDialog
-                    theme={theme}
-                    open={showSettingsPopup}
-                    onClose={handleCloseModal}
-                    aria-labelledby="alert-dialog-title"
-                    aria-describedby="alert-dialog-description"
-                >
-                    <MuiCustomDialogTitle id="alert-dialog-title">
-                        {translations.sidebar.settings.title}
-                    </MuiCustomDialogTitle>
-                    <MuiCustomDialogContent theme={theme}>
-                        <div>
-                            <label>
-                                {
-                                    translations.sidebar.settings
-                                        .light
-                                }
-                            </label>
-                            <SettingsToggleButton
-                                title={
-                                    translations.sidebar.settings
-                                        .light
-                                }
-                                data-umami-event="setTheme-settings"
-                            >
-                                <SidebarToggleModeButton
-                                    theme={theme}
-                                    mode={mode}
-                                    toggleMode={toggleMode}
-                                />
-                            </SettingsToggleButton>
-                        </div>
-
-                        <div>
-                            <label>
-                                {
-                                    translations.sidebar.settings
-                                        .privacy
-                                }
-                            </label>
-                            <SettingsToggleButton
-                                title={
-                                    translations.sidebar.settings
-                                        .privacy
-                                }
-                                data-umami-event="setPrivacy-settings"
-                            >
-                                <SidebarPrivacyToggleModeButton
-                                    theme={theme}
-                                    mode={mode}
-                                    toggleHidden={toggleHidden}
-                                    isHidden={isHidden}
-                                />
-                            </SettingsToggleButton>
-                        </div>
-
-                        <div>
-                            <label>
-                                {
-                                    translations.sidebar.settings
-                                        .language
-                                }
-                            </label>
-                            <SettingsToggleButton
-                                data-umami-event="setLanguage-settings"
-                                onClick={toggleLanguage}
-                            >
-                                {language === "it" ? "IT" : "EN"}
-                            </SettingsToggleButton>
-                        </div>
-
-                        <div>
-                            <label>
-                                {language === 'it' ? 'Obiettivi e Limiti' : 'Goals & Limits'}
-                            </label>
-                            <LocalizedLink to="/goals-limits" style={{ textDecoration: 'none' }}>
-                                <SettingsToggleButton
-                                    data-umami-event="goalsSettings-settings"
-                                    title="goalsSettingsButton"
-                                    onClick={handleCloseModal}
-                                >
-                                    <FaBullseye />
-                                </SettingsToggleButton>
-                            </LocalizedLink>
-                        </div>
-
-                        <div
-                            style={{ color: "red", marginTop: "20px" }}
-                        >
-                            <label>
-                                {" "}
-                                {
-                                    translations.sidebar.settings
-                                        .deleteAccount
-                                }
-                            </label>
-                            <SettingsToggleButton
-                                data-umami-event="deleteAccount-settings"
-                                title="deleteAccountButton"
-                                onClick={() => {
-                                    if (
-                                        !["test", "demo"].includes(
-                                            userType,
-                                        )
-                                    ) {
-                                        handleShowModalDeleteAccount();
-                                    }
-                                }}
-                                style={{
-                                    backgroundColor: [
-                                        "test",
-                                        "demo",
-                                    ].includes(userType)
-                                        ? "#d3d3d3"
-                                        : "",
-                                    color: ["test", "demo"].includes(
-                                        userType,
-                                    )
-                                        ? "#a9a9a9"
-                                        : "",
-                                    cursor: ["test", "demo"].includes(
-                                        userType,
-                                    )
-                                        ? "not-allowed"
-                                        : "pointer",
-                                }}
-                                disabled={["test", "demo"].includes(
-                                    userType,
-                                )}
-                            >
-                                <FontAwesomeIcon icon={faTrashCan} />
-                            </SettingsToggleButton>
-                        </div>
-                    </MuiCustomDialogContent>
-                    <MuiCustomDialogActions>
-                        <MuiCustomButton
-                            data-umami-event="saveSettings"
-                            onClick={handleCloseModal}
-                            autoFocus
-                        >
-                            {
-                                translations.sidebar.settings
-                                    .saveSettings
-                            }
-                        </MuiCustomButton>
-                    </MuiCustomDialogActions>
-                </MuiCustomDialog>
-            )}
         </>
     );
 };

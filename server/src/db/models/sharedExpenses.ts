@@ -276,6 +276,36 @@ async function deleteReceivable(user_id: string, receivable_id: number) {
     return {deletedCount: count ?? 0}
 }
 
+type ReimbursementRow = {
+    id: number
+    receivable_id: number
+    expense_id: number
+    amount: number
+    created_at: string
+}
+
+/**
+ * Lists a user's shared-expense reimbursement links (settlements tied to a
+ * receivable), most recent first — used by the data-export endpoint.
+ * getReceivablesByUserId already carries the aggregated settledAmount/status
+ * a receivable needs for display; this is the raw per-settlement ledger.
+ */
+async function getReimbursementsByUserId(user_id: string) {
+    const {data, error} = await supabase.from("shared_expense_reimbursements")
+        .select("id, receivable_id, expense_id, amount, created_at")
+        .eq("user_id", user_id)
+        .order("created_at", {ascending: false})
+    if (error) console.error("sharedExpenses.getReimbursementsByUserId: failed to read reimbursements", error)
+    if (error || !data) return []
+    return (data as unknown as ReimbursementRow[]).map((row) => ({
+        id: row.id,
+        receivableId: row.receivable_id,
+        expenseId: row.expense_id,
+        amount: row.amount,
+        createdAt: row.created_at,
+    }))
+}
+
 export default {
     getReceivablesByUserId,
     insertReceivable,
@@ -285,4 +315,5 @@ export default {
     insertImportedReimbursements,
     linkExistingExpense,
     linkExistingReimbursement,
+    getReimbursementsByUserId,
 }

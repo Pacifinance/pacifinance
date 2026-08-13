@@ -11,62 +11,18 @@ import {
     FaArrowUp,
     FaArrowDown
 } from 'react-icons/fa';
-import { 
-    BsArrowUpRight, 
-    BsArrowDownLeft, 
+import {
+    BsArrowUpRight,
+    BsArrowDownLeft,
     BsGraphUp,
     BsInfoCircle
 } from 'react-icons/bs';
 import { MdInsights, MdTrendingUp } from 'react-icons/md';
 import { getExpensesArray, getIncomesArray } from '../utils/userDataSelectors';
 import { addCurrency } from '../utils/money';
+import PortfolioSection from '../components/PortfolioSection';
 
 // Styled Components
-const InsightsContainer = styled.div`
-  background: ${props => props.theme.mode === 'dark' 
-    ? `linear-gradient(135deg, ${props.theme.secondaryColor}10 0%, ${props.theme.backgroundColor} 100%)`
-    : `linear-gradient(135deg, ${props.theme.secondaryColor}08 0%, rgba(255,255,255,0.9) 100%)`};
-  border-radius: 16px;
-  padding: 1.5rem;
-  margin: 1.25rem 0;
-  border: 1px solid ${props => `${props.theme.secondaryColor}30`};
-  backdrop-filter: blur(10px);
-  position: relative;
-  overflow: hidden;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, ${props => props.theme.secondaryColor}, ${props => props.theme.secondaryColor}80);
-  }
-
-  @media (max-width: 768px) {
-    padding: 1rem;
-    margin: 0.75rem 0;
-  }
-`;
-
-const InsightsHeader = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 1.5rem;
-  
-  h3 {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: ${props => props.theme.mode === 'dark' ? '#ffffff' : '#1a1a1a'};
-    margin: 0;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-`;
-
 const InsightsGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -231,7 +187,7 @@ const generateInsights = (userData, language, isHidden, translations, currencySy
   return insights.slice(0, 4); // Show at most 4 insights
 };
 
-const FinancialInsights = ({ theme, userData, isHidden = false }) => {
+const FinancialInsights = ({ theme, userData, isHidden = false, collapsed = false, onToggleCollapsed }) => {
   const { language, translations } = useContext(LanguageContext);
   const { currencySymbol, formatAmount } = useContext(CurrencyContext);
   const { isMobileScreen } = useContext(MediaQueryContext);
@@ -251,26 +207,28 @@ const FinancialInsights = ({ theme, userData, isHidden = false }) => {
   const displayedInsights = showAll ? insights : insights.slice(0, isMobileScreen ? 2 : 3);
 
   return (
-    <InsightsContainer theme={theme}>
-      <InsightsHeader theme={theme}>
-        <FaBrain style={{ color: theme.secondaryColor, fontSize: '1.4rem' }} />
-        <h3>
-          🧠 {translations.graphs.insights.title}
-        </h3>
-      </InsightsHeader>
-      
+    <PortfolioSection
+      theme={theme}
+      icon={FaBrain}
+      title={translations.graphs.insights.title}
+      accent={theme.secondaryColor}
+      collapsed={collapsed}
+      onToggleCollapsed={onToggleCollapsed}
+      expandLabel={translations.dashboard.expandSection}
+      collapseLabel={translations.dashboard.collapseSection}
+    >
       <InsightsGrid>
         {displayedInsights.map((insight, index) => (
-          <InsightCard 
-            key={index} 
-            theme={theme} 
+          <InsightCard
+            key={index}
+            theme={theme}
             insightColor={insight.color}
           >
             <InsightHeader insightColor={insight.color}>
               <insight.icon className="insight-icon" />
               <span className="insight-type">{insight.type}</span>
             </InsightHeader>
-            
+
             <InsightContent theme={theme} insightColor={insight.color}>
               <div className="insight-title">{insight.title}</div>
               <div className="insight-description">{insight.description}</div>
@@ -284,19 +242,19 @@ const FinancialInsights = ({ theme, userData, isHidden = false }) => {
           </InsightCard>
         ))}
       </InsightsGrid>
-      
+
       {insights.length > (isMobileScreen ? 2 : 3) && (
-        <ViewMoreButton 
+        <ViewMoreButton
           theme={theme}
           onClick={() => setShowAll(!showAll)}
         >
-          {showAll 
+          {showAll
             ? (language === 'it' ? 'Mostra meno' : 'Show less')
             : (language === 'it' ? `Mostra tutti (${insights.length})` : `Show all (${insights.length})`)
           }
         </ViewMoreButton>
       )}
-    </InsightsContainer>
+    </PortfolioSection>
   );
 };
 

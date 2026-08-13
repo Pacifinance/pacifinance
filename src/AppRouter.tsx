@@ -61,6 +61,7 @@ const CookiePolicyPage = React.lazy(() => import("./pages/CookiePolicyPage"));
 const DisclaimerPage = React.lazy(() => import("./pages/DisclaimerPage"));
 const RoadmapPage = React.lazy(() => import("./pages/RoadmapPage"));
 const ContributePage = React.lazy(() => import("./pages/ContributePage"));
+const NotFoundPage = React.lazy(() => import("./pages/NotFoundPage"));
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -341,8 +342,9 @@ const LanguageRoutes = () => {
         }
       />
 
-      {/* Catch all route within language */}
-      <Route path="*" element={<Navigate to="" replace />} />
+      {/* Catch all route within language — a real 404 page, not a silent
+          redirect to home (see NotFoundPage.tsx for why this changed). */}
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
 };

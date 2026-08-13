@@ -10,6 +10,52 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 ## [Unreleased]
 
 ### Added
+- Info page (`/info`): rewritten. Replaced the six UI-tutorial FAQ entries
+  ("how do I add an income", "how do I change my password"...) with actual
+  frequently-asked questions (privacy, data export, account deletion,
+  pricing, self-hosting, AI use); added a "Where we're headed" section
+  summarizing `docs/PRODUCT_VISION.md` (generic assets/complete net worth,
+  scenario simulations, explainable financial health, optional/local-first
+  AI) with links to the Roadmap and the full vision doc on GitHub, since
+  that material previously wasn't surfaced anywhere in the app; replaced the
+  generic "Continuous Support" feature card with an "Open Source" one and
+  added a GitHub link next to the donation button; dropped the redundant
+  "Our Commitment" section (four paragraphs restating things already said
+  elsewhere on the page); fixed the hardcoded English "Support Pacifinance"
+  button label. Also fixed the page's background, which had its own opaque
+  gradient silently overriding the shared background every other page uses
+  — Info was the one page in the app that visibly looked different.
+- Dashboard: Income/Outflow, Balance Analysis, Financial Insights and Goal
+  Tracker sections are now collapsible (Liquidity/Emergency Fund/Investments
+  already were), with the open/closed state remembered per section across
+  visits. Any section with no saved preference yet starts collapsed on
+  mobile and expanded on desktop — the mobile dashboard previously forced
+  everyone to scroll past every large section fully open on every visit.
+  All six sections now share the exact same collapsed/expanded card chrome
+  (`PortfolioSection`) instead of four different ad hoc treatments — Balance
+  Analysis previously had no border at all when collapsed, and Financial
+  Insights was noticeably wider than every other section.
+- Account deletion confirmation now spells out, before you commit to it: what
+  gets deleted, that it only actually happens after a 30-day grace period,
+  that logging back in during those 30 days cancels it, and that any
+  community prices you've verified stay visible to other users (previously
+  a single generic sentence, with that detail only shown *after* confirming).
+- `server/src/libs/userDataDomains.ts`: a single registry of every
+  user-owned data domain, now driving the "Export Data" endpoint
+  (`POST /api/user/alldata`), which previously only ever returned balances
+  and transactions (truncated at that — even those were missing several
+  columns) while silently omitting the other 20 domains (investments,
+  custom categories, liquidity sub-accounts, goals, recurring transactions,
+  shared expenses, notification preferences, roadmap votes...). Two new
+  tests (`userDataDomains.test.ts`, `userDataCascadeGuard.test.ts`) fail if
+  a future data domain is ever added to the database without being either
+  registered for export or explicitly excluded with a reason, and if any
+  user-owned table's foreign key isn't `ON DELETE CASCADE`. Documented as
+  a standing rule in `AGENTS.md` (rule 12) and `CONTRIBUTING.md` (rule 12).
+- Notification settings: a "Send test notification" button (shown once
+  reminders are enabled) that triggers an immediate push through the same
+  delivery path as real reminders, for the user to confirm push actually
+  works on their device.
 - `AI_POLICY.md`: AI-assisted contributions are welcome, but must be
   disclosed, reviewed, tested, and aligned with the project's vision before
   a PR — linked from `CONTRIBUTING.md` and a checklist item in the PR
@@ -24,6 +70,32 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   nothing to show a visitor trying the demo. Documented in `AGENTS.md`
   (rule 5) as a standing requirement: new demo-reachable features need
   real seed data, not just a structurally-correct empty state.
+- Custom 404 page: unknown routes previously redirected silently to the
+  homepage, giving no feedback that the URL was wrong. Now shows a real
+  not-found page with a CTA back to the dashboard (if logged in) or the
+  homepage, and is excluded from indexing.
+- Sticky "Get Started" call-to-action on mobile landing page, so the
+  primary CTA stays reachable without scrolling back to the hero on small
+  screens.
+- Security headers: Content-Security-Policy, X-Frame-Options,
+  X-Content-Type-Options, Referrer-Policy, Permissions-Policy and
+  Strict-Transport-Security, set via `vercel.json` for the app shell/static
+  pages and via Express middleware for the JSON API.
+- FAQ page: `FAQPage` JSON-LD structured data, so search engines can show
+  the questions as rich results.
+- `scripts/generateSitemap.js`: `public/sitemap.xml` is now generated at
+  build time from the real public route list (`npm run prebuild`), instead
+  of being a hand-maintained file that had drifted — it listed auth-gated
+  routes a crawler could never reach (`/dashboard`, `/comparison`) while
+  missing real public pages added since, and its `<lastmod>` was frozen at
+  a single past date.
+- Dark mode now persists across visits (`localStorage`) and, absent a saved
+  choice, follows the OS `prefers-color-scheme` on first load instead of
+  always defaulting to dark.
+- Terms of Service and Cookie Policy pages are now fully translated in all
+  six supported languages via the standard i18n system, matching how the
+  Privacy Policy already worked — previously both fell back to English for
+  four of the six languages (es/de/fr/pt-BR).
 
 ### Changed
 - Consolidated `CLAUDE.md`, `AGENTS.md` and `.github/copilot-instructions.md`
@@ -52,6 +124,36 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   shipped long ago).
 
 ### Fixed
+- `supabase/schema.sql` had silently drifted since 6 August: it still
+  created a `public.expenses` table, but a same-day migration
+  (`use-transactions-domain.sql`) had renamed it to `transactions` — a fresh
+  self-hosted deploy applying `schema.sql` per README.md/CONTRIBUTING.md
+  would get a database the server code couldn't actually use. Also missing
+  entirely: `roadmap_votes`, `notification_preferences`, `push_subscriptions`,
+  `instrument_historical_prices` (community prices) and several investment
+  tables, none of which had ever made it in. Regenerated from a live
+  `supabase db dump --linked --schema public` and re-added the one thing the
+  dump can't export, the `rls_auto_enable` event trigger (a database-level
+  object, created directly against the live project outside any migration,
+  that auto-enables RLS on future tables). `AGENTS.md` (rule 11) now
+  requires every schema-changing migration to update `schema.sql` in the
+  same PR so this can't happen again. Also fixed
+  `userDataCascadeGuard.test.ts`'s FK scanner, which only recognized the
+  old hand-written `column uuid ... references auth.users(id)` style and
+  had gone completely blind to `schema.sql` once it became a raw
+  `pg_dump` (which always expresses foreign keys as separate `ALTER TABLE
+  ... FOREIGN KEY` constraints) — it now recognizes both styles, so the
+  guard is actually checking `schema.sql` again instead of silently passing
+  on an empty match set.
+- Gamification badges (Savings streaks, First Save, Big/Super Saver, Budget
+  Master, Frugal Month, Spending Down) compared income against
+  `outflowsArray`, which sums *every* outflow transaction including money
+  moved into investments and transfers between the user's own accounts (see
+  `buildMonthlyArrays`). A user who invested a large share of their income,
+  or transferred money between accounts, could be told they "hadn't saved"
+  that month even though they clearly had. Switched all of these to
+  `expensesArray` (true discretionary/necessary spending only), with a
+  fallback to `outflowsArray` for callers that haven't computed it.
 - Public roadmap: the "Two-Factor Authentication" item showed as completed
   because `scripts/generateRoadmap.js`'s fallback text-match
   (`todoMatch: "2FA"`) landed on an unrelated, already-checked `todo.md`
@@ -69,6 +171,54 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - Landing hero: the desktop artwork was cropping off the tree and moon
   because it was center-positioned inside a panel narrower than the source
   image — repositioned so the full subject is visible instead.
+- Account deletion could fail for an admin account that had ever
+  approved/rejected another user's community price submission:
+  `instrument_historical_prices.verified_by` referenced `auth.users(id)`
+  without `ON DELETE CASCADE` (every other user reference in the schema
+  has it), so deleting that admin's Supabase Auth user hit a foreign-key
+  violation. Fixed via a migration setting it to `ON DELETE SET NULL`
+  (it records who reviewed a submission, not who owns it — `submitted_by`,
+  already cascading, is the real owner reference).
+- Deleting an account used to cascade-delete every community price the user
+  had ever submitted, including already-verified ones other users' portfolios
+  actively rely on (`getVerifiedCommunityPricesForInstrument`) — a
+  contributor closing their account shouldn't take that shared data down
+  with them. `instrument_historical_prices.submitted_by` is now nullable and
+  `ON DELETE SET NULL` instead of `CASCADE`; the application already treated
+  it as nullable everywhere (provider-sourced rows already store `null`
+  there), so this was a schema-only fix.
+- Mobile header: the privacy toggle rendered in alarming red with a red-tinted
+  background whenever privacy mode was on — every time, since it's a
+  deliberate protective feature many users leave on by default, not an error
+  state. Restyled to the brand accent color with a subtle pop animation on
+  toggle instead.
+- Notification settings: enabling reminders always blamed a failure on
+  browser notification permission, even when the actual cause was
+  something else (a subscribe/network failure), which was misleading when
+  the browser had already granted permission. Now only a genuine
+  permission denial shows that message; other failures show a distinct,
+  actionable one.
+- Desktop sidebar's and Settings page's privacy (eye) toggles were leftover,
+  differently-styled buttons (plain dark/light square, no animation) instead
+  of the same brand-accent button with the pop animation already used in the
+  mobile header. All three now render the same shared `PrivacyToggleButton`.
+- Settings page's privacy-toggle description said only "hide amounts in
+  charts", understating what the mode actually does: it hides values
+  everywhere in the app, and in charts it also randomizes percentages/values
+  and desaturates colors to grayscale so the hidden data can't be guessed
+  from shape or hue. Rewritten to say so, in all six languages (previously
+  hardcoded it/en only).
+- Removed a fully unreachable legacy "Settings" popup in `SidebarModals.tsx`
+  (its trigger button no longer existed anywhere in the UI) together with
+  the duplicate delete-account confirmation flow it was the only way to
+  reach — account deletion has been fully served by the redesigned,
+  itemized-consequences flow on the Settings page for a while, so this was
+  a second, unreachable copy of the same feature. Also deleted two
+  components this left orphaned with zero remaining callers
+  (`SidebarMobile`, `PrivacyToggleModeButton`) and their now-dead styled
+  helpers, and dropped a dozen imports in `Sidebar.tsx` and
+  `SidebarModals.tsx` left over from before this code was split into its
+  own file.
 
 ## [0.10.0] - 2026-08-11
 

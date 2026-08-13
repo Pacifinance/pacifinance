@@ -29,10 +29,58 @@ import {
     ModernFeatureTitle,
     ModernFeatureText,
 } from "../styles/ModernInfoStyled";
-import { BsShield, BsBarChart, BsPhone, BsGear, BsHeart, BsLightbulb } from 'react-icons/bs';
+import { BsShield, BsBarChart, BsPhone, BsGear, BsGithub, BsGraphUpArrow } from 'react-icons/bs';
+import { MdAccountBalance } from 'react-icons/md';
+import { FaBrain, FaRobot } from 'react-icons/fa';
+import { GITHUB_REPO_URL, GITHUB_VISION_URL } from '../data/externalLinks';
 import PWAInstallGuide from '../components/PWAInstallGuide';
 
 // The styled components now live in ModernInfoStyled.jsx
+
+// Small pill-shaped CTA link, reused for the roadmap/GitHub links.
+// `light` picks the white-on-transparent style that reads well against
+// ModernSupportSection's green gradient; without it, it uses theme-aware
+// colors so it also works on the plain (non-green) section cards.
+const PillLink = ({ theme, light = false, href, to, children, umamiEvent }) => {
+    const style = light
+        ? {
+            background: 'rgba(255, 255, 255, 0.12)',
+            border: '1px solid rgba(255, 255, 255, 0.3)',
+            color: 'rgba(255, 255, 255, 0.9)',
+            backdropFilter: 'blur(4px)',
+        }
+        : {
+            background: theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.04)',
+            border: `1px solid ${theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.12)'}`,
+            color: theme.textColor,
+        };
+    const baseStyle = {
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '0.5rem',
+        padding: '0.5rem 1.25rem',
+        borderRadius: '2rem',
+        fontWeight: 500,
+        fontSize: '0.85rem',
+        transition: 'all 0.3s ease',
+        letterSpacing: '0.02em',
+        textDecoration: 'none',
+        ...style,
+    };
+    if (to) {
+        return (
+            <LocalizedLink to={to} style={{ textDecoration: 'none', display: 'inline-block' }} data-umami-event={umamiEvent}>
+                <div style={baseStyle}>{children}</div>
+            </LocalizedLink>
+        );
+    }
+    return (
+        <a href={href} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', display: 'inline-block' }} data-umami-event={umamiEvent}>
+            <div style={baseStyle}>{children}</div>
+        </a>
+    );
+};
 
 function Info({ theme }) {
     const { translations } = useContext(LanguageContext);
@@ -47,7 +95,7 @@ function Info({ theme }) {
     const getTranslation = (path) => {
         const keys = path.split('.');
         let result = translations;
-        
+
         for (const key of keys) {
             if (result && typeof result === 'object' && result[key] !== undefined) {
                 result = result[key];
@@ -56,17 +104,17 @@ function Info({ theme }) {
                 return path; // Fall back to the original path
             }
         }
-        
+
         return result || path;
     };
 
     // FAQ data with safe translation handling
-    const faqData = Array.from({ length: 8 }, (_, index) => {
+    const faqData = Array.from({ length: 7 }, (_, index) => {
         const questionKey = `info.faq.question${index + 1}`;
         const answerKey = `info.faq.answer${index + 1}`;
         const question = getTranslation(questionKey);
         const answer = getTranslation(answerKey);
-        
+
         return {
             question,
             answer
@@ -100,16 +148,45 @@ function Info({ theme }) {
             delay: '0.4s'
         },
         {
-            icon: BsLightbulb,
+            icon: BsGraphUpArrow,
             title: getTranslation('info.features.insights.title'),
             description: getTranslation('info.features.insights.description'),
             delay: '0.5s'
         },
         {
-            icon: BsHeart,
-            title: getTranslation('info.features.support.title'),
-            description: getTranslation('info.features.support.description'),
+            icon: BsGithub,
+            title: getTranslation('info.features.openSource.title'),
+            description: getTranslation('info.features.openSource.description'),
             delay: '0.6s'
+        }
+    ];
+
+    // What's next — condensed from docs/PRODUCT_VISION.md, kept honest and
+    // non-committal ("direction, not a promise" — see that doc's own framing).
+    const visionItems = [
+        {
+            icon: MdAccountBalance,
+            title: getTranslation('info.vision.netWorth.title'),
+            description: getTranslation('info.vision.netWorth.description'),
+            delay: '0.1s'
+        },
+        {
+            icon: BsGraphUpArrow,
+            title: getTranslation('info.vision.simulations.title'),
+            description: getTranslation('info.vision.simulations.description'),
+            delay: '0.2s'
+        },
+        {
+            icon: FaBrain,
+            title: getTranslation('info.vision.explainable.title'),
+            description: getTranslation('info.vision.explainable.description'),
+            delay: '0.3s'
+        },
+        {
+            icon: FaRobot,
+            title: getTranslation('info.vision.ai.title'),
+            description: getTranslation('info.vision.ai.description'),
+            delay: '0.4s'
         }
     ];
 
@@ -135,7 +212,7 @@ function Info({ theme }) {
                         <ModernSectionTitle theme={theme}>
                             {getTranslation('info.features.title') || 'Caratteristiche Principali'}
                         </ModernSectionTitle>
-                        
+
                         <ModernSectionText theme={theme}>
                             {getTranslation('info.description2')}
                         </ModernSectionText>
@@ -145,9 +222,9 @@ function Info({ theme }) {
 
                         <ModernFeaturesGrid>
                             {features.map((feature, index) => (
-                                <ModernFeatureCard 
-                                    key={index} 
-                                    theme={theme} 
+                                <ModernFeatureCard
+                                    key={index}
+                                    theme={theme}
                                     delay={feature.delay}
                                 >
                                     <ModernFeatureIcon>
@@ -165,111 +242,93 @@ function Info({ theme }) {
                     </ModernSectionCard>
                 </ModernInfoSection>
 
+                {/* Sezione Visione: dove sta andando il progetto */}
+                <ModernInfoSection delay="0.3s">
+                    <ModernSectionCard theme={theme}>
+                        <ModernSectionTitle theme={theme}>
+                            {getTranslation('info.vision.title')}
+                        </ModernSectionTitle>
+
+                        <ModernSectionText theme={theme}>
+                            {getTranslation('info.vision.intro')}
+                        </ModernSectionText>
+
+                        <ModernFeaturesGrid>
+                            {visionItems.map((item, index) => (
+                                <ModernFeatureCard
+                                    key={index}
+                                    theme={theme}
+                                    delay={item.delay}
+                                >
+                                    <ModernFeatureIcon>
+                                        <item.icon />
+                                    </ModernFeatureIcon>
+                                    <ModernFeatureTitle theme={theme}>
+                                        {item.title}
+                                    </ModernFeatureTitle>
+                                    <ModernFeatureText theme={theme}>
+                                        {item.description}
+                                    </ModernFeatureText>
+                                </ModernFeatureCard>
+                            ))}
+                        </ModernFeaturesGrid>
+
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', justifyContent: 'center', marginTop: '2rem' }}>
+                            <PillLink theme={theme} to="/roadmap" umamiEvent="info-roadmap-link-clicked">
+                                🗺️ {getTranslation('info.roadmapLink')}
+                            </PillLink>
+                            <PillLink theme={theme} href={GITHUB_VISION_URL} umamiEvent="info-vision-link-clicked">
+                                📖 {getTranslation('info.vision.readMore')}
+                            </PillLink>
+                        </div>
+                    </ModernSectionCard>
+                </ModernInfoSection>
+
                 {/* Sezione Supporta il Progetto */}
                 <ModernInfoSection delay="0.4s">
                     <ModernSupportSection>
                         <ModernSupportTitle>
                             {getTranslation('info.developers.title')}
                         </ModernSupportTitle>
-                        
+
                         <ModernSupportText>
                             {getTranslation('info.developers.description')}
                         </ModernSupportText>
 
-                        {/* Roadmap CTA - subtle, between text blocks */}
-                        <div style={{
-                            position: 'relative',
-                            zIndex: 1,
-                            margin: '0.5rem 0 1.5rem',
-                        }}>
-                            <LocalizedLink
-                                to="/roadmap"
-                                style={{ textDecoration: 'none', display: 'inline-block' }}
-                                data-umami-event="info-roadmap-link-clicked"
-                            >
-                                <div style={{
-                                    display: 'inline-flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    gap: '0.5rem',
-                                    padding: '0.5rem 1.25rem',
-                                    borderRadius: '2rem',
-                                    background: 'rgba(255, 255, 255, 0.12)',
-                                    border: '1px solid rgba(255, 255, 255, 0.3)',
-                                    color: 'rgba(255, 255, 255, 0.9)',
-                                    fontWeight: '500',
-                                    fontSize: '0.85rem',
-                                    transition: 'all 0.3s ease',
-                                    backdropFilter: 'blur(4px)',
-                                    letterSpacing: '0.02em',
-                                }}>
-                                    🗺️ {getTranslation('info.roadmapLink')}
-                                    <span style={{ fontSize: '0.75rem', opacity: 0.7 }}>→</span>
-                                </div>
-                            </LocalizedLink>
-                        </div>
-
-                        {/* Divider */}
-                        <div style={{
-                            width: '60px',
-                            height: '2px',
-                            background: 'rgba(255, 255, 255, 0.25)',
-                            margin: '0 auto 1.5rem',
-                            borderRadius: '1px',
-                            position: 'relative',
-                            zIndex: 1,
-                        }} />
-
                         <ModernSupportText style={{ marginBottom: '1.5rem' }}>
                             {getTranslation('info.developers.calltoaction')}
                         </ModernSupportText>
-                        
-                        <a
-                            href="https://buymeacoffee.com/pacifinance"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            style={{ textDecoration: 'none' }}
-                        >
-                            <ModernCoffeeButton>
-                                <div style={{ 
-                                    display: 'flex', 
-                                    alignItems: 'center', 
-                                    gap: '0.5rem',
-                                    color: 'white',
-                                    fontWeight: 'bold',
-                                    fontSize: '1.1rem'
-                                }}>
-                                    ☕ Support Pacifinance
-                                </div>
-                            </ModernCoffeeButton>
-                        </a>
+
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'center', alignItems: 'center', position: 'relative', zIndex: 1 }}>
+                            <a
+                                href="https://buymeacoffee.com/pacifinance"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{ textDecoration: 'none' }}
+                                data-umami-event="info-coffee-link-clicked"
+                            >
+                                <ModernCoffeeButton>
+                                    <div style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '0.5rem',
+                                        color: 'white',
+                                        fontWeight: 'bold',
+                                        fontSize: '1.1rem'
+                                    }}>
+                                        ☕ {getTranslation('info.developers.coffeeButton')}
+                                    </div>
+                                </ModernCoffeeButton>
+                            </a>
+                            <PillLink theme={theme} light href={GITHUB_REPO_URL} umamiEvent="info-github-link-clicked">
+                                ⭐ {getTranslation('info.developers.githubButton')}
+                            </PillLink>
+                        </div>
                     </ModernSupportSection>
                 </ModernInfoSection>
 
-                {/* Sezione Informazioni Aggiuntive */}
-                <ModernInfoSection delay="0.6s">
-                    <ModernSectionCard theme={theme}>
-                        <ModernSectionTitle theme={theme}>
-                            {getTranslation('info.about.title') || 'Maggiori Informazioni'}
-                        </ModernSectionTitle>
-                        
-                        <ModernSectionText theme={theme}>
-                            {getTranslation('info.description4')}
-                        </ModernSectionText>
-                        <ModernSectionText theme={theme}>
-                            {getTranslation('info.description5')}
-                        </ModernSectionText>
-                        <ModernSectionText theme={theme}>
-                            {getTranslation('info.developers.description2')}
-                        </ModernSectionText>
-                        <ModernSectionText theme={theme}>
-                            {getTranslation('info.developers.description3')}
-                        </ModernSectionText>
-                    </ModernSectionCard>
-                </ModernInfoSection>
-
                 {/* Sezione FAQ */}
-                <ModernInfoSection delay="0.8s">
+                <ModernInfoSection delay="0.6s">
                     <ModernSectionCard theme={theme}>
                         <ModernSectionTitle theme={theme}>
                             {getTranslation('info.faq.title')}
@@ -288,16 +347,11 @@ function Info({ theme }) {
                                     </ModernFAQQuestion>
 
                                     <ModernFAQAnswer $isOpen={openFAQ === index}>
-                                        <ModernFAQAnswerContent 
+                                        <ModernFAQAnswerContent
                                             $isOpen={openFAQ === index}
                                             theme={theme}
                                         >
                                             {faq.answer}
-                                            {index === 5 && openFAQ === index && (
-                                                <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid rgba(7, 145, 100, 0.2)' }}>
-                                                    {getTranslation('info.faq.answer6CallToAction')}
-                                                </div>
-                                            )}
                                         </ModernFAQAnswerContent>
                                     </ModernFAQAnswer>
                                 </ModernFAQItem>
@@ -307,7 +361,7 @@ function Info({ theme }) {
                 </ModernInfoSection>
 
                 {/* Sezione Installa come App (PWA) */}
-                <ModernInfoSection delay="1.0s">
+                <ModernInfoSection delay="0.8s">
                     <ModernSectionCard theme={theme}>
                         <ModernSectionTitle theme={theme}>
                             <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>

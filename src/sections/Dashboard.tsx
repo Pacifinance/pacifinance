@@ -9,7 +9,7 @@ import { Pie } from 'recharts/lib/polar/Pie';
 import { Cell } from 'recharts/lib/component/Cell';
 import { ResponsiveContainer } from 'recharts/lib/component/ResponsiveContainer';
 import { Tooltip } from 'recharts/lib/component/Tooltip';
-import { 
+import {
     BsGraphUpArrow,
     BsWallet2,
     BsArrowUpRight,
@@ -47,12 +47,10 @@ import {
 import {
     ModernDashboardHeader,
     ModernBalanceOverview,
-    ModernChartsSection,
     ModernChartContainer,
     FloatingElement,
     ModernMetricCard,
     ModernDashboardTitle,
-    ModernIncomeExpenseSection,
     ModernIncomeExpenseCard,
     MainDashboardLayout,
     DashboardContent,
@@ -108,6 +106,13 @@ const Dashboard = ({ theme, userData, isHidden }) => {
         sections, visibleSections, moveSection, toggleSection, resetLayout, viewMode, toggleViewMode,
         collapsedGroups, toggleGroupCollapsed
     } = useDashboardLayout();
+    // A group with no explicit stored choice yet defaults to collapsed on mobile
+    // (there's simply too much to scroll past otherwise) and expanded on
+    // desktop; an explicit user choice (including "expanded" on mobile) always
+    // wins — collapsedGroups[id] is only ever undefined before the user's
+    // first toggle of that group, so `??` falls through to the device default
+    // exactly then, never overriding a real `false`.
+    const isGroupCollapsed = (groupId) => collapsedGroups[groupId] ?? isMobileScreen;
     const { isCombined: defaultCombineCrypto } = useCryptoGroupingPref();
     const { investmentService, liquidityAccountService } = useDemoServices();
     const [investmentHoldings, setInvestmentHoldings] = useState([]);
@@ -595,7 +600,7 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                                     title={translations.dashboard.liquidityAvailability}
                                     totalLabel={formatCurrency(totalTraditional)}
                                     accent={assetColors.totalLiquidity}
-                                    collapsed={!!collapsedGroups.liquidity}
+                                    collapsed={isGroupCollapsed('liquidity')}
                                     onToggleCollapsed={() => toggleGroupCollapsed('liquidity')}
                                     expandLabel={translations.dashboard.expandSection}
                                     collapseLabel={translations.dashboard.collapseSection}
@@ -665,7 +670,7 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                                 title={translations.dashboard.emergencySecurity}
                                 totalLabel={formatCurrency(emergencyFundAsset.value)}
                                 accent={emergencyFundAsset.color}
-                                collapsed={!!collapsedGroups.emergencyFund}
+                                collapsed={isGroupCollapsed('emergencyFund')}
                                 onToggleCollapsed={() => toggleGroupCollapsed('emergencyFund')}
                                 expandLabel={translations.dashboard.expandSection}
                                 collapseLabel={translations.dashboard.collapseSection}
@@ -730,7 +735,7 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                                 title={translations.dashboard.portfolioInvestments}
                                 totalLabel={formatCurrency(totalInvestments)}
                                 accent={assetColors.totalInvestments}
-                                collapsed={!!collapsedGroups.investments}
+                                collapsed={isGroupCollapsed('investments')}
                                 onToggleCollapsed={() => toggleGroupCollapsed('investments')}
                                 expandLabel={translations.dashboard.expandSection}
                                 collapseLabel={translations.dashboard.collapseSection}
@@ -809,12 +814,16 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                 {/* Sezione Entrate e Uscite */}
                 {isSectionVisible('income-expense') && (
                 <DashboardSectionSlot $order={getSectionOrder('income-expense')}>
-                <ModernIncomeExpenseSection theme={theme}>
-                    <h3 style={{ color: theme.textColor, marginBottom: isMobileScreen ? '0.75rem' : '1rem', fontSize: isMobileScreen ? '1.2rem' : '1.8rem', fontWeight: '600', textAlign: 'center' }}>
-                        <FaEuroSign style={{ marginRight: isMobileScreen ? '8px' : '12px', color: assetColors.savings }} />
-                        {translations.dashboard.titleGraph3}
-                    </h3>
-
+                <PortfolioSection
+                    theme={theme}
+                    icon={FaEuroSign}
+                    title={translations.dashboard.titleGraph3}
+                    accent={assetColors.savings}
+                    collapsed={isGroupCollapsed('income-expense')}
+                    onToggleCollapsed={() => toggleGroupCollapsed('income-expense')}
+                    expandLabel={translations.dashboard.expandSection}
+                    collapseLabel={translations.dashboard.collapseSection}
+                >
                     {/* Card principali: Entrate, Uscite, Risparmiato */}
                     <div style={{
                         display: 'grid',
@@ -1011,19 +1020,23 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                             )}
                         </div>
                     )}
-                </ModernIncomeExpenseSection>
+                </PortfolioSection>
                 </DashboardSectionSlot>
                 )}
 
                 {/* Sezione Grafici */}
                 {isSectionVisible('charts') && (
                 <DashboardSectionSlot $order={getSectionOrder('charts')}>
-                <ModernChartsSection theme={theme}>
-                    <h3 style={{ color: theme.textColor, marginBottom: isMobileScreen ? '0.6rem' : '1rem', fontSize: isMobileScreen ? '1.2rem' : '1.8rem', fontWeight: '600', textAlign: 'center' }}>
-                        <BsGraphUpArrow style={{ marginRight: isMobileScreen ? '8px' : '12px', color: assetColors.savings }} />
-                        {translations.dashboard.patrimonialAnalysis}
-                    </h3>
-
+                <PortfolioSection
+                    theme={theme}
+                    icon={BsGraphUpArrow}
+                    title={translations.dashboard.patrimonialAnalysis}
+                    accent={assetColors.savings}
+                    collapsed={isGroupCollapsed('charts')}
+                    onToggleCollapsed={() => toggleGroupCollapsed('charts')}
+                    expandLabel={translations.dashboard.expandSection}
+                    collapseLabel={translations.dashboard.collapseSection}
+                >
                     <div style={{
                         display: 'grid',
                         gridTemplateColumns: isMobileScreen ? '1fr' : 'repeat(auto-fit, minmax(400px, 1fr))',
@@ -1169,7 +1182,7 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                             </div>
                         </ModernChartContainer>
                     </div>
-                </ModernChartsSection>
+                </PortfolioSection>
                 </DashboardSectionSlot>
                 )}
 
@@ -1177,7 +1190,13 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                 {isSectionVisible('financial-insights') && (
                 <DashboardSectionSlot $order={getSectionOrder('financial-insights')}>
                 <Suspense fallback={<div style={{ padding: '2rem', textAlign: 'center', color: theme.textColor, opacity: 0.5 }}>{translations.general.loading || 'Loading...'}</div>}>
-                    <FinancialInsights theme={theme} userData={userData} isHidden={isHidden} />
+                    <FinancialInsights
+                        theme={theme}
+                        userData={userData}
+                        isHidden={isHidden}
+                        collapsed={isGroupCollapsed('financial-insights')}
+                        onToggleCollapsed={() => toggleGroupCollapsed('financial-insights')}
+                    />
                 </Suspense>
                 </DashboardSectionSlot>
                 )}
@@ -1186,7 +1205,13 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                 {isSectionVisible('goal-tracker') && (
                 <DashboardSectionSlot $order={getSectionOrder('goal-tracker')}>
                 <Suspense fallback={<div style={{ padding: '2rem', textAlign: 'center', color: theme.textColor, opacity: 0.5 }}>{translations.general.loading || 'Loading...'}</div>}>
-                    <GoalTracker theme={theme} userData={userData} isHidden={isHidden} />
+                    <GoalTracker
+                        theme={theme}
+                        userData={userData}
+                        isHidden={isHidden}
+                        collapsed={isGroupCollapsed('goal-tracker')}
+                        onToggleCollapsed={() => toggleGroupCollapsed('goal-tracker')}
+                    />
                 </Suspense>
                 </DashboardSectionSlot>
                 )}

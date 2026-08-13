@@ -109,7 +109,14 @@ export const BADGE_DEFINITIONS = {
 
   // ─────────────────────────────────────────
   // SAVINGS (6 badges)
-  // Require income > 0 AND income > outflows (can't "save" with zero income)
+  // Require income > 0 AND income > expenses (can't "save" with zero income).
+  // Deliberately compares against expensesArray, not outflowsArray: outflows
+  // also includes money moved into investments and transfers between the
+  // user's own accounts (see buildMonthlyArrays), so a heavy investor or
+  // someone shuffling money between accounts would otherwise look like they
+  // "didn't save" that month even though investing is itself a form of
+  // saving. expensesArray falls back to outflowsArray for callers that
+  // haven't computed it (matches getExpensesArray in userDataSelectors.ts).
   // ─────────────────────────────────────────
   firstSave: {
     id: 'firstSave',
@@ -117,8 +124,8 @@ export const BADGE_DEFINITIONS = {
     category: BADGE_CATEGORIES.savings,
     check: (data) => {
       const incomes = data.incomes?.incomesArray || [];
-      const outflows = data.outflows?.outflowsArray || [];
-      return incomes.some((inc, i) => inc > 0 && inc > (outflows[i] || 0));
+      const expenses = data.outflows?.expensesArray || data.outflows?.outflowsArray || [];
+      return incomes.some((inc, i) => inc > 0 && inc > (expenses[i] || 0));
     },
   },
   savingsStreak3: {
@@ -145,11 +152,11 @@ export const BADGE_DEFINITIONS = {
     category: BADGE_CATEGORIES.savings,
     check: (data) => {
       const incomes = data.incomes?.incomesArray || [];
-      const outflows = data.outflows?.outflowsArray || [];
+      const expenses = data.outflows?.expensesArray || data.outflows?.outflowsArray || [];
       return incomes.some((inc, i) => {
         if (inc <= 0) return false;
-        const spent = outflows[i] || 0;
-        if (spent <= 0) return false; // Must have actual outflows too
+        const spent = expenses[i] || 0;
+        if (spent <= 0) return false; // Must have actual expense data too
         const saved = inc - spent;
         return saved / inc >= 0.3;
       });
@@ -161,11 +168,11 @@ export const BADGE_DEFINITIONS = {
     category: BADGE_CATEGORIES.savings,
     check: (data) => {
       const incomes = data.incomes?.incomesArray || [];
-      const outflows = data.outflows?.outflowsArray || [];
+      const expenses = data.outflows?.expensesArray || data.outflows?.outflowsArray || [];
       return incomes.some((inc, i) => {
         if (inc <= 0) return false;
-        const spent = outflows[i] || 0;
-        if (spent <= 0) return false; // Must have actual outflows too
+        const spent = expenses[i] || 0;
+        if (spent <= 0) return false; // Must have actual expense data too
         const saved = inc - spent;
         return saved / inc >= 0.5;
       });
@@ -318,6 +325,11 @@ export const BADGE_DEFINITIONS = {
 
   // ─────────────────────────────────────────
   // OUTFLOW MANAGEMENT (4 badges)
+  // These compare against expensesArray, not outflowsArray, for the same
+  // reason as the Savings badges above: outflowsArray also includes money
+  // moved into investments and transfers between the user's own accounts,
+  // which would otherwise blow a "spending limit" or count as "not frugal"
+  // just for investing more that month.
   // ─────────────────────────────────────────
   budgetMaster: {
     id: 'budgetMaster',
@@ -325,12 +337,12 @@ export const BADGE_DEFINITIONS = {
     category: BADGE_CATEGORIES.outflowManagement,
     check: (data) => {
       const limit = data.limits?.monthlySpendingLimit;
-      const outflows = data.outflows?.outflowsArray?.[0];
-      // Require outflows > 0 (actual data) and a real user-set limit
+      const expenses = (data.outflows?.expensesArray || data.outflows?.outflowsArray)?.[0];
+      // Require expenses > 0 (actual data) and a real user-set limit
       // Default fallback — check that limit was explicitly set via goalsAndLimits
-      const hasUserSetLimit = data.limits?.monthlySpendingLimit && 
+      const hasUserSetLimit = data.limits?.monthlySpendingLimit &&
                                data.limits?.monthlySpendingLimit !== DEFAULT_MONTHLY_SPENDING_LIMIT;
-      return hasUserSetLimit && limit > 0 && outflows > 0 && outflows <= limit;
+      return hasUserSetLimit && limit > 0 && expenses > 0 && expenses <= limit;
     },
   },
   frugalMonth: {
@@ -338,9 +350,9 @@ export const BADGE_DEFINITIONS = {
     icon: '✂️',
     category: BADGE_CATEGORIES.outflowManagement,
     check: (data) => {
-      const outflows = data.outflows?.outflowsArray || [];
-      // Both months must have actual outflow data
-      return outflows.length >= 2 && outflows[0] > 0 && outflows[1] > 0 && outflows[0] < outflows[1];
+      const expenses = data.outflows?.expensesArray || data.outflows?.outflowsArray || [];
+      // Both months must have actual expense data
+      return expenses.length >= 2 && expenses[0] > 0 && expenses[1] > 0 && expenses[0] < expenses[1];
     },
   },
   spendingDown: {
@@ -348,11 +360,11 @@ export const BADGE_DEFINITIONS = {
     icon: '📉',
     category: BADGE_CATEGORIES.outflowManagement,
     check: (data) => {
-      const outflows = data.outflows?.outflowsArray || [];
-      // All 3 months must have actual outflow data and be decreasing
-      return outflows.length >= 3 && 
-             outflows[0] > 0 && outflows[1] > 0 && outflows[2] > 0 &&
-             outflows[0] < outflows[1] && outflows[1] < outflows[2];
+      const expenses = data.outflows?.expensesArray || data.outflows?.outflowsArray || [];
+      // All 3 months must have actual expense data and be decreasing
+      return expenses.length >= 3 &&
+             expenses[0] > 0 && expenses[1] > 0 && expenses[2] > 0 &&
+             expenses[0] < expenses[1] && expenses[1] < expenses[2];
     },
   },
   categoryTracker: {
@@ -535,15 +547,20 @@ function countActiveAssetTypes(data) {
   return ASSET_KEYS.filter(type => (balance[type] || 0) > 0).length;
 }
 
-// Calculate consecutive months with positive savings (income > outflows)
-// Requires BOTH income > 0 AND income > outflows (can't "save" with zero income)
+// Calculate consecutive months with positive savings (income > expenses).
+// Requires BOTH income > 0 AND income > expenses (can't "save" with zero
+// income). Uses expensesArray, not outflowsArray: outflows also includes
+// money moved into investments and transfers between the user's own
+// accounts (see buildMonthlyArrays in userDataTransformers.ts), so investing
+// a large share of income would otherwise break the streak even though
+// investing is itself a form of saving.
 function calculateSavingsStreak(data) {
   const incomes = data.incomes?.incomesArray || [];
-  const outflows = data.outflows?.outflowsArray || [];
+  const expenses = data.outflows?.expensesArray || data.outflows?.outflowsArray || [];
   let streak = 0;
-  for (let i = 0; i < Math.min(incomes.length, outflows.length); i++) {
+  for (let i = 0; i < Math.min(incomes.length, expenses.length); i++) {
     // Must have actual income data to count as a savings month
-    if (incomes[i] > 0 && incomes[i] > outflows[i]) {
+    if (incomes[i] > 0 && incomes[i] > expenses[i]) {
       streak++;
     } else {
       break;

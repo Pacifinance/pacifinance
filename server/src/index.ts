@@ -8,6 +8,18 @@ import { logger } from "./libs/logger"
 
 const app = express()
 app.set("trust proxy", 1)
+// API responses are JSON, never rendered as HTML/scripts, so they don't need
+// a Content-Security-Policy (that's set on the SPA shell itself via
+// vercel.json instead) - just the handful of headers that matter for a JSON
+// endpoint: don't let a browser MIME-sniff a response into something
+// executable, don't allow this origin's API to be framed, and don't leak the
+// referrer to third parties.
+app.use((_req, res, next) => {
+    res.setHeader("X-Content-Type-Options", "nosniff")
+    res.setHeader("X-Frame-Options", "DENY")
+    res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin")
+    next()
+})
 app.use(cookieParser())
 app.use((req, res, next) => {
     const supportedLocales = ["en", "it", "de", "es", "fr", "ja", "nl", "zh"]

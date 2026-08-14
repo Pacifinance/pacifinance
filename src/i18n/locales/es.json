@@ -327,6 +327,7 @@
                 "message": "Se produjo un error al registrar tu cuenta.",
                 "message2": "Por favor, inténtalo de nuevo en un momento.",
                 "turnstileUnavailable": "La verificación de seguridad aún no está disponible. Recarga la página e inténtalo de nuevo.",
+                "turnstileTestKeyNotice": "Estás usando las claves de prueba públicas de Cloudflare (ver .env.example). Está bien así indefinidamente si esta instancia se queda local/privada - configura tu propio sitio Turnstile solo si vas a exponer el registro a internet públicamente.",
                 "okButton": "ok entendido"
             },
             "successPopup": {
@@ -1192,7 +1193,7 @@
             "show": "Ver comparación",
             "hide": "Reducir",
             "groupHelp": "El grupo de comparación reúne usuarios con perfiles similares y muestra solo resultados agregados cuando hay suficientes participantes.",
-            "optInTitle": "Desbloquea la comparación con usuarios similares", "optInDescription": "Activa el consentimiento para recibir benchmarks agregados. Nunca compartimos transacciones, notas ni identidad.", "optInAction": "Activar comparación", "optInSaving": "Activando...", "optInError": "No se pudo activar la comparación comunitaria. Inténtalo de nuevo.",
+            "optInTitle": "Desbloquea la comparación con usuarios similares", "optInDescription": "Activa el consentimiento para recibir benchmarks agregados. Nunca compartimos transacciones, notas ni identidad.", "optInTitleSelfHosted": "Desbloquea la comparación con otros usuarios de esta instancia", "optInDescriptionSelfHosted": "Activa el consentimiento para compararte solo con otros usuarios de esta instancia self-hosted. La comparación comunitaria entre instancias es una función planificada, aún no disponible. Nunca compartimos transacciones, notas ni identidad.", "optInAction": "Activar comparación", "optInSaving": "Activando...", "optInError": "No se pudo activar la comparación comunitaria. Inténtalo de nuevo.",
             "basedOn": "Comparación basada en",
             "waiting": "Grupo de comparación en preparación",
             "privacy": "Solo datos agregados. Grupos de comparación: {count} usuarios; umbral mínimo de privacidad: {minimum}. Actualizado: {updated}.",

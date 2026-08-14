@@ -3,6 +3,16 @@ services:
     build:
       context: .
       target: web
+      # Sourced from .env by Compose's own interpolation (separate from
+      # .dockerignore, which only filters the build context) - see the
+      # Dockerfile's build stage for why these need to be build args and not
+      # just runtime env vars.
+      args:
+        VITE_TURNSTILE_SITE_KEY: ${VITE_TURNSTILE_SITE_KEY:-}
+        VITE_UMAMI_WEBSITE_ID: ${VITE_UMAMI_WEBSITE_ID:-}
+        VITE_UMAMI_SCRIPT_URL: ${VITE_UMAMI_SCRIPT_URL:-}
+        VITE_WEB_PUSH_PUBLIC_KEY: ${VITE_WEB_PUSH_PUBLIC_KEY:-}
+        VITE_DEV_MODE: ${VITE_DEV_MODE:-}
     ports: ["8080:80"]
     restart: unless-stopped
   api:
@@ -10,5 +20,49 @@ services:
       context: .
       target: api
     env_file: .env
-    ports: ["3000:3000"]
+    environment:
+      # Real Upstash Redis in your own .env overrides these; without one, the
+      # local redis+redis-http services below are used instead - Redis isn't
+      # optional caching for this app, e.g. registration's Turnstile
+      # anti-replay guard calls it unconditionally, so self-hosting without
+      # any Redis at all breaks registration outright.
+      UPSTASH_REDIS_REST_URL: ${UPSTASH_REDIS_REST_URL:-http://redis-http:80}
+      UPSTASH_REDIS_REST_TOKEN: ${UPSTASH_REDIS_REST_TOKEN:-selfhost-local-token}
+    depends_on:
+      - redis-http
+    # Host-side port is overridable (API_HOST_PORT in .env) since 3000/3001
+    # are both common enough dev ports to already be taken by something else
+    # on a given machine (this collided with an unrelated `open-webui`
+    # container in testing) - no single default is safe for everyone. Only
+    # cosmetic either way: `web` reaches `api` over the internal Docker
+    # network by service name regardless of this mapping; this port is just
+    # for hitting the API directly from the host (curl, Postman) if you want.
+    ports: ["${API_HOST_PORT:-3001}:3000"]
+    restart: unless-stopped
+    # Lets SUPABASE_URL=http://host.docker.internal:<port> reach a Supabase
+    # stack self-hosted on the same machine via its own docker-compose (see
+    # "Fully local Supabase" in the README) - Docker Desktop (Mac/Windows)
+    # already resolves this hostname on its own, this is only needed on Linux.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+  # Local stand-in for Upstash Redis, so self-hosting doesn't require a cloud
+  # Upstash account: plain Redis plus Upstash's own official REST shim
+  # (serverless-redis-http) in front of it, since the app talks to Redis
+  # through the @upstash/redis REST client, not the raw Redis protocol.
+  # Ignored entirely if UPSTASH_REDIS_REST_URL is set to a real Upstash
+  # instance in .env instead (see `api`'s environment above).
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+  redis-http:
+    image: hiett/serverless-redis-http:latest
+    environment:
+      SRH_MODE: env
+      # Same default as `api`'s UPSTASH_REDIS_REST_TOKEN above - keep them in
+      # sync if you override either in .env, or the two services won't agree
+      # on the token and every Redis call will fail auth.
+      SRH_TOKEN: ${UPSTASH_REDIS_REST_TOKEN:-selfhost-local-token}
+      SRH_CONNECTION_STRING: redis://redis:6379
+    depends_on:
+      - redis
     restart: unless-stopped

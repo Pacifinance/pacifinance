@@ -11,6 +11,7 @@ import { TimeoutError, getTimeoutMs, withTimeout } from "../../libs/timeout"
 import { checkAndConsumeRateLimit } from "../../libs/rateLimiter"
 import { generateRecoveryCode, hashRecoveryCode, parseRecoveryCodeInput } from "../../db/recoveryCode"
 import { logger } from "../../libs/logger"
+import { isSelfHosted } from "../../libs/deploymentMode"
 
 const publicRouter = express.Router()
 
@@ -54,9 +55,13 @@ function classifySupabaseHealthError(error: unknown): DependencyHealth["supabase
  */
 async function verifyTurnstileToken(token: string): Promise<[boolean, number]> {
     const token_lifetime_sec = 3 * 60
+    // "example.com" is Cloudflare's own fixed hostname for every response
+    // verified with their public Turnstile *test* keys (documented in
+    // .env.example's Turnstile section) - it never reflects the page's real
+    // origin, so it has to be allowed explicitly outside production.
     const expected_hostnames = process.env.NODE_ENV === "production"
         ? (process.env.TURNSTILE_ALLOWED_HOSTNAMES?.split(",").map(h => h.trim().toLowerCase()).filter(Boolean) ?? ["pacifinance.com", "www.pacifinance.com"])
-        : ["localhost", "127.0.0.1"]
+        : ["localhost", "127.0.0.1", "example.com"]
 
     // Check if the token has already been used. The key is created only if it doesn't
     // exist yet (NX) with the given TTL: a non-null result means this is the first use.
@@ -165,6 +170,15 @@ publicRouter.get("/health", (_, res) => {
 
 publicRouter.get("/health/dependencies", dependencyHealthHandler)
 publicRouter.get("/health-dependencies", dependencyHealthHandler)
+
+// Static app config the frontend needs before knowing anything about the
+// user - currently just deployment mode, so the UI can tell a self-hosted
+// instance's comparison cohort (this instance's own users only) apart from
+// the hosted community pool. Not cached: it's a static env value, not
+// fetched/computed data.
+publicRouter.get("/config", (_, res) => {
+    res.status(200).json({ selfHosted: isSelfHosted() })
+})
 
 // Public GitHub repo stats (stars/forks/contributors) for the landing page's
 // open-source section - self-refreshes on read past its TTL, same pattern as

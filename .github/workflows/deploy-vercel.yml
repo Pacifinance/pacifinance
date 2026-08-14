@@ -14,8 +14,10 @@ name: Deploy to Vercel
 #
 # One-time local setup to obtain the two IDs above:
 #   npx vercel login
-#   npx vercel link            # select the existing pacifinance-serverless project
-#   cat .vercel/project.json   # copy orgId -> VERCEL_ORG_ID, projectId -> VERCEL_PROJECT_ID
+#   npx vercel link            # select the existing pacifinance project
+#   cat .vercel/repo.json      # copy projects[0].orgId -> VERCEL_ORG_ID, projects[0].id -> VERCEL_PROJECT_ID
+#   (older Vercel CLI versions write .vercel/project.json with orgId/projectId
+#   at the top level instead - check whichever file `vercel link` created)
 #
 # Once these secrets exist, disconnect the GitHub integration in the Vercel
 # project's Settings > Git page (otherwise both it and this workflow would

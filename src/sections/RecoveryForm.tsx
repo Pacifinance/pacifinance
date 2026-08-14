@@ -2,11 +2,13 @@ import React, { useState, useRef, useContext, useEffect } from "react";
 import { useLocalizedNavigate } from "../hooks/useLocalizedNavigate";
 import { useServices } from "../contexts/ServiceContext";
 import { ThemeContext } from "../contexts/ThemeContext";
+import InfoIcon from "@mui/icons-material/Info";
 import { LanguageContext } from "../contexts/LanguageContext";
 import { useToast } from "../contexts/ToastContext";
 import { UserContext } from "../contexts/UserContext";
 import RecoveryCodeDisplay from "../components/RecoveryCodeDisplay";
-import { normalizeTurnstileSiteKey } from "../utils/turnstileConfig";
+import { normalizeTurnstileSiteKey, isTurnstileTestSiteKey } from "../utils/turnstileConfig";
+import { useDeployment } from "../contexts/DeploymentContext";
 import { loadTurnstileApi } from "../utils/turnstileLoader";
 import {
     MuiCustomTextField,
@@ -32,6 +34,7 @@ interface RecoveryFormProps {
 export default function RecoveryForm({ initialUserId = "", initialCode = "", onBackToSignIn }: RecoveryFormProps) {
     const { theme } = useContext(ThemeContext);
     const { language, translations } = useContext(LanguageContext);
+    const { selfHosted } = useDeployment();
     const { showError, showSuccess } = useToast();
     const { userService } = useServices();
     const { handleSetIsAuthenticated } = useContext(UserContext);
@@ -301,6 +304,24 @@ export default function RecoveryForm({ initialUserId = "", initialCode = "", onB
                     }}
                 />
 
+                {selfHosted && isTurnstileTestSiteKey(TURNSTILE_SITE_KEY) && (
+                    <div
+                        className="mb-3 p-3 rounded-lg border-l-4"
+                        style={{
+                            borderLeftColor: theme.warningColor,
+                            backgroundColor: theme.mode === "dark" ? `${theme.warningColor}15` : `${theme.warningColor}10`,
+                            border: `1px solid ${theme.warningColor}30`,
+                        }}
+                    >
+                        <div className="flex items-start space-x-3">
+                            <InfoIcon style={{ color: theme.warningColor, marginTop: '2px' }} fontSize="small" />
+                            <p className="text-sm opacity-90" style={{ margin: 0 }}>
+                                {translations.header.register.errorPopup.turnstileTestKeyNotice
+                                    || "You're using Cloudflare's public test keys (see .env.example). That's fine indefinitely if this instance stays local/private - only set up your own Turnstile site if you're going to expose registration to the public internet."}
+                            </p>
+                        </div>
+                    </div>
+                )}
                 <div ref={turnstileRef} style={{ margin: "10px 0" }}></div>
 
                 <div className="button-wrapper">

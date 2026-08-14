@@ -30,32 +30,37 @@ import { LanguageProvider } from './contexts/LanguageContext';
 import { MediaQueryProvider } from './contexts/MediaQueryContext';
 import { ToastProvider } from './contexts/ToastContext';
 import { ServiceProvider } from './contexts/ServiceContext';
+import { DeploymentProvider } from './contexts/DeploymentContext';
 import DevModeProvider from './contexts/DevModeProvider';
 
 createRoot(document.getElementById('root')).render(
   <ServiceProvider>
-    <MediaQueryProvider>
-      <LanguageProvider>
-        <ThemeProvider>
-          <DevModeProvider>
-            <UserProvider>
-              <CurrencyProvider>
-                <PageProvider>
-                  <PrivacyProvider>
-                    <ToastProvider>
-                      <React.StrictMode>
-                        <Router>
-                          <AppRouter />
-                        </Router>
-                      </React.StrictMode>
-                    </ToastProvider>
-                  </PrivacyProvider>
-                </PageProvider>
-              </CurrencyProvider>
-            </UserProvider>
-          </DevModeProvider>
-        </ThemeProvider>
-      </LanguageProvider>
-    </MediaQueryProvider>
+    {/* Outside the fixed MediaQuery>...>Toast chain on purpose - see
+        .github/instructions/contexts.instructions.md */}
+    <DeploymentProvider>
+      <MediaQueryProvider>
+        <LanguageProvider>
+          <ThemeProvider>
+            <DevModeProvider>
+              <UserProvider>
+                <CurrencyProvider>
+                  <PageProvider>
+                    <PrivacyProvider>
+                      <ToastProvider>
+                        <React.StrictMode>
+                          <Router>
+                            <AppRouter />
+                          </Router>
+                        </React.StrictMode>
+                      </ToastProvider>
+                    </PrivacyProvider>
+                  </PageProvider>
+                </CurrencyProvider>
+              </UserProvider>
+            </DevModeProvider>
+          </ThemeProvider>
+        </LanguageProvider>
+      </MediaQueryProvider>
+    </DeploymentProvider>
   </ServiceProvider>
 )

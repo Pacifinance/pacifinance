@@ -327,6 +327,7 @@
                 "message": "Une erreur s'est produite lors de l'inscription de ton compte.",
                 "message2": "Réessaie dans un instant.",
                 "turnstileUnavailable": "La vérification de sécurité n’est pas encore disponible. Recharge la page et réessaie.",
+                "turnstileTestKeyNotice": "Tu utilises les clés de test publiques de Cloudflare (voir .env.example). C'est très bien indéfiniment si cette instance reste locale/privée - configure ton propre site Turnstile seulement si tu comptes exposer l'inscription publiquement sur internet.",
                 "okButton": "ok compris"
             },
             "successPopup": {

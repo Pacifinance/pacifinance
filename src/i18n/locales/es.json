@@ -327,6 +327,7 @@
                 "message": "Se produjo un error al registrar tu cuenta.",
                 "message2": "Por favor, inténtalo de nuevo en un momento.",
                 "turnstileUnavailable": "La verificación de seguridad aún no está disponible. Recarga la página e inténtalo de nuevo.",
+                "turnstileTestKeyNotice": "Estás usando las claves de prueba públicas de Cloudflare (ver .env.example). Está bien así indefinidamente si esta instancia se queda local/privada - configura tu propio sitio Turnstile solo si vas a exponer el registro a internet públicamente.",
                 "okButton": "ok entendido"
             },
             "successPopup": {

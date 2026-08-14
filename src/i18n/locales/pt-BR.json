@@ -327,6 +327,7 @@
                 "message": "Ocorreu um erro ao cadastrar sua conta.",
                 "message2": "Por favor, tente novamente em instantes.",
                 "turnstileUnavailable": "A verificação de segurança ainda não está disponível. Recarregue a página e tente novamente.",
+                "turnstileTestKeyNotice": "Você está usando as chaves de teste públicas da Cloudflare (veja .env.example). Isso está ótimo por tempo indeterminado se esta instância continuar local/privada - configure seu próprio site Turnstile só se for expor o cadastro publicamente na internet.",
                 "okButton": "ok, entendi"
             },
             "successPopup": {

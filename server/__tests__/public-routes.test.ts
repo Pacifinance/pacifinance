@@ -93,6 +93,25 @@ describe("public backend routes", () => {
         expect(mockDb.users.setRecoveryCodeHash).toHaveBeenCalledWith("user-uuid", expect.stringMatching(/^[0-9a-f]{64}$/))
     })
 
+    it("accepts Cloudflare's public Turnstile test keys outside production (fixed example.com hostname)", async () => {
+        mockRedis.set.mockResolvedValue("OK")
+        vi.mocked(fetch).mockResolvedValue(new Response(JSON.stringify({
+            success: true,
+            hostname: "example.com"
+        }), {status: 200, headers: {"content-type": "application/json"}}))
+
+        const response = await request(app, "/api/registration", {
+            method: "POST",
+            body: {
+                user_pwd: "password",
+                repeated_pwd: "password",
+                turnstile_token: "turnstile-token"
+            }
+        })
+
+        expect(response.status).toBe(200)
+    })
+
     it("returns 504 instead of hanging when Supabase registration does not resolve", async () => {
         process.env.REGISTRATION_STEP_TIMEOUT_MS = "20"
         mockRedis.set.mockResolvedValue("OK")

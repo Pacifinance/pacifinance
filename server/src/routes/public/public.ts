@@ -55,9 +55,13 @@ function classifySupabaseHealthError(error: unknown): DependencyHealth["supabase
  */
 async function verifyTurnstileToken(token: string): Promise<[boolean, number]> {
     const token_lifetime_sec = 3 * 60
+    // "example.com" is Cloudflare's own fixed hostname for every response
+    // verified with their public Turnstile *test* keys (documented in
+    // .env.example's Turnstile section) - it never reflects the page's real
+    // origin, so it has to be allowed explicitly outside production.
     const expected_hostnames = process.env.NODE_ENV === "production"
         ? (process.env.TURNSTILE_ALLOWED_HOSTNAMES?.split(",").map(h => h.trim().toLowerCase()).filter(Boolean) ?? ["pacifinance.com", "www.pacifinance.com"])
-        : ["localhost", "127.0.0.1"]
+        : ["localhost", "127.0.0.1", "example.com"]
 
     // Check if the token has already been used. The key is created only if it doesn't
     // exist yet (NX) with the given TTL: a non-null result means this is the first use.

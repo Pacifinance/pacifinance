@@ -327,6 +327,7 @@
                 "message": "Bei der Registrierung Ihres Kontos ist ein Fehler aufgetreten.",
                 "message2": "Bitte versuchen Sie es in einem Moment erneut.",
                 "turnstileUnavailable": "Die Sicherheitsprüfung ist noch nicht verfügbar. Laden Sie die Seite neu und versuchen Sie es erneut.",
+                "turnstileTestKeyNotice": "Du verwendest Cloudflares öffentliche Test-Keys (siehe .env.example). Das ist auf Dauer völlig in Ordnung, solange diese Instanz lokal/privat bleibt - richte nur dann eine eigene Turnstile-Site ein, wenn du die Registrierung öffentlich im Internet zugänglich machen willst.",
                 "okButton": "ok verstanden"
             },
             "successPopup": {

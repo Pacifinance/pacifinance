@@ -180,6 +180,39 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   time `package.json`/`package-lock.json` haven't changed.
 
 ### Fixed
+- `scripts/self-host-local.sh` decided whether to apply `supabase/schema.sql`
+  based on whether `.selfhost-supabase/` already existed, not on whether the
+  schema was actually present in the database - a first run interrupted
+  partway through (a crashed Docker Desktop/WSL, for example) could leave a
+  permanently empty database that every later run silently kept skipping.
+  It now checks the database itself (`profiles` table presence) and
+  restarts PostgREST after applying the schema, since PostgREST caches the
+  schema at startup and wouldn't otherwise see new tables until restarted.
+- Registration on a self-hosted instance using Cloudflare's public Turnstile
+  test keys (the ones documented in `.env.example` for local testing) always
+  failed with a hostname mismatch: Cloudflare's test keys report a fixed
+  `hostname: "example.com"` in their verification response regardless of the
+  real page origin, which the non-production `localhost`/`127.0.0.1`
+  allowlist didn't account for. Sign-up and password recovery now also show
+  a small note when a self-hosted instance is using a public test key,
+  pointing at setting up a real Turnstile site before deploying for real.
+- The Turnstile-test-key notice (and `.env.example`'s comment) wrongly
+  implied every self-hoster eventually needs real Turnstile keys "before a
+  real deployment." Not true if the instance stays local/private forever
+  (personal use, never reachable from the public internet) - there's no
+  bot-abuse surface to protect in that case, so the test keys are fine
+  indefinitely. Real keys are only needed if registration is ever exposed
+  publicly.
+- The self-hosted Turnstile-test-key notice on Sign-up/Recovery was a quiet
+  gray sentence *below* Cloudflare's own alarming red "test key" banner, so
+  a self-hoster would see the scary part first and the explanation second.
+  Moved it above the widget instead and styled it as a proper amber notice
+  box (matching the page's existing info-box language, `theme.warningColor`)
+  so it reads as "this is expected" before the red banner, not after.
+- Sign-up error toasts (registration failure, Turnstile pending/error) were
+  built as raw HTML template strings but rendered as plain text, so users
+  saw literal `<div><strong>` markup instead of formatted text. Replaced
+  with plain sentences, matching every other `showError` call in the app.
 - `Dockerfile`/`docker-compose.yml`: the `web` image's build stage never
   received any `VITE_*` variables from `.env` (`.env` is deliberately
   excluded from the Docker build context so server secrets can't end up in

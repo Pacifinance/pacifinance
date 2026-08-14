@@ -55,10 +55,23 @@ if [ -z "$SERVICE_ROLE_KEY" ]; then
   exit 1
 fi
 
-if [ "$FIRST_RUN" = true ]; then
-  echo "==> Applying supabase/schema.sql to the new database..."
+# Check the database itself for whether the schema is really there, instead
+# of trusting FIRST_RUN/directory-existence - a first run that gets
+# interrupted after cloning but before (or during) the schema apply below
+# would otherwise leave a permanently empty database that every later run
+# silently skips fixing, since the directory already exists.
+SCHEMA_PRESENT="$(docker compose -f "$SUPA_DIR/docker-compose.yml" --project-directory "$SUPA_DIR" exec -T -e PGPASSWORD="$POSTGRES_PASSWORD" db \
+  psql -U postgres -d postgres -tAc "SELECT to_regclass('public.profiles') IS NOT NULL")"
+
+if [ "$SCHEMA_PRESENT" != "t" ]; then
+  echo "==> Applying supabase/schema.sql (schema missing or incomplete)..."
   docker compose -f "$SUPA_DIR/docker-compose.yml" --project-directory "$SUPA_DIR" exec -T -e PGPASSWORD="$POSTGRES_PASSWORD" db \
     psql -U postgres -d postgres < "$SCHEMA_FILE"
+  # PostgREST caches the DB schema at startup/on its own schedule, so it
+  # won't see tables created just now until told to reload - restart it
+  # rather than wait, so the very first request after setup already works.
+  echo "==> Restarting PostgREST so it picks up the new schema..."
+  docker compose -f "$SUPA_DIR/docker-compose.yml" --project-directory "$SUPA_DIR" restart rest
 fi
 
 echo "==> Wiring this repo's .env to the local Supabase stack..."

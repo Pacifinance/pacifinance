@@ -10,9 +10,16 @@ MediaQuery > Language > Theme > DevMode > User > Currency > Page > Privacy > Toa
 ```
 Changing this order causes circular dependency or context-not-found bugs.
 
+`DeploymentContext` lives **outside** this fixed chain, wrapping it from
+`ServiceProvider > DeploymentProvider > MediaQueryProvider > ... > ToastProvider`
+(see `src/index.tsx`). It has no dependency on, and nothing in the chain
+depends on it — it only needs `ServiceContext` (for `apiClient`) — so it
+doesn't fit anywhere in the ordered list above and doesn't need to.
+
 ## Context Responsibilities
 | Context | Owns |
 |---|---|
+| `DeploymentContext` | Whether this instance is self-hosted vs. the official hosted deployment (`selfHosted`) |
 | `MediaQueryContext` | Responsive breakpoints (`isMobile`, `isTablet`) |
 | `LanguageContext` | Active language, translations object |
 | `ThemeContext` | Dark/light theme object |

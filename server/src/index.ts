@@ -4,6 +4,24 @@ import cookieParser from "cookie-parser"
 import rootRouter from "./routes/routes"
 import { logger } from "./libs/logger"
 
+// Cloudflare's published Turnstile test secret keys (see
+// .env.example's Turnstile section) always resolve as pass/fail regardless
+// of the actual token - fine for local testing, a captcha bypass if ever
+// left in place on a real deployment. Refuse to start rather than go online
+// with registration effectively unprotected.
+const TURNSTILE_TEST_SECRET_KEYS = [
+    "1x0000000000000000000000000000000AA",
+    "2x0000000000000000000000000000000AA",
+    "3x0000000000000000000000000000000AA",
+]
+if (process.env.NODE_ENV === "production" && TURNSTILE_TEST_SECRET_KEYS.includes(process.env.TURNSTILE_SECRET_KEY ?? "")) {
+    throw new Error(
+        "TURNSTILE_SECRET_KEY is set to one of Cloudflare's public test keys while NODE_ENV=production. " +
+        "Replace it with a real Turnstile secret key for your own domain before deploying " +
+        "(see the Cloudflare Turnstile section in .env.example)."
+    )
+}
+
 /* ==================== Express.js server initialization ==================== */
 
 const app = express()

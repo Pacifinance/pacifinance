@@ -327,6 +327,7 @@
                 "message": "Ocorreu um erro ao cadastrar sua conta.",
                 "message2": "Por favor, tente novamente em instantes.",
                 "turnstileUnavailable": "A verificação de segurança ainda não está disponível. Recarregue a página e tente novamente.",
+                "turnstileTestKeyNotice": "Você está usando as chaves de teste públicas da Cloudflare (veja .env.example). Isso está ótimo por tempo indeterminado se esta instância continuar local/privada - configure seu próprio site Turnstile só se for expor o cadastro publicamente na internet.",
                 "okButton": "ok, entendi"
             },
             "successPopup": {
@@ -1190,7 +1191,7 @@
             "show": "Ver comparação",
             "hide": "Recolher",
             "groupHelp": "O grupo de comparação reúne usuários com perfis semelhantes e mostra resultados agregados apenas quando há participantes suficientes.",
-            "optInTitle": "Desbloqueie comparações com usuários semelhantes", "optInDescription": "Ative o consentimento para receber benchmarks agregados. Nunca compartilhamos transações, notas ou identidade.", "optInAction": "Ativar comparação", "optInSaving": "Ativando...", "optInError": "Não foi possível ativar a comparação da comunidade. Tente novamente.",
+            "optInTitle": "Desbloqueie comparações com usuários semelhantes", "optInDescription": "Ative o consentimento para receber benchmarks agregados. Nunca compartilhamos transações, notas ou identidade.", "optInTitleSelfHosted": "Desbloqueie comparações com outros usuários desta instância", "optInDescriptionSelfHosted": "Ative o consentimento para comparar apenas com outros usuários desta instância self-hosted. A comparação da comunidade entre instâncias é um recurso planejado, ainda não disponível. Nunca compartilhamos transações, notas ou identidade.", "optInAction": "Ativar comparação", "optInSaving": "Ativando...", "optInError": "Não foi possível ativar a comparação da comunidade. Tente novamente.",
             "basedOn": "Comparação baseada em",
             "waiting": "Coorte em preparação",
             "privacy": "Somente dados agregados. Coortes: {count} usuários; limite mínimo de privacidade: {minimum}. Atualizado: {updated}.",

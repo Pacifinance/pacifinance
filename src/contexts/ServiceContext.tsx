@@ -49,6 +49,7 @@ import { createSharedExpenseService } from '../services/sharedExpenseService';
 import { createNotificationService } from '../services/notificationService';
 import { createFeedbackService } from '../services/feedbackService';
 import { createRoadmapVotesService } from '../services/roadmapVotesService';
+import { createDeploymentService } from '../services/deploymentService';
 
 const ServiceContext = createContext(null);
 
@@ -92,6 +93,7 @@ export const createServices = (client) => {
     notificationService: createNotificationService(apiClient),
     feedbackService: createFeedbackService(apiClient),
     roadmapVotesService: createRoadmapVotesService(apiClient),
+    deploymentService: createDeploymentService(apiClient),
   };
 };
 

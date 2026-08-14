@@ -11,6 +11,32 @@ describe("public backend routes", () => {
         await expect(request(app, "/it/api/health")).resolves.toMatchObject({status: 200, text: "OK"})
     })
 
+    it("reports self-hosted deployment mode by default", async () => {
+        const original = process.env.DEPLOYMENT_MODE
+        delete process.env.DEPLOYMENT_MODE
+        try {
+            const response = await request(app, "/api/config")
+            expect(response.status).toBe(200)
+            expect(response.json).toEqual({selfHosted: true})
+        } finally {
+            if (original === undefined) delete process.env.DEPLOYMENT_MODE
+            else process.env.DEPLOYMENT_MODE = original
+        }
+    })
+
+    it("reports hosted deployment mode when DEPLOYMENT_MODE=hosted", async () => {
+        const original = process.env.DEPLOYMENT_MODE
+        process.env.DEPLOYMENT_MODE = "hosted"
+        try {
+            const response = await request(app, "/api/config")
+            expect(response.status).toBe(200)
+            expect(response.json).toEqual({selfHosted: false})
+        } finally {
+            if (original === undefined) delete process.env.DEPLOYMENT_MODE
+            else process.env.DEPLOYMENT_MODE = original
+        }
+    })
+
     it("reports dependency health without exposing secrets", async () => {
         const response = await request(app, "/api/health/dependencies")
         const aliasResponse = await request(app, "/api/health-dependencies")
@@ -65,6 +91,25 @@ describe("public backend routes", () => {
         expect(response.json.recovery_code_base32).toMatch(/^[0-9A-Z]{4}-[0-9A-Z]{4}-[0-9A-Z]{4}-[0-9A-Z]{4}$/)
         expect(response.json.recovery_code_words.split("-")).toHaveLength(10)
         expect(mockDb.users.setRecoveryCodeHash).toHaveBeenCalledWith("user-uuid", expect.stringMatching(/^[0-9a-f]{64}$/))
+    })
+
+    it("accepts Cloudflare's public Turnstile test keys outside production (fixed example.com hostname)", async () => {
+        mockRedis.set.mockResolvedValue("OK")
+        vi.mocked(fetch).mockResolvedValue(new Response(JSON.stringify({
+            success: true,
+            hostname: "example.com"
+        }), {status: 200, headers: {"content-type": "application/json"}}))
+
+        const response = await request(app, "/api/registration", {
+            method: "POST",
+            body: {
+                user_pwd: "password",
+                repeated_pwd: "password",
+                turnstile_token: "turnstile-token"
+            }
+        })
+
+        expect(response.status).toBe(200)
     })
 
     it("returns 504 instead of hanging when Supabase registration does not resolve", async () => {

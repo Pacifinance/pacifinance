@@ -8,9 +8,10 @@ import { LanguageContext } from "../contexts/LanguageContext";
 import { useToast } from "../contexts/ToastContext";
 import { UserContext } from "../contexts/UserContext";
 import RecoveryCodeDisplay from "../components/RecoveryCodeDisplay";
-import { normalizeTurnstileSiteKey } from "../utils/turnstileConfig";
+import { normalizeTurnstileSiteKey, isTurnstileTestSiteKey } from "../utils/turnstileConfig";
 import { loadTurnstileApi } from "../utils/turnstileLoader";
 import { trackAnalyticsEvent } from "../services/analyticsService";
+import { useDeployment } from "../contexts/DeploymentContext";
 
 //for the modal and styled components
 import {
@@ -41,6 +42,7 @@ const IS_DEV = import.meta.env.DEV || import.meta.env.VITE_DEV_MODE === 'true';
 export default function SignUpForm() {
     const { theme } = useContext(ThemeContext);
     const { language, translations } = useContext(LanguageContext);
+    const { selfHosted } = useDeployment();
     const { showError } = useToast();
     const { userService } = useServices();
     const { handleSetIsAuthenticated } = useContext(UserContext);
@@ -74,15 +76,7 @@ export default function SignUpForm() {
             hostname: window.location.hostname,
             sitekeyPrefix: TURNSTILE_SITE_KEY ? String(TURNSTILE_SITE_KEY).slice(0, 8) + "..." : "missing",
         });
-        showError(
-            `
-            <div>
-                <strong>Errore di Sicurezza</strong><br/>
-                ${message}
-            </div>
-        `,
-            isDomainError ? 7000 : 3000,
-        );
+        showError(`Errore di Sicurezza. ${message}`, isDomainError ? 7000 : 3000);
         setTurnstileToken("");
         setIsTurnstileLoaded(false);
     };
@@ -233,15 +227,7 @@ export default function SignUpForm() {
         // Check if Turnstile verification is complete
         if (!turnstileToken) {
             trackAnalyticsEvent("auth-sign-up-blocked", { reason: "security-pending" });
-            showError(
-                `
-                <div>
-                    <strong>Verifica di Sicurezza Richiesta</strong><br/>
-                    Attendi il completamento della verifica di sicurezza.
-                </div>
-            `,
-                3000,
-            );
+            showError("Verifica di Sicurezza Richiesta. Attendi il completamento della verifica di sicurezza.", 3000);
 
             // Try to execute the challenge if not already done
             if (window.turnstile && turnstileWidgetIdRef.current) {
@@ -262,13 +248,7 @@ export default function SignUpForm() {
             } else {
                 trackAnalyticsEvent("auth-sign-up-failed", { reason: "rejected" });
                 showError(
-                    `
-                <div>
-                    <strong>${translations.header.register.errorPopup.title}</strong><br/>
-                    ${translations.header.register.errorPopup.message}<br/>
-                    ${translations.header.register.errorPopup.message2}
-                </div>
-            `,
+                    `${translations.header.register.errorPopup.title}. ${translations.header.register.errorPopup.message} ${translations.header.register.errorPopup.message2}`,
                     5000,
                 );
             }
@@ -286,13 +266,7 @@ export default function SignUpForm() {
             }
 
             showError(
-                `
-                <div>
-                    <strong>${translations.header.register.errorPopup.title}</strong><br/>
-                    ${translations.header.register.errorPopup.message}<br/>
-                    ${translations.header.register.errorPopup.message2}
-                </div>
-            `,
+                `${translations.header.register.errorPopup.title}. ${translations.header.register.errorPopup.message} ${translations.header.register.errorPopup.message2}`,
                 5000,
             );
         }
@@ -428,6 +402,24 @@ export default function SignUpForm() {
                             ),
                         }}
                     />
+                    {selfHosted && isTurnstileTestSiteKey(TURNSTILE_SITE_KEY) && (
+                        <div
+                            className="mb-3 p-3 rounded-lg border-l-4"
+                            style={{
+                                borderLeftColor: theme.warningColor,
+                                backgroundColor: theme.mode === "dark" ? `${theme.warningColor}15` : `${theme.warningColor}10`,
+                                border: `1px solid ${theme.warningColor}30`,
+                            }}
+                        >
+                            <div className="flex items-start space-x-3">
+                                <InfoIcon style={{ color: theme.warningColor, marginTop: '2px' }} fontSize="small" />
+                                <p className="text-sm opacity-90" style={{ margin: 0 }}>
+                                    {translations.header.register.errorPopup.turnstileTestKeyNotice
+                                        || "You're using Cloudflare's public test keys (see .env.example). That's fine indefinitely if this instance stays local/private - only set up your own Turnstile site if you're going to expose registration to the public internet."}
+                                </p>
+                            </div>
+                        </div>
+                    )}
                     {/* Cloudflare Turnstile widget (Managed mode) */}
                     <div ref={turnstileRef} style={{ margin: "10px 0" }}></div>
 

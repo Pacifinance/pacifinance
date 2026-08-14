@@ -36,6 +36,8 @@ supabase/.temp/
 server/scripts
 .DS_Store
 *.sh
+!docker/**/*.sh
+!scripts/*.sh
 *.backup
 *.bak
 .env
@@ -44,6 +46,7 @@ server/scripts
 .env.test.local
 .env.production.local
 *.conf
+!docker/**/*.conf
 
 npm-debug.log*
 yarn-debug.log*
@@ -55,6 +58,11 @@ yarn-error.log*
 attached_assets/
 
 docker-compose.override.yml
+
+# Supabase's own self-hosting stack, cloned on demand by
+# scripts/self-host-local.sh - third-party code, never ours to track.
+.selfhost-supabase/
+.selfhost-supabase.src/
 
 pnpm-debug.log*
 lerna-debug.log*

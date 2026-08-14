@@ -59,6 +59,7 @@ import styled from 'styled-components';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
 import { useServices } from '../contexts/ServiceContext';
+import { useDeployment } from '../contexts/DeploymentContext';
 import { getCategoryColor } from '../data/categoryColors';
 import Leaderboard from './Leaderboard';
 
@@ -407,6 +408,23 @@ const CohortCustomizer = styled.div`
 `;
 
 const DEFAULT_FACTOR_GROUPS = ['career', 'location', 'lifeStage', 'household'];
+
+/** Title/description for the benchmark opt-in card: a self-hosted instance's
+ * cohort is only its own users (no cross-instance network exists yet - see
+ * docs/COMMUNITY_STATS_PROTOCOL.md), so it gets honest, different copy
+ * instead of the hosted-community wording. Extracted as a pure function so
+ * it's testable without mounting the whole Comparison component. */
+export const getBenchmarkOptInCopy = (selfHosted, benchmarkOverview) => (
+  selfHosted
+    ? {
+      title: benchmarkOverview?.optInTitleSelfHosted || 'Unlock comparison with other users of this instance',
+      description: benchmarkOverview?.optInDescriptionSelfHosted || 'Enable consent to compare against other users of this self-hosted instance only. Cross-instance community comparison is a planned feature, not available yet. We never share transactions, notes, or identity.'
+    }
+    : {
+      title: benchmarkOverview?.optInTitle || 'Unlock comparison with similar users',
+      description: benchmarkOverview?.optInDescription || 'Enable consent to receive aggregated benchmarks. We never share transactions, notes, or identity.'
+    }
+);
 
 const ExpandableCardContent = styled.div`
   max-height: ${props => props.expanded ? 'none' : '280px'};
@@ -1090,6 +1108,8 @@ function Comparison({ theme, userData, isHidden}) {
     const { language, translations } = useContext(LanguageContext);
     const { formatAmount } = useContext(CurrencyContext);
     const { rankingService, userService, statsService } = useServices();
+    const { selfHosted } = useDeployment();
+    const optInCopy = getBenchmarkOptInCopy(selfHosted, translations.comparison.benchmarkOverview);
     const [activeTab, setActiveTab] = useState('insights');
     const [expandedCards, setExpandedCards] = useState({});
     const [showMotivationalPopup, setShowMotivationalPopup] = useState(false);
@@ -1565,8 +1585,8 @@ function Comparison({ theme, userData, isHidden}) {
                 {!hasBenchmarkConsent && (
                     <BenchmarkOptInCard theme={theme}>
                         <div>
-                            <strong>{translations.comparison.benchmarkOverview?.optInTitle || 'Unlock comparison with similar users'}</strong>
-                            <p>{translations.comparison.benchmarkOverview?.optInDescription || 'Enable consent to receive aggregated benchmarks. We never share transactions, notes, or identity.'}</p>
+                            <strong>{optInCopy.title}</strong>
+                            <p>{optInCopy.description}</p>
                         </div>
                         <button type="button" onClick={enableCommunityComparison} disabled={isSavingBenchmarkConsent}>
                             {isSavingBenchmarkConsent

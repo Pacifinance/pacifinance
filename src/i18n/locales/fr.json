@@ -1190,7 +1190,7 @@
             "show": "Voir la comparaison",
             "hide": "Réduire",
             "groupHelp": "Le groupe de comparaison rassemble des utilisateurs aux profils similaires et affiche seulement des résultats agrégés lorsqu'il est assez grand.",
-            "optInTitle": "Débloquer la comparaison avec des utilisateurs similaires", "optInDescription": "Active ton consentement pour recevoir des benchmarks agrégés. Les transactions, notes et identités ne sont jamais partagées.", "optInAction": "Activer la comparaison", "optInSaving": "Activation...", "optInError": "Impossible d'activer la comparaison communautaire. Réessayez.",
+            "optInTitle": "Débloquer la comparaison avec des utilisateurs similaires", "optInDescription": "Active ton consentement pour recevoir des benchmarks agrégés. Les transactions, notes et identités ne sont jamais partagées.", "optInTitleSelfHosted": "Débloquer la comparaison avec les autres utilisateurs de cette instance", "optInDescriptionSelfHosted": "Active ton consentement pour te comparer uniquement aux autres utilisateurs de cette instance auto-hébergée. La comparaison communautaire entre instances est une fonctionnalité prévue, pas encore disponible. Les transactions, notes et identités ne sont jamais partagées.", "optInAction": "Activer la comparaison", "optInSaving": "Activation...", "optInError": "Impossible d'activer la comparaison communautaire. Réessayez.",
             "basedOn": "Comparaison basée sur",
             "waiting": "Groupe de comparaison en préparation",
             "privacy": "Données agrégées uniquement. Groupes de comparaison : {count} utilisateurs ; seuil minimal de confidentialité : {minimum}. Mis à jour : {updated}.",

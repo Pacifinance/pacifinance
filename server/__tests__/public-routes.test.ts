@@ -11,6 +11,32 @@ describe("public backend routes", () => {
         await expect(request(app, "/it/api/health")).resolves.toMatchObject({status: 200, text: "OK"})
     })
 
+    it("reports self-hosted deployment mode by default", async () => {
+        const original = process.env.DEPLOYMENT_MODE
+        delete process.env.DEPLOYMENT_MODE
+        try {
+            const response = await request(app, "/api/config")
+            expect(response.status).toBe(200)
+            expect(response.json).toEqual({selfHosted: true})
+        } finally {
+            if (original === undefined) delete process.env.DEPLOYMENT_MODE
+            else process.env.DEPLOYMENT_MODE = original
+        }
+    })
+
+    it("reports hosted deployment mode when DEPLOYMENT_MODE=hosted", async () => {
+        const original = process.env.DEPLOYMENT_MODE
+        process.env.DEPLOYMENT_MODE = "hosted"
+        try {
+            const response = await request(app, "/api/config")
+            expect(response.status).toBe(200)
+            expect(response.json).toEqual({selfHosted: false})
+        } finally {
+            if (original === undefined) delete process.env.DEPLOYMENT_MODE
+            else process.env.DEPLOYMENT_MODE = original
+        }
+    })
+
     it("reports dependency health without exposing secrets", async () => {
         const response = await request(app, "/api/health/dependencies")
         const aliasResponse = await request(app, "/api/health-dependencies")

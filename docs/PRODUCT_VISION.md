@@ -192,11 +192,23 @@ local mode" target (Docker, local Postgres, Redis optional, zero outbound
 traffic unless the owner opts into the community network) is described in
 [COMMUNITY_BENCHMARK_STRATEGY.md](COMMUNITY_BENCHMARK_STRATEGY.md).
 
-The gap worth tracking here: today's `docker compose up` (see
-[README.md](../README.md#docker-self-hosting)) still expects a Supabase
-project rather than a fully local database, so "standalone, zero external
-calls" is a target, not yet the default. Closing that gap is a prerequisite
-for treating self-hosting as a first-class, not best-effort, distribution.
+The fully-local gap is closed: `scripts/self-host-local.sh` runs Supabase's
+own self-hosting stack plus local Redis (`redis`/`redis-http` in
+`docker-compose.yml`) alongside Pacifinance, so a self-hosted instance no
+longer needs a cloud Supabase or Upstash account (see the README's "Fully
+local Supabase" section). `DEPLOYMENT_MODE`/`DeploymentContext` now let the
+frontend tell a self-hosted instance apart from the official deployment,
+used today to give the Comparison page's benchmark opt-in card honest
+self-hosted-instance copy instead of the hosted-community wording.
+
+What's still open: the actual cross-instance community-stats network
+transport. `server/src/services/communityStatsContribution.ts` maps
+already-bucketed, already-rounded inputs into the envelope shape from
+COMMUNITY_STATS_PROTOCOL.md, but nothing derives real privacy-safe buckets
+from raw profile tags yet, there's no `installationPseudonym` generation or
+signing, and pacifinance.com has no receiving endpoint to send a
+contribution to. That remains real infrastructure work plus a privacy/
+security review, not something to build without one.
 
 ---
 

@@ -11,6 +11,7 @@ import { TimeoutError, getTimeoutMs, withTimeout } from "../../libs/timeout"
 import { checkAndConsumeRateLimit } from "../../libs/rateLimiter"
 import { generateRecoveryCode, hashRecoveryCode, parseRecoveryCodeInput } from "../../db/recoveryCode"
 import { logger } from "../../libs/logger"
+import { isSelfHosted } from "../../libs/deploymentMode"
 
 const publicRouter = express.Router()
 
@@ -165,6 +166,15 @@ publicRouter.get("/health", (_, res) => {
 
 publicRouter.get("/health/dependencies", dependencyHealthHandler)
 publicRouter.get("/health-dependencies", dependencyHealthHandler)
+
+// Static app config the frontend needs before knowing anything about the
+// user - currently just deployment mode, so the UI can tell a self-hosted
+// instance's comparison cohort (this instance's own users only) apart from
+// the hosted community pool. Not cached: it's a static env value, not
+// fetched/computed data.
+publicRouter.get("/config", (_, res) => {
+    res.status(200).json({ selfHosted: isSelfHosted() })
+})
 
 // Public GitHub repo stats (stars/forks/contributors) for the landing page's
 // open-source section - self-refreshes on read past its TTL, same pattern as

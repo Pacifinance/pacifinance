@@ -45,7 +45,7 @@ fi
 SUPABASE_SERVICES="db auth rest api-gw studio meta"
 
 echo "==> Starting the Supabase services Pacifinance needs ($SUPABASE_SERVICES)..."
-docker compose --project-directory "$SUPA_DIR" up -d --wait $SUPABASE_SERVICES
+docker compose -f "$SUPA_DIR/docker-compose.yml" --project-directory "$SUPA_DIR" up -d --wait $SUPABASE_SERVICES
 
 SERVICE_ROLE_KEY="$(grep -m1 '^SERVICE_ROLE_KEY=' "$SUPA_DIR/.env" | cut -d= -f2-)"
 POSTGRES_PASSWORD="$(grep -m1 '^POSTGRES_PASSWORD=' "$SUPA_DIR/.env" | cut -d= -f2-)"
@@ -57,7 +57,7 @@ fi
 
 if [ "$FIRST_RUN" = true ]; then
   echo "==> Applying supabase/schema.sql to the new database..."
-  docker compose --project-directory "$SUPA_DIR" exec -T -e PGPASSWORD="$POSTGRES_PASSWORD" db \
+  docker compose -f "$SUPA_DIR/docker-compose.yml" --project-directory "$SUPA_DIR" exec -T -e PGPASSWORD="$POSTGRES_PASSWORD" db \
     psql -U postgres -d postgres < "$SCHEMA_FILE"
 fi
 

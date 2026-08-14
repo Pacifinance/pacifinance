@@ -1260,6 +1260,8 @@
             "groupHelp": "A comparison group contains users with similar profile characteristics. Results are aggregated and shown only when the group is sufficiently large.",
             "optInTitle": "Unlock comparisons with similar users",
             "optInDescription": "Opt in to receive aggregated benchmarks. We never share transactions, notes or identity.",
+            "optInTitleSelfHosted": "Unlock comparisons with other users of this instance",
+            "optInDescriptionSelfHosted": "Opt in to compare against other users of this self-hosted instance only. Cross-instance community comparison is a planned feature, not available yet. We never share transactions, notes or identity.",
             "optInAction": "Enable comparison",
             "optInSaving": "Activating...",
             "optInError": "Unable to activate community comparison. Please try again.",

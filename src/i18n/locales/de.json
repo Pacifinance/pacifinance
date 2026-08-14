@@ -1190,7 +1190,7 @@
             "show": "Vergleich anzeigen",
             "hide": "Einklappen",
             "groupHelp": "Die Vergleichsgruppe umfasst Nutzer mit ähnlichen Profilmerkmalen und zeigt nur aggregierte Ergebnisse bei ausreichender Größe.",
-            "optInTitle": "Vergleiche mit ähnlichen Nutzern freischalten", "optInDescription": "Aktiviere die Einwilligung für aggregierte Benchmarks. Transaktionen, Notizen und Identität werden nie geteilt.", "optInAction": "Vergleich aktivieren", "optInSaving": "Wird aktiviert...", "optInError": "Der Community-Vergleich konnte nicht aktiviert werden. Bitte erneut versuchen.",
+            "optInTitle": "Vergleiche mit ähnlichen Nutzern freischalten", "optInDescription": "Aktiviere die Einwilligung für aggregierte Benchmarks. Transaktionen, Notizen und Identität werden nie geteilt.", "optInTitleSelfHosted": "Vergleiche mit anderen Nutzern dieser Instanz freischalten", "optInDescriptionSelfHosted": "Aktiviere die Einwilligung, um dich nur mit anderen Nutzern dieser selbstgehosteten Instanz zu vergleichen. Der instanzübergreifende Community-Vergleich ist eine geplante Funktion und noch nicht verfügbar. Transaktionen, Notizen und Identität werden nie geteilt.", "optInAction": "Vergleich aktivieren", "optInSaving": "Wird aktiviert...", "optInError": "Der Community-Vergleich konnte nicht aktiviert werden. Bitte erneut versuchen.",
             "basedOn": "Vergleich basiert auf",
             "waiting": "Vergleichsgruppe wird vorbereitet",
             "privacy": "Nur aggregierte Daten. Gruppen: {count} Nutzer; Mindestgröße zum Datenschutz: {minimum}. Aktualisiert: {updated}.",

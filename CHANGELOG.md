@@ -10,6 +10,22 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 ## [Unreleased]
 
 ### Added
+- Deployment-mode detection: `DEPLOYMENT_MODE` env var (`server/src/libs/deploymentMode.ts`,
+  fails safe to self-hosted), `GET /api/config`, and a new `DeploymentContext`
+  (`src/contexts/DeploymentContext.tsx`) that lets the frontend tell a
+  self-hosted instance apart from the official pacifinance.com deployment
+  without ever calling the backend in mock/demo mode. First consumer: the
+  Comparison page's benchmark opt-in card now shows honest self-hosted-
+  instance copy (this instance's own users only; cross-instance community
+  comparison is planned, not live yet) instead of the hosted-community
+  wording, via new `optInTitleSelfHosted`/`optInDescriptionSelfHosted` i18n
+  keys in all six locales.
+- `server/src/services/communityStatsContribution.ts`: typed, pure envelope
+  builder matching the shape already specified in
+  `docs/COMMUNITY_STATS_PROTOCOL.md`, for future cross-instance community
+  benchmarking. Structure only — no bucket-coarsening, pseudonym generation,
+  signing, or network transport yet; see the file's own comments and
+  `docs/PRODUCT_VISION.md` §9 for what's still open.
 - `scripts/self-host-local.sh`: one command for a fully local self-host with
   no cloud account — clones Supabase's own official self-hosting stack on
   demand (never vendored into this repo, so it can't drift from their actual
@@ -141,19 +157,56 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   per-bank-template entry, an old one-off bundle-size check for a feature
   shipped long ago).
 
+### Added
+- `docker-compose.yml`: added local `redis` + `redis-http` (Upstash's own
+  official REST shim, `serverless-redis-http`) services, with `api`
+  defaulting to them when `UPSTASH_REDIS_REST_URL`/`_TOKEN` are unset in
+  `.env`. Redis was a hard, silent dependency for Docker self-hosting even
+  though nothing provisioned it - registration hard-fails without a
+  reachable Redis (the Turnstile anti-replay guard calls it
+  unconditionally), so self-hosting via Docker was broken for registration
+  specifically until now unless you separately owned a cloud Upstash
+  account. `.env.example` documents both the local default and how to point
+  at a real Upstash instance instead.
+
 ### Changed
+- `docker-compose.yml`: the `api` service's host-side port is now
+  configurable via `API_HOST_PORT` (`.env.example`, defaults to 3001)
+  instead of hardcoded, since no single default port is safe from colliding
+  with something else already running on a given self-hoster's machine.
 - `Dockerfile`: both `npm ci` steps (`web` and `api` build stages) now use a
   BuildKit cache mount for npm's package cache, so rebuilds after the first
   one don't re-download the entire dependency tree from the registry every
   time `package.json`/`package-lock.json` haven't changed.
 
 ### Fixed
+- `Dockerfile`/`docker-compose.yml`: the `web` image's build stage never
+  received any `VITE_*` variables from `.env` (`.env` is deliberately
+  excluded from the Docker build context so server secrets can't end up in
+  an image layer, but that silently starved Vite of the public ones too -
+  Turnstile site key, Umami website ID, web push key) - they'd compile in
+  empty with no error. Passed through explicitly as Docker build args
+  instead, sourced from `.env` via Compose's own interpolation.
+- `Dockerfile`: the `api` image's start command
+  (`node --import tsx/esm server/src/index.ts`) crash-looped on Node 22 with
+  `ERR_REQUIRE_CYCLE_MODULE` - handing a `.ts` entry file directly to `node`
+  while registering `tsx/esm` as a loader makes it load through both the CJS
+  and ESM paths at once. Switched to running it through the `tsx` CLI
+  instead, the same way `package.json`'s `dev:server` script already does.
 - `docker/nginx.conf`, referenced by the Dockerfile's `web` build stage, was
   missing from the repo entirely — `docker compose build` failed immediately
   for any self-hoster following the README. Added it, serving the SPA with a
   static-file/`index.html` fallback and proxying `/api/` to the `api`
   container (the frontend calls `/api/...` with a relative path, so the two
   containers need nginx to bridge them).
+- `.env.example`: clarified that `VITE_DEV_MODE`'s Turnstile bypass only works
+  against the frontend-only mock/demo mode, not the real backend (Docker
+  self-hosting included) — the real backend never had a dev bypass and still
+  calls Cloudflare's siteverify with whatever token it's sent, so the old
+  wording would have led a self-hoster straight into a confusing 401 on
+  registration. Documented Cloudflare's own official test keys as the
+  correct way to test registration against a real backend without owning a
+  real Turnstile site.
 - Analytics no longer falls back to pacifinance.com's own Umami website ID
   when `VITE_UMAMI_WEBSITE_ID` is unset — a self-hosted deployment that never
   set it was silently reporting its traffic into pacifinance.com's own

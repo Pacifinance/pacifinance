@@ -1260,6 +1260,8 @@
             "groupHelp": "Un gruppo di confronto riunisce utenti con caratteristiche di profilo simili. Mostriamo solo risultati aggregati quando la numerosità è sufficiente.",
             "optInTitle": "Sblocca il confronto con utenti simili",
             "optInDescription": "Attiva il consenso per ricevere benchmark aggregati. Non condividiamo transazioni, note o identità.",
+            "optInTitleSelfHosted": "Sblocca il confronto con gli altri utenti di questa istanza",
+            "optInDescriptionSelfHosted": "Attiva il consenso per confrontarti solo con altri utenti di questa istanza self-hosted. Il confronto community tra istanze diverse è una funzionalità pianificata, non ancora disponibile. Non condividiamo transazioni, note o identità.",
             "optInAction": "Attiva confronto",
             "optInSaving": "Attivazione...",
             "optInError": "Non è stato possibile attivare il confronto community. Riprova.",

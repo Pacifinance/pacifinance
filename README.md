@@ -86,7 +86,7 @@ Copy `.env.example` to `.env`, configure Supabase and required provider keys, th
 docker compose up --build
 ```
 
-The web client is available on port 8080 and the API on port 3000. See [the backup runbook](docs/BACKUP_RECOVERY.md), [the threat model](docs/THREAT_MODEL.md), and [the Supabase/RLS checklist](docs/SUPABASE_RLS_AUDIT.md) before production use.
+The web client is available on port 8080 and the API on port 3001 (only needed for hitting it directly - the web client already reaches it internally). See [the backup runbook](docs/BACKUP_RECOVERY.md), [the threat model](docs/THREAT_MODEL.md), and [the Supabase/RLS checklist](docs/SUPABASE_RLS_AUDIT.md) before production use.
 
 #### Fully local Supabase (no cloud account)
 

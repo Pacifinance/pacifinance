@@ -1,7 +1,9 @@
+# syntax=docker/dockerfile:1
+
 FROM node:22-alpine AS build
 WORKDIR /app
 COPY package*.json ./
-RUN npm ci
+RUN --mount=type=cache,target=/root/.npm npm ci
 COPY . .
 RUN npm run build
 
@@ -13,7 +15,7 @@ EXPOSE 80
 FROM node:22-alpine AS api
 WORKDIR /app
 COPY package*.json ./
-RUN npm ci
+RUN --mount=type=cache,target=/root/.npm npm ci
 COPY server ./server
 COPY api ./api
 EXPOSE 3000

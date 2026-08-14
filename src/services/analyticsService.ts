@@ -11,7 +11,6 @@ interface AnalyticsWindow extends Window {
 
 const SCRIPT_ID = 'pacifinance-umami';
 const DEFAULT_SCRIPT_URL = '/stats/script.js';
-const DEFAULT_WEBSITE_ID = '0399281d-9359-4537-89bf-e8f441b48836';
 const BLOCKED_PROPERTY_NAMES = /(?:^|_)(?:amount|balance|description|email|file|filename|hash|id|name|note|password|price|recovery|ticker|token|username|value|xpub)(?:$|_)/i;
 
 const getAnalyticsWindow = (): AnalyticsWindow | null =>
@@ -42,7 +41,11 @@ export const sanitizeAnalyticsProperties = (
 
 export const initializeAnalytics = (): Promise<boolean> => {
   const analyticsWindow = getAnalyticsWindow();
-  if (!analyticsWindow || !hasAnalyticsConsent()) return Promise.resolve(false);
+  const websiteId = import.meta.env.VITE_UMAMI_WEBSITE_ID;
+  // No fallback website ID on purpose: a self-hosted deployment that never
+  // set VITE_UMAMI_WEBSITE_ID must not silently start reporting its traffic
+  // into pacifinance.com's own Umami dashboard - it should just stay off.
+  if (!analyticsWindow || !websiteId || !hasAnalyticsConsent()) return Promise.resolve(false);
   if (analyticsWindow.umami) return Promise.resolve(true);
 
   const existing = document.getElementById(SCRIPT_ID) as HTMLScriptElement | null;
@@ -57,7 +60,7 @@ export const initializeAnalytics = (): Promise<boolean> => {
   script.id = SCRIPT_ID;
   script.defer = true;
   script.src = import.meta.env.VITE_UMAMI_SCRIPT_URL || DEFAULT_SCRIPT_URL;
-  script.dataset.websiteId = import.meta.env.VITE_UMAMI_WEBSITE_ID || DEFAULT_WEBSITE_ID;
+  script.dataset.websiteId = websiteId;
   document.head.appendChild(script);
 
   return new Promise((resolve) => {

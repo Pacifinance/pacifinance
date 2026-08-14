@@ -88,6 +88,46 @@ docker compose up --build
 
 The web client is available on port 8080 and the API on port 3000. See [the backup runbook](docs/BACKUP_RECOVERY.md), [the threat model](docs/THREAT_MODEL.md), and [the Supabase/RLS checklist](docs/SUPABASE_RLS_AUDIT.md) before production use.
 
+#### Fully local Supabase (no cloud account)
+
+The backend talks to Supabase's own API (`@supabase/supabase-js`, including its Auth admin API for account creation/deletion), not to raw Postgres, so it works unmodified against a self-hosted Supabase stack — you don't have to create a project on supabase.com at all.
+
+One command does the whole thing — clones Supabase's own self-hosting stack, generates its secrets, bootstraps `supabase/schema.sql` against it, wires this repo's `.env` to it, then builds and starts Pacifinance:
+
+```bash
+bash scripts/self-host-local.sh
+```
+
+That script deliberately doesn't vendor Supabase's services into this repo's `docker-compose.yml` — it clones their own official, always-current self-hosting setup on demand into `.selfhost-supabase/` (gitignored) instead. That way this project never has to track Supabase's internal service changes (their default gateway moved from Kong to Envoy since this was last checked, for example); it always gets whatever Supabase currently ships. Re-running the script is safe — it reuses the existing local stack and skips re-applying the schema.
+
+<details>
+<summary>What the script does, if you'd rather run the steps by hand or something goes wrong</summary>
+
+Supabase's own Docker setup evolves independently of this repo, so treat [their self-hosting guide](https://supabase.com/docs/guides/self-hosting/docker) as the source of truth if these commands look outdated; as of this writing it's:
+
+```bash
+git clone --depth 1 --branch self-hosted/v0.8.0 https://github.com/supabase/supabase
+cp -rf supabase/docker/. supabase-project && cd supabase-project
+cp .env.example .env
+sh utils/generate-keys.sh        # POSTGRES_PASSWORD, JWT_SECRET, ...
+sh utils/add-new-auth-keys.sh    # ANON_KEY, SERVICE_ROLE_KEY
+sh run.sh start                  # docker compose up -d --wait
+sh run.sh secrets                # prints the generated keys
+```
+
+This starts Postgres plus Supabase's Auth/API layer on the same machine, gateway (Envoy) on port 8000. Bootstrap the schema against it exactly like the cloud path: connect to its Postgres (`db` service, default port 5432) and apply `supabase/schema.sql`, or paste it into Studio's SQL editor.
+
+Then, back in this repo's `.env`:
+
+```bash
+SUPABASE_URL=http://host.docker.internal:8000
+SUPABASE_SERVICE_ROLE_KEY=<service_role key from `sh run.sh secrets`>
+```
+
+`docker-compose.yml`'s `api` service already maps `host.docker.internal` to the host machine (needed on Linux; Docker Desktop on Mac/Windows does this on its own), so `docker compose up --build` reaches the locally self-hosted Supabase stack with no further networking setup. The result: everything - frontend, API, database, auth - runs on your own machine with no outbound calls and no third-party account, beyond whatever optional provider keys (`CG_KEY`, `FINNHUB_KEY`, ...) you choose to fill in.
+
+</details>
+
 ```bash
 npm install
 ```

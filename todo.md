@@ -119,6 +119,8 @@
 ### Phase 3b — Hosted + self-hosted architecture
 - [ ] Dual distribution: hosted web app (pacifinance.com, free) + free self-hosted (AGPL) — same codebase; the competition is NOT hosted-vs-self-hosted
 - [ ] Anonymous comparison for self-hosted instances: an opt-in "community stats" service — the self-hosted instance sends ONLY anonymous aggregates (profile bucket: age range/job/country + rounded monthly totals), NEVER raw transactions; it receives percentiles back. Anyone who opts out gets everything except the comparison. This is the network effect that stays with the project even with open code
+- [ ] Detect self-hosted deployment on the Comparison page and replace the generic hosted-consent copy with a self-host-specific explanation of the opt-in (why the cohort is empty without it, what leaves the instance, how to revoke) — see `docs/COMMUNITY_STATS_PROTOCOL.md` and `docs/PRIVACY_ANONYMITY.md` for what the copy must promise
+- [ ] Fully local self-host mode: `docker compose up` still requires a Supabase project rather than a local-only Postgres, so "zero outbound traffic unless opted in" (`docs/COMMUNITY_BENCHMARK_STRATEGY.md`) isn't the default yet — prerequisite for the item above to mean anything for a true offline install; see `docs/PRODUCT_VISION.md` §9. Storage format stays a real DB (local Postgres now, SQLite for a possible future Tauri desktop build) rather than flat files, to avoid a second data layer to maintain
 - [ ] Note on Vercel: the Hobby plan prohibits commercial use — the day a paid tier launches, Vercel Pro (or a host migration) becomes necessary; budget for it then, not before
 
 ### Phase 4 — Anonymous comparison (the differentiator)

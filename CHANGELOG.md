@@ -10,6 +10,20 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 ## [Unreleased]
 
 ### Added
+- `scripts/self-host-local.sh`: one command for a fully local self-host with
+  no cloud account — clones Supabase's own official self-hosting stack on
+  demand (never vendored into this repo, so it can't drift from their actual
+  setup), generates its secrets, bootstraps `supabase/schema.sql` against it,
+  wires this repo's `.env` to it, then builds and starts Pacifinance. Works
+  because the backend already only talks to Supabase's API (including its
+  Auth admin API), so it runs unmodified against a self-hosted instance.
+  `docker-compose.yml`'s `api` service now maps `host.docker.internal` on
+  Linux too, so it can reach that locally self-hosted stack the same way
+  Docker Desktop already lets it on Mac/Windows. README documents both this
+  script and the equivalent manual steps.
+- `.env.example`: documented `VITE_UMAMI_WEBSITE_ID`, `VITE_UMAMI_SCRIPT_URL`,
+  `GITHUB_TOKEN` and the `GITHUB_APP_*` trio, which the code already read
+  but which weren't listed anywhere.
 - Info page (`/info`): rewritten. Replaced the six UI-tutorial FAQ entries
   ("how do I add an income", "how do I change my password"...) with actual
   frequently-asked questions (privacy, data export, account deletion,
@@ -127,7 +141,23 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   per-bank-template entry, an old one-off bundle-size check for a feature
   shipped long ago).
 
+### Changed
+- `Dockerfile`: both `npm ci` steps (`web` and `api` build stages) now use a
+  BuildKit cache mount for npm's package cache, so rebuilds after the first
+  one don't re-download the entire dependency tree from the registry every
+  time `package.json`/`package-lock.json` haven't changed.
+
 ### Fixed
+- `docker/nginx.conf`, referenced by the Dockerfile's `web` build stage, was
+  missing from the repo entirely — `docker compose build` failed immediately
+  for any self-hoster following the README. Added it, serving the SPA with a
+  static-file/`index.html` fallback and proxying `/api/` to the `api`
+  container (the frontend calls `/api/...` with a relative path, so the two
+  containers need nginx to bridge them).
+- Analytics no longer falls back to pacifinance.com's own Umami website ID
+  when `VITE_UMAMI_WEBSITE_ID` is unset — a self-hosted deployment that never
+  set it was silently reporting its traffic into pacifinance.com's own
+  dashboard instead of just staying off.
 - `supabase/schema.sql` had silently drifted since 6 August: it still
   created a `public.expenses` table, but a same-day migration
   (`use-transactions-domain.sql`) had renamed it to `transactions` — a fresh

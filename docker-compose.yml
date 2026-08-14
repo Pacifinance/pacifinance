@@ -12,3 +12,9 @@ services:
     env_file: .env
     ports: ["3000:3000"]
     restart: unless-stopped
+    # Lets SUPABASE_URL=http://host.docker.internal:<port> reach a Supabase
+    # stack self-hosted on the same machine via its own docker-compose (see
+    # "Fully local Supabase" in the README) - Docker Desktop (Mac/Windows)
+    # already resolves this hostname on its own, this is only needed on Linux.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

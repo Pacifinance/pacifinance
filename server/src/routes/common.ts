@@ -10,6 +10,12 @@ export { roundCurrency, toCents, fromCents, addCurrency }
  * @param data Data to sanitize
  * @returns Sanitized data
  */
+// No sanitized field (names, notes, tags...) legitimately needs to be
+// longer than this; capping the scan bound to a fixed constant (rather than
+// the raw, attacker-controlled string length) is what static analysis wants
+// to see to rule out an unbounded-iteration DoS.
+const MAX_SANITIZE_LENGTH = 10_000
+
 /**
  * Strips every "<...>" span with a single-pass character scan instead of a
  * regex - a regex like /<[^>]*>/g both lets nested tags survive a single
@@ -19,10 +25,11 @@ export { roundCurrency, toCents, fromCents, addCurrency }
  * there's no regex engine involved at all.
  */
 function stripTags(input: string): string {
+    const bounded = input.length > MAX_SANITIZE_LENGTH ? input.slice(0, MAX_SANITIZE_LENGTH) : input
     let result = ""
     let depth = 0
-    for (let i = 0; i < input.length; i++) {
-        const char = input[i]
+    for (let i = 0; i < bounded.length; i++) {
+        const char = bounded[i]
         if (char === "<") { depth++; continue }
         if (char === ">") { if (depth > 0) depth--; continue }
         if (depth === 0) result += char

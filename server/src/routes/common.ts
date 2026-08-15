@@ -10,22 +10,32 @@ export { roundCurrency, toCents, fromCents, addCurrency }
  * @param data Data to sanitize
  * @returns Sanitized data
  */
+/**
+ * Strips every "<...>" span with a single-pass character scan instead of a
+ * regex - a regex like /<[^>]*>/g both lets nested tags survive a single
+ * pass (e.g. "<<script>script>" -> "<script>") and is the kind of
+ * user-controlled-input pattern static analysis flags as a possible ReDoS
+ * regardless of looping. This is O(n), no backtracking possible because
+ * there's no regex engine involved at all.
+ */
+function stripTags(input: string): string {
+    let result = ""
+    let depth = 0
+    for (let i = 0; i < input.length; i++) {
+        const char = input[i]
+        if (char === "<") { depth++; continue }
+        if (char === ">") { if (depth > 0) depth--; continue }
+        if (depth === 0) result += char
+    }
+    return result
+}
+
 function sanitizeInput(data: string) {
     if (data === undefined || data === null) return ""
     // Remove empty spaces
-    let sanitized_data = String(data).trim()
-    // Strip HTML tags. Looped until stable: a single pass lets nested/overlapping
-    // tags survive (e.g. "<<script>script>" -> "<script>" after one pass) -
-    // each iteration strictly shrinks the string or stops, so this is bounded
-    // by nesting depth, not attacker-controllable to run long.
-    const regex = /<[^>]*>/g
-    let previous
-    do {
-        previous = sanitized_data
-        sanitized_data = sanitized_data.replace(regex, "")
-    } while (sanitized_data !== previous)
+    const trimmed = String(data).trim()
     // Return the sanitized input
-    return sanitized_data
+    return stripTags(trimmed)
 }
 
 /**

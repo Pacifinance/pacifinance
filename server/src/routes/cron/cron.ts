@@ -15,19 +15,15 @@ import { checkAndConsumeRateLimit } from "../../libs/rateLimiter"
  */
 const cronRouter = express.Router()
 
-function isAuthorized(req: express.Request) {
-    const expected = process.env.CRON_SECRET
-    if (!expected) return false
-    return req.headers.authorization === `Bearer ${expected}`
-}
-
 cronRouter.use(async (req, res, next) => {
     const ip = req.ip ?? "unknown"
     if (!(await checkAndConsumeRateLimit(`cron-auth:ip:${ip}`, 60))) {
         res.status(429).send()
         return
     }
-    if (!isAuthorized(req)) {
+
+    const expectedSecret = process.env.CRON_SECRET
+    if (!expectedSecret || req.headers.authorization !== `Bearer ${expectedSecret}`) {
         res.status(401).send()
         return
     }

@@ -51,8 +51,7 @@ describe('useAuth', () => {
 
   it('should return MockAuthContext in development mode', () => {
     // Simulate dev mode
-    const originalDEV = import.meta.env.DEV;
-    import.meta.env.DEV = true;
+    vi.stubEnv('DEV', true);
     localStorage.getItem.mockImplementation((key) =>
       key === 'pacifinance-dev-mode' ? 'true' : null
     );
@@ -77,7 +76,7 @@ describe('useAuth', () => {
     expect(result.current.userData?.userId).toBe('mock-user');
 
     // Restore
-    import.meta.env.DEV = originalDEV;
+    vi.unstubAllEnvs();
   });
 
   it('fallback handleSetIsAuthenticated should be a no-op', () => {

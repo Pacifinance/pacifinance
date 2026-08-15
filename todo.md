@@ -157,6 +157,8 @@
      problem while staying consistent with "no personal data, ever". -->
 - [ ] Two-factor authentication for user accounts (e.g. TOTP) — distinct from account recovery (block code + word phrase, done above): 2FA is a second factor at login, recovery is what gets you back in if you lose the password <!-- roadmap:2fa -->
 - [ ] Remaining `npm audit` stragglers after the CodeQL/Dependabot hardening pass (11 of the original ~38-78): `uuid` (needs an `overrides` entry to 11.x + verifying `exceljs` still works with its v11/ESM API) and `js-yaml`/`undici`/`path-to-regexp`/`smol-toml`/`ajv`/`@vercel/*` (all rooted in `@vercel/node`'s own tree; `npm audit fix --force` wants to *downgrade* `@vercel/node` to 4.0.0, untested against the current Vercel serverless build). All dev-scope/build-time only, not reachable by a real attacker via the running app — lower urgency, needs real compatibility testing rather than a blind forced bump
+- [ ] Consolidate the four icon libraries in active use (`@mui/icons-material`, `@fortawesome/*`, `react-icons`, `lucide-react` — see `docs/DEPENDENCIES.md` "Known duplication") down to one or two; touches dozens of files, not a quick fix
+- [ ] Revisit the Vite 8 and TypeScript 7 upgrades once their dependency chains stabilize — both are documented as deliberately deferred in `docs/DEPENDENCIES.md` "Deliberately not upgraded right now" (Vite 8's plugin chain currently resolves into a Babel 8 release candidate; TypeScript 7 is capped by `@typescript-eslint`'s peer range)
 
 
 ### Features

@@ -1,8 +1,11 @@
 /* Inter font loaded via <link> in index.html for non-blocking rendering */
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+/* Tailwind v4 no longer auto-loads a JS config file - this keeps our existing
+   custom colors/sizes/keyframes in tailwind.config.js working as-is instead
+   of hand-translating them to CSS @theme tokens (safer: zero risk of a typo
+   silently dropping a utility class used across the app). */
+@config "../tailwind.config.js";
 
 /* Font fallback with size-adjust to reduce CLS during font swap */
 @font-face {

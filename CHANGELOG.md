@@ -9,6 +9,24 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+### Added
+- `docs/DEPENDENCIES.md`: a reviewable, per-package justification for every
+  direct dependency, a periodic re-audit process, and the reasoning behind
+  deliberately deferring the Vite 8 and TypeScript 7 upgrades for now.
+  Prompted by a full `depcheck` audit (zero genuinely unused runtime
+  dependencies found) and by noticing four separate icon libraries in active
+  use with nobody having decided that on purpose - now tracked as a real
+  cleanup target in `todo.md` instead of silently accumulating further.
+
+### Changed
+- Migrated Tailwind CSS from v3 to v4: switched from the PostCSS plugin to
+  the official `@tailwindcss/vite` plugin (removes `postcss.config.js`
+  entirely), dropped `autoprefixer`/`postcss` (built into v4), and kept the
+  existing `tailwind.config.js` working via the new `@config` directive in
+  `src/index.css` rather than hand-translating custom theme tokens to CSS
+  `@theme` syntax (safer - zero risk of a typo silently dropping a utility
+  class used across the app).
+
 ### Security
 - Added rate limiting (existing Redis-backed `checkAndConsumeRateLimit`) to
   the private-session middleware, the cron secret-check middleware,

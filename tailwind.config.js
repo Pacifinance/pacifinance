@@ -39,10 +39,5 @@ module.exports = {
       },
     },
   },
-  variants: {
-    extend: {
-      fontSize: ['placeholder']
-    }
-  },
   plugins: [],
 }

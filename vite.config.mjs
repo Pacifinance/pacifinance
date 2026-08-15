@@ -1,12 +1,15 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tsconfigPaths from 'vite-tsconfig-paths'
+import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
     // Mirror path aliases from src/tsconfig.json — single source of truth.
     tsconfigPaths({ projects: ['./src/tsconfig.json'] }),
+    // Tailwind v4: this plugin replaces postcss.config.js entirely.
+    tailwindcss(),
     react({
       babel: {
         plugins: [
@@ -67,9 +70,6 @@ export default defineConfig({
         secure: false
       }
     }
-  },
-  css: {
-    postcss: './postcss.config.js'
   },
   build: {
     outDir: 'build',

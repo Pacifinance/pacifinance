@@ -9,12 +9,18 @@ import supabase from "../../db/supabase"
 import { generateRecoveryCode, hashRecoveryCode } from "../../db/recoveryCode"
 import { logger } from "../../libs/logger"
 import { USER_DATA_DOMAINS } from "../../libs/userDataDomains"
+import { checkAndConsumeRateLimit } from "../../libs/rateLimiter"
 
 /* === /user/* === */
 
 const userRouter = express.Router()
 
 userRouter.post("/logout", async (req, res) => {
+    const userId = req.userId as string
+    if (!(await checkAndConsumeRateLimit(`user-logout:${userId}`, 30))) {
+        res.status(429).send()
+        return
+    }
     // Best-effort revoke of the refresh token on Supabase's side; the cookies
     // are cleared regardless, which is what actually ends the session client-side
     const {accessToken} = authCookies.getAuthCookies(req)
@@ -58,6 +64,10 @@ userRouter.post("/set-id", async (req, res) => {
     // Check if the user has the right to change ID.
     // Send status code 403 (Forbidden) if it doesn't
     const userId = req.userId as string
+    if (!(await checkAndConsumeRateLimit(`user-set-id:${userId}`, 10))) {
+        res.status(429).send()
+        return
+    }
     const type = await db.users.getTypeOfUserId(userId)
     if (type === null || type.type === db.users.UserType.demo.value)
     {
@@ -105,6 +115,10 @@ userRouter.post("/set-password", async (req, res) => {
     // Check if the user has the right to change password.
     // Send status code 403 (Forbidden) if it doesn't
     const userId = req.userId as string
+    if (!(await checkAndConsumeRateLimit(`user-set-password:${userId}`, 10))) {
+        res.status(429).send()
+        return
+    }
     const type = await db.users.getTypeOfUserId(userId)
     if (type === null || type.type === db.users.UserType.demo.value)
     {
@@ -152,6 +166,10 @@ userRouter.post("/recovery-code/generate", async (req, res) => {
     // Check if the user has the right to generate a recovery code.
     // Send status code 403 (Forbidden) if it doesn't
     const userId = req.userId as string
+    if (!(await checkAndConsumeRateLimit(`user-recovery-code-generate:${userId}`, 10))) {
+        res.status(429).send()
+        return
+    }
     const type = await db.users.getTypeOfUserId(userId)
     if (type === null || type.type === db.users.UserType.demo.value)
     {

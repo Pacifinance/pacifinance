@@ -177,6 +177,38 @@ describe("public backend routes", () => {
         expect(response.cookies.join("; ")).toContain("sb-refresh-token=refresh")
     })
 
+    it("rate-limits login attempts per account", async () => {
+        mockRedis.incr.mockResolvedValueOnce(1).mockResolvedValueOnce(999)
+
+        const response = await request(app, "/api/login", {
+            method: "POST",
+            body: {user_id: "123456", password: "password"}
+        })
+
+        expect(response.status).toBe(429)
+        expect(mockSupabase.auth.signInWithPassword).not.toHaveBeenCalled()
+    })
+
+    it("rate-limits registration attempts per IP", async () => {
+        mockRedis.incr.mockResolvedValueOnce(999)
+        vi.mocked(fetch).mockResolvedValue(new Response(JSON.stringify({
+            success: true,
+            hostname: "localhost"
+        }), {status: 200, headers: {"content-type": "application/json"}}))
+
+        const response = await request(app, "/api/registration", {
+            method: "POST",
+            body: {
+                user_pwd: "password",
+                repeated_pwd: "password",
+                turnstile_token: "turnstile-token"
+            }
+        })
+
+        expect(response.status).toBe(429)
+        expect(mockDb.users.insertNew).not.toHaveBeenCalled()
+    })
+
     describe("/recovery/reset-password", () => {
         const turnstileOk = () => {
             mockRedis.set.mockResolvedValue("OK")

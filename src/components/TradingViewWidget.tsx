@@ -216,8 +216,12 @@ const TradingViewWidget = memo(({
         // A) Listen for postMessage error signals from TradingView
         messageHandler = (event) => {
           if (errorFired) return;
-          const origin = event.origin || '';
-          if (!origin.includes('tradingview.com')) return;
+          // Exact hostname/subdomain match, not a substring check: '.includes()'
+          // would also accept "https://evil.com/tradingview.com" or
+          // "https://tradingview.com.evil.com".
+          let originHostname = '';
+          try { originHostname = new URL(event.origin || '').hostname; } catch { /* ignore */ }
+          if (originHostname !== 'tradingview.com' && !originHostname.endsWith('.tradingview.com')) return;
           let d;
           try {
             d = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;

@@ -10,11 +10,20 @@ type RequestOptions = {
     query?: Record<string, string>
 }
 
+// Matches the default Origin below - a same-origin request, which is what
+// every existing test implicitly assumes now that server/src/index.ts
+// enforces an Origin/Referer-vs-Host CSRF check on state-changing requests.
+// Tests exercising that check directly override `headers.host`/`headers.origin`.
+export const testHost = "pacifinance.test"
+
 export async function request(app: Express, path: string, options: RequestOptions = {}) {
     const body = options.body === undefined ? "" : JSON.stringify(options.body)
-    const headers = options.body === undefined
-        ? (options.headers ?? {})
-        : {...(options.headers ?? {}), "content-type": "application/json"}
+    const headers = {
+        host: testHost,
+        origin: `https://${testHost}`,
+        ...(options.body === undefined ? {} : {"content-type": "application/json"}),
+        ...(options.headers ?? {}),
+    }
     const handler = serverless(app)
     const response = await handler({
         httpMethod: options.method ?? "GET",

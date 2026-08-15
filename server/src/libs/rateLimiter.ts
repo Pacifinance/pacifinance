@@ -24,7 +24,7 @@ export async function checkAndConsumeRateLimit(bucketKey: string, maxCalls: numb
         if (count === 1) await redis.expire(key, WINDOW_SEC)
         return count <= maxCalls
     } catch (error) {
-        console.error(`rateLimiter.checkAndConsumeRateLimit: Redis error for bucket "${bucketKey}", failing open`, error)
+        console.error("rateLimiter.checkAndConsumeRateLimit: Redis error, failing open", {bucketKey, error})
         return true
     }
 }

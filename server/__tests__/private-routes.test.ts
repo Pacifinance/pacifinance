@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest"
 
 import app from "../src/index"
 import { authCookie, request } from "./helpers/http"
-import { mockDb, mockSupabase, mockCache } from "./setup"
+import { mockDb, mockSupabase, mockCache, mockRedis } from "./setup"
 
 describe("private backend routes", () => {
     it("requires an access-token cookie for private routes", async () => {
@@ -10,6 +10,32 @@ describe("private backend routes", () => {
 
         expect(response.status).toBe(401)
         expect(mockDb.users.getPublicInfoByUserId).not.toHaveBeenCalled()
+    })
+
+    it("rate-limits private requests by IP before checking the session", async () => {
+        mockRedis.incr.mockResolvedValueOnce(999)
+
+        const response = await request(app, "/api/user/get", {
+            method: "POST",
+            headers: {cookie: authCookie}
+        })
+
+        expect(response.status).toBe(429)
+        expect(mockSupabase.auth.getClaims).not.toHaveBeenCalled()
+    })
+
+    it("rate-limits a password-verification route (set-id) per user", async () => {
+        mockDb.users.getTypeOfUserId.mockResolvedValue({type: 0})
+        mockRedis.incr.mockResolvedValueOnce(1).mockResolvedValueOnce(999)
+
+        const response = await request(app, "/api/user/set-id", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {password: "correct horse"}
+        })
+
+        expect(response.status).toBe(429)
+        expect(mockDb.users.verifyPassword).not.toHaveBeenCalled()
     })
 
     it("accepts valid Supabase claims and exposes req.userId to route handlers", async () => {

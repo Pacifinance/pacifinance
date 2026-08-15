@@ -10,15 +10,39 @@ export { roundCurrency, toCents, fromCents, addCurrency }
  * @param data Data to sanitize
  * @returns Sanitized data
  */
+// No sanitized field (names, notes, tags...) legitimately needs to be
+// longer than this; capping the scan bound to a fixed constant (rather than
+// the raw, attacker-controlled string length) is what static analysis wants
+// to see to rule out an unbounded-iteration DoS.
+const MAX_SANITIZE_LENGTH = 10_000
+
+/**
+ * Strips every "<...>" span with a single-pass character scan instead of a
+ * regex - a regex like /<[^>]*>/g both lets nested tags survive a single
+ * pass (e.g. "<<script>script>" -> "<script>") and is the kind of
+ * user-controlled-input pattern static analysis flags as a possible ReDoS
+ * regardless of looping. This is O(n), no backtracking possible because
+ * there's no regex engine involved at all.
+ */
+function stripTags(input: string): string {
+    const length = Math.min(input.length, MAX_SANITIZE_LENGTH)
+    let result = ""
+    let depth = 0
+    for (let i = 0; i < length; i++) {
+        const char = input[i]
+        if (char === "<") { depth++; continue }
+        if (char === ">") { if (depth > 0) depth--; continue }
+        if (depth === 0) result += char
+    }
+    return result
+}
+
 function sanitizeInput(data: string) {
     if (data === undefined || data === null) return ""
     // Remove empty spaces
-    let sanitized_data = String(data).trim()
-    // Check if there are HTML tags and remove them
-    const regex = /<[^>]*>/g
-    sanitized_data = sanitized_data.replace(regex, "")
+    const trimmed = String(data).trim()
     // Return the sanitized input
-    return sanitized_data
+    return stripTags(trimmed)
 }
 
 /**

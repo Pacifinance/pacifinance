@@ -201,6 +201,11 @@ publicRouter.get("/roadmap-votes", async (_, res) => {
 
 publicRouter.post("/registration", async (req, res) => {
     try {
+        const ip = req.ip ?? "unknown"
+        if (!(await checkAndConsumeRateLimit(`registration:ip:${ip}`, 10))) {
+            res.status(429).send()
+            return
+        }
         // Sanitize user input. Send status code 400 (Bad Request)
         // in case of invalid data (empty strings after sanitization)
         // or if the two passwords don't match
@@ -284,6 +289,17 @@ publicRouter.post("/login", async (req, res) => {
     {
         res.status(400)
         res.send()
+        return
+    }
+    // Rate-limited both per-IP and per-account, same as password recovery -
+    // this is the classic credential-brute-force target.
+    const loginIp = req.ip ?? "unknown"
+    const [loginIpAllowed, loginAccountAllowed] = await Promise.all([
+        checkAndConsumeRateLimit(`login:ip:${loginIp}`, 20),
+        checkAndConsumeRateLimit(`login:user:${user_id}`, 10),
+    ])
+    if (!loginIpAllowed || !loginAccountAllowed) {
+        res.status(429).send()
         return
     }
     // Attempt sign-in via Supabase Auth using the internal synthetic email

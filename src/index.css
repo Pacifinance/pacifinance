@@ -17,7 +17,14 @@
   line-gap-override: 0%;
 }
 
-
+/* Tailwind v4's @import above wraps its own output in native CSS cascade
+   layers (theme, base, components, utilities). Per spec, any UNLAYERED rule
+   always beats ANY layered rule regardless of specificity or source order -
+   so this custom CSS has to live in a layer too (base, same as Tailwind's
+   own reset), otherwise a plain "* { margin: 0; padding: 0 }" here would
+   silently win over every Tailwind spacing utility (p-8, mb-16, gap-5...)
+   app-wide, no matter how specific or how late the utility class is. */
+@layer base {
 *{
   margin: 0;
   padding: 0;
@@ -137,3 +144,4 @@ html, body, * {
     padding-bottom: calc(66px + env(safe-area-inset-bottom, 0px));
   }
 }
+} /* end @layer base */

@@ -27,6 +27,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   `@theme` syntax (safer - zero risk of a typo silently dropping a utility
   class used across the app).
 
+### Fixed
+- Fixed a site-wide styling regression from the Tailwind v4 migration: Tailwind
+  v4 wraps its output in native CSS cascade layers, and per spec any unlayered
+  rule always wins over a layered one regardless of specificity - so the
+  global reset in `src/index.css` (previously plain, unlayered CSS) was
+  silently overriding every Tailwind spacing utility (`p-8`, `mb-16`, `gap-5`...)
+  across the whole app, breaking the landing page, footer pages
+  (pricing/FAQ/sitemap), and the profile menu. Fixed by wrapping that reset in
+  `@layer base`, the same layer Tailwind's own reset uses.
+
 ### Security
 - Added rate limiting (existing Redis-backed `checkAndConsumeRateLimit`) to
   the private-session middleware, the cron secret-check middleware,

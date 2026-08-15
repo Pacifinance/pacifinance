@@ -9,6 +9,37 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+### Security
+- Added rate limiting (existing Redis-backed `checkAndConsumeRateLimit`) to
+  the private-session middleware, the cron secret-check middleware,
+  registration, login, and several password-verification/destructive user
+  routes that had none - CodeQL had flagged 9 of these; login itself wasn't
+  flagged but had the same gap and got the same fix as password recovery.
+- Fixed a tainted-format-string issue in the rate limiter's own error
+  logging (`server/src/libs/rateLimiter.ts`).
+- Added CSRF protection: a same-origin check (`server/src/libs/csrfProtection.ts`)
+  on all state-changing requests, comparing the browser's `Origin`/`Referer`
+  against the request's own host - no configuration needed, so it's correct
+  for both the hosted deployment and any self-hosted domain automatically.
+  Complements the existing `sameSite: "lax"` on the auth cookies.
+- Fixed `sanitizeInput`'s HTML-tag strip (`server/src/routes/common.ts`,
+  shared by ~40+ input fields) to loop until stable instead of a single
+  pass, so a nested tag like `<<script>script>` can no longer survive as
+  `<script>` after sanitization.
+- Fixed an origin-spoofing bug in `TradingViewWidget`'s `postMessage`
+  listener: it checked `event.origin.includes('tradingview.com')`, which
+  also matches attacker-controlled origins like `evil.com/tradingview.com`;
+  now requires an exact hostname/subdomain match.
+- Added a guard against prototype-pollution in `scripts/translateLocales.js`'s
+  path-based deep-set helper (dev-only script, real exploitability was near
+  nil, but cheap to close).
+- Added explicit, minimal `permissions:` blocks to the two GitHub Actions
+  workflows that were missing one.
+- Resolved the `npm audit`-fixable dependency vulnerabilities (`npm audit
+  fix`, lockfile-only, no `package.json` range changes). The remaining
+  stragglers are all rooted in `@vercel/node`'s own dependency tree or need
+  compatibility testing beyond a version bump - tracked in `todo.md`.
+
 ### Added
 - Deployment-mode detection: `DEPLOYMENT_MODE` env var (`server/src/libs/deploymentMode.ts`,
   fails safe to self-hosted), `GET /api/config`, and a new `DeploymentContext`

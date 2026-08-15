@@ -23,6 +23,7 @@ import roadmapVotesRouter from "./private/roadmapVotes"
 
 import supabase from "../db/supabase"
 import authCookies from "./authCookies"
+import { checkAndConsumeRateLimit } from "../libs/rateLimiter"
 
 /**
  * Root-level express router
@@ -48,6 +49,12 @@ rootRouter.use("/cron", cronRouter)
 // Supabase Auth on every private request. Projects still on a symmetric secret transparently
 // fall back to the same getUser()-based network check as before.
 rootRouter.use(async (req, res, next) => {
+    const ip = req.ip ?? "unknown"
+    if (!(await checkAndConsumeRateLimit(`private-auth:ip:${ip}`, 120))) {
+        res.status(429).send()
+        return
+    }
+
     const {accessToken, refreshToken} = authCookies.getAuthCookies(req)
     if (!accessToken) {
         res.status(401).send()

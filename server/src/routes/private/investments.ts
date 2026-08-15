@@ -3,6 +3,7 @@ import express from "express"
 import db from "../../db/db"
 import cache from "../../cache/cache"
 import common, { isOneOf, normalizeCurrency } from "../common"
+import { checkAndConsumeRateLimit } from "../../libs/rateLimiter"
 
 /* === /investments/* === */
 
@@ -550,6 +551,10 @@ investmentsRouter.post("/community-prices/pending", async (req, res) => {
 })
 
 investmentsRouter.post("/community-prices/verify", async (req, res) => {
+    if (!(await checkAndConsumeRateLimit(`investments-community-prices-verify:${req.userId}`, 60))) {
+        res.status(429).send()
+        return
+    }
     if (!(await db.users.isAdmin(req.userId as string))) {
         res.status(403).send()
         return

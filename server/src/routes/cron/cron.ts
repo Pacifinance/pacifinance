@@ -5,6 +5,7 @@ import cache from "../../cache/cache"
 import users from "../../db/models/users"
 import webPush from "../../libs/webPush"
 import { evaluateUser } from "../../libs/reminderScheduling"
+import { checkAndConsumeRateLimit } from "../../libs/rateLimiter"
 
 /**
  * Cron endpoints, meant to be invoked by Vercel Cron (see vercel.json) instead
@@ -20,7 +21,12 @@ function isAuthorized(req: express.Request) {
     return req.headers.authorization === `Bearer ${expected}`
 }
 
-cronRouter.use((req, res, next) => {
+cronRouter.use(async (req, res, next) => {
+    const ip = req.ip ?? "unknown"
+    if (!(await checkAndConsumeRateLimit(`cron-auth:ip:${ip}`, 60))) {
+        res.status(429).send()
+        return
+    }
     if (!isAuthorized(req)) {
         res.status(401).send()
         return

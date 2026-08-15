@@ -14,9 +14,16 @@ function sanitizeInput(data: string) {
     if (data === undefined || data === null) return ""
     // Remove empty spaces
     let sanitized_data = String(data).trim()
-    // Check if there are HTML tags and remove them
+    // Strip HTML tags. Looped until stable: a single pass lets nested/overlapping
+    // tags survive (e.g. "<<script>script>" -> "<script>" after one pass) -
+    // each iteration strictly shrinks the string or stops, so this is bounded
+    // by nesting depth, not attacker-controllable to run long.
     const regex = /<[^>]*>/g
-    sanitized_data = sanitized_data.replace(regex, "")
+    let previous
+    do {
+        previous = sanitized_data
+        sanitized_data = sanitized_data.replace(regex, "")
+    } while (sanitized_data !== previous)
     // Return the sanitized input
     return sanitized_data
 }

@@ -3,6 +3,7 @@ import cookieParser from "cookie-parser"
 
 import rootRouter from "./routes/routes"
 import { logger } from "./libs/logger"
+import { csrfProtection } from "./libs/csrfProtection"
 
 // Cloudflare's published Turnstile test secret keys (see
 // .env.example's Turnstile section) always resolve as pass/fail regardless
@@ -39,6 +40,7 @@ app.use((_req, res, next) => {
     next()
 })
 app.use(cookieParser())
+app.use(csrfProtection)
 app.use((req, res, next) => {
     const supportedLocales = ["en", "it", "de", "es", "fr", "ja", "nl", "zh"]
     const segments = req.path.split("/").filter(Boolean)

@@ -19,9 +19,14 @@ function writeLocale(filename, data) {
     writeFileSync(join(localesDir, filename), JSON.stringify(data, null, 4) + '\n', 'utf-8');
 }
 
+const UNSAFE_KEYS = new Set(['__proto__', 'constructor', 'prototype']);
+
 // Deep set a value at a dot-separated path
 function deepSet(obj, path, value) {
     const parts = path.split('.');
+    for (const part of parts) {
+        if (UNSAFE_KEYS.has(part)) throw new Error(`Refusing to set unsafe path segment "${part}" (from path "${path}")`);
+    }
     let current = obj;
     for (let i = 0; i < parts.length - 1; i++) {
         if (!(parts[i] in current)) current[parts[i]] = {};

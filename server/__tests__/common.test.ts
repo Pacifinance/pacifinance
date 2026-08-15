@@ -16,6 +16,16 @@ describe("server common helpers", () => {
         expect(common.sanitizeInput("  <b>Hello</b>  ")).toBe("Hello")
     })
 
+    it("strips nested/overlapping tags that a single-pass strip would let through", () => {
+        // A single-pass /<[^>]*>/g strip lets a nested tag reconstruct itself
+        // (e.g. "<<script>script>" -> "<script>" after one pass); no complete
+        // tag construct should survive the fix, however deeply nested.
+        const noTagSurvives = /<[^>]*>/
+        expect(common.sanitizeInput("<<script>script>alert(1)</<script>/script>")).not.toMatch(noTagSurvives)
+        expect(common.sanitizeInput("<<img src=x onerror=alert(1)>>")).not.toMatch(noTagSurvives)
+        expect(common.sanitizeInput("<<<b>>>Hello<<</b>>>")).not.toMatch(noTagSurvives)
+    })
+
     it("generates padded user ids and retries collisions", async () => {
         mockDb.users.userCodeExists
             .mockResolvedValueOnce(true)

@@ -43,6 +43,8 @@ jobs:
     environment:
       name: Production
       url: ${{ steps.deploy.outputs.url }}
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v7
 

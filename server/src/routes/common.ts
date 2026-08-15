@@ -25,11 +25,11 @@ const MAX_SANITIZE_LENGTH = 10_000
  * there's no regex engine involved at all.
  */
 function stripTags(input: string): string {
-    const bounded = input.length > MAX_SANITIZE_LENGTH ? input.slice(0, MAX_SANITIZE_LENGTH) : input
+    const length = Math.min(input.length, MAX_SANITIZE_LENGTH)
     let result = ""
     let depth = 0
-    for (let i = 0; i < bounded.length; i++) {
-        const char = bounded[i]
+    for (let i = 0; i < length; i++) {
+        const char = input[i]
         if (char === "<") { depth++; continue }
         if (char === ">") { if (depth > 0) depth--; continue }
         if (depth === 0) result += char

@@ -1,6 +1,23 @@
 ﻿# Pacifinance
 
-Pacifinance is an open-source, privacy-first personal finance app for tracking balances, income, outflows, recurring payments, goals, investments, and anonymous comparisons with similar users.
+**Privacy-first, self-hostable personal finance tracking with anonymous peer comparison**
+
+[**Website**](https://www.pacifinance.com) | [**Live Demo**](https://www.pacifinance.com) | [**Pricing**](https://www.pacifinance.com/pricing) | [**FAQ**](https://www.pacifinance.com/faq) | [**Roadmap**](https://www.pacifinance.com/roadmap) | [**Contributing**](CONTRIBUTING.md)
+
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPLv3-blue.svg)](LICENSE)
+[![Contributions Welcome](https://img.shields.io/badge/Contributions-Welcome-limegreen.svg)](CONTRIBUTING.md)
+[![React](https://img.shields.io/badge/React-19-61DAFB?logo=react)](https://react.dev/)
+[![Vite](https://img.shields.io/badge/Vite-7-646CFF?logo=vite)](https://vite.dev/)
+[![Supabase](https://img.shields.io/badge/Supabase-Postgres-3ECF8E?logo=supabase)](https://supabase.com/)
+
+A good fit if you:
+
+- 💰 want balances, investments, crypto, and recurring payments tracked in one place
+- 📊 are curious how your net worth compares to people in a similar situation — without anyone seeing your actual numbers
+- 🔒 don't want to hand a raw bank feed to a startup you've never heard of
+- 🖥️ want the option to self-host, or to run the free hosted version without managing any infrastructure yourself
+- 🌍 want an app that isn't only built around US/UK financial products
+- 🤝 want the roadmap and the comparison algorithm to both be public, not just marketing copy
 
 The project has a clear product bet: personal finance software should help people understand their own situation without turning their private financial life into a public profile. Community comparisons should be useful, aggregated, anonymous, and explainable.
 
@@ -10,11 +27,6 @@ Pacifinance supports two operating models:
 - a self-hostable open-source app for people who want full control of their data.
 
 The codebase contains both the React frontend and the Express serverless backend. Data is stored in Supabase Postgres, with optional Upstash Redis caching for prices and aggregate statistics.
-
-[![License: AGPL v3](https://img.shields.io/badge/License-AGPLv3-blue.svg)](LICENSE)
-[![React](https://img.shields.io/badge/React-19-61DAFB?logo=react)](https://react.dev/)
-[![Vite](https://img.shields.io/badge/Vite-7-646CFF?logo=vite)](https://vite.dev/)
-[![Supabase](https://img.shields.io/badge/Supabase-Postgres-3ECF8E?logo=supabase)](https://supabase.com/)
 
 The source-code licence does not grant permission to present a fork as an
 official Pacifinance product. See the [Trademark Policy](TRADEMARK_POLICY.md)
@@ -87,6 +99,20 @@ docker compose up --build
 ```
 
 The web client is available on port 8080 and the API on port 3001 (only needed for hitting it directly - the web client already reaches it internally). See [the backup runbook](docs/BACKUP_RECOVERY.md), [the threat model](docs/THREAT_MODEL.md), and [the Supabase/RLS checklist](docs/SUPABASE_RLS_AUDIT.md) before production use.
+
+#### Prebuilt images
+
+Every tagged release also publishes multi-arch (`linux/amd64`, `linux/arm64`) images, so you don't need a local build at all:
+
+```bash
+docker pull ghcr.io/pacifinance/pacifinance-web:latest
+docker pull ghcr.io/pacifinance/pacifinance-api:latest
+# or, from Docker Hub:
+docker pull pacifinance/pacifinance-web:latest
+docker pull pacifinance/pacifinance-api:latest
+```
+
+These images ship without a Turnstile/Umami/Web Push key baked in (those are Vite build-time values, not runtime config) - fine for a first try, but if you want your own keys, use `docker compose up --build` above instead.
 
 #### Fully local Supabase (no cloud account)
 

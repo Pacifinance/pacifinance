@@ -17,6 +17,20 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   dependencies found) and by noticing four separate icon libraries in active
   use with nobody having decided that on purpose - now tracked as a real
   cleanup target in `todo.md` instead of silently accumulating further.
+- `.github/workflows/publish-docker.yml`: publishes prebuilt multi-arch
+  (`linux/amd64`, `linux/arm64`) `web`/`api` images to GHCR on every tagged
+  release, so self-hosting no longer requires a local build - see "Prebuilt
+  images" under "Docker self-hosting" in `README.md`. Also pushes the same
+  images to Docker Hub once `DOCKERHUB_USERNAME`/`DOCKERHUB_TOKEN` repo
+  secrets exist (skips itself otherwise, so this stays optional and never
+  breaks the GHCR publish). Ships without Turnstile/Umami/Web Push keys
+  baked in (those are Vite build-time values); self-hosters who want their
+  own still use `docker compose up --build`.
+- README: a top-of-file quick-links row (Website/Live Demo/Pricing/FAQ/
+  Roadmap/Contributing), a "Contributions Welcome" badge linking to
+  `CONTRIBUTING.md`, and a short "who it's for" bullet list replacing part
+  of the opening paragraph, to make the pitch scannable in a few seconds
+  instead of requiring a full paragraph read.
 
 ### Changed
 - Migrated Tailwind CSS from v3 to v4: switched from the PostCSS plugin to
@@ -67,6 +81,36 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   fix`, lockfile-only, no `package.json` range changes). The remaining
   stragglers are all rooted in `@vercel/node`'s own dependency tree or need
   compatibility testing beyond a version bump - tracked in `todo.md`.
+- Closed two more of those stragglers via `package.json` `overrides`:
+  `js-yaml` to `^4.3.1` (fixes the quadratic-CPU-DoS CVEs in `!!omap`/merge-key
+  resolution; pulled in transitively by `eslint` and `@vercel/node`'s bundled
+  Python-runtime detector, both dev/build-time only) and `uuid` to `^11.1.1`
+  (fixes the missing-buffer-bounds-check CVE; pulled in by `exceljs`, a real
+  runtime dependency - verified its only call site uses the no-`buf` `uuidv4()`
+  form that was never actually affected). `undici`/`path-to-regexp`/`smol-toml`/
+  `ajv`/`@vercel/*` remain open: they're hard-pinned inside `@vercel/node`'s own
+  tree, dev/build-time only (never reachable via the deployed app), and the
+  only path that resolves them (`npm audit fix --force`) wants to downgrade
+  `@vercel/node` to 4.0.0 untested - see `todo.md`.
+- Resolved every Supabase Security/Performance Advisor warning
+  (`supabase/migrations/harden-function-search-path-and-extension-schema.sql`,
+  `optimize-rls-policies-and-add-fk-indexes.sql`, applied to `schema.sql` in
+  its final-state form too): pinned `search_path` on the 5 SQL functions the
+  advisor flagged as mutable (`function_search_path_mutable`); revoked
+  `anon`/`authenticated` EXECUTE on `rls_auto_enable()` - a `SECURITY
+  DEFINER` event-trigger handler that was reachable via `POST
+  /rest/v1/rpc/rls_auto_enable` despite only ever needing to run as the
+  trigger itself; moved the `pg_net` extension out of the `public` schema
+  (best-effort - wrapped in exception handling since some pg_net versions
+  aren't relocatable, see the migration's comment); rewrote all 26 RLS
+  policies that called `auth.uid()` unwrapped in `USING`/`WITH CHECK` so it
+  evaluates once per query instead of once per row
+  (`auth_rls_initplan`); added the 41 missing covering indexes on foreign
+  key columns the advisor listed (`unindexed_foreign_keys`). One advisor
+  item is out of SQL's reach: "Leaked Password Protection Disabled" is a
+  Supabase Auth dashboard toggle (Authentication -> Policies), not a
+  database object - needs enabling manually per project, hosted and
+  self-hosted alike.
 
 ### Added
 - Deployment-mode detection: `DEPLOYMENT_MODE` env var (`server/src/libs/deploymentMode.ts`,

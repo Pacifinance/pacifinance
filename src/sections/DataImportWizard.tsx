@@ -54,11 +54,13 @@ import {
 } from '../utils/dataImport';
 import { EXPENSE_CATEGORY_CODES } from '../data/expenseCategoryCodes';
 import { getCategoryColor } from '../data/categoryColors';
-import { detectBankFormat } from '../utils/dataImport/bankFormats';
+import { detectBankFormat, BANK_FORMAT_ASSET_KEY } from '../utils/dataImport/bankFormats';
 import {
   learnFromTransaction, suggestCategory, findPastMatchesWithDifferentCategory,
 } from '../utils/categoryPatterns';
-import { getAllOutflows, getAllIncomes, getCustomCategories, getOutflowsTags } from '../utils/userDataSelectors';
+import { getAllOutflows, getAllIncomes, getCustomCategories, getOutflowsTags, getCurrentBalance } from '../utils/userDataSelectors';
+import { LIQUIDITY_KEYS, buildSnapshotWithDeltas } from '../constants/balanceSchema';
+import { computeVoucherSplit } from '../utils/voucherSplit';
 import ImportPlatformGuide from '../components/ImportPlatformGuide';
 import MonthTransactionsViewer from './MonthTransactionsViewer';
 import CategoryPicker from '../components/CategoryPicker';
@@ -590,6 +592,18 @@ const InfoTooltip = styled.span`
   }
 `;
 
+const getTodayLocalISO = () => {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+};
+
+// A generic macrocategory (e.g. "Bank") used as a payment source when no
+// specific liquidity sub-account is linked yet — see selectedAccountId below.
+const GENERIC_ASSET_PREFIX = 'asset:';
+const toGenericAssetValue = (assetKey) => `${GENERIC_ASSET_PREFIX}${assetKey}`;
+const genericAssetKeyFromValue = (value) =>
+  typeof value === 'string' && value.startsWith(GENERIC_ASSET_PREFIX) ? value.slice(GENERIC_ASSET_PREFIX.length) : null;
+
 // ═══════════════════════════════════════════
 // Main Component
 // ═══════════════════════════════════════════
@@ -754,6 +768,13 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
   };
 
   const selectedAccount = liquidityAccounts.find((account) => String(account.id) === String(selectedAccountId));
+  // A macrocategory (e.g. "Bank") picked instead of a specific sub-account —
+  // still a valid, fully automated payment source (see handleImport).
+  const selectedGenericAssetKey = genericAssetKeyFromValue(selectedAccountId);
+  const genericAssetOptions = LIQUIDITY_KEYS.map((key) => ({
+    value: toGenericAssetValue(key),
+    label: translations.assets?.[key] || key,
+  }));
   const accountDelta = useMemo(() => importableTx.reduce((total, tx) => (
     total + (tx.isOutflow ? -toEUR(tx.amount) : toEUR(tx.amount))
   ), 0), [importableTx, toEUR]);
@@ -779,8 +800,25 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
         setReceivables(Array.isArray(items) ? items : []);
         const providerLabel = detectedBank ? (t.bankNames?.[detectedBank] || detectedBank) : '';
         setNewAccountLabel(providerLabel);
-        const match = accounts.find((account) => account.label.toLocaleLowerCase() === providerLabel.toLocaleLowerCase());
-        if (match) setSelectedAccountId(String(match.id));
+        const defaultAssetKey = detectedBank ? (BANK_FORMAT_ASSET_KEY[detectedBank] || 'bank') : 'bank';
+        if (detectedBank) setNewAccountAssetKey(defaultAssetKey);
+        // Prefer an account explicitly linked to this detected provider (set on
+        // a previous import, or manually in the accounts panel); fall back to a
+        // case-insensitive label match for accounts created before that link
+        // existed. If neither matches, default to the provider's generic
+        // macrocategory instead of leaving the payment source unset.
+        const linkedMatch = detectedBank
+          ? accounts.find((account) => account.linkedBankKey === detectedBank)
+          : null;
+        const labelMatch = !linkedMatch && providerLabel
+          ? accounts.find((account) => account.label.toLocaleLowerCase() === providerLabel.toLocaleLowerCase())
+          : null;
+        const match = linkedMatch || labelMatch;
+        if (match) {
+          setSelectedAccountId(String(match.id));
+        } else if (detectedBank) {
+          setSelectedAccountId(toGenericAssetValue(defaultAssetKey));
+        }
       })
       .catch(() => {});
     return () => { active = false; };
@@ -1233,6 +1271,9 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
           label: newAccountLabel.trim(),
           current_value: 0,
           currency: 'EUR',
+          // Remembers the detected provider so the NEXT import from it
+          // auto-selects this account instead of asking again.
+          linked_bank_key: detectedBank || null,
         });
         setLiquidityAccounts((current) => [...current, account]);
         setSelectedAccountId(String(account.id));
@@ -1240,12 +1281,25 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
         account = null;
       }
     }
+    // No specific sub-account (chosen, or just created) — fall back to the
+    // generic macrocategory the user picked (e.g. "Bank"), if any.
+    const fallbackAssetKey = account ? null : selectedGenericAssetKey;
 
     let success = 0;
     let failed = 0;
     let linkFailures = 0;
     const total = finalTx.length;
     const API_BATCH_SIZE = 500;
+    // Running available balance per fixed-denomination account, so several
+    // voucher purchases in the same import correctly deplete it in order
+    // instead of each computing its split against the account's starting
+    // balance. Persists across batches (processed sequentially below).
+    const voucherRemaining = new Map();
+    // rowIndex -> { fallbackAccountId, remainderAmount } for rows that ended
+    // up split onto a fallback account — reused below (instead of
+    // recomputing) so the "update this account with the net change"
+    // aggregate also moves the remainder into the right account.
+    const rowSplitInfo = new Map();
 
     for (let i = 0; i < total; i += API_BATCH_SIZE) {
       const batch = finalTx.slice(i, i + API_BATCH_SIZE);
@@ -1268,6 +1322,35 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                 detail_type: 'liquidity',
                 detail_id: rowAccount.id,
               };
+              // Fixed-denomination account (e.g. meal vouchers): split off
+              // whatever isn't a whole multiple of the denomination onto its
+              // configured fallback account. No per-row prompt — batch
+              // imports apply this automatically; a row without a configured
+              // fallback keeps the whole amount on the voucher account
+              // (fixable afterwards from the payment-method column).
+              if (tx.isOutflow && rowAccount.unitValue) {
+                if (!voucherRemaining.has(rowAccount.id)) voucherRemaining.set(rowAccount.id, rowAccount.currentValue);
+                const available = voucherRemaining.get(rowAccount.id);
+                const { voucherAmount, remainderAmount } = computeVoucherSplit(expense.amount, rowAccount.unitValue, available);
+                voucherRemaining.set(rowAccount.id, available - voucherAmount);
+                const fallbackAccount = rowAccount.fallbackAccountId
+                  ? liquidityAccounts.find((item) => item.id === rowAccount.fallbackAccountId)
+                  : null;
+                if (remainderAmount > 0 && fallbackAccount) {
+                  expense.balance_source_2 = {
+                    asset_key: fallbackAccount.assetKey,
+                    detail_type: 'liquidity',
+                    detail_id: fallbackAccount.id,
+                  };
+                  expense.balance_amount_2 = remainderAmount;
+                  rowSplitInfo.set(tx.rowIndex, { fallbackAccountId: fallbackAccount.id, remainderAmount });
+                }
+              }
+            } else {
+              const rowAssetKey = genericAssetKeyFromValue(rowAccountIds[tx.rowIndex]) || fallbackAssetKey;
+              if (rowAssetKey) {
+                expense.balance_source = { asset_key: rowAssetKey, detail_type: null, detail_id: null };
+              }
             }
             const ownShare = Number(rowSharedExpenses[tx.rowIndex]);
             if (tx.isOutflow && Number.isFinite(ownShare)) {
@@ -1302,10 +1385,22 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
       finalTx.forEach((tx) => {
         const target = liquidityAccounts.find((item) => String(item.id) === String(rowAccountIds[tx.rowIndex])) || account;
         if (!target) return;
+        const split = rowSplitInfo.get(tx.rowIndex);
+        const amountEUR = toEUR(tx.amount);
+        const primaryShare = split ? amountEUR - split.remainderAmount : amountEUR;
         deltasByAccount.set(target.id, {
           account: target,
-          delta: (deltasByAccount.get(target.id)?.delta || 0) + (tx.isOutflow ? -toEUR(tx.amount) : toEUR(tx.amount)),
+          delta: (deltasByAccount.get(target.id)?.delta || 0) + (tx.isOutflow ? -primaryShare : primaryShare),
         });
+        if (split) {
+          const fallbackTarget = liquidityAccounts.find((item) => item.id === split.fallbackAccountId);
+          if (fallbackTarget) {
+            deltasByAccount.set(fallbackTarget.id, {
+              account: fallbackTarget,
+              delta: (deltasByAccount.get(fallbackTarget.id)?.delta || 0) - split.remainderAmount,
+            });
+          }
+        }
       });
       try {
         await Promise.all(Array.from(deltasByAccount.values()).map(async ({ account: target, delta }) => {
@@ -1326,6 +1421,28 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
       } catch {
         // Transactions are already safely imported. Do not mark/retry them:
         // the persisted balance_source lets the user reconcile the account.
+      }
+    } else if (success === total && fallbackAssetKey && updateAccountBalance) {
+      // Same best-effort convenience for a generic macrocategory (no specific
+      // sub-account): bump the CURRENT balance snapshot by the net delta of
+      // every row that isn't overridden to a specific account. Matches the
+      // liquidity-account path above — a flat adjustment on today's snapshot,
+      // not a per-transaction-month reconciliation.
+      let delta = 0;
+      finalTx.forEach((tx) => {
+        const rowAccount = liquidityAccounts.find((item) => String(item.id) === String(rowAccountIds[tx.rowIndex]));
+        if (rowAccount) return; // this row already targets its own specific account
+        delta += tx.isOutflow ? -toEUR(tx.amount) : toEUR(tx.amount);
+      });
+      if (Math.abs(delta) > 0.005) {
+        try {
+          await financeService.addBalance(
+            buildSnapshotWithDeltas(getTodayLocalISO(), getCurrentBalance(userData), { [fallbackAssetKey]: delta }),
+          );
+        } catch {
+          // Same as above: the transactions are already imported and carry
+          // their own balance_source, so this failure is safe to ignore.
+        }
       }
     }
 
@@ -1957,9 +2074,18 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                 <span>{t.paymentAccount || t.paymentSourceTitle || 'Payment account'}</span>
                 <CompactSelect theme={theme} value={selectedAccountId} onChange={(event) => setSelectedAccountId(event.target.value)}>
                   <option value="">{t.noLinkedAccount || 'Do not link an account'}</option>
-                  {liquidityAccounts.map((accountItem) => (
-                    <option key={accountItem.id} value={accountItem.id}>{accountItem.label}</option>
-                  ))}
+                  <optgroup label={t.genericAccountGroup || 'Generic balance'}>
+                    {genericAssetOptions.map((opt) => (
+                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    ))}
+                  </optgroup>
+                  {liquidityAccounts.length > 0 && (
+                    <optgroup label={t.specificAccountGroup || 'Accounts'}>
+                      {liquidityAccounts.map((accountItem) => (
+                        <option key={accountItem.id} value={accountItem.id}>{accountItem.label}</option>
+                      ))}
+                    </optgroup>
+                  )}
                   <option value="new">{t.createPaymentAccount || '+ Create a payment account'}</option>
                 </CompactSelect>
               </PaymentField>
@@ -2267,6 +2393,9 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                                     onChange={(event) => setRowAccountIds((current) => ({ ...current, [tx.rowIndex]: event.target.value }))}
                                   >
                                     <option value="">{t.selectReceivingAccount || 'Select receiving account'}</option>
+                                    {genericAssetOptions.map((opt) => (
+                                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                    ))}
                                     {liquidityAccounts.map((accountItem) => (
                                       <option key={accountItem.id} value={accountItem.id}>{accountItem.label}</option>
                                     ))}

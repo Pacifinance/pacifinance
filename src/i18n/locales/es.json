@@ -973,6 +973,7 @@
             },
             "tableColumns": {
                 "category": "Categoría",
+                "paymentMethod": "Método de pago",
                 "value": "Valor",
                 "note": "Nota",
                 "date": "Fecha del ingreso"
@@ -1012,6 +1013,7 @@
             "tableColumns": {
                 "category": "Categoría",
                 "typology": "Tipología",
+                "paymentMethod": "Método de pago",
                 "value": "Valor",
                 "note": "Nota",
                 "date": "Fecha del gasto"
@@ -1020,6 +1022,7 @@
             "successUpdate": "Gasto insertado con éxito",
             "successDelete": "Gasto eliminado con éxito",
             "decreaseWhichBalance": "Restar de",
+            "splitRemainderHint": "{amount} restantes, pagados desde:",
             "makeRecurring": "Hacer que se repita cada mes",
             "sharedExpense": {
                 "toggleLabel": "Dividir con el grupo",
@@ -2345,6 +2348,8 @@
         "accountType": "Tipo de cuenta",
         "paymentSourceHelp": "El proveedor del archivo es un banco o una fuente de pago, no una categoría. Vincúlalo a una cuenta para mantener cada movimiento trazable.",
         "noLinkedAccount": "No vincular una cuenta",
+        "genericAccountGroup": "Saldo genérico",
+        "specificAccountGroup": "Cuentas",
         "createPaymentAccount": "+ Crear cuenta de pago",
         "accountName": "Nombre de la cuenta",
         "bankAccount": "Banco",
@@ -3108,6 +3113,12 @@
         "editTitle": "Editar cuenta",
         "label": "Nombre",
         "amount": "Importe",
+        "linkedBank": "Banco/proveedor vinculado",
+        "linkedBankNone": "Ninguno",
+        "unitValue": "Denominación (p. ej. vales de comida)",
+        "unitValueNone": "Ninguna — saldo continuo",
+        "fallbackAccount": "Resto pagado desde",
+        "fallbackAccountNone": "Preguntar cada vez",
         "addButton": "Añadir",
         "saveButton": "Guardar",
         "cancelEdit": "Cancelar",

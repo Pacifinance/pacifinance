@@ -17,9 +17,57 @@ export interface BalanceSourceEntryMeta {
   assetKey: string;
   detailType?: 'liquidity' | 'investment';
   detailId?: number;
+  /** Fixed denomination (e.g. €8/meal voucher) — set only for liquidity accounts that have one. */
+  unitValue?: number | null;
+  /** Current EUR balance — only populated for liquidity account entries, used to cap the voucher portion of a split. */
+  availableBalance?: number;
+  /** Liquidity account id configured as this account's default remainder source. */
+  fallbackAccountId?: number | null;
 }
 
 export type BalanceSourceMetaMap = Record<string, BalanceSourceEntryMeta>;
+
+export interface StoredBalanceSourceLike {
+  balanceAssetKey?: string | null;
+  balanceDetailType?: 'liquidity' | 'investment' | null;
+  balanceDetailId?: number | null;
+}
+
+/**
+ * Reverse lookup: from a transaction's stored balance-source fields
+ * (balanceAssetKey/balanceDetailType/balanceDetailId, as returned by
+ * TransactionDto) back to the translated label used as the Select value in
+ * balanceSourceMeta. Falls back from the specific sub-account (it may have
+ * been deleted/renamed since) to the parent asset field; returns '' when
+ * nothing was stored or nothing matches.
+ */
+export function resolveBalanceSourceLabel(
+  balanceSourceMeta: BalanceSourceMetaMap | null | undefined,
+  row: StoredBalanceSourceLike | null | undefined,
+): string {
+  if (!row?.balanceAssetKey || !balanceSourceMeta) return '';
+  const entries = Object.entries(balanceSourceMeta);
+  if (row.balanceDetailType && row.balanceDetailId != null) {
+    const detail = entries.find(([, meta]) =>
+      meta.detailType === row.balanceDetailType &&
+      meta.detailId === row.balanceDetailId &&
+      meta.assetKey === row.balanceAssetKey);
+    if (detail) return detail[0];
+  }
+  const base = entries.find(([, meta]) => !meta.detailType && meta.assetKey === row.balanceAssetKey);
+  return base?.[0] || '';
+}
+
+/** Reverse lookup: from a liquidity account id (e.g. a denomination account's configured fallbackAccountId) to its translated balance-source label. */
+export function resolveFallbackAccountLabel(
+  balanceSourceMeta: BalanceSourceMetaMap | null | undefined,
+  fallbackAccountId: number | null | undefined,
+): string {
+  if (fallbackAccountId == null || !balanceSourceMeta) return '';
+  const entry = Object.entries(balanceSourceMeta).find(([, meta]) =>
+    meta.detailType === 'liquidity' && meta.detailId === fallbackAccountId);
+  return entry?.[0] || '';
+}
 
 interface DetailLabelProps {
   parentLabel: string;

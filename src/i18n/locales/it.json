@@ -1039,6 +1039,7 @@
             },
             "tableColumns": {
                 "category": "Categoria",
+                "paymentMethod": "Metodo di pagamento",
                 "value": "Valore",
                 "note": "Nota",
                 "date": "Data Entrata"
@@ -1078,6 +1079,7 @@
             "tableColumns": {
                 "category": "Categoria",
                 "typology": "Tipologia",
+                "paymentMethod": "Metodo di pagamento",
                 "value": "Valore",
                 "note": "Nota",
                 "date": "Data Uscita"
@@ -1086,6 +1088,7 @@
             "successUpdate": "Uscita inserita con successo",
             "successDelete": "Uscita eliminata con successo",
             "decreaseWhichBalance": "Sottrai da",
+            "splitRemainderHint": "{amount} restanti, pagati da:",
             "makeRecurring": "Rendi ricorrente ogni mese",
             "sharedExpense": {
                 "toggleLabel": "Dividi con il gruppo",
@@ -2441,6 +2444,8 @@
         "accountType": "Tipo di conto",
         "paymentSourceHelp": "La piattaforma del file è una banca o una fonte di pagamento, non una categoria. Collegala a un conto per rendere tracciabile ogni movimento.",
         "noLinkedAccount": "Non collegare un conto",
+        "genericAccountGroup": "Saldo generico",
+        "specificAccountGroup": "Conti",
         "createPaymentAccount": "+ Crea un conto di pagamento",
         "accountName": "Nome del conto",
         "bankAccount": "Banca",
@@ -3204,6 +3209,12 @@
         "editTitle": "Modifica conto",
         "label": "Nome",
         "amount": "Importo",
+        "linkedBank": "Banca/provider collegato",
+        "linkedBankNone": "Nessuno",
+        "unitValue": "Denominazione (es. buoni pasto)",
+        "unitValueNone": "Nessuna — saldo continuo",
+        "fallbackAccount": "Resto pagato da",
+        "fallbackAccountNone": "Chiedi ogni volta",
         "addButton": "Aggiungi",
         "saveButton": "Salva",
         "cancelEdit": "Annulla",

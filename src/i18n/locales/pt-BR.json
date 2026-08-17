@@ -971,6 +971,7 @@
             },
             "tableColumns": {
                 "category": "Categoria",
+                "paymentMethod": "Método de pagamento",
                 "value": "Valor",
                 "note": "Nota",
                 "date": "Data da receita"
@@ -1010,6 +1011,7 @@
             "tableColumns": {
                 "category": "Categoria",
                 "typology": "Tipologia",
+                "paymentMethod": "Método de pagamento",
                 "value": "Valor",
                 "note": "Nota",
                 "date": "Data da saída"
@@ -1018,6 +1020,7 @@
             "successUpdate": "Saída inserida com sucesso",
             "successDelete": "Saída excluída com sucesso",
             "decreaseWhichBalance": "Subtrair de",
+            "splitRemainderHint": "{amount} restantes, pagos de:",
             "makeRecurring": "Tornar recorrente todo mês",
             "sharedExpense": {
                 "toggleLabel": "Dividir com o grupo",
@@ -2343,6 +2346,8 @@
         "accountType": "Tipo de conta",
         "paymentSourceHelp": "O provedor do arquivo é um banco ou fonte de pagamento, não uma categoria. Vincule-o a uma conta para manter cada movimento rastreável.",
         "noLinkedAccount": "Não vincular uma conta",
+        "genericAccountGroup": "Saldo genérico",
+        "specificAccountGroup": "Contas",
         "createPaymentAccount": "+ Criar conta de pagamento",
         "accountName": "Nome da conta",
         "bankAccount": "Banco",
@@ -3106,6 +3111,12 @@
         "editTitle": "Editar conta",
         "label": "Nome",
         "amount": "Valor",
+        "linkedBank": "Banco/provedor vinculado",
+        "linkedBankNone": "Nenhum",
+        "unitValue": "Denominação (ex. vale-refeição)",
+        "unitValueNone": "Nenhuma — saldo contínuo",
+        "fallbackAccount": "Restante pago de",
+        "fallbackAccountNone": "Perguntar sempre",
         "addButton": "Adicionar",
         "saveButton": "Salvar",
         "cancelEdit": "Cancelar",

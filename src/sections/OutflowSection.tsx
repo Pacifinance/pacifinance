@@ -34,7 +34,8 @@ import { indexToMonthKey } from '../utils/userDataSelectors';
 import ThemedSelect, { getMuiSelectMenuProps } from '../components/ThemedSelect';
 import DateFilterPopover from '../components/DateFilterPopover';
 import CategoryPicker from '../components/CategoryPicker';
-import { renderBalanceSourceMenuItems } from '../components/multiInsert/balanceSourceMenu';
+import { renderBalanceSourceMenuItems, resolveBalanceSourceLabel, resolveFallbackAccountLabel } from '../components/multiInsert/balanceSourceMenu';
+import { computeVoucherSplit } from '../utils/voucherSplit';
 import { useListViewMode } from '../hooks/useListViewMode';
 import { STORAGE_KEYS } from '../constants/storageKeys';
 import { inferTransactionPurpose } from '../utils/transactionPurpose';
@@ -132,6 +133,22 @@ const SharedEditPanel = styled.div`
   .shared-fields > * { min-width:0; width:100%; box-sizing:border-box; }
   small { color:${p => p.theme.textColor}; opacity:.65; line-height:1.35; overflow-wrap:anywhere; }
   @media (max-width:620px) { .shared-fields { grid-template-columns:1fr; } }
+`;
+
+const SplitHintRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.4rem;
+  width: min(100%, 340px);
+  max-width: 100%;
+  min-width: 0;
+  font-size: 0.72rem;
+  color: ${p => p.theme.textColor};
+  opacity: 0.85;
+
+  span { flex-shrink: 0; }
+  select { min-width: 0; flex: 1; }
 `;
 
 const SharedExpenseButton = ({ theme, details, ariaLabel }) => {
@@ -791,7 +808,7 @@ export default function OutflowSection({
   flatOutflowsForRange,
 }) {
   const { language, translations } = React.useContext(LanguageContext);
-  const { currencySymbol, formatNumber, fromEUR } = React.useContext(CurrencyContext);
+  const { currencySymbol, formatNumber, fromEUR, toEUR } = React.useContext(CurrencyContext);
   const pad = (n: number) => String(n).padStart(2, '0');
   const _now = new Date();
   const currentDate = `${_now.getFullYear()}-${pad(_now.getMonth() + 1)}-${pad(_now.getDate())}`;
@@ -823,6 +840,24 @@ export default function OutflowSection({
       ? translations.insert.sharedTransactionLink.peopleCountShort.replace('{count}', String(people))
       : '—';
     return `${translations.insert.sharedTransactionLink.sharedStatus} · ${translations.general.total}: ${formatNumber(fromEUR(item.totalAmount))} ${currencySymbol} · ${peopleText} · ${translations.insert.sharedTransactionLink.ownShare}: ${formatNumber(fromEUR(item.ownShare))} ${currencySymbol}`;
+  };
+
+  // "Edenred (8,00€) + Carta (3,50€)" when the transaction was split across a
+  // fixed-denomination account and its fallback (see utils/voucherSplit.ts);
+  // just the plain source label otherwise.
+  const getPaymentMethodDisplay = (add) => {
+    const primary = resolveBalanceSourceLabel(balanceSourceMeta, add);
+    if (!primary) return '—';
+    if (!add.balanceAssetKey2) return primary;
+    const secondary = resolveBalanceSourceLabel(balanceSourceMeta, {
+      balanceAssetKey: add.balanceAssetKey2,
+      balanceDetailType: add.balanceDetailType2,
+      balanceDetailId: add.balanceDetailId2,
+    });
+    if (!secondary) return primary;
+    const secondaryShare = Number(add.balanceAmount2) || 0;
+    const primaryShare = (Number(add.amount) || 0) - secondaryShare;
+    return `${primary} (${formatNumber(primaryShare)}${currencySymbol}) + ${secondary} (${formatNumber(secondaryShare)}${currencySymbol})`;
   };
 
   const renderSharedIndicator = (add) => {
@@ -887,6 +922,14 @@ export default function OutflowSection({
       note: add.notes || "",
       date: add.date ? String(add.date).slice(0, 10) : "",
       purpose: inferTransactionPurpose('outflow', add.categoryTag?.index ?? 0, add.purpose),
+      balanceSourceLabel: resolveBalanceSourceLabel(balanceSourceMeta, add),
+      splitFallbackLabel: add.balanceAssetKey2
+        ? resolveBalanceSourceLabel(balanceSourceMeta, {
+            balanceAssetKey: add.balanceAssetKey2,
+            balanceDetailType: add.balanceDetailType2,
+            balanceDetailId: add.balanceDetailId2,
+          })
+        : undefined,
       sharedEnabled: Boolean(shared),
       sharedMethod: shared && Number.isInteger(ratio) && ratio >= 2 ? 'people' : 'share',
       sharedPeopleCount: inferredPeople,
@@ -966,6 +1009,40 @@ export default function OutflowSection({
       )}
     </SharedEditPanel>
   );
+
+  // Shown under the payment-method select in edit mode when the chosen
+  // source is a fixed-denomination account (e.g. meal vouchers) and the
+  // amount leaves a remainder — lets the user pick/confirm which account
+  // absorbs it (see utils/voucherSplit.ts, defaults from the account's own
+  // configured fallback).
+  const renderSplitHint = () => {
+    const meta = balanceSourceMeta?.[editValues.balanceSourceLabel];
+    if (!meta?.unitValue) return null;
+    const amountEUR = toEUR(parseFloat(editValues.amount) || 0);
+    const { remainderAmount } = computeVoucherSplit(amountEUR, meta.unitValue, meta.availableBalance || 0);
+    if (remainderAmount <= 0.005) return null;
+    const fallbackLabel = editValues.splitFallbackLabel !== undefined
+      ? editValues.splitFallbackLabel
+      : resolveFallbackAccountLabel(balanceSourceMeta, meta.fallbackAccountId);
+    return (
+      <SplitHintRow theme={theme}>
+        <span>
+          {(translations.insert.outflowSection.splitRemainderHint || '{amount} left over, paid from:')
+            .replace('{amount}', `${formatNumber(fromEUR(remainderAmount))}${currencySymbol}`)}
+        </span>
+        <InlineSelect
+          theme={theme}
+          value={fallbackLabel}
+          onChange={(e) => setEditValues(prev => ({ ...prev, splitFallbackLabel: e.target.value }))}
+        >
+          <option value="">{translations.general.selectAnOption || 'Select...'}</option>
+          {Object.keys(balanceOptions || {})
+            .filter((label) => label !== editValues.balanceSourceLabel)
+            .map((label) => <option key={label} value={label}>{label}</option>)}
+        </InlineSelect>
+      </SplitHintRow>
+    );
+  };
 
   const renderPurposeSelect = () => {
     const purposeTranslations = translations.transactionPurpose;
@@ -1215,6 +1292,9 @@ export default function OutflowSection({
             </ThemedSelect>
           </div>
         </th>
+        <th style={{ minWidth: 110 }}>
+          {translations.insert.outflowSection.tableColumns.paymentMethod}
+        </th>
         <th style={{ minWidth: 100 }}>
           <span
             onClick={() => handleSort('amount')}
@@ -1345,6 +1425,23 @@ export default function OutflowSection({
                 </InlineSelect>
               </td>
               <td>
+                <Select
+                  value={editValues.balanceSourceLabel || ''}
+                  onChange={(e) => setEditValues(prev => ({ ...prev, balanceSourceLabel: e.target.value }))}
+                  displayEmpty
+                  fullWidth
+                  size="small"
+                  sx={selectSx}
+                  MenuProps={getMuiSelectMenuProps(theme)}
+                >
+                  <MenuItem value="">
+                    <em>{translations.general.selectAnOption || 'None (optional)'}</em>
+                  </MenuItem>
+                  {renderBalanceSourceMenuItems(balanceOptions, balanceSourceMeta)}
+                </Select>
+                {renderSplitHint()}
+              </td>
+              <td>
                 <div style={{ position: 'relative', width: '100%', minWidth: 0 }}>
                   <InlineInput
                     type="text"
@@ -1409,6 +1506,7 @@ export default function OutflowSection({
                 : getDisplayCategory(add)}
             </td>
             <td>{isHidden ? '****' : translateTag(add.paymentType?.label, language, 'payment')}</td>
+            <td>{isHidden ? '****' : getPaymentMethodDisplay(add)}</td>
             <td>
               {isHidden
                 ? '****'
@@ -1539,6 +1637,21 @@ export default function OutflowSection({
                       </option>
                     ))}
                   </InlineSelect>
+                  <Select
+                    value={editValues.balanceSourceLabel || ''}
+                    onChange={(e) => setEditValues(prev => ({ ...prev, balanceSourceLabel: e.target.value }))}
+                    displayEmpty
+                    fullWidth
+                    size="small"
+                    sx={selectSx}
+                    MenuProps={getMuiSelectMenuProps(theme)}
+                  >
+                    <MenuItem value="">
+                      <em>{translations.general.selectAnOption || 'None (optional)'}</em>
+                    </MenuItem>
+                    {renderBalanceSourceMenuItems(balanceOptions, balanceSourceMeta)}
+                  </Select>
+                  {renderSplitHint()}
                   <div style={{ position: 'relative', width: '100%', minWidth: 0 }}>
                     <InlineInput
                       type="text"
@@ -1601,6 +1714,9 @@ export default function OutflowSection({
               </CardTopRow>
               <CardMetaRow theme={theme}>
                 <span>{isHidden ? '****' : translateTag(add.paymentType?.label, language, 'payment')}</span>
+                {!isHidden && resolveBalanceSourceLabel(balanceSourceMeta, add) && (
+                  <span>{getPaymentMethodDisplay(add)}</span>
+                )}
                 <span>
                   {isHidden
                     ? '****'

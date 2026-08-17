@@ -31,6 +31,27 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   `CONTRIBUTING.md`, and a short "who it's for" bullet list replacing part
   of the opening paragraph, to make the pitch scannable in a few seconds
   instead of requiring a full paragraph read.
+- Outflow/income table and card views: a "Payment method" column showing
+  which account/balance a transaction was paid from or credited to, editable
+  in place. Changing it now correctly moves the amount out of the old
+  account/balance and into the new one (previously, changing the source
+  together with the amount could revert the wrong account).
+- CSV import wizard: when a bank/provider export is auto-detected (Revolut,
+  N26, Trade Republic, PayPal), the wizard now auto-selects the matching
+  liquidity sub-account if one is already linked to it, or falls back to the
+  right generic balance macrocategory (e.g. "Bank") instead of leaving the
+  payment source unset. Liquidity accounts can be manually linked to a
+  provider from the account management panel, and get linked automatically
+  the first time one is created during an import.
+- Fixed-denomination liquidity accounts (e.g. electronic meal vouchers issued
+  in fixed units like €8): a liquidity account can now be given a
+  denomination and a fallback account from the account management panel.
+  Spending an amount that isn't an exact multiple of the denomination (or
+  that exceeds the account's balance) now automatically splits the payment
+  across the voucher account and its fallback, shown as one row (e.g.
+  "Edenred (8,00€) + Banca (3,50€)") — applied automatically for imported
+  CSV rows, and available when editing a transaction's payment method
+  in-place.
 
 ### Changed
 - Migrated Tailwind CSS from v3 to v4: switched from the PostCSS plugin to

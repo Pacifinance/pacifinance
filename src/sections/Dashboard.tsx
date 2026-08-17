@@ -1227,6 +1227,7 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                 <LiquidityAccountsPanel
                     assetKey={openSubAccountsAssetKey}
                     accounts={liquidityAccountsByAssetKey[openSubAccountsAssetKey] || []}
+                    allAccounts={liquidityAccounts}
                     onClose={() => setOpenSubAccountsAssetKey(null)}
                     onChanged={refreshLiquidityAccounts}
                 />

@@ -971,6 +971,7 @@
             },
             "tableColumns": {
                 "category": "Catégorie",
+                "paymentMethod": "Moyen de paiement",
                 "value": "Valeur",
                 "note": "Note",
                 "date": "Date du revenu"
@@ -1010,6 +1011,7 @@
             "tableColumns": {
                 "category": "Catégorie",
                 "typology": "Typologie",
+                "paymentMethod": "Moyen de paiement",
                 "value": "Valeur",
                 "note": "Note",
                 "date": "Date de la sortie"
@@ -1018,6 +1020,7 @@
             "successUpdate": "Sortie insérée avec succès",
             "successDelete": "Sortie supprimée avec succès",
             "decreaseWhichBalance": "Soustraire de",
+            "splitRemainderHint": "{amount} restants, payés depuis :",
             "makeRecurring": "Rendre récurrent chaque mois",
             "sharedExpense": {
                 "toggleLabel": "Partager avec le groupe",
@@ -2343,6 +2346,8 @@
         "accountType": "Type de compte",
         "paymentSourceHelp": "Le fournisseur du fichier est une banque ou une source de paiement, pas une catégorie. Liez-le à un compte pour assurer la traçabilité.",
         "noLinkedAccount": "Ne pas lier de compte",
+        "genericAccountGroup": "Solde générique",
+        "specificAccountGroup": "Comptes",
         "createPaymentAccount": "+ Créer un compte de paiement",
         "accountName": "Nom du compte",
         "bankAccount": "Banque",
@@ -3106,6 +3111,12 @@
         "editTitle": "Modifier le compte",
         "label": "Nom",
         "amount": "Montant",
+        "linkedBank": "Banque/fournisseur lié",
+        "linkedBankNone": "Aucun",
+        "unitValue": "Dénomination (ex. tickets restaurant)",
+        "unitValueNone": "Aucune — solde continu",
+        "fallbackAccount": "Reste payé depuis",
+        "fallbackAccountNone": "Demander à chaque fois",
         "addButton": "Ajouter",
         "saveButton": "Enregistrer",
         "cancelEdit": "Annuler",

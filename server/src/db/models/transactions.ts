@@ -9,6 +9,7 @@ import type { TransactionPurpose } from "../../domain/transactions"
 const TRANSACTION_SELECT = `
     id, occurred_at, amount, cash_amount, exclude_from_statistics, is_expense, direction, purpose, notes,
     balance_asset_key, balance_detail_type, balance_detail_id,
+    balance_asset_key_2, balance_detail_type_2, balance_detail_id_2, balance_amount_2,
     payment_type:tags!expenses_payment_type_tag_id_fkey(label, client_index, type),
     category_tag:tags!expenses_category_tag_id_fkey(label, client_index, type),
     user_category:user_categories(id, label)
@@ -32,6 +33,16 @@ export type TransactionBalanceSource = {
     detail_id: number | null
 }
 
+/**
+ * A second balance source absorbing part of the transaction's amount — e.g.
+ * the card/cash remainder of a meal-voucher purchase paid partly from a
+ * fixed-denomination liquidity account (user_liquidity_accounts.unit_value).
+ * `amount` is the EUR share taken from THIS source; the primary
+ * TransactionBalanceSource's implied share is the transaction's own amount
+ * minus this one. Only meaningful together with a primary balance source.
+ */
+export type TransactionBalanceSplit = TransactionBalanceSource & { amount: number }
+
 interface TagJoinRow {
     label: string
     client_index: number
@@ -51,6 +62,10 @@ interface TransactionRow {
     balance_asset_key: string | null
     balance_detail_type: string | null
     balance_detail_id: number | null
+    balance_asset_key_2: string | null
+    balance_detail_type_2: string | null
+    balance_detail_id_2: number | null
+    balance_amount_2: number | null
     payment_type: TagJoinRow | null
     category_tag: TagJoinRow | null
     user_category: {id: number, label: string} | null
@@ -85,7 +100,11 @@ function toTransaction(rawRow: unknown) {
         userCategory: row.user_category ? {id: row.user_category.id as number, label: row.user_category.label as string} : null,
         balanceAssetKey: (row.balance_asset_key as string | null) ?? null,
         balanceDetailType: (row.balance_detail_type as string | null) ?? null,
-        balanceDetailId: (row.balance_detail_id as number | null) ?? null
+        balanceDetailId: (row.balance_detail_id as number | null) ?? null,
+        balanceAssetKey2: (row.balance_asset_key_2 as string | null) ?? null,
+        balanceDetailType2: (row.balance_detail_type_2 as string | null) ?? null,
+        balanceDetailId2: (row.balance_detail_id_2 as number | null) ?? null,
+        balanceAmount2: (row.balance_amount_2 as number | null) ?? null
     }
 }
 
@@ -102,11 +121,13 @@ function toTransaction(rawRow: unknown) {
  * @param category_tag Category tag of the expense
  * @param user_category_id Optional custom sub-category (child of category_tag), display-only
  * @param balance_source Optional balance source the transaction was paid from / credited to
+ * @param balance_split Optional second balance source absorbing part of the amount (e.g. a meal-voucher remainder)
  * @returns Expense document, or null in case of error
  */
 async function insertNew(user_id: string, date: Date, amount: number, is_expense: boolean,
     notes: string, payment_type: number, category_tag: number, user_category_id: number | null = null,
-    balance_source: TransactionBalanceSource | null = null, purpose: TransactionPurpose = is_expense ? "expense" : "income") {
+    balance_source: TransactionBalanceSource | null = null, purpose: TransactionPurpose = is_expense ? "expense" : "income",
+    balance_split: TransactionBalanceSplit | null = null) {
     let payment_type_ref = null
     let category_tag_ref = null
     if (is_expense) {
@@ -133,7 +154,11 @@ async function insertNew(user_id: string, date: Date, amount: number, is_expense
         user_category_id,
         balance_asset_key: balance_source?.asset_key ?? null,
         balance_detail_type: balance_source?.detail_type ?? null,
-        balance_detail_id: balance_source?.detail_id ?? null
+        balance_detail_id: balance_source?.detail_id ?? null,
+        balance_asset_key_2: balance_source ? (balance_split?.asset_key ?? null) : null,
+        balance_detail_type_2: balance_source ? (balance_split?.detail_type ?? null) : null,
+        balance_detail_id_2: balance_source ? (balance_split?.detail_id ?? null) : null,
+        balance_amount_2: balance_source ? (balance_split?.amount ?? null) : null
     }).select(TRANSACTION_SELECT).single()
     if (error) console.error("transactions.insertNew: failed to insert expense", error)
     if (error || !data) return null
@@ -151,6 +176,7 @@ export type TransactionUpdateInput = {
     categoryTag: number
     userCategoryId: number | null
     balanceSource: TransactionBalanceSource | null
+    balanceSplit: TransactionBalanceSplit | null
     sharedMode: "unchanged" | "set" | "remove"
     sharedTotal: number | null
     sharedOwnShare: number | null
@@ -165,6 +191,8 @@ async function updateExisting(user_id: string, input: TransactionUpdateInput) {
         tags.getReferenceByIndexAndType(input.categoryTag, categoryType),
     ])
     if (!paymentRef || !categoryRef) return null
+
+    const balanceSplit = input.balanceSource ? input.balanceSplit : null
 
     const {data, error} = await supabase.rpc("update_transaction_with_shared", {
         p_user_id: user_id,
@@ -183,6 +211,10 @@ async function updateExisting(user_id: string, input: TransactionUpdateInput) {
         p_shared_mode: input.sharedMode,
         p_shared_total: input.sharedTotal,
         p_shared_own_share: input.sharedOwnShare,
+        p_balance_asset_key_2: balanceSplit?.asset_key ?? null,
+        p_balance_detail_type_2: balanceSplit?.detail_type ?? null,
+        p_balance_detail_id_2: balanceSplit?.detail_id ?? null,
+        p_balance_amount_2: balanceSplit?.amount ?? null,
     })
     if (error) console.error("transactions.updateExisting: failed to update expense", error)
     if (error || data === null) return null
@@ -199,6 +231,7 @@ export type TransactionBatchInput = {
     categoryTag: number
     userCategoryId: number | null
     balanceSource: TransactionBalanceSource | null
+    balanceSplit: TransactionBalanceSplit | null
     cashAmount: number | null
     excludeFromStatistics: boolean
 }
@@ -244,6 +277,10 @@ async function insertBatch(user_id: string, inputs: TransactionBatchInput[]) {
             balance_asset_key: input.balanceSource?.asset_key ?? null,
             balance_detail_type: input.balanceSource?.detail_type ?? null,
             balance_detail_id: input.balanceSource?.detail_id ?? null,
+            balance_asset_key_2: input.balanceSource ? (input.balanceSplit?.asset_key ?? null) : null,
+            balance_detail_type_2: input.balanceSource ? (input.balanceSplit?.detail_type ?? null) : null,
+            balance_detail_id_2: input.balanceSource ? (input.balanceSplit?.detail_id ?? null) : null,
+            balance_amount_2: input.balanceSource ? (input.balanceSplit?.amount ?? null) : null,
         }
     })
     if (rows.some((row) => row === null)) return null

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { detectBankFormat } from '../../utils/dataImport/bankFormats';
+import { detectBankFormat, BANK_FORMAT_ASSET_KEY } from '../../utils/dataImport/bankFormats';
 
 describe('detectBankFormat', () => {
   it('detects a Revolut current-account export and maps its columns', () => {
@@ -114,6 +114,17 @@ describe('detectBankFormat', () => {
       tradeRow[2] = 'TRADING'; tradeRow[4] = 'BUY';
       expect(filterRow(cashRow)).toBe(true);
       expect(filterRow(tradeRow)).toBe(false);
+    });
+  });
+
+  describe('BANK_FORMAT_ASSET_KEY', () => {
+    it('maps every detectable bank format to a liquidity macrocategory', () => {
+      expect(BANK_FORMAT_ASSET_KEY).toEqual({
+        traderepublic: 'bank',
+        n26: 'bank',
+        revolut: 'digitalServices',
+        paypal: 'digitalServices',
+      });
     });
   });
 });

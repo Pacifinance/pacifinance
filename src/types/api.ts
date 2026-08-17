@@ -129,6 +129,12 @@ export interface TransactionWriteDto {
   /** Optional custom sub-category id (from /categories/get), display-only — stats stay on category_tag. */
   user_category_id?: number | null;
   balance_source?: TransactionBalanceSourceDto | null;
+  /** Second balance source absorbing part of the amount — e.g. the card/cash
+   * remainder of a meal-voucher purchase (see utils/voucherSplit.ts). Only
+   * meaningful together with balance_source; balance_amount_2 is the EUR
+   * share taken from THIS source (the primary source gets the rest). */
+  balance_source_2?: TransactionBalanceSourceDto | null;
+  balance_amount_2?: number | null;
   /** Real movement on the selected account when `amount` is only the user's share. */
   cash_amount?: number | null;
   /** Keeps an auditable movement out of income/outflow statistics. */
@@ -190,6 +196,11 @@ export interface TransactionDto {
   balanceAssetKey: AssetKey | null;
   balanceDetailType: 'liquidity' | 'investment' | null;
   balanceDetailId: number | null;
+  balanceAssetKey2: AssetKey | null;
+  balanceDetailType2: 'liquidity' | 'investment' | null;
+  balanceDetailId2: number | null;
+  /** EUR amount taken from the second balance source; null when there's no split. */
+  balanceAmount2: number | null;
   cashAmount: number;
   excludeFromStatistics: boolean;
 }
@@ -876,6 +887,12 @@ export interface LiquidityAccountDto {
   currency: string;
   notes: string;
   updatedAt: string;
+  /** Detected bank/provider id this account auto-matches on import (see utils/dataImport/bankFormats.ts BankFormatId). Null = no known provider. */
+  linkedBankKey: string | null;
+  /** Fixed denomination (e.g. 8 for €8 meal vouchers). Null = ordinary continuous-balance account. */
+  unitValue: number | null;
+  /** Account (another liquidity account id) that absorbs the remainder when a purchase isn't an exact multiple of unitValue. Only meaningful together with unitValue. */
+  fallbackAccountId: number | null;
 }
 
 export type LiquidityAccountsGetResponse = LiquidityAccountDto[];
@@ -887,6 +904,9 @@ export interface LiquidityAccountSaveRequest {
   current_value: number;
   currency?: string;
   notes?: string;
+  linked_bank_key?: string | null;
+  unit_value?: number | null;
+  fallback_account_id?: number | null;
 }
 
 export interface LiquidityAccountDeleteRequest { id: number; }

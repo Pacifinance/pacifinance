@@ -28,6 +28,8 @@ const RecurringTransactionsPanel = lazy(() => import("./RecurringTransactionsPan
 const SharedExpensesPanel = lazy(() => import("./SharedExpensesPanel"));
 const SharedTransactionLinkModal = lazy(() => import("../components/SharedTransactionLinkModal"));
 import { groupAmountsByBalanceSource, parseFormattedAmount } from "../components/multiInsert/helpers";
+import { resolveBalanceSourceLabel, resolveFallbackAccountLabel } from "../components/multiInsert/balanceSourceMenu";
+import { computeVoucherSplit } from "../utils/voucherSplit";
 const groupIncomeAmountsBySource = groupAmountsByBalanceSource;
 import { ASSET_KEYS } from "./MultiBalanceInsert";
 import { buildAddBalancePayload, buildSnapshotWithDeltas, ASSET_TO_DB_KEY } from "../constants/balanceSchema";
@@ -827,6 +829,12 @@ export default function InsertValue({
         assetKey: account.assetKey,
         detailType: 'liquidity',
         detailId: account.id,
+        // Fixed-denomination accounts (e.g. meal vouchers) need their unit
+        // value/balance/fallback to compute a card-or-cash split — see
+        // utils/voucherSplit.ts and its callers.
+        unitValue: account.unitValue ?? null,
+        availableBalance: account.currentValue ?? 0,
+        fallbackAccountId: account.fallbackAccountId ?? null,
       });
     });
 
@@ -1778,19 +1786,7 @@ export default function InsertValue({
    * Falls back from the specific sub-account (it may have been deleted since)
    * to the parent asset field; returns '' when nothing was stored.
    */
-  const findSourceLabelForTransaction = (row) => {
-    if (!row?.balanceAssetKey) return '';
-    const entries = getBalanceSourceEntries();
-    if (row.balanceDetailType && row.balanceDetailId != null) {
-      const detail = entries.find((entry) =>
-        entry.detailType === row.balanceDetailType &&
-        entry.detailId === row.balanceDetailId &&
-        entry.assetKey === row.balanceAssetKey);
-      if (detail) return detail.label;
-    }
-    const base = entries.find((entry) => !entry.detailType && entry.assetKey === row.balanceAssetKey);
-    return base?.label || '';
-  };
+  const findSourceLabelForTransaction = (row) => resolveBalanceSourceLabel(getBalanceSourceMeta(), row);
 
   const handleDeleteIncome = (date, amount, row = null) => {
     setDeleteIncomeAmount(amount);
@@ -1824,8 +1820,18 @@ export default function InsertValue({
 
   /**
    * Shared edit flow for both outflow and income. Detects whether the edit
-   * changed the cash amount or the transaction's month and, if so, asks the
-   * user to pick a balance source before applying the corresponding deltas.
+   * changed the cash amount, the transaction's month, or (via the row/card
+   * inline editors) the payment method, and applies the corresponding
+   * balance deltas.
+   *
+   * A pure payment-method change (same amount, same month) is unambiguous —
+   * the select the user just used IS the confirmation — so it's applied
+   * directly: refund the full amount to the OLD stored source, charge it to
+   * the NEW one. An amount/month change stays behind the existing
+   * confirmation modal (a judgment call: which account absorbs the
+   * difference), now correctly using the old transaction's own source for
+   * the revert instead of assuming it's the same as whatever the modal
+   * returns for the new one.
    */
   const saveEditTransaction = async (originalAdd, editedValues, isOutflow) => {
     const oldDate = originalAdd.date ? String(originalAdd.date).slice(0, 10) : '';
@@ -1839,28 +1845,78 @@ export default function InsertValue({
       if (Number.isNaN(a.getTime()) || Number.isNaN(b.getTime())) return true;
       return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth();
     })();
-    const needsBalanceUpdate = amountChanged || !sameMonth;
+    const oldSourceLabel = findSourceLabelForTransaction(originalAdd);
+    // Only the row/card inline editors (OutflowSection/IncomeSection) set
+    // this — undefined means "payment method wasn't part of this edit UI",
+    // and the original source is carried over unchanged (see fallback below).
+    const rowSourceLabel = editedValues.balanceSourceLabel;
+    const sourceChanged = rowSourceLabel !== undefined && rowSourceLabel !== oldSourceLabel;
+    const needsModalConfirmation = amountChanged || !sameMonth;
+    const needsBalanceUpdate = needsModalConfirmation || sourceChanged;
 
-    // 1. Ask for balance source if the edit impacts balances (recommended but optional).
-    let balanceSource = null;
-    if (needsBalanceUpdate) {
+    // 1. Resolve the source to persist/apply. Amount/month changes still go
+    // through the modal (recommended but optional, prefilled with whatever
+    // the row editor already picked). A source-only change is applied as-is,
+    // no modal.
+    let finalSourceLabel; // string = explicit; undefined = carry over original
+    let explicitSkip = false;
+    if (needsModalConfirmation) {
       const result = await openEditConfirmationModal({
         isOutflow,
         originalDate: oldDate,
         originalAmount: oldAmountEUR,
         editedDate: newDate,
         editedAmount: newAmountEUR,
-        initialSource: findSourceLabelForTransaction(originalAdd),
+        initialSource: rowSourceLabel || oldSourceLabel,
       });
       if (!result || result.cancelled) return false; // user dismissed the modal
-      balanceSource = result.source; // null means: save edit, don't touch balances
+      if (result.source) {
+        finalSourceLabel = result.source;
+      } else {
+        // "No balance change": keep the transaction pointing at its current
+        // source, but don't touch any balance snapshot.
+        explicitSkip = true;
+      }
+    } else if (rowSourceLabel !== undefined) {
+      finalSourceLabel = rowSourceLabel; // may be '' — explicitly unlinked
+    }
+
+    // 1b. Fixed-denomination sources (e.g. meal vouchers): recompute the
+    // card/cash split against the NEW amount whenever a final source was
+    // resolved (whether or not the source itself changed — a different
+    // amount can still change the remainder). The old transaction's own
+    // split (if any) is read straight off its stored fields, independent of
+    // this — it's what actually needs reverting below.
+    const oldSplitFallbackLabel = originalAdd?.balanceAssetKey2
+      ? findSourceLabelForTransaction({
+          balanceAssetKey: originalAdd.balanceAssetKey2,
+          balanceDetailType: originalAdd.balanceDetailType2,
+          balanceDetailId: originalAdd.balanceDetailId2,
+        })
+      : '';
+    const oldSplitAmountEUR = oldSplitFallbackLabel ? (Number(originalAdd?.balanceAmount2) || 0) : 0;
+
+    let newSplitFallbackLabel = '';
+    let newSplitRemainderEUR = 0;
+    if (finalSourceLabel) {
+      const sourceMeta = getBalanceSourceMeta()[finalSourceLabel];
+      if (sourceMeta?.unitValue) {
+        const { remainderAmount } = computeVoucherSplit(newAmountEUR, sourceMeta.unitValue, sourceMeta.availableBalance || 0);
+        if (remainderAmount > 0.005) {
+          const fallbackLabel = editedValues.splitFallbackLabel || resolveFallbackAccountLabel(getBalanceSourceMeta(), sourceMeta.fallbackAccountId);
+          if (fallbackLabel) {
+            newSplitFallbackLabel = fallbackLabel;
+            newSplitRemainderEUR = remainderAmount;
+          }
+        }
+      }
     }
 
     const sectionKey = isOutflow ? 'outflowSection' : 'incomeSection';
     try {
-      // 2. Build the updated transaction. Keep the source chosen in the edit modal, or carry
-      // over the source stored with the original transaction when the edit
-      // didn't ask for one (no balance impact).
+      // 2. Build the updated transaction. Keep the resolved source, or carry
+      // over the source stored with the original transaction when nothing
+      // touched it (no row editor involved, and no modal was needed).
       const inExJson = createInExJson(
         isOutflow,
         editedValues.date,
@@ -1869,15 +1925,24 @@ export default function InsertValue({
         isOutflow ? editedValues.typologyKey : 0,
         editedValues.categoryKey,
         editedValues.userCategoryId ?? null,
-        balanceSource,
+        finalSourceLabel || null,
         editedValues.purpose ?? originalAdd?.purpose,
+        finalSourceLabel ? { fallbackLabel: newSplitFallbackLabel, remainderAmountEUR: newSplitRemainderEUR } : null,
       );
-      if (!inExJson.transaction.balance_source && originalAdd?.balanceAssetKey) {
+      if (!inExJson.transaction.balance_source && originalAdd?.balanceAssetKey && finalSourceLabel === undefined) {
         inExJson.transaction.balance_source = {
           asset_key: originalAdd.balanceAssetKey,
           detail_type: originalAdd.balanceDetailType ?? null,
           detail_id: originalAdd.balanceDetailId ?? null,
         };
+        if (originalAdd.balanceAssetKey2) {
+          inExJson.transaction.balance_source_2 = {
+            asset_key: originalAdd.balanceAssetKey2,
+            detail_type: originalAdd.balanceDetailType2 ?? null,
+            detail_id: originalAdd.balanceDetailId2 ?? null,
+          };
+          inExJson.transaction.balance_amount_2 = originalAdd.balanceAmount2;
+        }
       }
       let sharedExpenseUpdate;
       if (isOutflow && typeof editedValues.sharedEnabled === 'boolean') {
@@ -1912,22 +1977,44 @@ export default function InsertValue({
         learnFromTransaction(inExJson.transaction.notes, inExJson.transaction.category_tag, isOutflow, inExJson.transaction.user_category_id ?? null);
       }
 
-      // 3. Apply balance deltas if needed.
-      if (needsBalanceUpdate && balanceSource) {
-        // Reversing the old transaction on the OLD month:
+      // 3. Apply balance deltas if needed (skipped entirely when the user
+      // explicitly chose "no balance change" in the modal).
+      if (needsBalanceUpdate && !explicitSkip) {
+        // Reversing the old transaction on the OLD month, against its OWN
+        // stored source(s):
         //   outflow → +oldAmount   income → -oldAmount
-        // Applying the new transaction on the NEW month:
+        // Applying the new transaction on the NEW month, against the
+        // resolved (possibly different) source(s):
         //   outflow → -newAmount   income → +newAmount
         const oldSign = isOutflow ? +1 : -1;
         const newSign = isOutflow ? -1 : +1;
-        if (sameMonth) {
+        const effectiveNewSource = finalSourceLabel || '';
+        const sameSource = effectiveNewSource === (oldSourceLabel || '');
+        const hasOldSplit = Boolean(oldSplitFallbackLabel) && oldSplitAmountEUR > 0.005;
+        const hasNewSplit = Boolean(newSplitFallbackLabel) && newSplitRemainderEUR > 0.005;
+        if (!hasOldSplit && !hasNewSplit && sameSource && sameMonth) {
           const net = oldSign * oldAmountEUR + newSign * newAmountEUR;
-          if (Math.abs(net) > 0.005) {
-            await applyBalanceDeltaForDate(newDate, net, balanceSource);
+          if (Math.abs(net) > 0.005 && effectiveNewSource) {
+            await applyBalanceDeltaForDate(newDate, net, effectiveNewSource);
           }
         } else {
-          await applyBalanceDeltaForDate(oldDate, oldSign * oldAmountEUR, balanceSource);
-          await applyBalanceDeltaForDate(newDate, newSign * newAmountEUR, balanceSource);
+          // A split on either side means the old and new legs can't be
+          // netted onto one source — revert every old leg in full, then
+          // apply every new leg in full.
+          if (oldSourceLabel) {
+            const oldPrimaryEUR = hasOldSplit ? oldAmountEUR - oldSplitAmountEUR : oldAmountEUR;
+            await applyBalanceDeltaForDate(oldDate, oldSign * oldPrimaryEUR, oldSourceLabel);
+          }
+          if (hasOldSplit) {
+            await applyBalanceDeltaForDate(oldDate, oldSign * oldSplitAmountEUR, oldSplitFallbackLabel);
+          }
+          if (effectiveNewSource) {
+            const newPrimaryEUR = hasNewSplit ? newAmountEUR - newSplitRemainderEUR : newAmountEUR;
+            await applyBalanceDeltaForDate(newDate, newSign * newPrimaryEUR, effectiveNewSource);
+          }
+          if (hasNewSplit) {
+            await applyBalanceDeltaForDate(newDate, newSign * newSplitRemainderEUR, newSplitFallbackLabel);
+          }
         }
       }
 
@@ -1983,9 +2070,17 @@ export default function InsertValue({
     };
   };
 
-  const createInExJson = (isOutflow, date, amount, notes, payment_type, category_tag, user_category_id = null, balanceSourceLabel = null, purpose = undefined) => {
+  // `split`, when given: { fallbackLabel, remainderAmountEUR } — the card/cash
+  // remainder of a fixed-denomination (e.g. meal voucher) purchase, already
+  // in EUR (see utils/voucherSplit.ts). Only meaningful together with a
+  // primary balanceSourceLabel.
+  const createInExJson = (isOutflow, date, amount, notes, payment_type, category_tag, user_category_id = null, balanceSourceLabel = null, purpose = undefined, split = null) => {
     const numericAmount = Number(amount) || 0;
     const direction = isOutflow ? 'outflow' : 'income';
+    const balance_source = buildBalanceSourcePayload(balanceSourceLabel);
+    const balance_source_2 = balance_source && split?.fallbackLabel && split.remainderAmountEUR > 0
+      ? buildBalanceSourcePayload(split.fallbackLabel)
+      : null;
     return {
       transaction: {
         date: date,
@@ -1996,7 +2091,8 @@ export default function InsertValue({
         category_tag: category_tag,
         user_category_id: user_category_id,
         notes: notes,
-        balance_source: buildBalanceSourcePayload(balanceSourceLabel),
+        balance_source,
+        ...(balance_source_2 ? { balance_source_2, balance_amount_2: split.remainderAmountEUR } : {}),
       },
     };
   };

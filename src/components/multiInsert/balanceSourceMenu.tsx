@@ -17,6 +17,12 @@ export interface BalanceSourceEntryMeta {
   assetKey: string;
   detailType?: 'liquidity' | 'investment';
   detailId?: number;
+  /** Fixed denomination (e.g. €8/meal voucher) — set only for liquidity accounts that have one. */
+  unitValue?: number | null;
+  /** Current EUR balance — only populated for liquidity account entries, used to cap the voucher portion of a split. */
+  availableBalance?: number;
+  /** Liquidity account id configured as this account's default remainder source. */
+  fallbackAccountId?: number | null;
 }
 
 export type BalanceSourceMetaMap = Record<string, BalanceSourceEntryMeta>;
@@ -50,6 +56,17 @@ export function resolveBalanceSourceLabel(
   }
   const base = entries.find(([, meta]) => !meta.detailType && meta.assetKey === row.balanceAssetKey);
   return base?.[0] || '';
+}
+
+/** Reverse lookup: from a liquidity account id (e.g. a denomination account's configured fallbackAccountId) to its translated balance-source label. */
+export function resolveFallbackAccountLabel(
+  balanceSourceMeta: BalanceSourceMetaMap | null | undefined,
+  fallbackAccountId: number | null | undefined,
+): string {
+  if (fallbackAccountId == null || !balanceSourceMeta) return '';
+  const entry = Object.entries(balanceSourceMeta).find(([, meta]) =>
+    meta.detailType === 'liquidity' && meta.detailId === fallbackAccountId);
+  return entry?.[0] || '';
 }
 
 interface DetailLabelProps {

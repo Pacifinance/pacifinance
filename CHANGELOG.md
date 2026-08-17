@@ -43,6 +43,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   payment source unset. Liquidity accounts can be manually linked to a
   provider from the account management panel, and get linked automatically
   the first time one is created during an import.
+- Fixed-denomination liquidity accounts (e.g. electronic meal vouchers issued
+  in fixed units like €8): a liquidity account can now be given a
+  denomination and a fallback account from the account management panel.
+  Spending an amount that isn't an exact multiple of the denomination (or
+  that exceeds the account's balance) now automatically splits the payment
+  across the voucher account and its fallback, shown as one row (e.g.
+  "Edenred (8,00€) + Banca (3,50€)") — applied automatically for imported
+  CSV rows, and available when editing a transaction's payment method
+  in-place.
 
 ### Changed
 - Migrated Tailwind CSS from v3 to v4: switched from the PostCSS plugin to

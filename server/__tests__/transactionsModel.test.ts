@@ -46,8 +46,8 @@ describe("transaction batch insert", () => {
 
     it("resolves distinct tags once and performs one database insert", async () => {
         const result = await transactionsModel.insertBatch("user-1", [
-            {date: new Date("2026-08-01"), amount: 10, isExpense: true, purpose: "expense", notes: "Lunch", paymentType: 1, categoryTag: 4, userCategoryId: null, balanceSource: null},
-            {date: new Date("2026-08-02"), amount: 20, isExpense: false, purpose: "refund", notes: "Refund", paymentType: 0, categoryTag: 0, userCategoryId: null, balanceSource: null},
+            {date: new Date("2026-08-01"), amount: 10, isExpense: true, purpose: "expense", notes: "Lunch", paymentType: 1, categoryTag: 4, userCategoryId: null, balanceSource: null, balanceSplit: null},
+            {date: new Date("2026-08-02"), amount: 20, isExpense: false, purpose: "refund", notes: "Refund", paymentType: 0, categoryTag: 0, userCategoryId: null, balanceSource: null, balanceSplit: null},
         ])
 
         expect(result).toHaveLength(2)
@@ -62,7 +62,7 @@ describe("transaction batch insert", () => {
     it("aborts before writing if a tag reference cannot be resolved", async () => {
         mocks.getReference.mockResolvedValueOnce(null)
         const result = await transactionsModel.insertBatch("user-1", [
-            {date: new Date("2026-08-01"), amount: 10, isExpense: true, purpose: "expense", notes: "", paymentType: 1, categoryTag: 4, userCategoryId: null, balanceSource: null},
+            {date: new Date("2026-08-01"), amount: 10, isExpense: true, purpose: "expense", notes: "", paymentType: 1, categoryTag: 4, userCategoryId: null, balanceSource: null, balanceSplit: null},
         ])
         expect(result).toBeNull()
         expect(mocks.insert).not.toHaveBeenCalled()
@@ -101,7 +101,7 @@ describe("transaction atomic update", () => {
         mocks.getReference.mockResolvedValueOnce(null)
         const result = await transactionsModel.updateExisting("user-1", {
             id: 42, date: new Date("2026-08-01"), amount: 12, isExpense: true, purpose: "expense", notes: "Lunch",
-            paymentType: 1, categoryTag: 4, userCategoryId: null, balanceSource: null,
+            paymentType: 1, categoryTag: 4, userCategoryId: null, balanceSource: null, balanceSplit: null,
             sharedMode: "remove", sharedTotal: null, sharedOwnShare: null,
         })
 
@@ -114,7 +114,7 @@ describe("transaction atomic update", () => {
         const result = await transactionsModel.updateExisting("user-1", {
             id: 42, date: new Date("2026-08-01"), amount: 6, isExpense: true, purpose: "expense", notes: "Lunch",
             paymentType: 1, categoryTag: 4, userCategoryId: 9,
-            balanceSource: {asset_key: "bank", detail_type: null, detail_id: null},
+            balanceSource: {asset_key: "bank", detail_type: null, detail_id: null}, balanceSplit: null,
             sharedMode: "set", sharedTotal: 24, sharedOwnShare: 6,
         })
 
@@ -123,6 +123,37 @@ describe("transaction atomic update", () => {
         expect(mocks.rpc).toHaveBeenCalledWith("update_transaction_with_shared", expect.objectContaining({
             p_user_id: "user-1", p_transaction_id: 42, p_notes: "encrypted:Lunch", p_purpose: "expense",
             p_shared_mode: "set", p_shared_total: 24, p_shared_own_share: 6,
+        }))
+    })
+
+    it("passes the second balance source through to the RPC when a split is given", async () => {
+        mocks.rpc.mockResolvedValue({data: 42, error: null})
+        await transactionsModel.updateExisting("user-1", {
+            id: 42, date: new Date("2026-08-01"), amount: 11.5, isExpense: true, purpose: "expense", notes: "Pranzo",
+            paymentType: 1, categoryTag: 4, userCategoryId: null,
+            balanceSource: {asset_key: "digitalServices", detail_type: "liquidity", detail_id: 5},
+            balanceSplit: {asset_key: "bank", detail_type: null, detail_id: null, amount: 3.5},
+            sharedMode: "unchanged", sharedTotal: null, sharedOwnShare: null,
+        })
+
+        expect(mocks.rpc).toHaveBeenCalledWith("update_transaction_with_shared", expect.objectContaining({
+            p_balance_asset_key: "digitalServices", p_balance_detail_type: "liquidity", p_balance_detail_id: 5,
+            p_balance_asset_key_2: "bank", p_balance_detail_type_2: null, p_balance_detail_id_2: null, p_balance_amount_2: 3.5,
+        }))
+    })
+
+    it("drops the split when there is no primary balance source", async () => {
+        mocks.rpc.mockResolvedValue({data: 42, error: null})
+        await transactionsModel.updateExisting("user-1", {
+            id: 42, date: new Date("2026-08-01"), amount: 11.5, isExpense: true, purpose: "expense", notes: "Pranzo",
+            paymentType: 1, categoryTag: 4, userCategoryId: null,
+            balanceSource: null,
+            balanceSplit: {asset_key: "bank", detail_type: null, detail_id: null, amount: 3.5},
+            sharedMode: "unchanged", sharedTotal: null, sharedOwnShare: null,
+        })
+
+        expect(mocks.rpc).toHaveBeenCalledWith("update_transaction_with_shared", expect.objectContaining({
+            p_balance_asset_key_2: null, p_balance_detail_type_2: null, p_balance_detail_id_2: null, p_balance_amount_2: null,
         }))
     })
 })

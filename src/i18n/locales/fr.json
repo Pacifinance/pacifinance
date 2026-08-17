@@ -1020,6 +1020,7 @@
             "successUpdate": "Sortie insérée avec succès",
             "successDelete": "Sortie supprimée avec succès",
             "decreaseWhichBalance": "Soustraire de",
+            "splitRemainderHint": "{amount} restants, payés depuis :",
             "makeRecurring": "Rendre récurrent chaque mois",
             "sharedExpense": {
                 "toggleLabel": "Partager avec le groupe",
@@ -3112,6 +3113,10 @@
         "amount": "Montant",
         "linkedBank": "Banque/fournisseur lié",
         "linkedBankNone": "Aucun",
+        "unitValue": "Dénomination (ex. tickets restaurant)",
+        "unitValueNone": "Aucune — solde continu",
+        "fallbackAccount": "Reste payé depuis",
+        "fallbackAccountNone": "Demander à chaque fois",
         "addButton": "Ajouter",
         "saveButton": "Enregistrer",
         "cancelEdit": "Annuler",

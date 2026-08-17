@@ -23,15 +23,21 @@ interface LiquidityAccountsPanelProps {
   userDate?: string;
   /** Backfilled history rows for the viewed month, keyed by account id. */
   historyByEntityId?: Record<number, LiquidityAccountHistoryDto | undefined>;
+  /** Every liquidity account across all asset keys — lets a denomination
+   * account's fallback source be picked from any of them, not just this
+   * asset key's own accounts. Defaults to `accounts` when omitted. */
+  allAccounts?: LiquidityAccountDto[];
 }
 
 interface FormState {
   label: string;
   amount: string;
   linkedBankKey: string;
+  unitValue: string;
+  fallbackAccountId: string;
 }
 
-const emptyForm: FormState = { label: '', amount: '', linkedBankKey: '' };
+const emptyForm: FormState = { label: '', amount: '', linkedBankKey: '', unitValue: '', fallbackAccountId: '' };
 
 // Providers the CSV import wizard can auto-detect (see utils/dataImport/bankFormats.ts
 // BankFormatId) — linking one here lets a future import from that provider
@@ -210,6 +216,7 @@ const SecondaryButton = styled.button`
 
 export default function LiquidityAccountsPanel({
   assetKey, accounts, onClose, onChanged, isCurrentMonth = true, userDate, historyByEntityId = {},
+  allAccounts,
 }: LiquidityAccountsPanelProps) {
   const { theme } = useContext(ThemeContext);
   const { translations, language } = useContext(LanguageContext);
@@ -225,10 +232,21 @@ export default function LiquidityAccountsPanel({
   const [historicalValueInput, setHistoricalValueInput] = useState('');
   const [savingHistorical, setSavingHistorical] = useState(false);
 
+  // Candidates for "fallback source" — any other account, across asset keys,
+  // that isn't the one currently being edited (a voucher account can't be
+  // its own remainder fallback).
+  const fallbackCandidates = (allAccounts ?? accounts).filter((account) => account.id !== editingId);
+
   const startEdit = (account: LiquidityAccountDto) => {
     setEditingId(account.id);
     setShowForm(true);
-    setForm({ label: account.label, amount: String(account.currentValue), linkedBankKey: account.linkedBankKey || '' });
+    setForm({
+      label: account.label,
+      amount: String(account.currentValue),
+      linkedBankKey: account.linkedBankKey || '',
+      unitValue: account.unitValue != null ? String(account.unitValue) : '',
+      fallbackAccountId: account.fallbackAccountId != null ? String(account.fallbackAccountId) : '',
+    });
   };
 
   const resetForm = () => {
@@ -247,6 +265,8 @@ export default function LiquidityAccountsPanel({
         label: form.label.trim(),
         current_value: toEUR(Number(form.amount)),
         linked_bank_key: form.linkedBankKey || null,
+        unit_value: form.unitValue !== '' ? toEUR(Number(form.unitValue)) : null,
+        fallback_account_id: form.unitValue !== '' && form.fallbackAccountId !== '' ? Number(form.fallbackAccountId) : null,
       });
       resetForm();
       await onChanged();
@@ -383,6 +403,31 @@ export default function LiquidityAccountsPanel({
                     ))}
                   </select>
                 </label>
+                <label>
+                  {t.unitValue || 'Denomination (e.g. meal vouchers)'}
+                  <input
+                    type="number"
+                    value={form.unitValue}
+                    placeholder={t.unitValueNone || 'None — continuous balance'}
+                    onChange={(e) => setForm((f) => ({ ...f, unitValue: e.target.value, fallbackAccountId: e.target.value === '' ? '' : f.fallbackAccountId }))}
+                  />
+                </label>
+                {form.unitValue !== '' && (
+                  <label>
+                    {t.fallbackAccount || 'Remainder paid from'}
+                    <select
+                      value={form.fallbackAccountId}
+                      onChange={(e) => setForm((f) => ({ ...f, fallbackAccountId: e.target.value }))}
+                    >
+                      <option value="">{t.fallbackAccountNone || 'Ask each time'}</option>
+                      {fallbackCandidates.map((candidate) => (
+                        <option key={candidate.id} value={candidate.id}>
+                          {translations.assets[candidate.assetKey]} / {candidate.label}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                )}
               </FieldsGrid>
             </FormSection>
           ) : (

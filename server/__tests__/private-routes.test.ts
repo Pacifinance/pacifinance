@@ -207,6 +207,7 @@ describe("private backend routes", () => {
             null,
             null, // balance_source: not provided in the payload
             "income",
+            null, // balance_split: not provided in the payload
         )
     })
 
@@ -226,7 +227,7 @@ describe("private backend routes", () => {
 
         expect(response.status).toBe(200)
         expect(mockDb.transactions.insertNew).toHaveBeenCalledWith(
-            "user-uuid", expect.any(Date), 10, true, "legacy client", 1, 3, null, null, "expense",
+            "user-uuid", expect.any(Date), 10, true, "legacy client", 1, 3, null, null, "expense", null,
         )
     })
 
@@ -247,12 +248,12 @@ describe("private backend routes", () => {
 
         await expect(add(8)).resolves.toMatchObject({status: 200})
         expect(mockDb.transactions.insertNew).toHaveBeenLastCalledWith(
-            "user-uuid", expect.any(Date), 100, true, "", 1, 8, null, null, "investment",
+            "user-uuid", expect.any(Date), 100, true, "", 1, 8, null, null, "investment", null,
         )
 
         await expect(add(3, "transfer")).resolves.toMatchObject({status: 200})
         expect(mockDb.transactions.insertNew).toHaveBeenLastCalledWith(
-            "user-uuid", expect.any(Date), 100, true, "", 1, 3, null, null, "transfer",
+            "user-uuid", expect.any(Date), 100, true, "", 1, 3, null, null, "transfer", null,
         )
 
         await expect(add(3, "invalid-purpose")).resolves.toMatchObject({status: 400})
@@ -408,14 +409,14 @@ describe("private backend routes", () => {
         expect(response.status).toBe(200)
         expect(mockDb.transactions.insertNew).toHaveBeenLastCalledWith(
             "user-uuid", expect.any(Date), 10, true, "", 1, 3, null,
-            {asset_key: "bank", detail_type: "liquidity", detail_id: 7}, "expense",
+            {asset_key: "bank", detail_type: "liquidity", detail_id: 7}, "expense", null,
         )
 
         // Invalid asset key: the source is dropped, the transaction still inserts
         response = await addTransaction({asset_key: "not-an-asset", detail_type: "liquidity", detail_id: 7})
         expect(response.status).toBe(200)
         expect(mockDb.transactions.insertNew).toHaveBeenLastCalledWith(
-            "user-uuid", expect.any(Date), 10, true, "", 1, 3, null, null, "expense",
+            "user-uuid", expect.any(Date), 10, true, "", 1, 3, null, null, "expense", null,
         )
 
         // Detail type without id: only the parent key survives
@@ -423,7 +424,68 @@ describe("private backend routes", () => {
         expect(response.status).toBe(200)
         expect(mockDb.transactions.insertNew).toHaveBeenLastCalledWith(
             "user-uuid", expect.any(Date), 10, true, "", 1, 3, null,
-            {asset_key: "cash", detail_type: null, detail_id: null}, "expense",
+            {asset_key: "cash", detail_type: null, detail_id: null}, "expense", null,
+        )
+    })
+
+    it("persists a valid balance split alongside a primary balance source", async () => {
+        const response = await request(app, "/api/transactions/add", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {
+                transaction: {
+                    date: "2024-05-20T00:00:00.000Z",
+                    amount: "11.50",
+                    direction: "outflow",
+                    payment_type: 1,
+                    category_tag: 3,
+                    notes: "",
+                    balance_source: {asset_key: "digitalServices", detail_type: "liquidity", detail_id: 5},
+                    balance_source_2: {asset_key: "bank", detail_type: null, detail_id: null},
+                    balance_amount_2: 3.5,
+                }
+            }
+        })
+
+        expect(response.status).toBe(200)
+        expect(mockDb.transactions.insertNew).toHaveBeenLastCalledWith(
+            "user-uuid", expect.any(Date), 11.5, true, "", 1, 3, null,
+            {asset_key: "digitalServices", detail_type: "liquidity", detail_id: 5}, "expense",
+            {asset_key: "bank", detail_type: null, detail_id: null, amount: 3.5},
+        )
+    })
+
+    it("drops a balance split that is not strictly between 0 and the transaction amount", async () => {
+        const addWithSplitAmount = (balance_amount_2: unknown) => request(app, "/api/transactions/add", {
+            method: "POST",
+            headers: {cookie: authCookie},
+            body: {
+                transaction: {
+                    date: "2024-05-20T00:00:00.000Z",
+                    amount: "11.50",
+                    direction: "outflow",
+                    payment_type: 1,
+                    category_tag: 3,
+                    notes: "",
+                    balance_source: {asset_key: "digitalServices", detail_type: "liquidity", detail_id: 5},
+                    balance_source_2: {asset_key: "bank", detail_type: null, detail_id: null},
+                    balance_amount_2,
+                }
+            }
+        })
+
+        // Equal to the transaction amount — not a real split
+        await expect(addWithSplitAmount(11.5)).resolves.toMatchObject({status: 200})
+        expect(mockDb.transactions.insertNew).toHaveBeenLastCalledWith(
+            "user-uuid", expect.any(Date), 11.5, true, "", 1, 3, null,
+            {asset_key: "digitalServices", detail_type: "liquidity", detail_id: 5}, "expense", null,
+        )
+
+        // Zero
+        await expect(addWithSplitAmount(0)).resolves.toMatchObject({status: 200})
+        expect(mockDb.transactions.insertNew).toHaveBeenLastCalledWith(
+            "user-uuid", expect.any(Date), 11.5, true, "", 1, 3, null,
+            {asset_key: "digitalServices", detail_type: "liquidity", detail_id: 5}, "expense", null,
         )
     })
 

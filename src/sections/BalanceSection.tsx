@@ -704,6 +704,7 @@ export default function BalanceSection({
         <LiquidityAccountsPanel
           assetKey={openSubAccountsAssetKey}
           accounts={liquidityAccountsByAssetKey[openSubAccountsAssetKey] || []}
+          allAccounts={liquidityAccounts}
           onClose={() => setOpenSubAccountsAssetKey(null)}
           onChanged={async () => { if (onLiquidityAccountsChanged) await onLiquidityAccountsChanged(); }}
           isCurrentMonth={isCurrentMonth}

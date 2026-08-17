@@ -1020,6 +1020,7 @@
             "successUpdate": "Saída inserida com sucesso",
             "successDelete": "Saída excluída com sucesso",
             "decreaseWhichBalance": "Subtrair de",
+            "splitRemainderHint": "{amount} restantes, pagos de:",
             "makeRecurring": "Tornar recorrente todo mês",
             "sharedExpense": {
                 "toggleLabel": "Dividir com o grupo",
@@ -3112,6 +3113,10 @@
         "amount": "Valor",
         "linkedBank": "Banco/provedor vinculado",
         "linkedBankNone": "Nenhum",
+        "unitValue": "Denominação (ex. vale-refeição)",
+        "unitValueNone": "Nenhuma — saldo contínuo",
+        "fallbackAccount": "Restante pago de",
+        "fallbackAccountNone": "Perguntar sempre",
         "addButton": "Adicionar",
         "saveButton": "Salvar",
         "cancelEdit": "Cancelar",

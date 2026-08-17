@@ -14,6 +14,8 @@ type AccountRow = {
     notes: string
     updated_at: string
     linked_bank_key: string | null
+    unit_value: number | null
+    fallback_account_id: number | null
 }
 
 export type AccountInput = {
@@ -24,9 +26,16 @@ export type AccountInput = {
     notes: string
     /** Detected bank/provider id this account should auto-match on import (see utils/dataImport/bankFormats.ts client-side). Null = no known provider. */
     linkedBankKey?: string | null
+    /** Fixed denomination (e.g. €8/meal voucher). Null = ordinary continuous-balance account. */
+    unitValue?: number | null
+    /** Account that absorbs the remainder when a purchase isn't an exact multiple of unitValue. Only meaningful together with unitValue. */
+    fallbackAccountId?: number | null
 }
 
-const ACCOUNT_SELECT = ["id", "asset_key", "label", "current_value", "currency", "notes", "updated_at", "linked_bank_key"].join(", ")
+const ACCOUNT_SELECT = [
+    "id", "asset_key", "label", "current_value", "currency", "notes", "updated_at",
+    "linked_bank_key", "unit_value", "fallback_account_id",
+].join(", ")
 
 function toAccount(row: AccountRow) {
     return {
@@ -38,6 +47,8 @@ function toAccount(row: AccountRow) {
         notes: row.notes,
         updatedAt: row.updated_at,
         linkedBankKey: row.linked_bank_key,
+        unitValue: row.unit_value,
+        fallbackAccountId: row.fallback_account_id,
     }
 }
 
@@ -50,6 +61,8 @@ function toAccountPayload(user_id: string, input: AccountInput) {
         currency: input.currency,
         notes: input.notes,
         linked_bank_key: input.linkedBankKey ?? null,
+        unit_value: input.unitValue ?? null,
+        fallback_account_id: input.fallbackAccountId ?? null,
     }
 }
 
@@ -91,6 +104,8 @@ async function updateAccount(user_id: string, account_id: number, input: Account
             currency: input.currency,
             notes: input.notes,
             linked_bank_key: input.linkedBankKey ?? null,
+            unit_value: input.unitValue ?? null,
+            fallback_account_id: input.fallbackAccountId ?? null,
             updated_at: new Date().toISOString(),
         })
         .eq("user_id", user_id)

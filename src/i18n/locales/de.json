@@ -1020,6 +1020,7 @@
             "successUpdate": "Ausgabe erfolgreich eingefügt",
             "successDelete": "Ausgabe erfolgreich gelöscht",
             "decreaseWhichBalance": "Abziehen von",
+            "splitRemainderHint": "{amount} übrig, bezahlt von:",
             "makeRecurring": "Jeden Monat wiederholen",
             "sharedExpense": {
                 "toggleLabel": "Mit der Gruppe teilen",
@@ -3112,6 +3113,10 @@
         "amount": "Betrag",
         "linkedBank": "Verknüpfte Bank/Anbieter",
         "linkedBankNone": "Keine",
+        "unitValue": "Stückelung (z. B. Essensgutscheine)",
+        "unitValueNone": "Keine — laufendes Guthaben",
+        "fallbackAccount": "Rest bezahlt von",
+        "fallbackAccountNone": "Jedes Mal fragen",
         "addButton": "Hinzufügen",
         "saveButton": "Speichern",
         "cancelEdit": "Abbrechen",

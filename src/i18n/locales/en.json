@@ -1088,6 +1088,7 @@
             "successUpdate": "Outflow inserted successfully",
             "successDelete": "Outflow deleted successfully",
             "decreaseWhichBalance": "Subtract from",
+            "splitRemainderHint": "{amount} left over, paid from:",
             "makeRecurring": "Make it recurring every month",
             "sharedExpense": {
                 "toggleLabel": "Split with the group",
@@ -3210,6 +3211,10 @@
         "amount": "Amount",
         "linkedBank": "Linked bank/provider",
         "linkedBankNone": "None",
+        "unitValue": "Denomination (e.g. meal vouchers)",
+        "unitValueNone": "None — continuous balance",
+        "fallbackAccount": "Remainder paid from",
+        "fallbackAccountNone": "Ask each time",
         "addButton": "Add",
         "saveButton": "Save",
         "cancelEdit": "Cancel",

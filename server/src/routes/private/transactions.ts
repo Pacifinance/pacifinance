@@ -3,7 +3,7 @@ import express from "express"
 import { ExtDate } from "../../libs/datelib"
 
 import db from "../../db/db"
-import { TRANSACTION_BALANCE_ASSET_KEYS, TRANSACTION_BALANCE_DETAIL_TYPES, TransactionBalanceSource } from "../../db/models/transactions"
+import { TRANSACTION_BALANCE_ASSET_KEYS, TRANSACTION_BALANCE_DETAIL_TYPES, TransactionBalanceSource, TransactionBalanceSplit } from "../../db/models/transactions"
 import type { ImportedReimbursementLink, ImportedSharedExpenseLink } from "../../db/models/sharedExpenses"
 import common from "../common"
 import { inferTransactionPurpose, isPurposeCompatible } from "../../domain/transactions"
@@ -24,6 +24,23 @@ function sanitizeBalanceSource(raw: any): TransactionBalanceSource | null {
     // A detail type without an id (or vice versa) is meaningless — keep only the parent key
     if (detail_type === null || detail_id === null) return {asset_key, detail_type: null, detail_id: null}
     return {asset_key, detail_type, detail_id}
+}
+
+/**
+ * Sanitizes the optional second balance source (e.g. the card/cash remainder
+ * of a meal-voucher purchase). Only meaningful together with a primary
+ * source and a valid split amount strictly between 0 and the transaction's
+ * effective amount — anything else drops the split silently (same
+ * "optional enrichment, never a reason to reject the transaction" policy as
+ * sanitizeBalanceSource).
+ */
+function sanitizeBalanceSplit(rawSource: any, rawAmount: any, primarySource: TransactionBalanceSource | null, effectiveAmount: number): TransactionBalanceSplit | null {
+    if (!primarySource) return null
+    const source = sanitizeBalanceSource(rawSource)
+    if (!source) return null
+    const amount = common.roundCurrency(Number(rawAmount))
+    if (!Number.isFinite(amount) || amount <= 0 || amount >= effectiveAmount) return null
+    return {...source, amount}
 }
 
 /**
@@ -103,10 +120,12 @@ transactionsRouter.post("/add", async (req, res) => {
     const raw_user_category_id = transaction.user_category_id
     const user_category_id = (raw_user_category_id !== null && raw_user_category_id !== undefined && Number.isFinite(Number(raw_user_category_id)))
         ? Number(raw_user_category_id) : null
+    const balanceSource = sanitizeBalanceSource(transaction.balance_source)
     const doc = await db.transactions.insertNew(
         req.userId as string, transaction.date, transaction.amount, transaction.is_expense,
         transaction.notes, transaction.payment_type, transaction.category_tag, user_category_id,
-        sanitizeBalanceSource(transaction.balance_source), transaction.purpose
+        balanceSource, transaction.purpose,
+        sanitizeBalanceSplit(transaction.balance_source_2, transaction.balance_amount_2, balanceSource, transaction.amount)
     );
     // Check if the document was inserted successfully. Send
     // status code 500 (Internal Server Error) if it failed
@@ -143,6 +162,7 @@ transactionsRouter.post("/update", async (req, res) => {
     const rawUserCategoryId = transaction.user_category_id
     const userCategoryId = rawUserCategoryId !== null && rawUserCategoryId !== undefined
         && Number.isFinite(Number(rawUserCategoryId)) ? Number(rawUserCategoryId) : null
+    const balanceSource = sanitizeBalanceSource(transaction.balance_source)
     const updated = await db.transactions.updateExisting(req.userId as string, {
         id,
         date: validationExpense.date,
@@ -153,7 +173,8 @@ transactionsRouter.post("/update", async (req, res) => {
         paymentType: validationExpense.payment_type,
         categoryTag: validationExpense.category_tag,
         userCategoryId,
-        balanceSource: sanitizeBalanceSource(transaction.balance_source),
+        balanceSource,
+        balanceSplit: sanitizeBalanceSplit(transaction.balance_source_2, transaction.balance_amount_2, balanceSource, validationExpense.amount),
         sharedMode: sharedEnabled ? "set" : sharedRemove ? "remove" : "unchanged",
         sharedTotal,
         sharedOwnShare,
@@ -180,6 +201,7 @@ transactionsRouter.post("/batch-add", async (req, res) => {
         const rawUserCategoryId = transaction.user_category_id
         const userCategoryId = rawUserCategoryId !== null && rawUserCategoryId !== undefined
             && Number.isFinite(Number(rawUserCategoryId)) ? Number(rawUserCategoryId) : null
+        const balanceSource = sanitizeBalanceSource(transaction.balance_source)
         inputs.push({
             date: transaction.date as Date,
             amount: transaction.amount as number,
@@ -189,7 +211,8 @@ transactionsRouter.post("/batch-add", async (req, res) => {
             paymentType: transaction.payment_type as number,
             categoryTag: transaction.category_tag as number,
             userCategoryId,
-            balanceSource: sanitizeBalanceSource(transaction.balance_source),
+            balanceSource,
+            balanceSplit: sanitizeBalanceSplit(transaction.balance_source_2, transaction.balance_amount_2, balanceSource, transaction.amount),
             cashAmount: transaction.cash_amount === null || transaction.cash_amount === undefined
                 ? null : common.roundCurrency(Number(transaction.cash_amount)),
             excludeFromStatistics: transaction.exclude_from_statistics === true,

@@ -60,6 +60,7 @@ import {
 } from '../utils/categoryPatterns';
 import { getAllOutflows, getAllIncomes, getCustomCategories, getOutflowsTags, getCurrentBalance } from '../utils/userDataSelectors';
 import { LIQUIDITY_KEYS, buildSnapshotWithDeltas } from '../constants/balanceSchema';
+import { computeVoucherSplit } from '../utils/voucherSplit';
 import ImportPlatformGuide from '../components/ImportPlatformGuide';
 import MonthTransactionsViewer from './MonthTransactionsViewer';
 import CategoryPicker from '../components/CategoryPicker';
@@ -1289,6 +1290,16 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
     let linkFailures = 0;
     const total = finalTx.length;
     const API_BATCH_SIZE = 500;
+    // Running available balance per fixed-denomination account, so several
+    // voucher purchases in the same import correctly deplete it in order
+    // instead of each computing its split against the account's starting
+    // balance. Persists across batches (processed sequentially below).
+    const voucherRemaining = new Map();
+    // rowIndex -> { fallbackAccountId, remainderAmount } for rows that ended
+    // up split onto a fallback account — reused below (instead of
+    // recomputing) so the "update this account with the net change"
+    // aggregate also moves the remainder into the right account.
+    const rowSplitInfo = new Map();
 
     for (let i = 0; i < total; i += API_BATCH_SIZE) {
       const batch = finalTx.slice(i, i + API_BATCH_SIZE);
@@ -1311,6 +1322,30 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                 detail_type: 'liquidity',
                 detail_id: rowAccount.id,
               };
+              // Fixed-denomination account (e.g. meal vouchers): split off
+              // whatever isn't a whole multiple of the denomination onto its
+              // configured fallback account. No per-row prompt — batch
+              // imports apply this automatically; a row without a configured
+              // fallback keeps the whole amount on the voucher account
+              // (fixable afterwards from the payment-method column).
+              if (tx.isOutflow && rowAccount.unitValue) {
+                if (!voucherRemaining.has(rowAccount.id)) voucherRemaining.set(rowAccount.id, rowAccount.currentValue);
+                const available = voucherRemaining.get(rowAccount.id);
+                const { voucherAmount, remainderAmount } = computeVoucherSplit(expense.amount, rowAccount.unitValue, available);
+                voucherRemaining.set(rowAccount.id, available - voucherAmount);
+                const fallbackAccount = rowAccount.fallbackAccountId
+                  ? liquidityAccounts.find((item) => item.id === rowAccount.fallbackAccountId)
+                  : null;
+                if (remainderAmount > 0 && fallbackAccount) {
+                  expense.balance_source_2 = {
+                    asset_key: fallbackAccount.assetKey,
+                    detail_type: 'liquidity',
+                    detail_id: fallbackAccount.id,
+                  };
+                  expense.balance_amount_2 = remainderAmount;
+                  rowSplitInfo.set(tx.rowIndex, { fallbackAccountId: fallbackAccount.id, remainderAmount });
+                }
+              }
             } else {
               const rowAssetKey = genericAssetKeyFromValue(rowAccountIds[tx.rowIndex]) || fallbackAssetKey;
               if (rowAssetKey) {
@@ -1350,10 +1385,22 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
       finalTx.forEach((tx) => {
         const target = liquidityAccounts.find((item) => String(item.id) === String(rowAccountIds[tx.rowIndex])) || account;
         if (!target) return;
+        const split = rowSplitInfo.get(tx.rowIndex);
+        const amountEUR = toEUR(tx.amount);
+        const primaryShare = split ? amountEUR - split.remainderAmount : amountEUR;
         deltasByAccount.set(target.id, {
           account: target,
-          delta: (deltasByAccount.get(target.id)?.delta || 0) + (tx.isOutflow ? -toEUR(tx.amount) : toEUR(tx.amount)),
+          delta: (deltasByAccount.get(target.id)?.delta || 0) + (tx.isOutflow ? -primaryShare : primaryShare),
         });
+        if (split) {
+          const fallbackTarget = liquidityAccounts.find((item) => item.id === split.fallbackAccountId);
+          if (fallbackTarget) {
+            deltasByAccount.set(fallbackTarget.id, {
+              account: fallbackTarget,
+              delta: (deltasByAccount.get(fallbackTarget.id)?.delta || 0) - split.remainderAmount,
+            });
+          }
+        }
       });
       try {
         await Promise.all(Array.from(deltasByAccount.values()).map(async ({ account: target, delta }) => {

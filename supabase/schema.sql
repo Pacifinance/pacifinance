@@ -1246,6 +1246,7 @@ CREATE TABLE IF NOT EXISTS "public"."user_liquidity_accounts" (
     "currency" "text" DEFAULT 'EUR'::"text" NOT NULL,
     "notes" "text" DEFAULT ''::"text" NOT NULL,
     "updated_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "linked_bank_key" "text",
     CONSTRAINT "user_liquidity_accounts_asset_key_check" CHECK (("asset_key" = ANY (ARRAY['bank'::"text", 'cash'::"text", 'digitalServices'::"text", 'emergencyFund'::"text"])))
 );
 

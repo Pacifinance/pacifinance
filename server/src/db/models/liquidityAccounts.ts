@@ -13,6 +13,7 @@ type AccountRow = {
     currency: string
     notes: string
     updated_at: string
+    linked_bank_key: string | null
 }
 
 export type AccountInput = {
@@ -21,9 +22,11 @@ export type AccountInput = {
     currentValue: number
     currency: string
     notes: string
+    /** Detected bank/provider id this account should auto-match on import (see utils/dataImport/bankFormats.ts client-side). Null = no known provider. */
+    linkedBankKey?: string | null
 }
 
-const ACCOUNT_SELECT = ["id", "asset_key", "label", "current_value", "currency", "notes", "updated_at"].join(", ")
+const ACCOUNT_SELECT = ["id", "asset_key", "label", "current_value", "currency", "notes", "updated_at", "linked_bank_key"].join(", ")
 
 function toAccount(row: AccountRow) {
     return {
@@ -34,6 +37,7 @@ function toAccount(row: AccountRow) {
         currency: row.currency,
         notes: row.notes,
         updatedAt: row.updated_at,
+        linkedBankKey: row.linked_bank_key,
     }
 }
 
@@ -45,6 +49,7 @@ function toAccountPayload(user_id: string, input: AccountInput) {
         current_value: input.currentValue,
         currency: input.currency,
         notes: input.notes,
+        linked_bank_key: input.linkedBankKey ?? null,
     }
 }
 
@@ -85,6 +90,7 @@ async function updateAccount(user_id: string, account_id: number, input: Account
             current_value: input.currentValue,
             currency: input.currency,
             notes: input.notes,
+            linked_bank_key: input.linkedBankKey ?? null,
             updated_at: new Date().toISOString(),
         })
         .eq("user_id", user_id)

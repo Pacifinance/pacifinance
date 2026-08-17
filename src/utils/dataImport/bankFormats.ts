@@ -15,6 +15,19 @@
 
 export type BankFormatId = 'revolut' | 'n26' | 'traderepublic' | 'paypal';
 
+/**
+ * Default balance macrocategory for each detected bank/provider — used by the
+ * import wizard to preselect a sensible payment source when the user hasn't
+ * (yet) linked a specific liquidity sub-account to this provider (see
+ * DataImportWizard.tsx and user_liquidity_accounts.linked_bank_key).
+ */
+export const BANK_FORMAT_ASSET_KEY: Record<BankFormatId, 'bank' | 'digitalServices'> = {
+  traderepublic: 'bank',
+  n26: 'bank',
+  revolut: 'digitalServices',
+  paypal: 'digitalServices',
+};
+
 export interface BankColumnMapping {
   dateCol: number;
   amountCol: number;

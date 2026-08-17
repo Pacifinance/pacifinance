@@ -86,10 +86,12 @@ const DEMO_DIVIDENDS_SUMMARY = [
  * (Phase 2's sub-account dropdown) has real entries to show instead of just
  * the flat account-type totals. */
 const DEMO_LIQUIDITY_ACCOUNTS: LiquidityAccountDto[] = [
-  { id: -301, assetKey: 'bank', label: 'Conto Corrente Principale', currentValue: 8200, currency: 'EUR', notes: '', updatedAt: daysAgoISO(1) },
-  { id: -302, assetKey: 'bank', label: 'Revolut', currentValue: 1450, currency: 'EUR', notes: 'Spese quotidiane', updatedAt: daysAgoISO(1) },
-  { id: -303, assetKey: 'cash', label: 'Contanti', currentValue: 180, currency: 'EUR', notes: '', updatedAt: daysAgoISO(3) },
-  { id: -304, assetKey: 'emergencyFund', label: 'Fondo Emergenza', currentValue: 5000, currency: 'EUR', notes: '5 mesi di spese', updatedAt: daysAgoISO(10) },
+  { id: -301, assetKey: 'bank', label: 'Conto Corrente Principale', currentValue: 8200, currency: 'EUR', notes: '', updatedAt: daysAgoISO(1), linkedBankKey: null },
+  // Linked to the 'revolut' import format so the CSV import wizard's demo
+  // walkthrough can show a detected export auto-matching this account.
+  { id: -302, assetKey: 'bank', label: 'Revolut', currentValue: 1450, currency: 'EUR', notes: 'Spese quotidiane', updatedAt: daysAgoISO(1), linkedBankKey: 'revolut' },
+  { id: -303, assetKey: 'cash', label: 'Contanti', currentValue: 180, currency: 'EUR', notes: '', updatedAt: daysAgoISO(3), linkedBankKey: null },
+  { id: -304, assetKey: 'emergencyFund', label: 'Fondo Emergenza', currentValue: 5000, currency: 'EUR', notes: '5 mesi di spese', updatedAt: daysAgoISO(10), linkedBankKey: null },
 ];
 
 /** Salary + rent + a couple of subscriptions - covers both directions
@@ -291,7 +293,7 @@ export const useDemoServices = () => {
         getAccounts: async (): Promise<LiquidityAccountDto[]> => DEMO_LIQUIDITY_ACCOUNTS,
         saveAccount: async (data: {
           id?: number; asset_key: LiquidityAccountDto['assetKey']; label: string;
-          current_value: number; currency?: string; notes?: string;
+          current_value: number; currency?: string; notes?: string; linked_bank_key?: string | null;
         }): Promise<LiquidityAccountDto> => ({
           id: data.id ?? -Date.now(),
           assetKey: data.asset_key,
@@ -300,6 +302,7 @@ export const useDemoServices = () => {
           currency: data.currency ?? 'EUR',
           notes: data.notes ?? '',
           updatedAt: new Date().toISOString(),
+          linkedBankKey: data.linked_bank_key ?? null,
         }),
         deleteAccount: async () => FAKE_SUCCESS,
         getAccountHistory: async () => [],

@@ -876,6 +876,8 @@ export interface LiquidityAccountDto {
   currency: string;
   notes: string;
   updatedAt: string;
+  /** Detected bank/provider id this account auto-matches on import (see utils/dataImport/bankFormats.ts BankFormatId). Null = no known provider. */
+  linkedBankKey: string | null;
 }
 
 export type LiquidityAccountsGetResponse = LiquidityAccountDto[];
@@ -887,6 +889,7 @@ export interface LiquidityAccountSaveRequest {
   current_value: number;
   currency?: string;
   notes?: string;
+  linked_bank_key?: string | null;
 }
 
 export interface LiquidityAccountDeleteRequest { id: number; }

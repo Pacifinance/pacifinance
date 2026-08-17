@@ -11,6 +11,8 @@ function parseAccountPayload(body: Record<string, unknown>) {
     const assetKey = common.sanitizeInput(String(body.asset_key ?? body.assetKey ?? ""))
     const label = common.sanitizeInput(String(body.label ?? "")).slice(0, 60)
     const currentValue = Number(body.current_value ?? body.currentValue)
+    const rawLinkedBankKey = body.linked_bank_key ?? body.linkedBankKey
+    const linkedBankKey = rawLinkedBankKey ? common.sanitizeInput(String(rawLinkedBankKey)).slice(0, 40) : null
 
     if (
         !isOneOf(assetKey, db.liquidityAccounts.LIQUIDITY_ACCOUNT_ASSET_KEYS) ||
@@ -26,6 +28,7 @@ function parseAccountPayload(body: Record<string, unknown>) {
         currentValue,
         currency: normalizeCurrency(body.currency),
         notes: common.sanitizeInput(String(body.notes ?? "")).slice(0, 240),
+        linkedBankKey: linkedBankKey || null,
     }
 }
 

@@ -28,9 +28,15 @@ interface LiquidityAccountsPanelProps {
 interface FormState {
   label: string;
   amount: string;
+  linkedBankKey: string;
 }
 
-const emptyForm: FormState = { label: '', amount: '' };
+const emptyForm: FormState = { label: '', amount: '', linkedBankKey: '' };
+
+// Providers the CSV import wizard can auto-detect (see utils/dataImport/bankFormats.ts
+// BankFormatId) — linking one here lets a future import from that provider
+// auto-select this account instead of asking every time.
+const LINKABLE_BANK_KEYS = ['revolut', 'n26', 'traderepublic', 'paypal'] as const;
 
 const EmptyState = styled.p`
   margin: 0.5rem 0 1rem;
@@ -172,7 +178,7 @@ const FieldsGrid = styled.div`
     min-width: 0;
   }
 
-  input {
+  input, select {
     width: 100%;
     box-sizing: border-box;
     padding: 0.5rem 0.6rem;
@@ -222,7 +228,7 @@ export default function LiquidityAccountsPanel({
   const startEdit = (account: LiquidityAccountDto) => {
     setEditingId(account.id);
     setShowForm(true);
-    setForm({ label: account.label, amount: String(account.currentValue) });
+    setForm({ label: account.label, amount: String(account.currentValue), linkedBankKey: account.linkedBankKey || '' });
   };
 
   const resetForm = () => {
@@ -240,6 +246,7 @@ export default function LiquidityAccountsPanel({
         asset_key: assetKey,
         label: form.label.trim(),
         current_value: toEUR(Number(form.amount)),
+        linked_bank_key: form.linkedBankKey || null,
       });
       resetForm();
       await onChanged();
@@ -363,6 +370,18 @@ export default function LiquidityAccountsPanel({
                 <label>
                   {t.amount}
                   <input type="number" value={form.amount} onChange={(e) => setForm((f) => ({ ...f, amount: e.target.value }))} />
+                </label>
+                <label>
+                  {t.linkedBank || 'Linked bank/provider'}
+                  <select
+                    value={form.linkedBankKey}
+                    onChange={(e) => setForm((f) => ({ ...f, linkedBankKey: e.target.value }))}
+                  >
+                    <option value="">{t.linkedBankNone || 'None'}</option>
+                    {LINKABLE_BANK_KEYS.map((key) => (
+                      <option key={key} value={key}>{translations.dataImport?.bankNames?.[key] || key}</option>
+                    ))}
+                  </select>
                 </label>
               </FieldsGrid>
             </FormSection>

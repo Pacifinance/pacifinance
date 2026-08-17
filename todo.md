@@ -156,7 +156,7 @@
      model avoids. The recovery code (see above, done) solves the same
      problem while staying consistent with "no personal data, ever". -->
 - [ ] Two-factor authentication for user accounts (e.g. TOTP) — distinct from account recovery (block code + word phrase, done above): 2FA is a second factor at login, recovery is what gets you back in if you lose the password <!-- roadmap:2fa -->
-- [ ] Remaining `npm audit` stragglers after the CodeQL/Dependabot hardening pass (11 of the original ~38-78): `uuid` (needs an `overrides` entry to 11.x + verifying `exceljs` still works with its v11/ESM API) and `js-yaml`/`undici`/`path-to-regexp`/`smol-toml`/`ajv`/`@vercel/*` (all rooted in `@vercel/node`'s own tree; `npm audit fix --force` wants to *downgrade* `@vercel/node` to 4.0.0, untested against the current Vercel serverless build). All dev-scope/build-time only, not reachable by a real attacker via the running app — lower urgency, needs real compatibility testing rather than a blind forced bump
+- [ ] Remaining `npm audit` stragglers: `undici`/`path-to-regexp`/`smol-toml`/`ajv`/`@vercel/*` (all rooted in `@vercel/node`'s own tree; `npm audit fix --force` wants to *downgrade* `@vercel/node` to 4.0.0, untested against the current Vercel serverless build; the in-range `undici` override to `^5.29.0` doesn't clear the advisories since the fixes only land in 6.28+). All dev-scope/build-time only, not reachable by a real attacker via the running app — lower urgency, needs real compatibility testing rather than a blind forced bump. `uuid` and `js-yaml` are done (`overrides` to `^11.1.1`/`^4.3.1`; `exceljs`'s `uuidv4()` no-arg call site verified compatible, build+tests green)
 - [ ] Consolidate the four icon libraries in active use (`@mui/icons-material`, `@fortawesome/*`, `react-icons`, `lucide-react` — see `docs/DEPENDENCIES.md` "Known duplication") down to one or two; touches dozens of files, not a quick fix
 - [ ] Revisit the Vite 8 and TypeScript 7 upgrades once their dependency chains stabilize — both are documented as deliberately deferred in `docs/DEPENDENCIES.md` "Deliberately not upgraded right now" (Vite 8's plugin chain currently resolves into a Babel 8 release candidate; TypeScript 7 is capped by `@typescript-eslint`'s peer range)
 
@@ -173,6 +173,15 @@
 - [~] User feedback system (Phase 1): in-app form -> GitHub Issue via the backend <!-- roadmap:feedback-system -->
 - [~] "Contribute" section: how to donate, report bugs, propose ideas <!-- roadmap:contribute-section -->
 - [x] Roadmap priority voting system: per-user toggle vote + public counts, backed by `roadmapVotes` table and routes <!-- roadmap:roadmap-voting -->
+
+### Open Source Distribution and Discovery
+- [~] Publish prebuilt multi-arch Docker images so self-hosting doesn't require a local build: automation is in place (`.github/workflows/publish-docker.yml`, GHCR always + Docker Hub once its repo secrets are added, `linux/amd64`+`linux/arm64`), first real images publish on the next tagged release
+- [ ] Runtime-configurable Turnstile/Umami/Web Push keys for the prebuilt Docker images above (currently Vite build-time-only, so the published images ship with those integrations off) - self-hosters who want their own keys still have to build from source until this lands
+- [ ] Submit to self-hosting app-store directories (Unraid Community Apps, Umbrel App Store, Runtipi, CasaOS, etc.) - worth doing once the Docker images above have some real-world adoption, not before
+- [ ] GitHub topic convention so third-party integrations/forks can self-list and be discovered - nothing to link yet, revisit once any exist
+- [ ] README video walkthrough - low priority, no urgency
+- [ ] Public read-only API for portfolio/comparison data (bearer-token auth, opt-in per user) - long-term idea, needs its own auth/rate-limit/abuse design before it's a real proposal, not a quick add
+- [ ] Dedicated community chat (Discord/Slack) - revisit once issue/discussion volume actually justifies a channel beyond GitHub Issues/Discussions
 
 ### Testing
 <!-- From a coverage audit (2026-08): well covered overall (~1755 tests,

@@ -17,6 +17,20 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   dependencies found) and by noticing four separate icon libraries in active
   use with nobody having decided that on purpose - now tracked as a real
   cleanup target in `todo.md` instead of silently accumulating further.
+- `.github/workflows/publish-docker.yml`: publishes prebuilt multi-arch
+  (`linux/amd64`, `linux/arm64`) `web`/`api` images to GHCR on every tagged
+  release, so self-hosting no longer requires a local build - see "Prebuilt
+  images" under "Docker self-hosting" in `README.md`. Also pushes the same
+  images to Docker Hub once `DOCKERHUB_USERNAME`/`DOCKERHUB_TOKEN` repo
+  secrets exist (skips itself otherwise, so this stays optional and never
+  breaks the GHCR publish). Ships without Turnstile/Umami/Web Push keys
+  baked in (those are Vite build-time values); self-hosters who want their
+  own still use `docker compose up --build`.
+- README: a top-of-file quick-links row (Website/Live Demo/Pricing/FAQ/
+  Roadmap/Contributing), a "Contributions Welcome" badge linking to
+  `CONTRIBUTING.md`, and a short "who it's for" bullet list replacing part
+  of the opening paragraph, to make the pitch scannable in a few seconds
+  instead of requiring a full paragraph read.
 
 ### Changed
 - Migrated Tailwind CSS from v3 to v4: switched from the PostCSS plugin to
@@ -67,6 +81,17 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   fix`, lockfile-only, no `package.json` range changes). The remaining
   stragglers are all rooted in `@vercel/node`'s own dependency tree or need
   compatibility testing beyond a version bump - tracked in `todo.md`.
+- Closed two more of those stragglers via `package.json` `overrides`:
+  `js-yaml` to `^4.3.1` (fixes the quadratic-CPU-DoS CVEs in `!!omap`/merge-key
+  resolution; pulled in transitively by `eslint` and `@vercel/node`'s bundled
+  Python-runtime detector, both dev/build-time only) and `uuid` to `^11.1.1`
+  (fixes the missing-buffer-bounds-check CVE; pulled in by `exceljs`, a real
+  runtime dependency - verified its only call site uses the no-`buf` `uuidv4()`
+  form that was never actually affected). `undici`/`path-to-regexp`/`smol-toml`/
+  `ajv`/`@vercel/*` remain open: they're hard-pinned inside `@vercel/node`'s own
+  tree, dev/build-time only (never reachable via the deployed app), and the
+  only path that resolves them (`npm audit fix --force`) wants to downgrade
+  `@vercel/node` to 4.0.0 untested - see `todo.md`.
 
 ### Added
 - Deployment-mode detection: `DEPLOYMENT_MODE` env var (`server/src/libs/deploymentMode.ts`,

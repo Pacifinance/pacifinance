@@ -1,0 +1,125 @@
+name: Publish Docker images
+
+# Ships prebuilt multi-arch images for self-hosters so `docker compose up`
+# doesn't require a local build.
+#
+# Two images, matching the Dockerfile's two build targets - there's no
+# single "the app" container, `web` (nginx serving the static build) and
+# `api` (the Express backend) are deployed separately.
+#
+# Always published to GHCR - needs no extra account/secrets, authenticates
+# with the workflow's own GITHUB_TOKEN:
+#   ghcr.io/pacifinance/pacifinance-web
+#   ghcr.io/pacifinance/pacifinance-api
+#
+# Also published to Docker Hub, but only once these repo secrets exist
+# (Settings > Secrets and variables > Actions) - the Docker Hub push step
+# skips itself if they're missing, so this stays optional:
+#   DOCKERHUB_USERNAME  The Docker Hub account/org that owns the `pacifinance` namespace
+#   DOCKERHUB_TOKEN     Access token, not the account password: Docker Hub ->
+#                        Account Settings > Security > New Access Token
+#   dockerhub.com/pacifinance/pacifinance-web
+#   dockerhub.com/pacifinance/pacifinance-api
+#
+# Built without the VITE_* build args (Turnstile/Umami/Web Push keys) baked
+# in, so the images work out of the box but with those integrations off -
+# self-hosters who want their own keys baked in still need
+# `docker compose up --build` from source. See "Docker self-hosting" in
+# README.md.
+#
+# First run: on both registries, packages are private by default until
+# manually switched to public (GHCR: Settings > Packages > each package >
+# Change visibility; Docker Hub: the repository's own Settings tab) - a
+# one-time step, not something a workflow can do on its own.
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  IMAGE_NAME: pacifinance
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target: [web, api]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Check Docker Hub credentials
+        id: dockerhub
+        run: |
+          if [ -n "${{ secrets.DOCKERHUB_USERNAME }}" ] && [ -n "${{ secrets.DOCKERHUB_TOKEN }}" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Log in to Docker Hub
+        if: steps.dockerhub.outputs.enabled == 'true'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Extract GHCR metadata
+        id: meta_ghcr
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/pacifinance/${{ env.IMAGE_NAME }}-${{ matrix.target }}
+          tags: |
+            type=semver,pattern={{version}}
+            type=raw,value=latest,enable=${{ github.event_name == 'push' }}
+
+      - name: Extract Docker Hub metadata
+        if: steps.dockerhub.outputs.enabled == 'true'
+        id: meta_dockerhub
+        uses: docker/metadata-action@v5
+        with:
+          images: pacifinance/${{ env.IMAGE_NAME }}-${{ matrix.target }}
+          tags: |
+            type=semver,pattern={{version}}
+            type=raw,value=latest,enable=${{ github.event_name == 'push' }}
+
+      - name: Combine tags
+        id: tags
+        run: |
+          {
+            echo "list<<TAGEOF"
+            echo "${{ steps.meta_ghcr.outputs.tags }}"
+            if [ "${{ steps.dockerhub.outputs.enabled }}" = "true" ]; then
+              echo "${{ steps.meta_dockerhub.outputs.tags }}"
+            fi
+            echo "TAGEOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: ${{ matrix.target }}
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.tags.outputs.list }}
+          labels: ${{ steps.meta_ghcr.outputs.labels }}

@@ -44,6 +44,7 @@ COMMENT ON SCHEMA "public" IS 'standard public schema';
 
 CREATE OR REPLACE FUNCTION "public"."get_balance_history"("p_user_id" "uuid", "p_months" integer DEFAULT NULL::integer) RETURNS TABLE("month_start" "date", "bank" numeric, "cash" numeric, "digital_services" numeric, "stocks" numeric, "etf" numeric, "bitcoin" numeric, "crypto" numeric, "bonds" numeric, "funds" numeric, "commodities" numeric, "emergency_fund" numeric, "recorded_at" timestamp with time zone)
     LANGUAGE "sql" STABLE
+    SET "search_path" TO 'public'
     AS $$
   with monthly as (
     select
@@ -70,6 +71,7 @@ ALTER FUNCTION "public"."get_balance_history"("p_user_id" "uuid", "p_months" int
 
 CREATE OR REPLACE FUNCTION "public"."get_balance_ranking_pool"("p_user_ids" "uuid"[] DEFAULT NULL::"uuid"[], "p_ignore_test_demo" boolean DEFAULT true) RETURNS TABLE("user_id" "uuid", "total_balance" numeric)
     LANGUAGE "sql" STABLE
+    SET "search_path" TO 'public'
     AS $$
   with eligible as (
     select p.id from public.profiles p
@@ -90,6 +92,7 @@ ALTER FUNCTION "public"."get_balance_ranking_pool"("p_user_ids" "uuid"[], "p_ign
 
 CREATE OR REPLACE FUNCTION "public"."get_benchmark_metric_rows"("p_user_ids" "uuid"[], "p_current_month" "date" DEFAULT ("date_trunc"('month'::"text", "now"()))::"date") RETURNS TABLE("user_id" "uuid", "balance_total" numeric, "asset_allocation" "jsonb", "monthly_income" numeric, "monthly_expenses" numeric, "yearly_income" numeric, "yearly_expenses" numeric, "yearly_expenses_by_category" "jsonb")
     LANGUAGE "sql" STABLE
+    SET "search_path" TO 'public'
     AS $$
   with eligible as (
     select unnest(p_user_ids) as user_id
@@ -165,6 +168,7 @@ ALTER FUNCTION "public"."get_benchmark_metric_rows"("p_user_ids" "uuid"[], "p_cu
 
 CREATE OR REPLACE FUNCTION "public"."get_expense_ranking_pool"("p_user_ids" "uuid"[] DEFAULT NULL::"uuid"[], "p_is_expense" boolean DEFAULT true, "p_month" "date" DEFAULT NULL::"date") RETURNS TABLE("user_id" "uuid", "total_amount" numeric)
     LANGUAGE "sql" STABLE
+    SET "search_path" TO 'public'
     AS $$
   with eligible as (
     select p.id from public.profiles p
@@ -190,6 +194,7 @@ ALTER FUNCTION "public"."get_expense_ranking_pool"("p_user_ids" "uuid"[], "p_is_
 
 CREATE OR REPLACE FUNCTION "public"."get_monthly_totals"("p_user_id" "uuid", "p_months" integer DEFAULT NULL::integer) RETURNS TABLE("month_start" "date", "total_outflows" numeric, "total_incomes" numeric, "total_expenses" numeric, "total_investments" numeric, "total_transfers" numeric)
     LANGUAGE "sql" STABLE
+    SET "search_path" TO 'public'
     AS $$
   select
     date_trunc('month', occurred_at)::date as month_start,
@@ -1558,6 +1563,53 @@ CREATE INDEX "user_liquidity_accounts_user_idx" ON "public"."user_liquidity_acco
 
 
 
+-- Covering indexes for foreign keys the Supabase performance advisor
+-- flagged as unindexed (0001_unindexed_foreign_keys) - added in one batch
+-- rather than piecemeal since they're all single-column FK lookups.
+CREATE INDEX "benchmark_profile_snapshots_age_tag_id_idx" ON "public"."benchmark_profile_snapshots" USING "btree" ("age_tag_id");
+CREATE INDEX "benchmark_profile_snapshots_children_tag_id_idx" ON "public"."benchmark_profile_snapshots" USING "btree" ("children_tag_id");
+CREATE INDEX "benchmark_profile_snapshots_country_tag_id_idx" ON "public"."benchmark_profile_snapshots" USING "btree" ("country_tag_id");
+CREATE INDEX "benchmark_profile_snapshots_housing_type_tag_id_idx" ON "public"."benchmark_profile_snapshots" USING "btree" ("housing_type_tag_id");
+CREATE INDEX "benchmark_profile_snapshots_job_country_tag_id_idx" ON "public"."benchmark_profile_snapshots" USING "btree" ("job_country_tag_id");
+CREATE INDEX "benchmark_profile_snapshots_job_tag_id_idx" ON "public"."benchmark_profile_snapshots" USING "btree" ("job_tag_id");
+CREATE INDEX "benchmark_profile_snapshots_job_type_tag_id_idx" ON "public"."benchmark_profile_snapshots" USING "btree" ("job_type_tag_id");
+CREATE INDEX "benchmark_profile_snapshots_living_situation_tag_id_idx" ON "public"."benchmark_profile_snapshots" USING "btree" ("living_situation_tag_id");
+CREATE INDEX "benchmark_profile_snapshots_remote_type_tag_id_idx" ON "public"."benchmark_profile_snapshots" USING "btree" ("remote_type_tag_id");
+CREATE INDEX "benchmark_profile_snapshots_user_id_idx" ON "public"."benchmark_profile_snapshots" USING "btree" ("user_id");
+CREATE INDEX "benchmark_profile_snapshots_work_time_tag_id_idx" ON "public"."benchmark_profile_snapshots" USING "btree" ("work_time_tag_id");
+CREATE INDEX "benchmark_profile_snapshots_years_of_experience_tag_id_idx" ON "public"."benchmark_profile_snapshots" USING "btree" ("years_of_experience_tag_id");
+CREATE INDEX "instrument_historical_prices_submitted_by_idx" ON "public"."instrument_historical_prices" USING "btree" ("submitted_by");
+CREATE INDEX "instrument_historical_prices_verified_by_idx" ON "public"."instrument_historical_prices" USING "btree" ("verified_by");
+CREATE INDEX "profiles_age_tag_id_idx" ON "public"."profiles" USING "btree" ("age_tag_id");
+CREATE INDEX "profiles_children_tag_id_idx" ON "public"."profiles" USING "btree" ("children_tag_id");
+CREATE INDEX "profiles_country_tag_id_idx" ON "public"."profiles" USING "btree" ("country_tag_id");
+CREATE INDEX "profiles_housing_type_tag_id_idx" ON "public"."profiles" USING "btree" ("housing_type_tag_id");
+CREATE INDEX "profiles_job_country_tag_id_idx" ON "public"."profiles" USING "btree" ("job_country_tag_id");
+CREATE INDEX "profiles_job_tag_id_idx" ON "public"."profiles" USING "btree" ("job_tag_id");
+CREATE INDEX "profiles_job_type_tag_id_idx" ON "public"."profiles" USING "btree" ("job_type_tag_id");
+CREATE INDEX "profiles_living_situation_tag_id_idx" ON "public"."profiles" USING "btree" ("living_situation_tag_id");
+CREATE INDEX "profiles_preferred_currency_tag_id_idx" ON "public"."profiles" USING "btree" ("preferred_currency_tag_id");
+CREATE INDEX "profiles_remote_type_tag_id_idx" ON "public"."profiles" USING "btree" ("remote_type_tag_id");
+CREATE INDEX "profiles_work_time_tag_id_idx" ON "public"."profiles" USING "btree" ("work_time_tag_id");
+CREATE INDEX "profiles_years_of_experience_tag_id_idx" ON "public"."profiles" USING "btree" ("years_of_experience_tag_id");
+CREATE INDEX "recurring_transactions_category_tag_id_idx" ON "public"."recurring_transactions" USING "btree" ("category_tag_id");
+CREATE INDEX "recurring_transactions_payment_type_tag_id_idx" ON "public"."recurring_transactions" USING "btree" ("payment_type_tag_id");
+CREATE INDEX "recurring_transactions_user_category_id_idx" ON "public"."recurring_transactions" USING "btree" ("user_category_id");
+CREATE INDEX "shared_expense_reimbursements_receivable_id_idx" ON "public"."shared_expense_reimbursements" USING "btree" ("receivable_id");
+CREATE INDEX "transactions_category_tag_id_idx" ON "public"."transactions" USING "btree" ("category_tag_id");
+CREATE INDEX "transactions_payment_type_tag_id_idx" ON "public"."transactions" USING "btree" ("payment_type_tag_id");
+CREATE INDEX "transactions_user_category_id_idx" ON "public"."transactions" USING "btree" ("user_category_id");
+CREATE INDEX "user_categories_parent_tag_id_idx" ON "public"."user_categories" USING "btree" ("parent_tag_id");
+CREATE INDEX "user_investment_dividends_holding_id_idx" ON "public"."user_investment_dividends" USING "btree" ("holding_id");
+CREATE INDEX "user_investment_dividends_instrument_id_idx" ON "public"."user_investment_dividends" USING "btree" ("instrument_id");
+CREATE INDEX "user_investment_holding_history_holding_id_idx" ON "public"."user_investment_holding_history" USING "btree" ("holding_id");
+CREATE INDEX "user_investment_holding_history_instrument_id_idx" ON "public"."user_investment_holding_history" USING "btree" ("instrument_id");
+CREATE INDEX "user_investment_transactions_holding_id_idx" ON "public"."user_investment_transactions" USING "btree" ("holding_id");
+CREATE INDEX "user_investment_transactions_instrument_id_idx" ON "public"."user_investment_transactions" USING "btree" ("instrument_id");
+CREATE INDEX "user_liquidity_account_history_account_id_idx" ON "public"."user_liquidity_account_history" USING "btree" ("account_id");
+
+
+
 ALTER TABLE ONLY "public"."balances"
     ADD CONSTRAINT "balances_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "auth"."users"("id") ON DELETE CASCADE;
 
@@ -1888,26 +1940,26 @@ ALTER TABLE ONLY "public"."user_liquidity_accounts"
 
 
 
-CREATE POLICY "Users delete own push subscriptions" ON "public"."push_subscriptions" FOR DELETE USING (("auth"."uid"() = "user_id"));
+CREATE POLICY "Users delete own push subscriptions" ON "public"."push_subscriptions" FOR DELETE USING ((( SELECT "auth"."uid"() AS "uid") = "user_id"));
 
 
 
-CREATE POLICY "Users read own notification preferences" ON "public"."notification_preferences" FOR SELECT USING (("auth"."uid"() = "user_id"));
+CREATE POLICY "Users read own notification preferences" ON "public"."notification_preferences" FOR SELECT USING ((( SELECT "auth"."uid"() AS "uid") = "user_id"));
 
 
 
-CREATE POLICY "Users read own push subscriptions" ON "public"."push_subscriptions" FOR SELECT USING (("auth"."uid"() = "user_id"));
+CREATE POLICY "Users read own push subscriptions" ON "public"."push_subscriptions" FOR SELECT USING ((( SELECT "auth"."uid"() AS "uid") = "user_id"));
 
 
 
-CREATE POLICY "Users update own notification preferences" ON "public"."notification_preferences" FOR UPDATE USING (("auth"."uid"() = "user_id")) WITH CHECK (("auth"."uid"() = "user_id"));
+CREATE POLICY "Users update own notification preferences" ON "public"."notification_preferences" FOR UPDATE USING ((( SELECT "auth"."uid"() AS "uid") = "user_id")) WITH CHECK ((( SELECT "auth"."uid"() AS "uid") = "user_id"));
 
 
 
 ALTER TABLE "public"."balances" ENABLE ROW LEVEL SECURITY;
 
 
-CREATE POLICY "balances_own_rows" ON "public"."balances" TO "authenticated" USING (("auth"."uid"() = "user_id")) WITH CHECK (("auth"."uid"() = "user_id"));
+CREATE POLICY "balances_own_rows" ON "public"."balances" TO "authenticated" USING ((( SELECT "auth"."uid"() AS "uid") = "user_id")) WITH CHECK ((( SELECT "auth"."uid"() AS "uid") = "user_id"));
 
 
 
@@ -1928,18 +1980,18 @@ CREATE POLICY "benchmark_snapshots_no_client_access" ON "public"."benchmark_prof
 ALTER TABLE "public"."deletions" ENABLE ROW LEVEL SECURITY;
 
 
-CREATE POLICY "deletions_own_row" ON "public"."deletions" FOR SELECT TO "authenticated" USING (("auth"."uid"() = "user_id"));
+CREATE POLICY "deletions_own_row" ON "public"."deletions" FOR SELECT TO "authenticated" USING ((( SELECT "auth"."uid"() AS "uid") = "user_id"));
 
 
 
-CREATE POLICY "expenses_own_rows" ON "public"."transactions" TO "authenticated" USING (("auth"."uid"() = "user_id")) WITH CHECK (("auth"."uid"() = "user_id"));
+CREATE POLICY "expenses_own_rows" ON "public"."transactions" TO "authenticated" USING ((( SELECT "auth"."uid"() AS "uid") = "user_id")) WITH CHECK ((( SELECT "auth"."uid"() AS "uid") = "user_id"));
 
 
 
 ALTER TABLE "public"."instrument_historical_prices" ENABLE ROW LEVEL SECURITY;
 
 
-CREATE POLICY "instrument_historical_prices_select_verified_or_own" ON "public"."instrument_historical_prices" FOR SELECT TO "authenticated" USING ((("status" = 'verified'::"text") OR ("auth"."uid"() = "submitted_by")));
+CREATE POLICY "instrument_historical_prices_select_verified_or_own" ON "public"."instrument_historical_prices" FOR SELECT TO "authenticated" USING ((("status" = 'verified'::"text") OR (( SELECT "auth"."uid"() AS "uid") = "submitted_by")));
 
 
 
@@ -1956,7 +2008,7 @@ ALTER TABLE "public"."notification_preferences" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "public"."profiles" ENABLE ROW LEVEL SECURITY;
 
 
-CREATE POLICY "profiles_own_row" ON "public"."profiles" TO "authenticated" USING (("auth"."uid"() = "id")) WITH CHECK (("auth"."uid"() = "id"));
+CREATE POLICY "profiles_own_row" ON "public"."profiles" TO "authenticated" USING ((( SELECT "auth"."uid"() AS "uid") = "id")) WITH CHECK ((( SELECT "auth"."uid"() AS "uid") = "id"));
 
 
 
@@ -1966,14 +2018,14 @@ ALTER TABLE "public"."push_subscriptions" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "public"."recurring_transactions" ENABLE ROW LEVEL SECURITY;
 
 
-CREATE POLICY "recurring_transactions_own_rows" ON "public"."recurring_transactions" TO "authenticated" USING (("auth"."uid"() = "user_id")) WITH CHECK (("auth"."uid"() = "user_id"));
+CREATE POLICY "recurring_transactions_own_rows" ON "public"."recurring_transactions" TO "authenticated" USING ((( SELECT "auth"."uid"() AS "uid") = "user_id")) WITH CHECK ((( SELECT "auth"."uid"() AS "uid") = "user_id"));
 
 
 
 ALTER TABLE "public"."roadmap_votes" ENABLE ROW LEVEL SECURITY;
 
 
-CREATE POLICY "roadmap_votes_own_rows" ON "public"."roadmap_votes" TO "authenticated" USING (("auth"."uid"() = "user_id")) WITH CHECK (("auth"."uid"() = "user_id"));
+CREATE POLICY "roadmap_votes_own_rows" ON "public"."roadmap_votes" TO "authenticated" USING ((( SELECT "auth"."uid"() AS "uid") = "user_id")) WITH CHECK ((( SELECT "auth"."uid"() AS "uid") = "user_id"));
 
 
 
@@ -1983,11 +2035,11 @@ ALTER TABLE "public"."shared_expense_receivables" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "public"."shared_expense_reimbursements" ENABLE ROW LEVEL SECURITY;
 
 
-CREATE POLICY "shared_expense_reimbursements_own_rows" ON "public"."shared_expense_reimbursements" TO "authenticated" USING (("auth"."uid"() = "user_id")) WITH CHECK (("auth"."uid"() = "user_id"));
+CREATE POLICY "shared_expense_reimbursements_own_rows" ON "public"."shared_expense_reimbursements" TO "authenticated" USING ((( SELECT "auth"."uid"() AS "uid") = "user_id")) WITH CHECK ((( SELECT "auth"."uid"() AS "uid") = "user_id"));
 
 
 
-CREATE POLICY "shared_receivables_own_rows" ON "public"."shared_expense_receivables" TO "authenticated" USING (("auth"."uid"() = "user_id")) WITH CHECK (("auth"."uid"() = "user_id"));
+CREATE POLICY "shared_receivables_own_rows" ON "public"."shared_expense_receivables" TO "authenticated" USING ((( SELECT "auth"."uid"() AS "uid") = "user_id")) WITH CHECK ((( SELECT "auth"."uid"() AS "uid") = "user_id"));
 
 
 
@@ -2004,79 +2056,79 @@ ALTER TABLE "public"."transactions" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "public"."user_categories" ENABLE ROW LEVEL SECURITY;
 
 
-CREATE POLICY "user_categories_own_rows" ON "public"."user_categories" TO "authenticated" USING (("auth"."uid"() = "user_id")) WITH CHECK (("auth"."uid"() = "user_id"));
+CREATE POLICY "user_categories_own_rows" ON "public"."user_categories" TO "authenticated" USING ((( SELECT "auth"."uid"() AS "uid") = "user_id")) WITH CHECK ((( SELECT "auth"."uid"() AS "uid") = "user_id"));
 
 
 
 ALTER TABLE "public"."user_goals" ENABLE ROW LEVEL SECURITY;
 
 
-CREATE POLICY "user_goals_own_rows" ON "public"."user_goals" TO "authenticated" USING (("auth"."uid"() = "user_id")) WITH CHECK (("auth"."uid"() = "user_id"));
+CREATE POLICY "user_goals_own_rows" ON "public"."user_goals" TO "authenticated" USING ((( SELECT "auth"."uid"() AS "uid") = "user_id")) WITH CHECK ((( SELECT "auth"."uid"() AS "uid") = "user_id"));
 
 
 
 ALTER TABLE "public"."user_investment_dividends" ENABLE ROW LEVEL SECURITY;
 
 
-CREATE POLICY "user_investment_dividends_own_rows" ON "public"."user_investment_dividends" TO "authenticated" USING (("auth"."uid"() = "user_id")) WITH CHECK (("auth"."uid"() = "user_id"));
+CREATE POLICY "user_investment_dividends_own_rows" ON "public"."user_investment_dividends" TO "authenticated" USING ((( SELECT "auth"."uid"() AS "uid") = "user_id")) WITH CHECK ((( SELECT "auth"."uid"() AS "uid") = "user_id"));
 
 
 
 ALTER TABLE "public"."user_investment_holding_history" ENABLE ROW LEVEL SECURITY;
 
 
-CREATE POLICY "user_investment_holding_history_insert_own" ON "public"."user_investment_holding_history" FOR INSERT TO "authenticated" WITH CHECK (("auth"."uid"() = "user_id"));
+CREATE POLICY "user_investment_holding_history_insert_own" ON "public"."user_investment_holding_history" FOR INSERT TO "authenticated" WITH CHECK ((( SELECT "auth"."uid"() AS "uid") = "user_id"));
 
 
 
-CREATE POLICY "user_investment_holding_history_select_own" ON "public"."user_investment_holding_history" FOR SELECT TO "authenticated" USING (("auth"."uid"() = "user_id"));
+CREATE POLICY "user_investment_holding_history_select_own" ON "public"."user_investment_holding_history" FOR SELECT TO "authenticated" USING ((( SELECT "auth"."uid"() AS "uid") = "user_id"));
 
 
 
-CREATE POLICY "user_investment_holding_history_update_own" ON "public"."user_investment_holding_history" FOR UPDATE TO "authenticated" USING (("auth"."uid"() = "user_id")) WITH CHECK (("auth"."uid"() = "user_id"));
+CREATE POLICY "user_investment_holding_history_update_own" ON "public"."user_investment_holding_history" FOR UPDATE TO "authenticated" USING ((( SELECT "auth"."uid"() AS "uid") = "user_id")) WITH CHECK ((( SELECT "auth"."uid"() AS "uid") = "user_id"));
 
 
 
 ALTER TABLE "public"."user_investment_holdings" ENABLE ROW LEVEL SECURITY;
 
 
-CREATE POLICY "user_investment_holdings_own_rows" ON "public"."user_investment_holdings" TO "authenticated" USING (("auth"."uid"() = "user_id")) WITH CHECK (("auth"."uid"() = "user_id"));
+CREATE POLICY "user_investment_holdings_own_rows" ON "public"."user_investment_holdings" TO "authenticated" USING ((( SELECT "auth"."uid"() AS "uid") = "user_id")) WITH CHECK ((( SELECT "auth"."uid"() AS "uid") = "user_id"));
 
 
 
 ALTER TABLE "public"."user_investment_settings" ENABLE ROW LEVEL SECURITY;
 
 
-CREATE POLICY "user_investment_settings_own_rows" ON "public"."user_investment_settings" TO "authenticated" USING (("auth"."uid"() = "user_id")) WITH CHECK (("auth"."uid"() = "user_id"));
+CREATE POLICY "user_investment_settings_own_rows" ON "public"."user_investment_settings" TO "authenticated" USING ((( SELECT "auth"."uid"() AS "uid") = "user_id")) WITH CHECK ((( SELECT "auth"."uid"() AS "uid") = "user_id"));
 
 
 
 ALTER TABLE "public"."user_investment_transactions" ENABLE ROW LEVEL SECURITY;
 
 
-CREATE POLICY "user_investment_transactions_own_rows" ON "public"."user_investment_transactions" TO "authenticated" USING (("auth"."uid"() = "user_id")) WITH CHECK (("auth"."uid"() = "user_id"));
+CREATE POLICY "user_investment_transactions_own_rows" ON "public"."user_investment_transactions" TO "authenticated" USING ((( SELECT "auth"."uid"() AS "uid") = "user_id")) WITH CHECK ((( SELECT "auth"."uid"() AS "uid") = "user_id"));
 
 
 
 ALTER TABLE "public"."user_liquidity_account_history" ENABLE ROW LEVEL SECURITY;
 
 
-CREATE POLICY "user_liquidity_account_history_insert_own" ON "public"."user_liquidity_account_history" FOR INSERT TO "authenticated" WITH CHECK (("auth"."uid"() = "user_id"));
+CREATE POLICY "user_liquidity_account_history_insert_own" ON "public"."user_liquidity_account_history" FOR INSERT TO "authenticated" WITH CHECK ((( SELECT "auth"."uid"() AS "uid") = "user_id"));
 
 
 
-CREATE POLICY "user_liquidity_account_history_select_own" ON "public"."user_liquidity_account_history" FOR SELECT TO "authenticated" USING (("auth"."uid"() = "user_id"));
+CREATE POLICY "user_liquidity_account_history_select_own" ON "public"."user_liquidity_account_history" FOR SELECT TO "authenticated" USING ((( SELECT "auth"."uid"() AS "uid") = "user_id"));
 
 
 
-CREATE POLICY "user_liquidity_account_history_update_own" ON "public"."user_liquidity_account_history" FOR UPDATE TO "authenticated" USING (("auth"."uid"() = "user_id")) WITH CHECK (("auth"."uid"() = "user_id"));
+CREATE POLICY "user_liquidity_account_history_update_own" ON "public"."user_liquidity_account_history" FOR UPDATE TO "authenticated" USING ((( SELECT "auth"."uid"() AS "uid") = "user_id")) WITH CHECK ((( SELECT "auth"."uid"() AS "uid") = "user_id"));
 
 
 
 ALTER TABLE "public"."user_liquidity_accounts" ENABLE ROW LEVEL SECURITY;
 
 
-CREATE POLICY "user_liquidity_accounts_own_rows" ON "public"."user_liquidity_accounts" TO "authenticated" USING (("auth"."uid"() = "user_id")) WITH CHECK (("auth"."uid"() = "user_id"));
+CREATE POLICY "user_liquidity_accounts_own_rows" ON "public"."user_liquidity_accounts" TO "authenticated" USING ((( SELECT "auth"."uid"() AS "uid") = "user_id")) WITH CHECK ((( SELECT "auth"."uid"() AS "uid") = "user_id"));
 
 
 
@@ -2117,8 +2169,9 @@ GRANT ALL ON FUNCTION "public"."get_monthly_totals"("p_user_id" "uuid", "p_month
 
 
 
-GRANT ALL ON FUNCTION "public"."rls_auto_enable"() TO "anon";
-GRANT ALL ON FUNCTION "public"."rls_auto_enable"() TO "authenticated";
+-- Not granted to anon/authenticated on purpose: this only ever needs to run
+-- as the event trigger defined above, never as a direct RPC call (Security
+-- Advisor's "Public Can Execute SECURITY DEFINER Function" check).
 GRANT ALL ON FUNCTION "public"."rls_auto_enable"() TO "service_role";
 
 

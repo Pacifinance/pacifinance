@@ -92,6 +92,25 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   tree, dev/build-time only (never reachable via the deployed app), and the
   only path that resolves them (`npm audit fix --force`) wants to downgrade
   `@vercel/node` to 4.0.0 untested - see `todo.md`.
+- Resolved every Supabase Security/Performance Advisor warning
+  (`supabase/migrations/harden-function-search-path-and-extension-schema.sql`,
+  `optimize-rls-policies-and-add-fk-indexes.sql`, applied to `schema.sql` in
+  its final-state form too): pinned `search_path` on the 5 SQL functions the
+  advisor flagged as mutable (`function_search_path_mutable`); revoked
+  `anon`/`authenticated` EXECUTE on `rls_auto_enable()` - a `SECURITY
+  DEFINER` event-trigger handler that was reachable via `POST
+  /rest/v1/rpc/rls_auto_enable` despite only ever needing to run as the
+  trigger itself; moved the `pg_net` extension out of the `public` schema
+  (best-effort - wrapped in exception handling since some pg_net versions
+  aren't relocatable, see the migration's comment); rewrote all 26 RLS
+  policies that called `auth.uid()` unwrapped in `USING`/`WITH CHECK` so it
+  evaluates once per query instead of once per row
+  (`auth_rls_initplan`); added the 41 missing covering indexes on foreign
+  key columns the advisor listed (`unindexed_foreign_keys`). One advisor
+  item is out of SQL's reach: "Leaked Password Protection Disabled" is a
+  Supabase Auth dashboard toggle (Authentication -> Policies), not a
+  database object - needs enabling manually per project, hosted and
+  self-hosted alike.
 
 ### Added
 - Deployment-mode detection: `DEPLOYMENT_MODE` env var (`server/src/libs/deploymentMode.ts`,

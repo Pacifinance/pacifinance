@@ -34,7 +34,7 @@ import { indexToMonthKey } from '../utils/userDataSelectors';
 import ThemedSelect, { getMuiSelectMenuProps } from '../components/ThemedSelect';
 import DateFilterPopover from '../components/DateFilterPopover';
 import CategoryPicker from '../components/CategoryPicker';
-import { renderBalanceSourceMenuItems } from '../components/multiInsert/balanceSourceMenu';
+import { renderBalanceSourceMenuItems, resolveBalanceSourceLabel } from '../components/multiInsert/balanceSourceMenu';
 import { useListViewMode } from '../hooks/useListViewMode';
 import { STORAGE_KEYS } from '../constants/storageKeys';
 import { inferTransactionPurpose } from '../utils/transactionPurpose';
@@ -887,6 +887,7 @@ export default function OutflowSection({
       note: add.notes || "",
       date: add.date ? String(add.date).slice(0, 10) : "",
       purpose: inferTransactionPurpose('outflow', add.categoryTag?.index ?? 0, add.purpose),
+      balanceSourceLabel: resolveBalanceSourceLabel(balanceSourceMeta, add),
       sharedEnabled: Boolean(shared),
       sharedMethod: shared && Number.isInteger(ratio) && ratio >= 2 ? 'people' : 'share',
       sharedPeopleCount: inferredPeople,
@@ -1215,6 +1216,9 @@ export default function OutflowSection({
             </ThemedSelect>
           </div>
         </th>
+        <th style={{ minWidth: 110 }}>
+          {translations.insert.outflowSection.tableColumns.paymentMethod}
+        </th>
         <th style={{ minWidth: 100 }}>
           <span
             onClick={() => handleSort('amount')}
@@ -1345,6 +1349,22 @@ export default function OutflowSection({
                 </InlineSelect>
               </td>
               <td>
+                <Select
+                  value={editValues.balanceSourceLabel || ''}
+                  onChange={(e) => setEditValues(prev => ({ ...prev, balanceSourceLabel: e.target.value }))}
+                  displayEmpty
+                  fullWidth
+                  size="small"
+                  sx={selectSx}
+                  MenuProps={getMuiSelectMenuProps(theme)}
+                >
+                  <MenuItem value="">
+                    <em>{translations.general.selectAnOption || 'None (optional)'}</em>
+                  </MenuItem>
+                  {renderBalanceSourceMenuItems(balanceOptions, balanceSourceMeta)}
+                </Select>
+              </td>
+              <td>
                 <div style={{ position: 'relative', width: '100%', minWidth: 0 }}>
                   <InlineInput
                     type="text"
@@ -1409,6 +1429,7 @@ export default function OutflowSection({
                 : getDisplayCategory(add)}
             </td>
             <td>{isHidden ? '****' : translateTag(add.paymentType?.label, language, 'payment')}</td>
+            <td>{isHidden ? '****' : (resolveBalanceSourceLabel(balanceSourceMeta, add) || '—')}</td>
             <td>
               {isHidden
                 ? '****'
@@ -1539,6 +1560,20 @@ export default function OutflowSection({
                       </option>
                     ))}
                   </InlineSelect>
+                  <Select
+                    value={editValues.balanceSourceLabel || ''}
+                    onChange={(e) => setEditValues(prev => ({ ...prev, balanceSourceLabel: e.target.value }))}
+                    displayEmpty
+                    fullWidth
+                    size="small"
+                    sx={selectSx}
+                    MenuProps={getMuiSelectMenuProps(theme)}
+                  >
+                    <MenuItem value="">
+                      <em>{translations.general.selectAnOption || 'None (optional)'}</em>
+                    </MenuItem>
+                    {renderBalanceSourceMenuItems(balanceOptions, balanceSourceMeta)}
+                  </Select>
                   <div style={{ position: 'relative', width: '100%', minWidth: 0 }}>
                     <InlineInput
                       type="text"
@@ -1601,6 +1636,9 @@ export default function OutflowSection({
               </CardTopRow>
               <CardMetaRow theme={theme}>
                 <span>{isHidden ? '****' : translateTag(add.paymentType?.label, language, 'payment')}</span>
+                {!isHidden && resolveBalanceSourceLabel(balanceSourceMeta, add) && (
+                  <span>{resolveBalanceSourceLabel(balanceSourceMeta, add)}</span>
+                )}
                 <span>
                   {isHidden
                     ? '****'

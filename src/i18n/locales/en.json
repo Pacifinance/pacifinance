@@ -1039,6 +1039,7 @@
             },
             "tableColumns": {
                 "category": "Category",
+                "paymentMethod": "Payment method",
                 "value": "Value",
                 "note": "Note",
                 "date": "Income Date"
@@ -1078,6 +1079,7 @@
             "tableColumns": {
                 "category": "Category",
                 "typology": "Typology",
+                "paymentMethod": "Payment method",
                 "value": "Value",
                 "note": "Note",
                 "date": "Outflow Date"

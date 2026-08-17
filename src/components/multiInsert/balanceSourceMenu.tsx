@@ -21,6 +21,37 @@ export interface BalanceSourceEntryMeta {
 
 export type BalanceSourceMetaMap = Record<string, BalanceSourceEntryMeta>;
 
+export interface StoredBalanceSourceLike {
+  balanceAssetKey?: string | null;
+  balanceDetailType?: 'liquidity' | 'investment' | null;
+  balanceDetailId?: number | null;
+}
+
+/**
+ * Reverse lookup: from a transaction's stored balance-source fields
+ * (balanceAssetKey/balanceDetailType/balanceDetailId, as returned by
+ * TransactionDto) back to the translated label used as the Select value in
+ * balanceSourceMeta. Falls back from the specific sub-account (it may have
+ * been deleted/renamed since) to the parent asset field; returns '' when
+ * nothing was stored or nothing matches.
+ */
+export function resolveBalanceSourceLabel(
+  balanceSourceMeta: BalanceSourceMetaMap | null | undefined,
+  row: StoredBalanceSourceLike | null | undefined,
+): string {
+  if (!row?.balanceAssetKey || !balanceSourceMeta) return '';
+  const entries = Object.entries(balanceSourceMeta);
+  if (row.balanceDetailType && row.balanceDetailId != null) {
+    const detail = entries.find(([, meta]) =>
+      meta.detailType === row.balanceDetailType &&
+      meta.detailId === row.balanceDetailId &&
+      meta.assetKey === row.balanceAssetKey);
+    if (detail) return detail[0];
+  }
+  const base = entries.find(([, meta]) => !meta.detailType && meta.assetKey === row.balanceAssetKey);
+  return base?.[0] || '';
+}
+
 interface DetailLabelProps {
   parentLabel: string;
   fullLabel: string;

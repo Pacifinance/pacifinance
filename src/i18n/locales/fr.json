@@ -971,6 +971,7 @@
             },
             "tableColumns": {
                 "category": "Catégorie",
+                "paymentMethod": "Moyen de paiement",
                 "value": "Valeur",
                 "note": "Note",
                 "date": "Date du revenu"
@@ -1010,6 +1011,7 @@
             "tableColumns": {
                 "category": "Catégorie",
                 "typology": "Typologie",
+                "paymentMethod": "Moyen de paiement",
                 "value": "Valeur",
                 "note": "Note",
                 "date": "Date de la sortie"

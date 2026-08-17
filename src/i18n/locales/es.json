@@ -973,6 +973,7 @@
             },
             "tableColumns": {
                 "category": "Categoría",
+                "paymentMethod": "Método de pago",
                 "value": "Valor",
                 "note": "Nota",
                 "date": "Fecha del ingreso"
@@ -1012,6 +1013,7 @@
             "tableColumns": {
                 "category": "Categoría",
                 "typology": "Tipología",
+                "paymentMethod": "Método de pago",
                 "value": "Valor",
                 "note": "Nota",
                 "date": "Fecha del gasto"

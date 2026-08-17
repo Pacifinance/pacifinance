@@ -16,7 +16,7 @@ import { indexToMonthKey } from '../utils/userDataSelectors';
 import ThemedSelect, { getMuiSelectMenuProps } from '../components/ThemedSelect';
 import DateFilterPopover from '../components/DateFilterPopover';
 import CategoryPicker from '../components/CategoryPicker';
-import { renderBalanceSourceMenuItems } from '../components/multiInsert/balanceSourceMenu';
+import { renderBalanceSourceMenuItems, resolveBalanceSourceLabel } from '../components/multiInsert/balanceSourceMenu';
 import { useListViewMode } from '../hooks/useListViewMode';
 import { STORAGE_KEYS } from '../constants/storageKeys';
 import {
@@ -405,6 +405,7 @@ export default function IncomeSection({
       amount: String(parseFloat(displayAmount.toFixed(2))),
       note: add.notes || "",
       date: add.date ? new Date(add.date).toISOString().split('T')[0] : "",
+      balanceSourceLabel: resolveBalanceSourceLabel(balanceSourceMeta, add),
     });
   };
 
@@ -534,6 +535,9 @@ export default function IncomeSection({
               ))}
             </ThemedSelect>
           </div>
+        </th>
+        <th style={{ minWidth: 110 }}>
+          {translations.insert.incomeSection.tableColumns.paymentMethod}
         </th>
         <th style={{ minWidth: 100 }}>
           <span
@@ -720,6 +724,22 @@ export default function IncomeSection({
                 </div>
               </td>
               <td>
+                <Select
+                  value={editValues.balanceSourceLabel || ''}
+                  onChange={(e) => setEditValues(prev => ({ ...prev, balanceSourceLabel: e.target.value }))}
+                  displayEmpty
+                  fullWidth
+                  size="small"
+                  sx={selectSx}
+                  MenuProps={getMuiSelectMenuProps(theme)}
+                >
+                  <MenuItem value="">
+                    <em>{translations.general.selectAnOption || 'None (optional)'}</em>
+                  </MenuItem>
+                  {renderBalanceSourceMenuItems(balanceOptions, balanceSourceMeta)}
+                </Select>
+              </td>
+              <td>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                   <InlineInput
                     type="text"
@@ -778,6 +798,7 @@ export default function IncomeSection({
             <td>
               {isHidden ? '****' : getDisplayCategory(add)}
             </td>
+            <td>{isHidden ? '****' : (resolveBalanceSourceLabel(balanceSourceMeta, add) || '—')}</td>
             <td>
               {isHidden
                 ? '****'
@@ -898,6 +919,20 @@ export default function IncomeSection({
                     disabled={isSaving}
                     placeholder={translations.insert.incomeSection.placeholderCategory}
                   />
+                  <Select
+                    value={editValues.balanceSourceLabel || ''}
+                    onChange={(e) => setEditValues(prev => ({ ...prev, balanceSourceLabel: e.target.value }))}
+                    displayEmpty
+                    fullWidth
+                    size="small"
+                    sx={selectSx}
+                    MenuProps={getMuiSelectMenuProps(theme)}
+                  >
+                    <MenuItem value="">
+                      <em>{translations.general.selectAnOption || 'None (optional)'}</em>
+                    </MenuItem>
+                    {renderBalanceSourceMenuItems(balanceOptions, balanceSourceMeta)}
+                  </Select>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                     <InlineInput
                       type="text"
@@ -956,6 +991,9 @@ export default function IncomeSection({
                 </CardAmount>
               </CardTopRow>
               <CardMetaRow theme={theme} style={{ justifyContent: 'flex-end' }}>
+                {!isHidden && resolveBalanceSourceLabel(balanceSourceMeta, add) && (
+                  <span>{resolveBalanceSourceLabel(balanceSourceMeta, add)}</span>
+                )}
                 <span>
                   {isHidden
                     ? '****'

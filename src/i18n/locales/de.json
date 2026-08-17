@@ -971,6 +971,7 @@
             },
             "tableColumns": {
                 "category": "Kategorie",
+                "paymentMethod": "Zahlungsmethode",
                 "value": "Betrag",
                 "note": "Notiz",
                 "date": "Einnahmedatum"
@@ -1010,6 +1011,7 @@
             "tableColumns": {
                 "category": "Kategorie",
                 "typology": "Typ",
+                "paymentMethod": "Zahlungsmethode",
                 "value": "Betrag",
                 "note": "Notiz",
                 "date": "Ausgabedatum"

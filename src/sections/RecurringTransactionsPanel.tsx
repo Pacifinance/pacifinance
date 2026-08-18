@@ -22,6 +22,7 @@ import { getMuiSelectMenuProps } from '../components/ThemedSelect';
 import CategoryPicker from '../components/CategoryPicker';
 import { ModernActionButton } from '../styles/MyStyled';
 import { inferTransactionPurpose } from '../utils/transactionPurpose';
+import { renderBalanceSourceMenuItems, resolveBalanceSourceLabel } from '../components/multiInsert/balanceSourceMenu';
 
 const EmptyState = styled.p`
   margin: 0.5rem 0 1rem;
@@ -181,10 +182,10 @@ const SecondaryButton = styled.button`
   cursor: pointer;
 `;
 
-const emptyForm = { isExpense: true, purpose: 'expense', categoryKey: '', userCategoryId: null, paymentTypeKey: '', amount: '', dayOfMonth: '1', notes: '' };
+const emptyForm = { isExpense: true, purpose: 'expense', categoryKey: '', userCategoryId: null, paymentTypeKey: '', amount: '', dayOfMonth: '1', notes: '', balanceSourceLabel: '' };
 
 export default function RecurringTransactionsPanel({
-  theme, items, outflowsTags, incomesTags, paymentTags, customCategories,
+  theme, items, outflowsTags, incomesTags, paymentTags, customCategories, balanceOptions, balanceSourceMeta,
   onCreateCategory, onClose, onChanged,
 }) {
   const { language, translations } = useContext(LanguageContext);
@@ -224,6 +225,11 @@ export default function RecurringTransactionsPanel({
       amount: String(fromEUR(item.amount)),
       dayOfMonth: String(item.dayOfMonth),
       notes: item.notes || '',
+      balanceSourceLabel: resolveBalanceSourceLabel(balanceSourceMeta, {
+        balanceAssetKey: item.balanceAssetKey,
+        balanceDetailType: item.balanceDetailType,
+        balanceDetailId: item.balanceDetailId,
+      }),
     });
     setShowForm(true);
   };
@@ -242,6 +248,7 @@ export default function RecurringTransactionsPanel({
     if (!canSave || saving) return;
     setSaving(true);
     try {
+      const sourceMeta = balanceSourceMeta?.[form.balanceSourceLabel];
       await recurringTransactionService.saveRecurring({
         id: editingId ?? undefined,
         direction: form.isExpense ? 'outflow' : 'income',
@@ -252,6 +259,9 @@ export default function RecurringTransactionsPanel({
         category_tag: Number(form.categoryKey),
         user_category_id: form.userCategoryId,
         day_of_month: Number(form.dayOfMonth),
+        balance_source: sourceMeta
+          ? { asset_key: sourceMeta.assetKey, detail_type: sourceMeta.detailType ?? null, detail_id: sourceMeta.detailId ?? null }
+          : null,
       });
       resetForm();
       await onChanged();
@@ -431,6 +441,28 @@ export default function RecurringTransactionsPanel({
                     value={form.dayOfMonth}
                     onChange={(e) => setForm((f) => ({ ...f, dayOfMonth: e.target.value }))}
                   />
+                </label>
+
+                <label>
+                  {form.isExpense
+                    ? (translations?.insert?.outflowSection?.decreaseWhichBalance || 'Sottrai da')
+                    : (translations?.insert?.incomeSection?.increaseWhichBalance || 'Aggiungi a')}
+                  <Select
+                    value={form.balanceSourceLabel}
+                    onChange={(e) => setForm((f) => ({ ...f, balanceSourceLabel: e.target.value }))}
+                    displayEmpty
+                    size="small"
+                    sx={selectSx}
+                    MenuProps={menuProps}
+                    renderValue={(value) =>
+                      value === '' ? (translations?.general?.selectAnOption || 'Nessuno (opzionale)') : value
+                    }
+                  >
+                    <MenuItem value="">
+                      <em>{translations?.general?.selectAnOption || 'Nessuno (opzionale)'}</em>
+                    </MenuItem>
+                    {renderBalanceSourceMenuItems(balanceOptions, balanceSourceMeta)}
+                  </Select>
                 </label>
               </FieldsGrid>
 

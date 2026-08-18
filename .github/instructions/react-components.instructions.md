@@ -52,6 +52,42 @@ const color = getAssetColor('stocks');
 const icon = getCategoryIcon('food');
 ```
 
+## Shared Selectors (accounts, categories, payment types...) — MANDATORY
+Every place a user picks from a recurring domain concept — a balance
+source/sub-account, a category (incl. custom sub-categories), a payment
+type/tag — must render it through the one shared component/helper for that
+concept, not a fresh inline `<select>`/`<Select>` mapped over the raw data.
+A second implementation drifts in look (flat vs grouped, no sub-account
+indentation) and in behavior, exactly what happened with Quick Add's account
+field and the recurring-transactions panel before both were fixed to reuse
+the real thing.
+```tsx
+// ❌ WRONG — reimplementing the balance-source dropdown inline
+<select value={source} onChange={...}>
+  {entries.map(e => <option key={e.label} value={e.label}>{e.label}</option>)}
+</select>
+
+// ✅ CORRECT — same grouped/indented rendering everywhere a balance source is picked
+import { renderBalanceSourceMenuItems, resolveBalanceSourceLabel } from '../components/multiInsert/balanceSourceMenu';
+<Select value={selectedOption} onChange={...}>
+  {renderBalanceSourceMenuItems(balanceOptions, balanceSourceMeta)}
+</Select>
+// resolveBalanceSourceLabel(...) to preselect it from a stored transaction/template
+
+// ✅ CORRECT — categories (including the user's own custom sub-categories)
+import CategoryPicker from '../components/CategoryPicker';
+<CategoryPicker officialTags={tags} customCategories={customCategories} onSelect={...} />
+```
+Before writing a new selector for an existing domain concept, grep for how it
+is already rendered elsewhere (`renderBalanceSourceMenuItems`, `CategoryPicker`,
+`sortTagsByLanguage`/`translateTag` for payment-type/tag dropdowns) and reuse
+it. If a shared renderer genuinely can't be reused (e.g. a stripped-down flow
+that intentionally avoids a heavier component's side effects), say so in a
+comment next to the duplicate — same as `QuickAddTransaction.tsx`'s own doc
+comment already does for its balance-delta logic — so the drift is a
+documented, reviewable choice instead of silent duplication that only shows up
+as a bug later.
+
 ## userData — MANDATORY
 ```tsx
 // ❌ WRONG — direct property access

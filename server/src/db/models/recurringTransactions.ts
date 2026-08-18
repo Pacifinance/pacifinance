@@ -3,11 +3,16 @@ import supabase from "../supabase"
 import { ExtDate, toDateOnly } from "../../libs/datelib"
 
 import tags from "./tags"
+import balances from "./balances"
+import liquidityAccounts from "./liquidityAccounts"
+import investments from "./investments"
 import { encryptField, decryptField } from "../crypto"
 import type { TransactionPurpose } from "../../domain/transactions"
+import type { TransactionBalanceSource } from "./transactions"
 
 const RECURRING_SELECT = `
     id, is_expense, purpose, amount, notes, day_of_month, active, next_run_date,
+    balance_asset_key, balance_detail_type, balance_detail_id,
     payment_type:tags!recurring_transactions_payment_type_tag_id_fkey(label, client_index, type),
     category_tag:tags!recurring_transactions_category_tag_id_fkey(label, client_index, type),
     user_category:user_categories(id, label)
@@ -24,6 +29,9 @@ interface RecurringRow {
     day_of_month: number
     active: boolean
     next_run_date: string
+    balance_asset_key: string | null
+    balance_detail_type: string | null
+    balance_detail_id: number | null
     payment_type: TagJoin
     category_tag: TagJoin
     user_category: {id: number, label: string} | null
@@ -51,6 +59,9 @@ function toRecurring(rawRow: unknown) {
         dayOfMonth: row.day_of_month,
         active: row.active,
         nextRunDate: row.next_run_date,
+        balanceAssetKey: row.balance_asset_key,
+        balanceDetailType: row.balance_detail_type,
+        balanceDetailId: row.balance_detail_id,
     }
 }
 
@@ -63,6 +74,7 @@ export type RecurringInput = {
     categoryTag: number // client index
     userCategoryId: number | null
     dayOfMonth: number // 1-28
+    balanceSource: TransactionBalanceSource | null
 }
 
 /**
@@ -128,6 +140,9 @@ async function insertRecurring(user_id: string, input: RecurringInput) {
         day_of_month: input.dayOfMonth,
         active: true,
         next_run_date: toDateOnly(computeInitialNextRunDate(input.dayOfMonth)),
+        balance_asset_key: input.balanceSource?.asset_key ?? null,
+        balance_detail_type: input.balanceSource?.detail_type ?? null,
+        balance_detail_id: input.balanceSource?.detail_id ?? null,
     }).select(RECURRING_SELECT).single()
     if (error) console.error("recurringTransactions.insertRecurring: failed to insert", error)
     if (error || !data) return null
@@ -155,6 +170,9 @@ async function updateRecurring(user_id: string, id: number, input: RecurringInpu
             user_category_id: input.userCategoryId,
             day_of_month: input.dayOfMonth,
             next_run_date: toDateOnly(computeInitialNextRunDate(input.dayOfMonth)),
+            balance_asset_key: input.balanceSource?.asset_key ?? null,
+            balance_detail_type: input.balanceSource?.detail_type ?? null,
+            balance_detail_id: input.balanceSource?.detail_id ?? null,
             updated_at: new Date().toISOString(),
         })
         .eq("user_id", user_id)
@@ -216,6 +234,9 @@ type DueRow = {
     category_tag_id: number
     user_category_id: number | null
     day_of_month: number
+    balance_asset_key: string | null
+    balance_detail_type: "liquidity" | "investment" | null
+    balance_detail_id: number | null
 }
 
 /**
@@ -226,7 +247,8 @@ type DueRow = {
  */
 async function getDueRecurring(now: Date) {
     const {data, error} = await supabase.from("recurring_transactions")
-        .select("id, user_id, is_expense, purpose, amount, notes, payment_type_tag_id, category_tag_id, user_category_id, day_of_month")
+        .select(`id, user_id, is_expense, purpose, amount, notes, payment_type_tag_id, category_tag_id,
+            user_category_id, day_of_month, balance_asset_key, balance_detail_type, balance_detail_id`)
         .eq("active", true)
         .lte("next_run_date", toDateOnly(now))
     if (error) console.error("recurringTransactions.getDueRecurring: failed to read due templates", error)
@@ -234,13 +256,100 @@ async function getDueRecurring(now: Date) {
     return data as unknown as DueRow[]
 }
 
+// camelCase asset key -> balances table column name (the same mapping as the
+// client's ASSET_TO_DB_KEY in src/constants/balanceSchema.ts - duplicated
+// here since client and server code never share a bundle).
+const ASSET_TO_BALANCE_COLUMN: Record<string, string> = {
+    bank: "bank", cash: "cash", digitalServices: "digital_services", emergencyFund: "emergency_fund",
+    stocks: "stocks", etf: "etf", bitcoin: "bitcoin", crypto: "crypto",
+    bonds: "bonds", funds: "funds", commodities: "commodities",
+}
+
+/**
+ * Applies a due template's amount as a balance delta, mirroring what the
+ * client does after a manual insert (InsertValues.tsx's applyCurrentDetailSourceDelta
+ * + createBalancesJson) - but server-side, since a cron-fired template has no
+ * client present to do it. Best-effort: logs and returns on failure, never
+ * throws, so a delta problem can't turn an already-recorded transaction into
+ * a failed cron run (same philosophy as balances/add's history-snapshot calls).
+ */
+async function applyRecurringBalanceDelta(
+    user_id: string,
+    assetKey: string | null,
+    detailType: "liquidity" | "investment" | null,
+    detailId: number | null,
+    deltaEUR: number,
+) {
+    if (!assetKey || !deltaEUR) return
+
+    if (detailType === "liquidity" && detailId !== null) {
+        const accounts = await liquidityAccounts.getAccountsByUserId(user_id)
+        const account = accounts.find((a) => a.id === detailId)
+        if (!account) return
+        await liquidityAccounts.updateAccount(user_id, account.id, {
+            assetKey: account.assetKey,
+            label: account.label,
+            currentValue: (Number(account.currentValue) || 0) + deltaEUR,
+            currency: account.currency,
+            notes: account.notes,
+            linkedBankKey: account.linkedBankKey,
+            unitValue: account.unitValue,
+            fallbackAccountId: account.fallbackAccountId,
+        })
+        return
+    }
+
+    if (detailType === "investment" && detailId !== null) {
+        // Raw stored current_value (not the live-verified-price overlay) is the
+        // correct baseline to compound a delta onto - see getHoldingsByUserId's
+        // own comment on why the overlay exists and why it's a read-time-only view.
+        const holdings = await investments.getHoldingsByUserId(user_id, false)
+        const holding = holdings.find((h) => h.id === detailId)
+        if (!holding?.instrument?.id) return
+        await investments.updateHolding(user_id, holding.id, {
+            instrumentId: holding.instrument.id,
+            assetKey: holding.assetKey,
+            positionType: holding.positionType,
+            quantity: holding.quantity,
+            averagePrice: holding.averagePrice,
+            currentValue: (Number(holding.currentValue) || 0) + deltaEUR,
+            investedAmount: holding.investedAmount,
+            currency: holding.currency,
+            notes: holding.notes,
+            importSource: holding.importSource,
+        })
+        return
+    }
+
+    // No sub-account: the macro balance field itself. Append a new snapshot
+    // row (balances is append-only history, never updated in place) built
+    // from the most recent one with the delta applied to the chosen field.
+    const column = ASSET_TO_BALANCE_COLUMN[assetKey]
+    if (!column) return
+    const latest = await balances.getMostRecentByUserId(user_id)
+    const values: Record<string, number> = {
+        bank: latest?.bank ?? 0, cash: latest?.cash ?? 0, digital_services: latest?.digitalServices ?? 0,
+        stocks: latest?.stocks ?? 0, etf: latest?.etf ?? 0, bitcoin: latest?.bitcoin ?? 0, crypto: latest?.crypto ?? 0,
+        bonds: latest?.bonds ?? 0, funds: latest?.funds ?? 0, commodities: latest?.commodities ?? 0,
+        emergency_fund: latest?.emergencyFund ?? 0,
+    }
+    values[column] += deltaEUR
+    await balances.insertNew(
+        user_id, new Date(), values.bank, values.cash, values.digital_services,
+        values.stocks, values.etf, values.bitcoin, values.crypto,
+        values.bonds, values.funds, values.commodities, values.emergency_fund,
+    )
+}
+
 /**
  * Inserts the expenses row for one due template (ids already resolved, so
- * this skips transactions.insertNew's client-index tag lookup) and advances the
- * template to next month. Best-effort per template: a failure on one template
- * must not stop the others in the same cron run.
+ * this skips transactions.insertNew's client-index tag lookup), advances the
+ * template to next month, and - if a balance source was configured - applies
+ * its amount as a delta to that account (see applyRecurringBalanceDelta).
+ * Best-effort per template: a failure on one template must not stop the
+ * others in the same cron run.
  */
-async function runDueTemplate(row: DueRow, runDate: Date) {
+export async function runDueTemplate(row: DueRow, runDate: Date) {
     const {error: insertError} = await supabase.from("transactions").insert({
         user_id: row.user_id,
         occurred_at: runDate.toISOString(),
@@ -251,7 +360,9 @@ async function runDueTemplate(row: DueRow, runDate: Date) {
         payment_type_tag_id: row.payment_type_tag_id,
         category_tag_id: row.category_tag_id,
         user_category_id: row.user_category_id,
-        // balance_asset_key/detail intentionally left null — see migration comment
+        balance_asset_key: row.balance_asset_key,
+        balance_detail_type: row.balance_detail_type,
+        balance_detail_id: row.balance_detail_id,
     })
     if (insertError) {
         console.error(`recurringTransactions.runDueTemplate: failed to insert expense for template ${row.id}`, insertError)
@@ -268,6 +379,15 @@ async function runDueTemplate(row: DueRow, runDate: Date) {
         console.error(`recurringTransactions.runDueTemplate: failed to advance template ${row.id}`, updateError)
         return false
     }
+
+    if (row.balance_asset_key) {
+        await applyRecurringBalanceDelta(
+            row.user_id, row.balance_asset_key, row.balance_detail_type, row.balance_detail_id,
+            row.is_expense ? -row.amount : row.amount,
+        ).catch((error) =>
+            console.error(`recurringTransactions.runDueTemplate: failed to apply balance delta for template ${row.id}`, error))
+    }
+
     return true
 }
 

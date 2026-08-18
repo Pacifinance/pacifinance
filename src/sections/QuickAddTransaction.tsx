@@ -39,6 +39,9 @@ import { useLocalizedNavigate } from '../hooks/useLocalizedNavigate';
 import { ASSET_KEYS, buildSnapshotWithDeltas } from '../constants/balanceSchema';
 import CategoryPicker from '../components/CategoryPicker';
 import { inferTransactionPurpose } from '../utils/transactionPurpose';
+import { Select, MenuItem } from '@mui/material';
+import { getMuiSelectMenuProps } from '../components/ThemedSelect';
+import { renderBalanceSourceMenuItems } from '../components/multiInsert/balanceSourceMenu';
 import {
   Overlay as ModalOverlay, ModalContainer, ModalHeader, ModalTitle, CloseButton, ModalBody,
 } from '../components/multiInsert/SharedStyles';
@@ -255,21 +258,6 @@ const CategorySuggestionHint = styled.div`
   margin-top: 0.3rem;
 `;
 
-const SourceSelect = styled.select`
-  width: 100%;
-  box-sizing: border-box;
-  margin-bottom: 0.9rem;
-  border: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.14)' : 'rgba(0,0,0,0.12)'};
-  border-radius: 0.6rem;
-  padding: 0.5rem 0.7rem;
-  font-size: 0.85rem;
-  background: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.02)'};
-  color: ${p => p.theme.textColor};
-  outline: none;
-
-  &:focus { border-color: ${p => p.theme.buttonBackgroundColor}; }
-`;
-
 const NoteToggle = styled.button`
   border: none;
   background: transparent;
@@ -473,6 +461,19 @@ export default function QuickAddTransaction({ theme, showFab = true, menuOpen: c
     () => Object.fromEntries(sourceEntries.map((entry) => [entry.label, entry])),
     [sourceEntries],
   );
+
+  // Matches the old SourceSelect native <select>'s look, translated to MUI sx.
+  const sourceSelectSx = useMemo(() => ({
+    width: '100%',
+    mb: '0.9rem',
+    borderRadius: '0.6rem',
+    border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.14)' : 'rgba(0,0,0,0.12)'}`,
+    background: theme.mode === 'dark' ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.02)',
+    color: theme.textColor,
+    fontSize: '0.85rem',
+    '& .MuiOutlinedInput-notchedOutline': { border: 'none' },
+    '& .MuiSelect-select': { padding: '0.5rem 0.7rem' },
+  }), [theme]);
 
   const tags = useMemo(
     () => (isOutflow ? getOutflowsTags(userData) : getIncomesTags(userData)),
@@ -830,16 +831,19 @@ export default function QuickAddTransaction({ theme, showFab = true, menuOpen: c
                 </CategoryFieldWrap>
 
                 <FieldLabel theme={theme}>{t.sourceLabel || 'Conto (opzionale)'}</FieldLabel>
-                <SourceSelect
-                  theme={theme}
+                <Select
                   value={sourceLabel}
                   onChange={(e) => setSourceLabel(e.target.value)}
+                  sx={sourceSelectSx}
+                  displayEmpty
+                  MenuProps={getMuiSelectMenuProps(theme)}
+                  renderValue={(value) => (value === '' ? (t.sourceNone || 'Nessuno') : value)}
                 >
-                  <option value="">{t.sourceNone || 'Nessuno'}</option>
-                  {sourceEntries.map((entry) => (
-                    <option key={entry.label} value={entry.label}>{entry.label}</option>
-                  ))}
-                </SourceSelect>
+                  <MenuItem value="">
+                    <em>{t.sourceNone || 'Nessuno'}</em>
+                  </MenuItem>
+                  {renderBalanceSourceMenuItems(sourceMeta, sourceMeta)}
+                </Select>
 
                 <NoteToggle type="button" theme={theme} onClick={() => setShowNote((v) => !v)}>
                   + {t.note || 'nota'}

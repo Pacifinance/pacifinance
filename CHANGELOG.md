@@ -10,6 +10,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 ## [Unreleased]
 
 ### Added
+- Recurring transaction templates (subscriptions, rent, salary) can now pick
+  a source/destination account and sub-account, the same grouped picker used
+  everywhere else a balance source is chosen. When the daily cron fires a
+  template, the generated transaction now records that source and - a
+  genuine behavior change - automatically moves the amount in/out of the
+  selected account/sub-account (liquidity account, investment holding, or
+  the plain macro balance field), the same way a manually-entered
+  transaction already does, since no one is there to confirm it when the
+  cron runs unattended. Templates left without a source keep behaving
+  exactly as before (ledger entry only, no balance movement).
 - `docs/DEPENDENCIES.md`: a reviewable, per-package justification for every
   direct dependency, a periodic re-audit process, and the reasoning behind
   deliberately deferring the Vite 8 and TypeScript 7 upgrades for now.
@@ -63,6 +73,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   class used across the app).
 
 ### Fixed
+- Fixed the Quick Add popup's "Conto (opzionale)" field only ever showing the
+  11 macro asset categories: it already fetched and merged in liquidity
+  accounts and investment holdings as selectable sub-account entries, but
+  rendered them all as a flat, unstyled native `<select>` instead of the
+  grouped/indented MUI picker (`renderBalanceSourceMenuItems`) used
+  everywhere else a balance source is picked - swapped to the shared
+  component for visual consistency.
 - Fixed Umami analytics reporting zero traffic in production: the `/stats/:match*`
   proxy rewrite in `vercel.json` pointed at `https://eu.umami.is`, which
   301-redirects to `https://cloud.umami.is` (the CSP `connect-src` already

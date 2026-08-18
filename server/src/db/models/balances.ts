@@ -104,6 +104,28 @@ async function getLatestByUserId(user_id: string, limit_date: ExtDate | undefine
 }
 
 /**
+ * Gets the single most recent balance snapshot for a user, with no date
+ * exclusion (unlike getLatestByUserId, whose default limit_date excludes
+ * today) - used as the baseline when applying an automatic delta (e.g. a
+ * recurring transaction template firing), so a snapshot already recorded
+ * today/this month is built on top of instead of skipped.
+ * @param user_id uuid of the user
+ * @returns Balance document, or null if the user has no balance history yet
+ */
+async function getMostRecentByUserId(user_id: string) {
+    const {data, error} = await supabase.from("balances")
+        .select(BALANCE_COLUMNS)
+        .eq("user_id", user_id)
+        .order("user_date", {ascending: false})
+        .order("recorded_at", {ascending: false})
+        .limit(1)
+        .maybeSingle()
+    if (error) console.error("balances.getMostRecentByUserId: failed to read most recent balance", error)
+    if (error || !data) return null
+    return toBalance(data)
+}
+
+/**
  * Gets the latest balance of a user and sums all its parts together
  * @param user_id uuid of the user
  * @param limit_date Date after which balances are ignored
@@ -194,6 +216,7 @@ export default {
     balancesExistByUserId,
     getAllByUserId,
     getLatestByUserId,
+    getMostRecentByUserId,
     getTotalLatestByUserId,
     getBalanceHistoryByUserId,
     getRankingPool

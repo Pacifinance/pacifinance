@@ -244,7 +244,6 @@ export default function SignUpForm() {
                 generated_recovery_base32 = response.data.recovery_code_base32 || "";
                 generated_recovery_words = response.data.recovery_code_words || "";
                 setShowSuccessModal(true);
-                //window.umami.trackEvent('SignUp');
             } else {
                 trackAnalyticsEvent("auth-sign-up-failed", { reason: "rejected" });
                 showError(

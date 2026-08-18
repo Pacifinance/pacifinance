@@ -63,6 +63,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   class used across the app).
 
 ### Fixed
+- Fixed Umami analytics reporting zero traffic in production: the `/stats/:match*`
+  proxy rewrite in `vercel.json` pointed at `https://eu.umami.is`, which
+  301-redirects to `https://cloud.umami.is` (the CSP `connect-src` already
+  allow-listed `cloud.umami.is`, not `eu.umami.is` - a mismatch present since
+  this proxy was first added). Loading the tracker script through a
+  cross-origin redirect gets it blocked by `script-src 'self'`, so
+  `window.umami` never initialized and every pageview/event silently
+  no-opped. Pointed the rewrite at `https://cloud.umami.is` to match.
 - Fixed a site-wide styling regression from the Tailwind v4 migration: Tailwind
   v4 wraps its output in native CSS cascade layers, and per spec any unlayered
   rule always wins over a layered one regardless of specificity - so the

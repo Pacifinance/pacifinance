@@ -3,6 +3,7 @@ import express from "express"
 import db from "../../db/db"
 import common from "../common"
 import { inferTransactionPurpose, isPurposeCompatible } from "../../domain/transactions"
+import { sanitizeBalanceSource } from "./transactions"
 
 /* === /recurring-transactions/* === */
 
@@ -33,7 +34,9 @@ function parseRecurringPayload(body: Record<string, unknown>) {
     if (!amountValid || !categoryValid || !paymentTypeValid || !dayValid || purpose === null
         || !isPurposeCompatible(isExpense ? "outflow" : "income", purpose)) return null
 
-    return {isExpense, purpose, amount, notes, paymentType, categoryTag, userCategoryId, dayOfMonth}
+    const balanceSource = sanitizeBalanceSource(body.balance_source)
+
+    return {isExpense, purpose, amount, notes, paymentType, categoryTag, userCategoryId, dayOfMonth, balanceSource}
 }
 
 recurringTransactionsRouter.post("/get", async (req, res) => {

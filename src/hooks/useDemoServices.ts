@@ -101,10 +101,10 @@ const DEMO_LIQUIDITY_ACCOUNTS: LiquidityAccountDto[] = [
 /** Salary + rent + a couple of subscriptions - covers both directions
  * (income/outflow) and both the fixed-category and custom-category paths. */
 const DEMO_RECURRING: RecurringTransactionDto[] = [
-  { id: -401, direction: 'income', purpose: 'income', amount: 2850, notes: 'Stipendio mensile', paymentType: null, categoryTag: { label: 'salary', index: 0, type: 1 }, userCategory: null, dayOfMonth: 27, active: true, nextRunDate: daysAgoDate(-12) },
-  { id: -402, direction: 'outflow', purpose: 'expense', amount: 750, notes: 'Affitto', paymentType: { label: 'periodic payment', index: 4, type: 0 }, categoryTag: { label: 'house', index: 5, type: 0 }, userCategory: null, dayOfMonth: 1, active: true, nextRunDate: daysAgoDate(-16) },
-  { id: -403, direction: 'outflow', purpose: 'expense', amount: 15.99, notes: 'Netflix', paymentType: { label: 'subscription', index: 2, type: 0 }, categoryTag: { label: 'digital service', index: 1, type: 0 }, userCategory: null, dayOfMonth: 5, active: true, nextRunDate: daysAgoDate(-20) },
-  { id: -404, direction: 'outflow', purpose: 'expense', amount: 42, notes: 'Abbonamento palestra', paymentType: { label: 'subscription', index: 2, type: 0 }, categoryTag: null, userCategory: { id: -501, label: 'Palestra' }, dayOfMonth: 3, active: true, nextRunDate: daysAgoDate(-18) },
+  { id: -401, direction: 'income', purpose: 'income', amount: 2850, notes: 'Stipendio mensile', paymentType: null, categoryTag: { label: 'salary', index: 0, type: 1 }, userCategory: null, dayOfMonth: 27, active: true, nextRunDate: daysAgoDate(-12), balanceAssetKey: 'bank', balanceDetailType: 'liquidity', balanceDetailId: -301 },
+  { id: -402, direction: 'outflow', purpose: 'expense', amount: 750, notes: 'Affitto', paymentType: { label: 'periodic payment', index: 4, type: 0 }, categoryTag: { label: 'house', index: 5, type: 0 }, userCategory: null, dayOfMonth: 1, active: true, nextRunDate: daysAgoDate(-16), balanceAssetKey: 'bank', balanceDetailType: 'liquidity', balanceDetailId: -301 },
+  { id: -403, direction: 'outflow', purpose: 'expense', amount: 15.99, notes: 'Netflix', paymentType: { label: 'subscription', index: 2, type: 0 }, categoryTag: { label: 'digital service', index: 1, type: 0 }, userCategory: null, dayOfMonth: 5, active: true, nextRunDate: daysAgoDate(-20), balanceAssetKey: null, balanceDetailType: null, balanceDetailId: null },
+  { id: -404, direction: 'outflow', purpose: 'expense', amount: 42, notes: 'Abbonamento palestra', paymentType: { label: 'subscription', index: 2, type: 0 }, categoryTag: null, userCategory: { id: -501, label: 'Palestra' }, dayOfMonth: 3, active: true, nextRunDate: daysAgoDate(-18), balanceAssetKey: null, balanceDetailType: null, balanceDetailId: null },
 ];
 
 /** One pending shared-expense receivable ("I paid for the group") so the
@@ -339,6 +339,9 @@ export const useDemoServices = () => {
           dayOfMonth: data.day_of_month,
           active: true,
           nextRunDate: new Date().toISOString().slice(0, 10),
+          balanceAssetKey: data.balance_source?.asset_key ?? null,
+          balanceDetailType: data.balance_source?.detail_type ?? null,
+          balanceDetailId: data.balance_source?.detail_id ?? null,
         }),
         setRecurringActive: async (data): Promise<RecurringTransactionDto> => ({
           id: data.id,
@@ -352,6 +355,9 @@ export const useDemoServices = () => {
           dayOfMonth: 1,
           active: data.active,
           nextRunDate: new Date().toISOString().slice(0, 10),
+          balanceAssetKey: null,
+          balanceDetailType: null,
+          balanceDetailId: null,
         }),
         deleteRecurring: async () => FAKE_SUCCESS,
       },

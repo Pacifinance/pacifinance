@@ -1026,8 +1026,13 @@ CREATE TABLE IF NOT EXISTS "public"."recurring_transactions" (
     "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
     "updated_at" timestamp with time zone DEFAULT "now"() NOT NULL,
     "purpose" "text" DEFAULT 'other'::"text" NOT NULL,
+    "balance_asset_key" "text",
+    "balance_detail_type" "text",
+    "balance_detail_id" bigint,
     CONSTRAINT "recurring_transactions_day_of_month_check" CHECK ((("day_of_month" >= 1) AND ("day_of_month" <= 28))),
-    CONSTRAINT "recurring_transactions_purpose_check" CHECK (("purpose" = ANY (ARRAY['income'::"text", 'expense'::"text", 'investment'::"text", 'transfer'::"text", 'debt'::"text", 'tax'::"text", 'refund'::"text", 'other'::"text"])))
+    CONSTRAINT "recurring_transactions_purpose_check" CHECK (("purpose" = ANY (ARRAY['income'::"text", 'expense'::"text", 'investment'::"text", 'transfer'::"text", 'debt'::"text", 'tax'::"text", 'refund'::"text", 'other'::"text"]))),
+    CONSTRAINT "recurring_transactions_balance_asset_key_check" CHECK (("balance_asset_key" = ANY (ARRAY['bank'::"text", 'cash'::"text", 'digitalServices'::"text", 'emergencyFund'::"text", 'stocks'::"text", 'etf'::"text", 'bitcoin'::"text", 'crypto'::"text", 'bonds'::"text", 'funds'::"text", 'commodities'::"text"]))),
+    CONSTRAINT "recurring_transactions_balance_detail_type_check" CHECK (("balance_detail_type" = ANY (ARRAY['liquidity'::"text", 'investment'::"text"])))
 );
 
 

@@ -2718,6 +2718,8 @@ export default function InsertValue({
               incomesTags={incomesTags}
               paymentTags={paymentTags}
               customCategories={getCustomCategories(userData)}
+              balanceOptions={options}
+              balanceSourceMeta={getBalanceSourceMeta()}
               onCreateCategory={(parentIndex, label, isExpense) => addCustomCategory({
                 label,
                 parent_index: parentIndex,

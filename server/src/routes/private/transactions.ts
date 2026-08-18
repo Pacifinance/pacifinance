@@ -14,7 +14,7 @@ import { inferTransactionPurpose, isPurposeCompatible } from "../../domain/trans
  * silently: the source is an optional enrichment, never a reason to reject
  * the transaction itself).
  */
-function sanitizeBalanceSource(raw: any): TransactionBalanceSource | null {
+export function sanitizeBalanceSource(raw: any): TransactionBalanceSource | null {
     if (!raw || typeof raw !== "object") return null
     const asset_key = raw.asset_key
     if (!TRANSACTION_BALANCE_ASSET_KEYS.includes(asset_key)) return null

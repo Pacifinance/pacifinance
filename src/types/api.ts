@@ -244,6 +244,9 @@ export interface RecurringTransactionDto {
   dayOfMonth: number;
   active: boolean;
   nextRunDate: string; // "YYYY-MM-DD"
+  balanceAssetKey: AssetKey | null;
+  balanceDetailType: 'liquidity' | 'investment' | null;
+  balanceDetailId: number | null;
 }
 
 export type RecurringTransactionsGetResponse = RecurringTransactionDto[];
@@ -258,6 +261,7 @@ export interface RecurringTransactionSaveRequest {
   category_tag: number; // client index
   user_category_id?: number | null;
   day_of_month: number; // 1-28
+  balance_source?: TransactionBalanceSourceDto | null;
 }
 
 export interface RecurringTransactionSetActiveRequest {

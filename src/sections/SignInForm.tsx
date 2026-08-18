@@ -89,7 +89,6 @@ export default function SignInForm() {
         trackAnalyticsEvent("auth-sign-in-succeeded", { method: "password" });
         handleSetIsAuthenticated(true); // Set the user's authentication to true
         navigate("/dashboard"); //direct redirect
-        //window.umami.trackEvent('signIn', 'SignIn');
       } else {
         trackAnalyticsEvent("auth-sign-in-failed", { reason: "rejected" });
         showError(translations.header.login.errorPopup.message, 4000);

@@ -71,6 +71,17 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   cross-origin redirect gets it blocked by `script-src 'self'`, so
   `window.umami` never initialized and every pageview/event silently
   no-opped. Pointed the rewrite at `https://cloud.umami.is` to match.
+- Fixed Umami analytics still reporting zero traffic after the fix above:
+  the `/stats/:match*` reverse proxy only ever covers the `script.js`
+  download - Umami Cloud's hosted tracker script has its actual event-collection
+  host (`https://gateway.umami.is`) hardcoded at build time, so every
+  `/api/send` call bypasses the proxy entirely and goes straight there
+  regardless of what path the script itself was loaded from. That domain
+  wasn't in the CSP `connect-src` allowlist (which listed the now-confirmed-unused
+  `cloud.umami.is` instead), so the browser blocked every single event -
+  confirmed via a real browser's console CSP violations, which is also what
+  revealed the actual endpoint. Swapped `connect-src`'s `cloud.umami.is` for
+  `gateway.umami.is`.
 - Fixed a site-wide styling regression from the Tailwind v4 migration: Tailwind
   v4 wraps its output in native CSS cascade layers, and per spec any unlayered
   rule always wins over a layered one regardless of specificity - so the

@@ -2,7 +2,7 @@ import React from 'react';
 import { createPortal } from 'react-dom';
 import { Select, MenuItem } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes, faCalendarAlt, faPen, faCheck, faRotateLeft, faSortUp, faSortDown, faSort, faLayerGroup, faTableCells, faThLarge, faFilter, faHandHoldingDollar } from '@fortawesome/free-solid-svg-icons';
+import { faTimes, faCalendarAlt, faPen, faCheck, faSortUp, faSortDown, faSort, faLayerGroup, faTableCells, faThLarge, faFilter, faHandHoldingDollar } from '@fortawesome/free-solid-svg-icons';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
 import { translateTag } from '../data/tagTranslations';
@@ -24,7 +24,7 @@ import {
   ViewSwitch, ViewButton, TableScroll, CardViewWrap,
   FilterToggleRow, FilterBadge, FilterPanel, FilterRow, FilterLabel, FilterInlineRow, ClearFiltersBtn,
   CardList, TxCard, CardTopRow, CardCategory, CardAmount, CardMetaRow, CardNote, CardActionsRow,
-  TotalCard, ActionBtn, InlineInput,
+  TotalCard, ActionBtn,
 } from '../components/transactionList/TransactionListStyles';
 import {
   Overlay, ModalContainer, ModalHeader, ModalTitle, CloseButton, ModalBody, ModalFooter, SubmitButton,
@@ -584,7 +584,7 @@ export default function IncomeSection({
             <FormField>
               <FieldLabel theme={theme}>{translations.insert.incomeSection.tableColumns?.value || translations.general.amount}</FieldLabel>
               <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <InlineInput
+                <FieldInput
                   type="text"
                   theme={theme}
                   value={editValues.amount}
@@ -595,7 +595,7 @@ export default function IncomeSection({
             </FormField>
             <FormField>
               <FieldLabel theme={theme}>{translations.insert.incomeSection.tableColumns?.note || 'Note'}</FieldLabel>
-              <InlineInput
+              <FieldInput
                 type="text"
                 theme={theme}
                 value={editValues.note}
@@ -606,7 +606,7 @@ export default function IncomeSection({
             </FormField>
             <FormField>
               <FieldLabel theme={theme}>{translations.insert.incomeSection.tableColumns?.date || translations.general.date}</FieldLabel>
-              <InlineInput
+              <FieldInput
                 type="date"
                 theme={theme}
                 value={editValues.date}
@@ -615,16 +615,7 @@ export default function IncomeSection({
               />
             </FormField>
           </ModalBody>
-          <ModalFooter theme={theme}>
-            <ActionBtn
-              className="cancel"
-              onClick={handleCancelInline}
-              disabled={isSaving}
-              title={translations.insert.incomeSection.cancelEdit}
-            >
-              <FontAwesomeIcon icon={faRotateLeft} />
-              {translations.insert.incomeSection.cancelEdit}
-            </ActionBtn>
+          <ModalFooter theme={theme} style={{ justifyContent: 'flex-end' }}>
             <SubmitButton theme={theme} onClick={handleSaveInline} disabled={isSaving}>
               <FontAwesomeIcon icon={faCheck} />
               {translations.insert.incomeSection.editButton}
@@ -1200,7 +1191,7 @@ export default function IncomeSection({
               <FontAwesomeIcon icon={showMobileFilters ? faSortUp : faSortDown} />
             </FilterToggleRow>
             <FilterPanel theme={theme} $open={showMobileFilters}>
-              <FilterRow>
+              <FilterRow theme={theme}>
                 <FilterLabel theme={theme}>{translations.insert.incomeSection.tableColumns.category}</FilterLabel>
                 <ThemedSelect
                   value={incomeCategoryFilter}
@@ -1211,7 +1202,7 @@ export default function IncomeSection({
                   {renderCategoryFilterOptions(incomesTags)}
                 </ThemedSelect>
               </FilterRow>
-              <FilterRow>
+              <FilterRow theme={theme}>
                 <FilterLabel theme={theme}>{translations.insert.incomeSection.tableColumns.note}</FilterLabel>
                 <input
                   type="text"
@@ -1221,9 +1212,9 @@ export default function IncomeSection({
                   style={{ width: '100%', boxSizing: 'border-box' }}
                 />
               </FilterRow>
-              <FilterRow>
+              <FilterRow theme={theme}>
                 <FilterLabel theme={theme}>{translations.general.date || 'Data'}</FilterLabel>
-                <FilterInlineRow>
+                <FilterInlineRow theme={theme}>
                   <input
                     type="date"
                     value={incomeDateFilterStart || ''}

@@ -54,6 +54,28 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   - Shared expenses are now grouped by month (collapsible, newest first)
     with a filter panel (note search, status, date range), instead of one
     long flat list.
+  - Follow-up polish from live-testing the modal and mobile scroll fixes
+    above:
+    - The shared `FilterRow`/`FilterInlineRow` components (used by every
+      Outflows/Incomes/Shared-Expenses filter panel) weren't receiving the
+      `theme` prop they need to color their own note/date `<input>`s and any
+      nested `<select>` - rendering as plain unthemed white boxes with
+      unreadable white-on-white text in dark mode. Fixed everywhere this
+      pattern was used.
+    - The transaction-edit modal's category/typology/amount/note/date/
+      purpose fields still used the old inline-edit styling (a permanent
+      blue-tinted border, meant to flag "you're editing this" in a dense
+      list row) - visually inconsistent now that they live in a modal, which
+      already signals that. Switched them to the same neutral field style
+      used by the rest of the app's modals and forms.
+    - Removed the redundant "Annulla modifica" button from the edit modal's
+      footer - the header's ✕ already closes/cancels it.
+    - `insert-values`' content area was capped at 1100px, leaving large
+      unused margins on wide screens and forcing the transaction table to
+      horizontally scroll even when the window had room to spare. Widened it
+      to 1400px (matching the width already used on Comparison/Knowledge)
+      and let the table fill its container instead of capping at 1200px on
+      its own.
 
 ### Added
 - Recurring transaction templates (subscriptions, rent, salary) can now pick

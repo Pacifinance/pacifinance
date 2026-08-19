@@ -8,7 +8,6 @@ import {
   faCalendarAlt,
   faPen,
   faCheck,
-  faRotateLeft,
   faSortUp,
   faSortDown,
   faSort,
@@ -43,7 +42,7 @@ import {
   ViewSwitch, ViewButton, TableScroll, CardViewWrap,
   FilterToggleRow, FilterBadge, FilterPanel, FilterRow, FilterLabel, FilterInlineRow, ClearFiltersBtn,
   CardList, TxCard, CardTopRow, CardCategory, CardAmount, CardMetaRow, CardNote, CardActionsRow,
-  TotalCard, ActionBtn, InlineInput,
+  TotalCard, ActionBtn,
 } from '../components/transactionList/TransactionListStyles';
 import {
   Overlay, ModalContainer, ModalHeader, ModalTitle, CloseButton, ModalBody, ModalFooter, SubmitButton,
@@ -693,26 +692,6 @@ const EmptyChart = styled.div`
 
 
 
-const InlineSelect = styled.select`
-  width: 100%;
-  min-width: 80px;
-  padding: 4px 6px;
-  border: 1.5px solid ${p => p.theme.mode === 'dark' ? 'rgba(59,130,246,0.4)' : 'rgba(59,130,246,0.3)'};
-  border-radius: 6px;
-  font-size: 0.82rem;
-  background: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : '#f8fafc'};
-  color: ${p => p.theme.textColor};
-  box-sizing: border-box;
-  outline: none;
-  cursor: pointer;
-  font-family: inherit;
-
-  option {
-    background: ${p => p.theme.mode === 'dark' ? '#1e293b' : '#ffffff'};
-    color: ${p => p.theme.mode === 'dark' ? '#e2e8f0' : '#1e293b'};
-  }
-`;
-
 const TotalRow = styled.tr`
   font-weight: 700;
   td { text-align: center; }
@@ -990,17 +969,17 @@ export default function OutflowSection({
       {editValues.sharedEnabled && (
         <>
           <div className="shared-fields">
-            <InlineSelect theme={theme} value={editValues.sharedMethod}
+            <ThemedSelect compact value={editValues.sharedMethod}
               onChange={(e) => setEditValues(prev => ({...prev, sharedMethod: e.target.value}))}>
               <option value="people">{translations.insert.sharedTransactionLink.splitByPeople}</option>
               <option value="share">{translations.insert.sharedTransactionLink.specifyShare}</option>
-            </InlineSelect>
+            </ThemedSelect>
             {editValues.sharedMethod === 'people' ? (
-              <InlineInput type="number" theme={theme} min="2" step="1" value={editValues.sharedPeopleCount}
+              <FieldInput type="number" theme={theme} min="2" step="1" value={editValues.sharedPeopleCount}
                 onChange={(e) => setEditValues(prev => ({...prev, sharedPeopleCount: e.target.value}))}
                 aria-label={translations.insert.outflowSection.sharedExpense?.peopleLabel} />
             ) : (
-              <InlineInput type="number" theme={theme} min="0" step="0.01" value={editValues.sharedOwnShare}
+              <FieldInput type="number" theme={theme} min="0" step="0.01" value={editValues.sharedOwnShare}
                 onChange={(e) => setEditValues(prev => ({...prev, sharedOwnShare: e.target.value}))}
                 aria-label={translations.insert.sharedTransactionLink.ownShare} />
             )}
@@ -1058,8 +1037,8 @@ export default function OutflowSection({
           {(translations.insert.outflowSection.splitRemainderHint || '{amount} left over, paid from:')
             .replace('{amount}', `${formatNumber(fromEUR(remainderAmount))}${currencySymbol}`)}
         </span>
-        <InlineSelect
-          theme={theme}
+        <ThemedSelect
+          compact
           value={fallbackLabel}
           onChange={(e) => setEditValues(prev => ({ ...prev, splitFallbackLabel: e.target.value }))}
         >
@@ -1067,7 +1046,7 @@ export default function OutflowSection({
           {Object.keys(balanceOptions || {})
             .filter((label) => label !== editValues.balanceSourceLabel)
             .map((label) => <option key={label} value={label}>{label}</option>)}
-        </InlineSelect>
+        </ThemedSelect>
       </SplitHintRow>
     );
   };
@@ -1075,18 +1054,20 @@ export default function OutflowSection({
   const renderPurposeSelect = () => {
     const purposeTranslations = translations.transactionPurpose;
     return (
-      <InlineSelect
-        theme={theme}
+      <Select
         value={editValues.purpose || 'expense'}
         onChange={(event) => setEditValues(prev => ({...prev, purpose: event.target.value}))}
         disabled={isSaving || editValues.sharedEnabled}
         aria-label={purposeTranslations.label}
-        title={purposeTranslations.label}
+        fullWidth
+        size="small"
+        sx={selectSx}
+        MenuProps={getMuiSelectMenuProps(theme)}
       >
         {['expense', 'investment', 'transfer', 'debt', 'tax', 'other'].map((purpose) => (
-          <option key={purpose} value={purpose}>{purposeTranslations[purpose]}</option>
+          <MenuItem key={purpose} value={purpose}>{purposeTranslations[purpose]}</MenuItem>
         ))}
-      </InlineSelect>
+      </Select>
     );
   };
 
@@ -1133,17 +1114,20 @@ export default function OutflowSection({
             </FormField>
             <FormField>
               <FieldLabel theme={theme}>{translations.general.typology}</FieldLabel>
-              <InlineSelect
-                theme={theme}
+              <Select
                 value={editValues.typologyKey}
                 onChange={(e) => setEditValues(prev => ({ ...prev, typologyKey: Number(e.target.value) }))}
+                fullWidth
+                size="small"
+                sx={selectSx}
+                MenuProps={getMuiSelectMenuProps(theme)}
               >
                 {sortTagsByLanguage(paymentTags, language, 'payment').filter(item => item.label !== 'none').map((item) => (
-                  <option key={item.index} value={item.index}>
+                  <MenuItem key={item.index} value={item.index}>
                     {translateTag(item.label, language, 'payment')}
-                  </option>
+                  </MenuItem>
                 ))}
-              </InlineSelect>
+              </Select>
             </FormField>
             <FormField>
               <FieldLabel theme={theme}>{translations.insert.outflowSection.tableColumns?.paymentMethod || translations.general.selectAnOption}</FieldLabel>
@@ -1166,7 +1150,7 @@ export default function OutflowSection({
             <FormField>
               <FieldLabel theme={theme}>{translations.insert.outflowSection.tableColumns?.value || translations.general.amount}</FieldLabel>
               <div style={{ position: 'relative', width: '100%', minWidth: 0 }}>
-                <InlineInput
+                <FieldInput
                   type="text"
                   theme={theme}
                   value={editValues.amount}
@@ -1178,7 +1162,7 @@ export default function OutflowSection({
             </FormField>
             <FormField>
               <FieldLabel theme={theme}>{translations.insert.outflowSection.tableColumns?.note || 'Note'}</FieldLabel>
-              <InlineInput
+              <FieldInput
                 type="text"
                 theme={theme}
                 value={editValues.note}
@@ -1189,7 +1173,7 @@ export default function OutflowSection({
             </FormField>
             <FormField>
               <FieldLabel theme={theme}>{translations.insert.outflowSection.tableColumns?.date || translations.general.date}</FieldLabel>
-              <InlineInput
+              <FieldInput
                 type="date"
                 theme={theme}
                 value={editValues.date}
@@ -1203,16 +1187,7 @@ export default function OutflowSection({
               {renderPurposeSelect()}
             </FormField>
           </ModalBody>
-          <ModalFooter theme={theme}>
-            <ActionBtn
-              className="cancel"
-              onClick={handleCancelInline}
-              disabled={isSaving}
-              title={translations.insert.outflowSection.cancelEdit}
-            >
-              <FontAwesomeIcon icon={faRotateLeft} />
-              {translations.insert.outflowSection.cancelEdit}
-            </ActionBtn>
+          <ModalFooter theme={theme} style={{ justifyContent: 'flex-end' }}>
             <SubmitButton theme={theme} onClick={handleSaveInline} disabled={isSaving}>
               <FontAwesomeIcon icon={faCheck} />
               {translations.insert.outflowSection.editButton}
@@ -2243,7 +2218,7 @@ export default function OutflowSection({
                 <FontAwesomeIcon icon={showMobileFilters ? faSortUp : faSortDown} />
               </FilterToggleRow>
               <FilterPanel theme={theme} $open={showMobileFilters}>
-                <FilterRow>
+                <FilterRow theme={theme}>
                   <FilterLabel theme={theme}>{translations.insert.outflowSection.tableColumns.category}</FilterLabel>
                   <ThemedSelect
                     value={outflowCategoryFilter}
@@ -2258,7 +2233,7 @@ export default function OutflowSection({
                     ))}
                   </ThemedSelect>
                 </FilterRow>
-                <FilterRow>
+                <FilterRow theme={theme}>
                   <FilterLabel theme={theme}>{translations.insert.outflowSection.tableColumns.typology}</FilterLabel>
                   <ThemedSelect
                     value={outflowTypologyFilter}
@@ -2275,7 +2250,7 @@ export default function OutflowSection({
                     )}
                   </ThemedSelect>
                 </FilterRow>
-                <FilterRow>
+                <FilterRow theme={theme}>
                   <FilterLabel theme={theme}>{translations.insert.outflowSection.tableColumns.note}</FilterLabel>
                   <input
                     type="text"
@@ -2285,9 +2260,9 @@ export default function OutflowSection({
                     style={{ width: '100%', boxSizing: 'border-box' }}
                   />
                 </FilterRow>
-                <FilterRow>
+                <FilterRow theme={theme}>
                   <FilterLabel theme={theme}>{translations.general.date || 'Data'}</FilterLabel>
-                  <FilterInlineRow>
+                  <FilterInlineRow theme={theme}>
                     <input
                       type="date"
                       value={outflowDateFilterStart || ''}

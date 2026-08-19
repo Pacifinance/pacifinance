@@ -219,7 +219,7 @@ const GaugeValue = styled.div`
 `;
 
 const GaugeCaption = styled.p`
-  margin: 0;
+  margin: 0 auto;
   max-width: 320px;
   color: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.62)' : 'rgba(15,23,42,0.58)'};
   font-size: 0.82rem;

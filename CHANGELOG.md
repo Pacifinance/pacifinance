@@ -36,6 +36,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   - "Spending by Category" only ever showed the user's own amounts - added
     the same "vs. your comparison group" line every other accordion section
     already has, per category.
+  - The gauge caption (the sentence explaining what the percentile means) was
+    missing `margin: 0 auto` on its `max-width`-constrained box, so it hugged
+    the left edge of the card instead of centering under the now-circular
+    gauge above it.
+- Insert Data's "outflows"/"income" secondary tools row (CSV/Excel,
+  Ricorrenti, Spese condivise) stayed capped at an old 1000px width on
+  desktop while the page around it (`ContentWrapper`/`SectionCard`) was
+  widened to 1400px in a previous change, leaving a wide dead strip to its
+  right instead of right-aligning against the same edge as the form card
+  beneath it.
 - Consistency and correctness pass across the CSV import wizard and the
   Aggiungi entrate/uscite flow, prompted by live-testing a real Trade
   Republic export:

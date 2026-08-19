@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { Select, MenuItem } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faCalendarAlt, faPen, faCheck, faRotateLeft, faSortUp, faSortDown, faSort, faLayerGroup, faTableCells, faThLarge, faFilter, faHandHoldingDollar } from '@fortawesome/free-solid-svg-icons';
@@ -22,9 +23,12 @@ import { STORAGE_KEYS } from '../constants/storageKeys';
 import {
   ViewSwitch, ViewButton, TableScroll, CardViewWrap,
   FilterToggleRow, FilterBadge, FilterPanel, FilterRow, FilterLabel, FilterInlineRow, ClearFiltersBtn,
-  CardList, TxCard, CardTopRow, CardCategory, CardAmount, CardMetaRow, CardNote, CardActionsRow, CardEditGrid,
+  CardList, TxCard, CardTopRow, CardCategory, CardAmount, CardMetaRow, CardNote, CardActionsRow,
   TotalCard, ActionBtn, InlineInput,
 } from '../components/transactionList/TransactionListStyles';
+import {
+  Overlay, ModalContainer, ModalHeader, ModalTitle, CloseButton, ModalBody, ModalFooter, SubmitButton,
+} from '../components/multiInsert/SharedStyles';
 
 const handleInputChange = (e, setterFunction) => {
   let cleanedValue = e.target.value
@@ -382,17 +386,6 @@ export default function IncomeSection({
   const [editValues, setEditValues] = React.useState({});
   const [isSaving, setIsSaving] = React.useState(false);
 
-  const isEditingRow = (add) => {
-    if (!editingAdd) return false;
-    return add === editingAdd || (
-      add.date === editingAdd.date &&
-      add.amount === editingAdd.amount &&
-      add.categoryTag?.index === editingAdd.categoryTag?.index &&
-      (add.userCategory?.id ?? null) === (editingAdd.userCategory?.id ?? null) &&
-      add.notes === editingAdd.notes
-    );
-  };
-
   const startEditing = (add) => {
     const displayAmount = fromEUR(add.amount ?? 0);
     setEditingAdd(add);
@@ -507,6 +500,142 @@ export default function IncomeSection({
       : <FontAwesomeIcon icon={faSortDown} style={{ marginLeft: 4, fontSize: '0.9em' }} />;
   };
 
+  // Category FILTER options: official tags plus, nested under each via a
+  // native <optgroup>, the user's own custom sub-categories — so filtering
+  // can target a specific sub-category, not just the broad parent (mirrors
+  // OutflowSection.tsx's renderCategoryFilterOptions).
+  const renderCategoryFilterOptions = (officialTags) => {
+    const expectedParentType = 1; // income
+    const safeCustomCategories = (customCategories || []).filter((category) =>
+      category.parentType === undefined || category.parentType === expectedParentType
+    );
+    return officialTags.map((item) => {
+      const label = translateTag(item.label, language, 'income');
+      const children = safeCustomCategories.filter((c) => c.parentIndex === item.index);
+      if (children.length === 0) {
+        return <option key={item.index} value={label}>{label}</option>;
+      }
+      return (
+        <optgroup key={item.index} label={label}>
+          <option value={label}>{label}</option>
+          {children.map((c) => (
+            <option key={`cus:${c.id}`} value={`cus:${c.id}`}>↳ {c.label}</option>
+          ))}
+        </optgroup>
+      );
+    });
+  };
+
+  // Single shared edit modal for BOTH card view and table view — rendered
+  // once from the main return (not per-view), mirrors OutflowSection.tsx.
+  const renderEditModal = () => {
+    if (!editingAdd) return null;
+    return createPortal(
+      <Overlay onClick={(e) => { if (e.target === e.currentTarget && !isSaving) handleCancelInline(); }}>
+        <ModalContainer theme={theme} $maxWidth="480px">
+          <ModalHeader theme={theme}>
+            <ModalTitle theme={theme}>
+              <h2>{translations.insert.incomeSection.editingLabel}</h2>
+            </ModalTitle>
+            {!isSaving && <CloseButton theme={theme} onClick={handleCancelInline}>✕</CloseButton>}
+          </ModalHeader>
+          <ModalBody theme={theme}>
+            <FormField>
+              <FieldLabel theme={theme}>{translations.insert.incomeSection.tableColumns?.category || translations.general.category}</FieldLabel>
+              <CategoryPicker
+                theme={theme}
+                officialTags={incomesTags}
+                customCategories={customCategories}
+                categoryType="income"
+                categoryKey={editValues.categoryKey}
+                userCategoryId={editValues.userCategoryId ?? null}
+                onSelect={({ categoryKey, categoryValue, userCategoryId, userCategoryLabel }) =>
+                  setEditValues(prev => ({
+                    ...prev,
+                    categoryKey,
+                    categoryValue: userCategoryLabel || categoryValue,
+                    parentValue: categoryValue,
+                    userCategoryId,
+                    userCategoryLabel,
+                  }))
+                }
+                onCreateCategory={onCreateCategory}
+                disabled={isSaving}
+                placeholder={translations.insert.incomeSection.placeholderCategory}
+              />
+            </FormField>
+            <FormField>
+              <FieldLabel theme={theme}>{translations.insert.incomeSection.tableColumns?.paymentMethod || translations.general.selectAnOption}</FieldLabel>
+              <Select
+                value={editValues.balanceSourceLabel || ''}
+                onChange={(e) => setEditValues(prev => ({ ...prev, balanceSourceLabel: e.target.value }))}
+                displayEmpty
+                fullWidth
+                size="small"
+                sx={selectSx}
+                MenuProps={getMuiSelectMenuProps(theme)}
+              >
+                <MenuItem value="">
+                  <em>{translations.general.selectAnOption || 'None (optional)'}</em>
+                </MenuItem>
+                {renderBalanceSourceMenuItems(balanceOptions, balanceSourceMeta)}
+              </Select>
+            </FormField>
+            <FormField>
+              <FieldLabel theme={theme}>{translations.insert.incomeSection.tableColumns?.value || translations.general.amount}</FieldLabel>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <InlineInput
+                  type="text"
+                  theme={theme}
+                  value={editValues.amount}
+                  onChange={handleEditAmountChange}
+                />
+                <span style={{ fontSize: '0.8em', opacity: 0.6 }}>{currencySymbol}</span>
+              </div>
+            </FormField>
+            <FormField>
+              <FieldLabel theme={theme}>{translations.insert.incomeSection.tableColumns?.note || 'Note'}</FieldLabel>
+              <InlineInput
+                type="text"
+                theme={theme}
+                value={editValues.note}
+                onChange={(e) => setEditValues(prev => ({ ...prev, note: e.target.value }))}
+                maxLength={64}
+                placeholder={translations.insert.incomeSection.tableColumns?.note || 'Note'}
+              />
+            </FormField>
+            <FormField>
+              <FieldLabel theme={theme}>{translations.insert.incomeSection.tableColumns?.date || translations.general.date}</FieldLabel>
+              <InlineInput
+                type="date"
+                theme={theme}
+                value={editValues.date}
+                onChange={(e) => setEditValues(prev => ({ ...prev, date: e.target.value }))}
+                max={currentDate}
+              />
+            </FormField>
+          </ModalBody>
+          <ModalFooter theme={theme}>
+            <ActionBtn
+              className="cancel"
+              onClick={handleCancelInline}
+              disabled={isSaving}
+              title={translations.insert.incomeSection.cancelEdit}
+            >
+              <FontAwesomeIcon icon={faRotateLeft} />
+              {translations.insert.incomeSection.cancelEdit}
+            </ActionBtn>
+            <SubmitButton theme={theme} onClick={handleSaveInline} disabled={isSaving}>
+              <FontAwesomeIcon icon={faCheck} />
+              {translations.insert.incomeSection.editButton}
+            </SubmitButton>
+          </ModalFooter>
+        </ModalContainer>
+      </Overlay>,
+      document.body,
+    );
+  };
+
   function renderTableHeader() {
     const min = dateFilterMin;
     const max = dateFilterMax;
@@ -528,11 +657,7 @@ export default function IncomeSection({
               style={{ minWidth: 100 }}
             >
               <option value="">{translations.general.all}</option>
-              {incomesTags.map((item) => (
-                <option key={item.index} value={translateTag(item.label, language, 'income')}>
-                  {translateTag(item.label, language, 'income')}
-                </option>
-              ))}
+              {renderCategoryFilterOptions(incomesTags)}
             </ThemedSelect>
           </div>
         </th>
@@ -622,7 +747,9 @@ export default function IncomeSection({
       }
       return (
         (!incomeCategoryFilter ||
-          translateTag(add.categoryTag?.label, language, 'income') === incomeCategoryFilter) &&
+          (incomeCategoryFilter.startsWith('cus:')
+            ? String(add.userCategory?.id) === incomeCategoryFilter.slice(4)
+            : translateTag(add.categoryTag?.label, language, 'income') === incomeCategoryFilter)) &&
         (!incomeNoteFilter ||
           (add.notes &&
             add.notes.toLowerCase().includes(incomeNoteFilter.toLowerCase()))) &&
@@ -693,105 +820,6 @@ export default function IncomeSection({
           ? getGrayscaleColor(rawColor, index)
           : getLighterSolidColor(rawColor);
         const rowGradient = getGradientForCategory(processedColor);
-
-        // Inline editing mode for this row
-        if (isEditingRow(add)) {
-          return (
-            <tr key={index} style={{ background: 'rgba(59, 130, 246, 0.08)', outline: '2px solid rgba(59, 130, 246, 0.25)' }}>
-              <td>
-                <div style={{ minWidth: 180 }}>
-                  <CategoryPicker
-                    theme={theme}
-                    officialTags={incomesTags}
-                    customCategories={customCategories}
-                    categoryType="income"
-                    categoryKey={editValues.categoryKey}
-                    userCategoryId={editValues.userCategoryId ?? null}
-                    onSelect={({ categoryKey, categoryValue, userCategoryId, userCategoryLabel }) =>
-                      setEditValues(prev => ({
-                        ...prev,
-                        categoryKey,
-                        categoryValue: userCategoryLabel || categoryValue,
-                        parentValue: categoryValue,
-                        userCategoryId,
-                        userCategoryLabel,
-                      }))
-                    }
-                    onCreateCategory={onCreateCategory}
-                    disabled={isSaving}
-                    placeholder={translations.insert.incomeSection.placeholderCategory}
-                  />
-                </div>
-              </td>
-              <td>
-                <Select
-                  value={editValues.balanceSourceLabel || ''}
-                  onChange={(e) => setEditValues(prev => ({ ...prev, balanceSourceLabel: e.target.value }))}
-                  displayEmpty
-                  fullWidth
-                  size="small"
-                  sx={selectSx}
-                  MenuProps={getMuiSelectMenuProps(theme)}
-                >
-                  <MenuItem value="">
-                    <em>{translations.general.selectAnOption || 'None (optional)'}</em>
-                  </MenuItem>
-                  {renderBalanceSourceMenuItems(balanceOptions, balanceSourceMeta)}
-                </Select>
-              </td>
-              <td>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                  <InlineInput
-                    type="text"
-                    theme={theme}
-                    value={editValues.amount}
-                    onChange={handleEditAmountChange}
-                    style={{ minWidth: 60 }}
-                  />
-                  <span style={{ fontSize: '0.8em', opacity: 0.6 }}>{currencySymbol}</span>
-                </div>
-              </td>
-              <td>
-                <InlineInput
-                  type="text"
-                  theme={theme}
-                  value={editValues.note}
-                  onChange={(e) => setEditValues(prev => ({ ...prev, note: e.target.value }))}
-                  maxLength={64}
-                />
-              </td>
-              <td>
-                <InlineInput
-                  type="date"
-                  theme={theme}
-                  value={editValues.date}
-                  onChange={(e) => setEditValues(prev => ({ ...prev, date: e.target.value }))}
-                  max={currentDate}
-                />
-              </td>
-              <td>
-                <div style={{ display: 'flex', gap: '4px', alignItems: 'center', justifyContent: 'center' }}>
-                  <ActionBtn
-                    className="edit"
-                    onClick={handleSaveInline}
-                    disabled={isSaving}
-                    title={translations.insert.incomeSection.editButton}
-                  >
-                    <FontAwesomeIcon icon={faCheck} />
-                  </ActionBtn>
-                  <ActionBtn
-                    className="cancel"
-                    onClick={handleCancelInline}
-                    disabled={isSaving}
-                    title={translations.insert.incomeSection.cancelEdit}
-                  >
-                    <FontAwesomeIcon icon={faRotateLeft} />
-                  </ActionBtn>
-                </div>
-              </td>
-            </tr>
-          );
-        }
 
         return (
           <tr key={index} style={{ background: rowGradient }}>
@@ -893,92 +921,6 @@ export default function IncomeSection({
             ? getGrayscaleColor(rawColor, index)
             : getLighterSolidColor(rawColor);
           const rowGradient = getGradientForCategory(processedColor);
-
-          if (isEditingRow(add)) {
-            return (
-              <TxCard key={index} theme={theme} $gradient="rgba(59, 130, 246, 0.08)" style={{ outline: '2px solid rgba(59, 130, 246, 0.25)' }}>
-                <CardEditGrid>
-                  <CategoryPicker
-                    theme={theme}
-                    officialTags={incomesTags}
-                    customCategories={customCategories}
-                    categoryType="income"
-                    categoryKey={editValues.categoryKey}
-                    userCategoryId={editValues.userCategoryId ?? null}
-                    onSelect={({ categoryKey, categoryValue, userCategoryId, userCategoryLabel }) =>
-                      setEditValues(prev => ({
-                        ...prev,
-                        categoryKey,
-                        categoryValue: userCategoryLabel || categoryValue,
-                        parentValue: categoryValue,
-                        userCategoryId,
-                        userCategoryLabel,
-                      }))
-                    }
-                    onCreateCategory={onCreateCategory}
-                    disabled={isSaving}
-                    placeholder={translations.insert.incomeSection.placeholderCategory}
-                  />
-                  <Select
-                    value={editValues.balanceSourceLabel || ''}
-                    onChange={(e) => setEditValues(prev => ({ ...prev, balanceSourceLabel: e.target.value }))}
-                    displayEmpty
-                    fullWidth
-                    size="small"
-                    sx={selectSx}
-                    MenuProps={getMuiSelectMenuProps(theme)}
-                  >
-                    <MenuItem value="">
-                      <em>{translations.general.selectAnOption || 'None (optional)'}</em>
-                    </MenuItem>
-                    {renderBalanceSourceMenuItems(balanceOptions, balanceSourceMeta)}
-                  </Select>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                    <InlineInput
-                      type="text"
-                      theme={theme}
-                      value={editValues.amount}
-                      onChange={handleEditAmountChange}
-                    />
-                    <span style={{ fontSize: '0.8em', opacity: 0.6 }}>{currencySymbol}</span>
-                  </div>
-                  <InlineInput
-                    type="text"
-                    theme={theme}
-                    value={editValues.note}
-                    onChange={(e) => setEditValues(prev => ({ ...prev, note: e.target.value }))}
-                    maxLength={64}
-                    placeholder={translations.insert.incomeSection.tableColumns?.note || 'Note'}
-                  />
-                  <InlineInput
-                    type="date"
-                    theme={theme}
-                    value={editValues.date}
-                    onChange={(e) => setEditValues(prev => ({ ...prev, date: e.target.value }))}
-                    max={currentDate}
-                  />
-                </CardEditGrid>
-                <CardActionsRow>
-                  <ActionBtn
-                    className="edit"
-                    onClick={handleSaveInline}
-                    disabled={isSaving}
-                    title={translations.insert.incomeSection.editButton}
-                  >
-                    <FontAwesomeIcon icon={faCheck} />
-                  </ActionBtn>
-                  <ActionBtn
-                    className="cancel"
-                    onClick={handleCancelInline}
-                    disabled={isSaving}
-                    title={translations.insert.incomeSection.cancelEdit}
-                  >
-                    <FontAwesomeIcon icon={faRotateLeft} />
-                  </ActionBtn>
-                </CardActionsRow>
-              </TxCard>
-            );
-          }
 
           return (
             <TxCard key={index} theme={theme} $gradient={rowGradient}>
@@ -1266,11 +1208,7 @@ export default function IncomeSection({
                   style={{ width: '100%' }}
                 >
                   <option value="">{translations.general.all}</option>
-                  {incomesTags.map((item) => (
-                    <option key={item.index} value={translateTag(item.label, language, 'income')}>
-                      {translateTag(item.label, language, 'income')}
-                    </option>
-                  ))}
+                  {renderCategoryFilterOptions(incomesTags)}
                 </ThemedSelect>
               </FilterRow>
               <FilterRow>
@@ -1323,6 +1261,7 @@ export default function IncomeSection({
           </CardViewWrap>
         )}
       </TableSection>
+      {renderEditModal()}
     </SectionWrapper>
   );
 }

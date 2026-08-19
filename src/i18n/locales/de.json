@@ -1131,7 +1131,12 @@
             "markReceived": "Erhaltenen Betrag markieren",
             "deleteButton": "Loschen",
             "amountReceivedLabel": "Erhaltener Betrag",
-            "confirmSettle": "Bestatigen"
+            "confirmSettle": "Bestatigen",
+            "searchLabel": "Notiz",
+            "searchPlaceholder": "Suchen...",
+            "statusFilterLabel": "Status",
+            "noMatchingResults": "Keine geteilten Ausgaben entsprechen diesen Filtern.",
+            "unknownMonth": "—"
         },
         "deleteTransaction": {
             "titleOutflow": "Are you sure you want to delete this outflow?",
@@ -2380,6 +2385,8 @@
         "duplicateHint": "Scheint bereits erfasst zu sein — standardmäßig abgewählt.",
         "transferBadge": "Möglicherweise Überweisung",
         "transferHint": "Stimmt mit einem gegenläufigen Eintrag gleichen Betrags überein — könnte eine Überweisung zwischen Ihren eigenen Konten sein, kein echtes Einkommen/Ausgabe.",
+        "cashbackRewardBadge": "Cashback investiert",
+        "cashbackRewardHint": "Diese Prämie wurde direkt investiert, nicht als Bargeld erhalten — als Investition markiert und von den Einkommensstatistiken ausgeschlossen.",
         "flaggedRowsNote": "{count} Zeilen sehen wie mögliche Duplikate oder Überweisungen zwischen Ihren eigenen Konten aus und wurden standardmäßig abgewählt — prüfen Sie die Markierungen unten und wählen Sie echte Fälle erneut aus.",
         "matchedAgainstLabel": "Ähnlich wie:",
         "viewMonthButton": "👁️ Bereits erfasste Transaktionen anzeigen",

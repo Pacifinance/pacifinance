@@ -3,6 +3,7 @@ import { ThemeContext } from '../contexts/ThemeContext';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { useToast } from '../contexts/ToastContext';
 import { useServices } from '../contexts/ServiceContext';
+import ThemedSelect from './ThemedSelect';
 import type { FeedbackType } from '../services/feedbackService';
 
 const TITLE_MAX = 100;
@@ -77,15 +78,15 @@ export default function FeedbackForm() {
 
   return (
     <form onSubmit={handleSubmit} data-umami-event="feedback-form-submit">
-      <select
+      <ThemedSelect
         value={type}
         onChange={(e) => setType(e.target.value as FeedbackType)}
-        style={inputStyle}
+        style={{ width: '100%', marginBottom: '0.6rem' }}
       >
         <option value="bug">{t.typeBug}</option>
         <option value="idea">{t.typeIdea}</option>
         <option value="other">{t.typeOther}</option>
-      </select>
+      </ThemedSelect>
 
       <input
         type="text"

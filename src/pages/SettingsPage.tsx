@@ -23,6 +23,7 @@ import NotificationPreferences from "../sections/NotificationPreferences";
 import LanguageSelector from "../components/LanguageSelector";
 import SettingsGroup, { SettingsSubHeading, SettingsDivider } from "../components/SettingsGroup";
 import SettingsRow from "../components/SettingsRow";
+import ThemedSelect from "../components/ThemedSelect";
 import { exportToCSV, exportToExcel, exportToJSON, exportToPDF } from "../utils/dataExport";
 import Tooltip from "@mui/material/Tooltip";
 
@@ -519,27 +520,18 @@ const SettingsPage = () => {
                                     label={translations.sidebar.settings.currency}
                                     subtitle={translations.sidebar.settings.currencySubtitle}
                                 >
-                                    <select
+                                    <ThemedSelect
+                                        compact
                                         value={currency}
                                         onChange={(e) => setCurrency(e.target.value)}
-                                        style={{
-                                            padding: "0.45rem 0.7rem",
-                                            borderRadius: "8px",
-                                            fontWeight: "600",
-                                            fontSize: "0.8rem",
-                                            border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)'}`,
-                                            background: theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : '#f5f5f5',
-                                            color: theme.mode === 'dark' ? '#fff' : '#1a1a2e',
-                                            cursor: "pointer",
-                                            minWidth: "95px"
-                                        }}
+                                        style={{ minWidth: "95px", fontWeight: 600 }}
                                     >
                                         {Object.values(CURRENCIES).map(c => (
-                                            <option key={c.code} value={c.code} style={{ color: "#1a1a2e", backgroundColor: "#ffffff" }}>
+                                            <option key={c.code} value={c.code}>
                                                 {c.flag} {c.code} ({c.symbol})
                                             </option>
                                         ))}
-                                    </select>
+                                    </ThemedSelect>
                                 </SettingsRow>
 
                                 <SettingsRow
@@ -587,40 +579,21 @@ const SettingsPage = () => {
                             >
                                 {translations.sidebar.settings.pastDateBalance || (language === "it" ? "Impatto bilancio per date passate" : "Past-date balance impact")}
                             </SettingsSubHeading>
-                            <select
+                            <ThemedSelect
+                                style={{ width: "100%" }}
                                 value={pastDatePref}
                                 onChange={(e) => setPastDatePref(e.target.value)}
-                                style={{
-                                    width: "100%",
-                                    padding: "0.6rem 0.75rem",
-                                    borderRadius: "10px",
-                                    border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.12)'}`,
-                                    backgroundColor: theme.mode === 'dark' ? '#1a1f2e' : '#ffffff',
-                                    color: theme.mode === 'dark' ? '#ffffff' : '#1a1a2e',
-                                    fontSize: "0.88rem",
-                                    fontFamily: "inherit",
-                                    cursor: "pointer",
-                                }}
                             >
-                                <option
-                                    value={PAST_DATE_BALANCE_CHOICES.ASK}
-                                    style={{ backgroundColor: theme.mode === 'dark' ? '#1a1f2e' : '#ffffff', color: theme.mode === 'dark' ? '#ffffff' : '#1a1a2e' }}
-                                >
+                                <option value={PAST_DATE_BALANCE_CHOICES.ASK}>
                                     {translations.sidebar.settings.pastDateBalanceAsk || (language === "it" ? "Chiedi ogni volta" : "Ask every time")}
                                 </option>
-                                <option
-                                    value={PAST_DATE_BALANCE_CHOICES.NONE}
-                                    style={{ backgroundColor: theme.mode === 'dark' ? '#1a1f2e' : '#ffffff', color: theme.mode === 'dark' ? '#ffffff' : '#1a1a2e' }}
-                                >
+                                <option value={PAST_DATE_BALANCE_CHOICES.NONE}>
                                     {translations.sidebar.settings.pastDateBalanceNone || (language === "it" ? "Nessun impatto sul bilancio" : "No balance impact")}
                                 </option>
-                                <option
-                                    value={PAST_DATE_BALANCE_CHOICES.PAST_MONTH}
-                                    style={{ backgroundColor: theme.mode === 'dark' ? '#1a1f2e' : '#ffffff', color: theme.mode === 'dark' ? '#ffffff' : '#1a1a2e' }}
-                                >
+                                <option value={PAST_DATE_BALANCE_CHOICES.PAST_MONTH}>
                                     {translations.sidebar.settings.pastDateBalancePastMonth || (language === "it" ? "Aggiorna bilancio del mese" : "Update that month's balance")}
                                 </option>
-                            </select>
+                            </ThemedSelect>
                         </SettingsGroup>
 
                         {/* ═══ 2. Privacy — hide amounts now + default at login ═══ */}
@@ -653,34 +626,18 @@ const SettingsPage = () => {
                             >
                                 {translations.sidebar.settings.privacyDefault || (language === "it" ? "Privacy all'accesso" : "Privacy at login")}
                             </SettingsSubHeading>
-                            <select
+                            <ThemedSelect
+                                style={{ width: "100%" }}
                                 value={privacyDefaultPref}
                                 onChange={(e) => setPrivacyDefaultPref(e.target.value)}
-                                style={{
-                                    width: "100%",
-                                    padding: "0.6rem 0.75rem",
-                                    borderRadius: "10px",
-                                    border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.12)'}`,
-                                    backgroundColor: theme.mode === 'dark' ? '#1a1f2e' : '#ffffff',
-                                    color: theme.mode === 'dark' ? '#ffffff' : '#1a1a2e',
-                                    fontSize: "0.88rem",
-                                    fontFamily: "inherit",
-                                    cursor: "pointer",
-                                }}
                             >
-                                <option
-                                    value={PRIVACY_DEFAULT_CHOICES.ALWAYS_HIDDEN}
-                                    style={{ backgroundColor: theme.mode === 'dark' ? '#1a1f2e' : '#ffffff', color: theme.mode === 'dark' ? '#ffffff' : '#1a1a2e' }}
-                                >
+                                <option value={PRIVACY_DEFAULT_CHOICES.ALWAYS_HIDDEN}>
                                     {translations.sidebar.settings.privacyDefaultAlwaysHidden || (language === "it" ? "Nascondi sempre all'accesso (consigliato)" : "Always hidden at login (recommended)")}
                                 </option>
-                                <option
-                                    value={PRIVACY_DEFAULT_CHOICES.REMEMBER_LAST}
-                                    style={{ backgroundColor: theme.mode === 'dark' ? '#1a1f2e' : '#ffffff', color: theme.mode === 'dark' ? '#ffffff' : '#1a1a2e' }}
-                                >
+                                <option value={PRIVACY_DEFAULT_CHOICES.REMEMBER_LAST}>
                                     {translations.sidebar.settings.privacyDefaultRememberLast || (language === "it" ? "Ricorda l'ultima scelta" : "Remember last choice")}
                                 </option>
-                            </select>
+                            </ThemedSelect>
                         </SettingsGroup>
 
                         {/* ═══ 3. Categorie personalizzate — richiudibile, così tante voci non spingono giù il resto ═══ */}
@@ -710,54 +667,38 @@ const SettingsPage = () => {
                                     <label style={{ display: "block", marginBottom: "0.25rem", color: theme.textColor, fontSize: "0.75rem", fontWeight: 600 }}>
                                         {language === "it" ? "Tipo" : "Type"}
                                     </label>
-                                    <select
+                                    <ThemedSelect
+                                        style={{ width: "100%" }}
                                         value={newCategoryType}
                                         onChange={(e) => {
                                             setNewCategoryType(e.target.value);
                                             setNewCategoryParentIndex("");
                                         }}
                                         disabled={isCreatingCategory}
-                                        style={{
-                                            width: "100%",
-                                            padding: "0.5rem 0.6rem",
-                                            borderRadius: "8px",
-                                            border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.18)' : 'rgba(0,0,0,0.16)'}`,
-                                            background: theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : '#fff',
-                                            color: theme.textColor,
-                                            fontSize: "0.82rem"
-                                        }}
                                     >
-                                        <option value="expense" style={{ color: "#1a1a2e" }}>{language === "it" ? "Spesa" : "Expense"}</option>
-                                        <option value="income" style={{ color: "#1a1a2e" }}>{language === "it" ? "Entrata" : "Income"}</option>
-                                    </select>
+                                        <option value="expense">{language === "it" ? "Spesa" : "Expense"}</option>
+                                        <option value="income">{language === "it" ? "Entrata" : "Income"}</option>
+                                    </ThemedSelect>
                                 </div>
                                 <div>
                                     <label style={{ display: "block", marginBottom: "0.25rem", color: theme.textColor, fontSize: "0.75rem", fontWeight: 600 }}>
                                         {language === "it" ? "Categoria madre" : "Parent category"}
                                     </label>
-                                    <select
+                                    <ThemedSelect
+                                        style={{ width: "100%" }}
                                         value={newCategoryParentIndex}
                                         onChange={(e) => setNewCategoryParentIndex(e.target.value)}
                                         disabled={isCreatingCategory}
-                                        style={{
-                                            width: "100%",
-                                            padding: "0.5rem 0.6rem",
-                                            borderRadius: "8px",
-                                            border: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.18)' : 'rgba(0,0,0,0.16)'}`,
-                                            background: theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : '#fff',
-                                            color: theme.textColor,
-                                            fontSize: "0.82rem"
-                                        }}
                                     >
-                                        <option value="" style={{ color: "#1a1a2e" }}>
+                                        <option value="">
                                             {language === "it" ? "Scegli..." : "Choose..."}
                                         </option>
                                         {categoryParentOptions.map(tag => (
-                                            <option key={`${newCategoryType}-${tag.index}`} value={tag.index} style={{ color: "#1a1a2e" }}>
+                                            <option key={`${newCategoryType}-${tag.index}`} value={tag.index}>
                                                 {translateTag(tag.label, language, newCategoryType)}
                                             </option>
                                         ))}
-                                    </select>
+                                    </ThemedSelect>
                                 </div>
                                 <div>
                                     <label style={{ display: "block", marginBottom: "0.25rem", color: theme.textColor, fontSize: "0.75rem", fontWeight: 600 }}>
@@ -974,29 +915,21 @@ const SettingsPage = () => {
                                         }}>
                                             {language === "it" ? "Periodo" : "Period"}
                                         </label>
-                                        <select
+                                        <ThemedSelect
+                                            style={{ width: "100%" }}
                                             value={exportFilter}
                                             onChange={(e) => setExportFilter(e.target.value)}
-                                            style={{
-                                                width: "100%",
-                                                padding: "0.5rem",
-                                                border: `1px solid ${theme.borderColor}`,
-                                                borderRadius: "8px",
-                                                backgroundColor: theme.inputBackground,
-                                                color: "#000000",
-                                                fontSize: "0.9rem"
-                                            }}
                                         >
-                                            <option value="all" style={{ color: "#000000", backgroundColor: "#ffffff" }}>
+                                            <option value="all">
                                                 {language === "it" ? "Tutti i dati" : "All data"}
                                             </option>
-                                            <option value="last12" style={{ color: "#000000", backgroundColor: "#ffffff" }}>
+                                            <option value="last12">
                                                 {language === "it" ? "Ultimi 12 mesi" : "Last 12 months"}
                                             </option>
-                                            <option value="specific" style={{ color: "#000000", backgroundColor: "#ffffff" }}>
+                                            <option value="specific">
                                                 {language === "it" ? "Mese specifico" : "Specific month"}
                                             </option>
-                                        </select>
+                                        </ThemedSelect>
                                     </div>
 
                                     {exportFilter === "specific" && (
@@ -1010,28 +943,20 @@ const SettingsPage = () => {
                                                 }}>
                                                     {language === "it" ? "Mese" : "Month"}
                                                 </label>
-                                                <select
+                                                <ThemedSelect
+                                                    style={{ width: "100%" }}
                                                     value={selectedMonth}
                                                     onChange={(e) => setSelectedMonth(e.target.value)}
-                                                    style={{
-                                                        width: "100%",
-                                                        padding: "0.75rem",
-                                                        border: `1px solid ${theme.borderColor}`,
-                                                        borderRadius: "8px",
-                                                        backgroundColor: theme.inputBackground,
-                                                        color: "#000000",
-                                                        fontSize: "0.9rem"
-                                                    }}
                                                 >
-                                                    <option value="" style={{ color: "#000000", backgroundColor: "#ffffff" }}>
+                                                    <option value="">
                                                         {language === "it" ? "Seleziona mese" : "Select month"}
                                                     </option>
                                                     {months.map(month => (
-                                                        <option key={month.value} value={month.value} style={{ color: "#000000", backgroundColor: "#ffffff" }}>
+                                                        <option key={month.value} value={month.value}>
                                                             {month.label}
                                                         </option>
                                                     ))}
-                                                </select>
+                                                </ThemedSelect>
                                             </div>
 
                                             <div>
@@ -1043,28 +968,20 @@ const SettingsPage = () => {
                                                 }}>
                                                     {language === "it" ? "Anno" : "Year"}
                                                 </label>
-                                                <select
+                                                <ThemedSelect
+                                                    style={{ width: "100%" }}
                                                     value={selectedYear}
                                                     onChange={(e) => setSelectedYear(e.target.value)}
-                                                    style={{
-                                                        width: "100%",
-                                                        padding: "0.75rem",
-                                                        border: `1px solid ${theme.borderColor}`,
-                                                        borderRadius: "8px",
-                                                        backgroundColor: theme.inputBackground,
-                                                        color: "#000000",
-                                                        fontSize: "0.9rem"
-                                                    }}
                                                 >
-                                                    <option value="" style={{ color: "#000000", backgroundColor: "#ffffff" }}>
+                                                    <option value="">
                                                         {language === "it" ? "Seleziona anno" : "Select year"}
                                                     </option>
                                                     {years.map(year => (
-                                                        <option key={year} value={year} style={{ color: "#000000", backgroundColor: "#ffffff" }}>
+                                                        <option key={year} value={year}>
                                                             {year}
                                                         </option>
                                                     ))}
-                                                </select>
+                                                </ThemedSelect>
                                             </div>
                                         </>
                                     )}

@@ -10,6 +10,7 @@ import {
   Overlay, ModalContainer, ModalHeader, ModalTitle, CloseButton, ModalBody, ModalFooter,
 } from '../components/multiInsert/SharedStyles';
 import { ModernActionButton } from '../styles/MyStyled';
+import ThemedSelect from '../components/ThemedSelect';
 import type { LiquidityAssetKey, LiquidityAccountDto, LiquidityAccountHistoryDto } from '../types/api';
 
 interface LiquidityAccountsPanelProps {
@@ -393,7 +394,8 @@ export default function LiquidityAccountsPanel({
                 </label>
                 <label>
                   {t.linkedBank || 'Linked bank/provider'}
-                  <select
+                  <ThemedSelect
+                    style={{ width: '100%' }}
                     value={form.linkedBankKey}
                     onChange={(e) => setForm((f) => ({ ...f, linkedBankKey: e.target.value }))}
                   >
@@ -401,7 +403,7 @@ export default function LiquidityAccountsPanel({
                     {LINKABLE_BANK_KEYS.map((key) => (
                       <option key={key} value={key}>{translations.dataImport?.bankNames?.[key] || key}</option>
                     ))}
-                  </select>
+                  </ThemedSelect>
                 </label>
                 <label>
                   {t.unitValue || 'Denomination (e.g. meal vouchers)'}
@@ -415,7 +417,8 @@ export default function LiquidityAccountsPanel({
                 {form.unitValue !== '' && (
                   <label>
                     {t.fallbackAccount || 'Remainder paid from'}
-                    <select
+                    <ThemedSelect
+                      style={{ width: '100%' }}
                       value={form.fallbackAccountId}
                       onChange={(e) => setForm((f) => ({ ...f, fallbackAccountId: e.target.value }))}
                     >
@@ -425,7 +428,7 @@ export default function LiquidityAccountsPanel({
                           {translations.assets[candidate.assetKey]} / {candidate.label}
                         </option>
                       ))}
-                    </select>
+                    </ThemedSelect>
                   </label>
                 )}
               </FieldsGrid>

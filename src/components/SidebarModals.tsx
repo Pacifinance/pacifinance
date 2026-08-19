@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Select, MenuItem } from "@mui/material";
+import { getMuiSelectMenuProps } from './ThemedSelect';
 import { sortTagsByLanguage } from '../utils/sortingUtils';
 import { translateTag } from '../data/tagTranslations';
 import {
@@ -120,10 +121,12 @@ const SidebarModals = ({
                                     });
                                 }}
                                 style={{
-                                    backgroundColor: "white",
                                     height: "2em",
                                     marginBottom: "0.5em",
+                                    backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : '#ffffff',
+                                    color: theme.textColor,
                                 }}
+                                MenuProps={getMuiSelectMenuProps(theme)}
                                 displayEmpty
                                 renderValue={(value) => {
                                     if (value === "") {
@@ -171,10 +174,12 @@ const SidebarModals = ({
                                     });
                                 }}
                                 style={{
-                                    backgroundColor: "white",
                                     height: "2em",
                                     marginBottom: "0.5em",
+                                    backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : '#ffffff',
+                                    color: theme.textColor,
                                 }}
+                                MenuProps={getMuiSelectMenuProps(theme)}
                                 displayEmpty
                                 renderValue={(value) => {
                                     if (value === "") {
@@ -218,10 +223,12 @@ const SidebarModals = ({
                                     });
                                 }}
                                 style={{
-                                    backgroundColor: "white",
                                     height: "2em",
                                     marginBottom: "0.5em",
+                                    backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : '#ffffff',
+                                    color: theme.textColor,
                                 }}
+                                MenuProps={getMuiSelectMenuProps(theme)}
                                 displayEmpty
                                 renderValue={(value) => {
                                     if (value === "") {
@@ -268,10 +275,12 @@ const SidebarModals = ({
                                     });
                                 }}
                                 style={{
-                                    backgroundColor: "white",
                                     height: "2em",
                                     marginBottom: "0.5em",
+                                    backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : '#ffffff',
+                                    color: theme.textColor,
                                 }}
+                                MenuProps={getMuiSelectMenuProps(theme)}
                                 displayEmpty
                                 renderValue={(value) => {
                                     if (value === "") {
@@ -318,10 +327,12 @@ const SidebarModals = ({
                                     });
                                 }}
                                 style={{
-                                    backgroundColor: "white",
                                     height: "2em",
                                     marginBottom: "0.5em",
+                                    backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : '#ffffff',
+                                    color: theme.textColor,
                                 }}
+                                MenuProps={getMuiSelectMenuProps(theme)}
                                 displayEmpty
                                 renderValue={(value) => {
                                     if (value === "")
@@ -368,10 +379,12 @@ const SidebarModals = ({
                                     });
                                 }}
                                 style={{
-                                    backgroundColor: "white",
                                     height: "2em",
                                     marginBottom: "0.5em",
+                                    backgroundColor: theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : '#ffffff',
+                                    color: theme.textColor,
                                 }}
+                                MenuProps={getMuiSelectMenuProps(theme)}
                                 displayEmpty
                                 renderValue={(value) => {
                                     if (value === "")

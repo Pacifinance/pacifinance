@@ -12,6 +12,7 @@ import {
   Overlay, ModalContainer, ModalHeader, ModalTitle, CloseButton, ModalBody, ModalFooter,
 } from '../components/multiInsert/SharedStyles';
 import { ModernActionButton } from '../styles/MyStyled';
+import ThemedSelect from '../components/ThemedSelect';
 import { parseInvestmentCsv, ImportedTransaction, ImportedDividend, ImportPlatform } from '../utils/investmentImport/parsers';
 import {
   buildMonthlyPositionTimeline, positionKeyFor, AggregatedPosition,
@@ -1418,11 +1419,11 @@ export default function InvestmentImportWizard({ onClose, onImported }: Investme
                   <ManualResolveBlock theme={theme}>
                     <span>{t.notFound}</span>
                     <ManualAddRow theme={theme}>
-                      <select value={row.manualKind} onChange={(e) => setManualKind(index, e.target.value as InvestmentKind)}>
+                      <ThemedSelect compact value={row.manualKind} onChange={(e) => setManualKind(index, e.target.value as InvestmentKind)}>
                         {MANUAL_KIND_OPTIONS.map((kind) => (
                           <option key={kind} value={kind}>{t.kinds?.[kind] || kind}</option>
                         ))}
-                      </select>
+                      </ThemedSelect>
                     </ManualAddRow>
                     <InstrumentSearchAutocomplete
                       assetKey={KIND_TO_ASSET_KEY[row.manualKind] as InvestmentAssetKey}

@@ -1131,7 +1131,12 @@
             "markReceived": "Marquer le montant reçu",
             "deleteButton": "Supprimer",
             "amountReceivedLabel": "Montant reçu",
-            "confirmSettle": "Confirmer"
+            "confirmSettle": "Confirmer",
+            "searchLabel": "Note",
+            "searchPlaceholder": "Rechercher...",
+            "statusFilterLabel": "Statut",
+            "noMatchingResults": "Aucune dépense partagée ne correspond à ces filtres.",
+            "unknownMonth": "—"
         },
         "deleteTransaction": {
             "titleOutflow": "Are you sure you want to delete this outflow?",
@@ -2380,6 +2385,8 @@
         "duplicateHint": "Semble déjà enregistré — désélectionné par défaut.",
         "transferBadge": "Virement possible",
         "transferHint": "Correspond à une entrée de flux opposé du même montant — pourrait être un virement entre vos propres comptes, pas un revenu/une dépense réel(le).",
+        "cashbackRewardBadge": "Cashback investi",
+        "cashbackRewardHint": "Cette récompense a été investie directement, pas reçue en espèces — marquée comme investissement et exclue des statistiques de revenus.",
         "flaggedRowsNote": "{count} lignes ressemblent à des doublons possibles ou à des virements entre vos propres comptes, et ont été désélectionnées par défaut — vérifiez les badges ci-dessous et resélectionnez celles qui sont authentiques.",
         "matchedAgainstLabel": "Similaire à :",
         "viewMonthButton": "👁️ Voir les transactions déjà enregistrées",

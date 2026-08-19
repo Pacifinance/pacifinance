@@ -77,7 +77,10 @@ describe('SharedExpensesPanel', () => {
     renderPanel();
     expect(screen.getByText('Uber vacation')).toBeInTheDocument();
     expect(screen.getByText('€30.00')).toBeInTheDocument();
-    expect(screen.getByText(/Pending/)).toBeInTheDocument();
+    // Match the row's status text specifically — the filter panel's status
+    // dropdown also has a "Pending" option, so a plain getByText(/Pending/)
+    // is ambiguous now that filtering exists.
+    expect(screen.getByText((content, element) => element.tagName !== 'OPTION' && /Pending/.test(content))).toBeInTheDocument();
   });
 
   it('falls back to the untitled label when notes are empty', () => {
@@ -107,5 +110,25 @@ describe('SharedExpensesPanel', () => {
   it('does not show the "mark received" action once a receivable is fully settled', () => {
     renderPanel([{ ...baseItem, settledAmount: 30, status: 'settled' }]);
     expect(screen.queryByRole('button', { name: /mark amount received/i })).not.toBeInTheDocument();
+  });
+
+  it('groups receivables from different months under separate headers', () => {
+    renderPanel([
+      baseItem,
+      { ...baseItem, id: 2, date: '2026-04-05', notes: 'Dinner' },
+    ]);
+    expect(screen.getByText(/March 2026/i)).toBeInTheDocument();
+    expect(screen.getByText(/April 2026/i)).toBeInTheDocument();
+  });
+
+  it('filters the list by status', () => {
+    renderPanel([
+      baseItem,
+      { ...baseItem, id: 2, notes: 'Dinner', status: 'settled', settledAmount: 30 },
+    ]);
+    fireEvent.click(screen.getByRole('button', { name: /filters/i }));
+    fireEvent.change(screen.getByDisplayValue('All'), { target: { value: 'settled' } });
+    expect(screen.getByText('Dinner')).toBeInTheDocument();
+    expect(screen.queryByText('Uber vacation')).not.toBeInTheDocument();
   });
 });

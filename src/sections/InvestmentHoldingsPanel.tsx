@@ -18,6 +18,7 @@ import {
   Overlay, ModalContainer, ModalHeader, ModalTitle, CloseButton, ModalBody, ModalFooter,
 } from '../components/multiInsert/SharedStyles';
 import { ModernActionButton } from '../styles/MyStyled';
+import ThemedSelect from '../components/ThemedSelect';
 import { ASSET_KEY_TO_KIND, KIND_TO_SEARCH_SOURCE, DEFAULT_INSTRUMENT_HINTS } from '../constants/investmentSchema';
 import { formatInstrumentDetails } from '../utils/instrumentDisplay';
 import { getAssetColor } from '../data/assetColors';
@@ -1571,13 +1572,14 @@ export default function InvestmentHoldingsPanel({
                   {providerHistoryMessage && <p style={{ margin: '0.45rem 0', fontSize: '0.78rem', opacity: 0.8 }}>{providerHistoryMessage}</p>}
                   {years.length > 1 && (
                     <HistoryYearFilter theme={theme}>
-                      <select
+                      <ThemedSelect
+                        compact
                         value={yearFilter}
                         onChange={(e) => setHistoryYearFilterByHoldingId((prev) => ({ ...prev, [holding.id]: e.target.value }))}
                       >
                         <option value="all">{t.historyAllYears || 'All years'}</option>
                         {years.map((year) => <option key={year} value={year}>{year}</option>)}
-                      </select>
+                      </ThemedSelect>
                     </HistoryYearFilter>
                   )}
                   {displayed.map(({ entry, quantityDelta, sources }) => {

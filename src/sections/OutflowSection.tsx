@@ -42,14 +42,27 @@ import { inferTransactionPurpose } from '../utils/transactionPurpose';
 import {
   ViewSwitch, ViewButton, TableScroll, CardViewWrap,
   FilterToggleRow, FilterBadge, FilterPanel, FilterRow, FilterLabel, FilterInlineRow, ClearFiltersBtn,
-  CardList, TxCard, CardTopRow, CardCategory, CardAmount, CardMetaRow, CardNote, CardActionsRow, CardEditGrid,
+  CardList, TxCard, CardTopRow, CardCategory, CardAmount, CardMetaRow, CardNote, CardActionsRow,
   TotalCard, ActionBtn, InlineInput,
 } from '../components/transactionList/TransactionListStyles';
+import {
+  Overlay, ModalContainer, ModalHeader, ModalTitle, CloseButton, ModalBody, ModalFooter, SubmitButton,
+} from '../components/multiInsert/SharedStyles';
 
 // Note: Le funzioni per processare i colori sono ora importate da utils/colorUtils
 
 // Raw (untranslated) payment-tag labels that suggest a recurring template
 const RECURRING_PAYMENT_LABELS = ['subscription', 'periodic payment'];
+
+// Which payment typologies make sense for a given transaction purpose (raw,
+// untranslated payment-tag labels) — e.g. "cap" (piano di accumulo) only
+// makes sense for an investment, "installment" (rata) fits a debt payoff.
+// Falls back to DEFAULT_TYPOLOGY_LABELS for expense/tax/transfer/other.
+const TYPOLOGY_LABELS_BY_PURPOSE = {
+  investment: ['single payment', 'cap', 'periodic payment'],
+  debt: ['installment', 'single payment', 'periodic payment'],
+};
+const DEFAULT_TYPOLOGY_LABELS = ['subscription', 'periodic payment', 'single payment', 'installment'];
 
 /* ─── Styled Components ─── */
 const SectionWrapper = styled.div`
@@ -889,18 +902,6 @@ export default function OutflowSection({
   const [editValues, setEditValues] = React.useState({});
   const [isSaving, setIsSaving] = React.useState(false);
 
-  const isEditingRow = (add) => {
-    if (!editingAdd) return false;
-    return add === editingAdd || (
-      add.date === editingAdd.date &&
-      add.amount === editingAdd.amount &&
-      add.categoryTag?.index === editingAdd.categoryTag?.index &&
-      add.paymentType?.index === editingAdd.paymentType?.index &&
-      (add.userCategory?.id ?? null) === (editingAdd.userCategory?.id ?? null) &&
-      add.notes === editingAdd.notes
-    );
-  };
-
   const startEditing = (add) => {
     const linkedShared = getSharedReceivable(add.id);
     const hasStoredSplit = Number(add.cashAmount) > Number(add.amount) + 0.005;
@@ -1015,6 +1016,33 @@ export default function OutflowSection({
   // amount leaves a remainder — lets the user pick/confirm which account
   // absorbs it (see utils/voucherSplit.ts, defaults from the account's own
   // configured fallback).
+  // Category FILTER options: official tags plus, nested under each via a
+  // native <optgroup>, the user's own custom sub-categories — so filtering
+  // can target a specific sub-category, not just the broad parent (a plain
+  // <select> is still the right control here, unlike CategoryPicker, since
+  // a filter has no "create new" affordance to offer).
+  const renderCategoryFilterOptions = (officialTags) => {
+    const expectedParentType = 0; // expense
+    const safeCustomCategories = (customCategories || []).filter((category) =>
+      category.parentType === undefined || category.parentType === expectedParentType
+    );
+    return officialTags.map((item) => {
+      const label = translateTag(item.label, language, 'expense');
+      const children = safeCustomCategories.filter((c) => c.parentIndex === item.index);
+      if (children.length === 0) {
+        return <option key={item.index} value={label}>{label}</option>;
+      }
+      return (
+        <optgroup key={item.index} label={label}>
+          <option value={label}>{label}</option>
+          {children.map((c) => (
+            <option key={`cus:${c.id}`} value={`cus:${c.id}`}>↳ {c.label}</option>
+          ))}
+        </optgroup>
+      );
+    });
+  };
+
   const renderSplitHint = () => {
     const meta = balanceSourceMeta?.[editValues.balanceSourceLabel];
     if (!meta?.unitValue) return null;
@@ -1059,6 +1087,140 @@ export default function OutflowSection({
           <option key={purpose} value={purpose}>{purposeTranslations[purpose]}</option>
         ))}
       </InlineSelect>
+    );
+  };
+
+  // Single shared edit modal for BOTH card view and table view — rendered
+  // once from the main return (not per-view) so switching between views
+  // mid-edit doesn't matter and there's only one instance of this JSX to
+  // maintain, at any screen size.
+  const renderEditModal = () => {
+    if (!editingAdd) return null;
+    return createPortal(
+      <Overlay onClick={(e) => { if (e.target === e.currentTarget && !isSaving) handleCancelInline(); }}>
+        <ModalContainer theme={theme} $maxWidth="480px">
+          <ModalHeader theme={theme}>
+            <ModalTitle theme={theme}>
+              <h2>{translations.insert.outflowSection.editingLabel}</h2>
+            </ModalTitle>
+            {!isSaving && <CloseButton theme={theme} onClick={handleCancelInline}>✕</CloseButton>}
+          </ModalHeader>
+          <ModalBody theme={theme}>
+            <FormField>
+              <FieldLabel theme={theme}>{translations.general.category}</FieldLabel>
+              <CategoryPicker
+                theme={theme}
+                officialTags={OutflowsTags}
+                customCategories={customCategories}
+                categoryType="expense"
+                categoryKey={editValues.categoryKey}
+                userCategoryId={editValues.userCategoryId ?? null}
+                onSelect={({ categoryKey, categoryValue, userCategoryId, userCategoryLabel }) =>
+                  setEditValues(prev => ({
+                    ...prev,
+                    categoryKey,
+                    categoryValue: userCategoryLabel || categoryValue,
+                    parentValue: categoryValue,
+                    userCategoryId,
+                    userCategoryLabel,
+                    purpose: inferTransactionPurpose('outflow', Number(categoryKey)),
+                  }))
+                }
+                onCreateCategory={onCreateCategory}
+                disabled={isSaving}
+                placeholder={translations.insert.outflowSection.placeholderCategory}
+              />
+            </FormField>
+            <FormField>
+              <FieldLabel theme={theme}>{translations.general.typology}</FieldLabel>
+              <InlineSelect
+                theme={theme}
+                value={editValues.typologyKey}
+                onChange={(e) => setEditValues(prev => ({ ...prev, typologyKey: Number(e.target.value) }))}
+              >
+                {sortTagsByLanguage(paymentTags, language, 'payment').filter(item => item.label !== 'none').map((item) => (
+                  <option key={item.index} value={item.index}>
+                    {translateTag(item.label, language, 'payment')}
+                  </option>
+                ))}
+              </InlineSelect>
+            </FormField>
+            <FormField>
+              <FieldLabel theme={theme}>{translations.insert.outflowSection.tableColumns?.paymentMethod || translations.general.selectAnOption}</FieldLabel>
+              <Select
+                value={editValues.balanceSourceLabel || ''}
+                onChange={(e) => setEditValues(prev => ({ ...prev, balanceSourceLabel: e.target.value }))}
+                displayEmpty
+                fullWidth
+                size="small"
+                sx={selectSx}
+                MenuProps={getMuiSelectMenuProps(theme)}
+              >
+                <MenuItem value="">
+                  <em>{translations.general.selectAnOption || 'None (optional)'}</em>
+                </MenuItem>
+                {renderBalanceSourceMenuItems(balanceOptions, balanceSourceMeta)}
+              </Select>
+            </FormField>
+            {renderSplitHint()}
+            <FormField>
+              <FieldLabel theme={theme}>{translations.insert.outflowSection.tableColumns?.value || translations.general.amount}</FieldLabel>
+              <div style={{ position: 'relative', width: '100%', minWidth: 0 }}>
+                <InlineInput
+                  type="text"
+                  theme={theme}
+                  value={editValues.amount}
+                  onChange={handleEditAmountChange}
+                  style={{ width: '100%', minWidth: 0, paddingRight: '1.8rem' }}
+                />
+                <span style={{ position: 'absolute', right: '0.55rem', top: '50%', transform: 'translateY(-50%)', fontSize: '0.8em', opacity: 0.6, pointerEvents: 'none' }}>{currencySymbol}</span>
+              </div>
+            </FormField>
+            <FormField>
+              <FieldLabel theme={theme}>{translations.insert.outflowSection.tableColumns?.note || 'Note'}</FieldLabel>
+              <InlineInput
+                type="text"
+                theme={theme}
+                value={editValues.note}
+                onChange={(e) => setEditValues(prev => ({ ...prev, note: e.target.value }))}
+                maxLength={64}
+                placeholder={translations.insert.outflowSection.tableColumns?.note || 'Note'}
+              />
+            </FormField>
+            <FormField>
+              <FieldLabel theme={theme}>{translations.insert.outflowSection.tableColumns?.date || translations.general.date}</FieldLabel>
+              <InlineInput
+                type="date"
+                theme={theme}
+                value={editValues.date}
+                onChange={(e) => setEditValues(prev => ({ ...prev, date: e.target.value }))}
+                max={currentDate}
+              />
+            </FormField>
+            {renderSharedEditControls()}
+            <FormField>
+              <FieldLabel theme={theme}>{translations.transactionPurpose.label}</FieldLabel>
+              {renderPurposeSelect()}
+            </FormField>
+          </ModalBody>
+          <ModalFooter theme={theme}>
+            <ActionBtn
+              className="cancel"
+              onClick={handleCancelInline}
+              disabled={isSaving}
+              title={translations.insert.outflowSection.cancelEdit}
+            >
+              <FontAwesomeIcon icon={faRotateLeft} />
+              {translations.insert.outflowSection.cancelEdit}
+            </ActionBtn>
+            <SubmitButton theme={theme} onClick={handleSaveInline} disabled={isSaving}>
+              <FontAwesomeIcon icon={faCheck} />
+              {translations.insert.outflowSection.editButton}
+            </SubmitButton>
+          </ModalFooter>
+        </ModalContainer>
+      </Overlay>,
+      document.body,
     );
   };
 
@@ -1153,7 +1315,9 @@ export default function OutflowSection({
       }
       return (
         (!outflowCategoryFilter ||
-          translateTag(add.categoryTag?.label, language, 'expense') === outflowCategoryFilter) &&
+          (outflowCategoryFilter.startsWith('cus:')
+            ? String(add.userCategory?.id) === outflowCategoryFilter.slice(4)
+            : translateTag(add.categoryTag?.label, language, 'expense') === outflowCategoryFilter)) &&
         (!outflowTypologyFilter ||
           translateTag(add.paymentType?.label, language, 'payment') === outflowTypologyFilter) &&
         (!purposeFilter || inferTransactionPurpose('outflow', add.categoryTag?.index ?? 0, add.purpose) === purposeFilter) &&
@@ -1258,11 +1422,7 @@ export default function OutflowSection({
               style={{ minWidth: 100 }}
             >
               <option value="">{translations.general.all}</option>
-              {OutflowsTags.map((item) => (
-                <option key={item.index} value={translateTag(item.label, language, 'expense')}>
-                  {translateTag(item.label, language, 'expense')}
-                </option>
-              ))}
+              {renderCategoryFilterOptions(OutflowsTags)}
             </ThemedSelect>
           </div>
         </th>
@@ -1381,123 +1541,6 @@ export default function OutflowSection({
           : getLighterSolidColor(rawColor);
         const rowGradient = getGradientForCategory(processedColor);
 
-        // Inline editing mode for this row
-        if (isEditingRow(add)) {
-          return (
-            <tr key={index} style={{ background: 'rgba(59, 130, 246, 0.08)', outline: '2px solid rgba(59, 130, 246, 0.25)' }}>
-              <td>
-                <div style={{ minWidth: 180 }}>
-                  <CategoryPicker
-                    theme={theme}
-                    officialTags={OutflowsTags}
-                    customCategories={customCategories}
-                    categoryType="expense"
-                    categoryKey={editValues.categoryKey}
-                    userCategoryId={editValues.userCategoryId ?? null}
-                    onSelect={({ categoryKey, categoryValue, userCategoryId, userCategoryLabel }) =>
-                      setEditValues(prev => ({
-                        ...prev,
-                        categoryKey,
-                        categoryValue: userCategoryLabel || categoryValue,
-                        parentValue: categoryValue,
-                        userCategoryId,
-                        userCategoryLabel,
-                        purpose: inferTransactionPurpose('outflow', Number(categoryKey)),
-                      }))
-                    }
-                    onCreateCategory={onCreateCategory}
-                    disabled={isSaving}
-                    placeholder={translations.insert.outflowSection.placeholderCategory}
-                  />
-                </div>
-              </td>
-              <td>
-                <InlineSelect
-                  theme={theme}
-                  value={editValues.typologyKey}
-                  onChange={(e) => setEditValues(prev => ({ ...prev, typologyKey: Number(e.target.value) }))}
-                >
-                  {sortTagsByLanguage(paymentTags, language, 'payment').filter(item => item.label !== 'none').map((item) => (
-                    <option key={item.index} value={item.index}>
-                      {translateTag(item.label, language, 'payment')}
-                    </option>
-                  ))}
-                </InlineSelect>
-              </td>
-              <td>
-                <Select
-                  value={editValues.balanceSourceLabel || ''}
-                  onChange={(e) => setEditValues(prev => ({ ...prev, balanceSourceLabel: e.target.value }))}
-                  displayEmpty
-                  fullWidth
-                  size="small"
-                  sx={selectSx}
-                  MenuProps={getMuiSelectMenuProps(theme)}
-                >
-                  <MenuItem value="">
-                    <em>{translations.general.selectAnOption || 'None (optional)'}</em>
-                  </MenuItem>
-                  {renderBalanceSourceMenuItems(balanceOptions, balanceSourceMeta)}
-                </Select>
-                {renderSplitHint()}
-              </td>
-              <td>
-                <div style={{ position: 'relative', width: '100%', minWidth: 0 }}>
-                  <InlineInput
-                    type="text"
-                    theme={theme}
-                    value={editValues.amount}
-                    onChange={handleEditAmountChange}
-                    style={{ minWidth: 0, width: '100%', paddingRight: '1.8rem' }}
-                  />
-                  <span style={{ position: 'absolute', right: '0.55rem', top: '50%', transform: 'translateY(-50%)', fontSize: '0.8em', opacity: 0.6, pointerEvents: 'none' }}>{currencySymbol}</span>
-                </div>
-              </td>
-              <td style={{ minWidth: 360, width: '34%' }}>
-                <InlineInput
-                  type="text"
-                  theme={theme}
-                  value={editValues.note}
-                  onChange={(e) => setEditValues(prev => ({ ...prev, note: e.target.value }))}
-                  maxLength={64}
-                />
-                {renderSharedEditControls()}
-                {renderPurposeSelect()}
-              </td>
-              <td>
-                <InlineInput
-                  type="date"
-                  theme={theme}
-                  value={editValues.date}
-                  onChange={(e) => setEditValues(prev => ({ ...prev, date: e.target.value }))}
-                  max={currentDate}
-                  style={{ colorScheme: theme.mode === 'dark' ? 'dark' : 'light' }}
-                />
-              </td>
-              <td>
-                <div style={{ display: 'flex', gap: '4px', alignItems: 'center', justifyContent: 'center' }}>
-                  <ActionBtn
-                    className="edit"
-                    onClick={handleSaveInline}
-                    disabled={isSaving}
-                    title={translations.insert.outflowSection.editButton}
-                  >
-                    <FontAwesomeIcon icon={faCheck} />
-                  </ActionBtn>
-                  <ActionBtn
-                    className="cancel"
-                    onClick={handleCancelInline}
-                    disabled={isSaving}
-                    title={translations.insert.outflowSection.cancelEdit}
-                  >
-                    <FontAwesomeIcon icon={faRotateLeft} />
-                  </ActionBtn>
-                </div>
-              </td>
-            </tr>
-          );
-        }
-
         return (
           <tr key={index} style={{ background: rowGradient }}>
             <td>
@@ -1599,108 +1642,6 @@ export default function OutflowSection({
             ? getGrayscaleColor(rawColor, index)
             : getLighterSolidColor(rawColor);
           const rowGradient = getGradientForCategory(processedColor);
-
-          if (isEditingRow(add)) {
-            return (
-              <TxCard key={index} theme={theme} $gradient="rgba(59, 130, 246, 0.08)" style={{ outline: '2px solid rgba(59, 130, 246, 0.25)' }}>
-                <CardEditGrid>
-                  <CategoryPicker
-                    theme={theme}
-                    officialTags={OutflowsTags}
-                    customCategories={customCategories}
-                    categoryType="expense"
-                    categoryKey={editValues.categoryKey}
-                    userCategoryId={editValues.userCategoryId ?? null}
-                    onSelect={({ categoryKey, categoryValue, userCategoryId, userCategoryLabel }) =>
-                      setEditValues(prev => ({
-                        ...prev,
-                        categoryKey,
-                        categoryValue: userCategoryLabel || categoryValue,
-                        parentValue: categoryValue,
-                        userCategoryId,
-                        userCategoryLabel,
-                        purpose: inferTransactionPurpose('outflow', Number(categoryKey)),
-                      }))
-                    }
-                    onCreateCategory={onCreateCategory}
-                    disabled={isSaving}
-                    placeholder={translations.insert.outflowSection.placeholderCategory}
-                  />
-                  <InlineSelect
-                    theme={theme}
-                    value={editValues.typologyKey}
-                    onChange={(e) => setEditValues(prev => ({ ...prev, typologyKey: Number(e.target.value) }))}
-                  >
-                    {sortTagsByLanguage(paymentTags, language, 'payment').filter(item => item.label !== 'none').map((item) => (
-                      <option key={item.index} value={item.index}>
-                        {translateTag(item.label, language, 'payment')}
-                      </option>
-                    ))}
-                  </InlineSelect>
-                  <Select
-                    value={editValues.balanceSourceLabel || ''}
-                    onChange={(e) => setEditValues(prev => ({ ...prev, balanceSourceLabel: e.target.value }))}
-                    displayEmpty
-                    fullWidth
-                    size="small"
-                    sx={selectSx}
-                    MenuProps={getMuiSelectMenuProps(theme)}
-                  >
-                    <MenuItem value="">
-                      <em>{translations.general.selectAnOption || 'None (optional)'}</em>
-                    </MenuItem>
-                    {renderBalanceSourceMenuItems(balanceOptions, balanceSourceMeta)}
-                  </Select>
-                  {renderSplitHint()}
-                  <div style={{ position: 'relative', width: '100%', minWidth: 0 }}>
-                    <InlineInput
-                      type="text"
-                      theme={theme}
-                      value={editValues.amount}
-                      onChange={handleEditAmountChange}
-                      style={{ width: '100%', minWidth: 0, paddingRight: '1.8rem' }}
-                    />
-                    <span style={{ position: 'absolute', right: '0.55rem', top: '50%', transform: 'translateY(-50%)', fontSize: '0.8em', opacity: 0.6, pointerEvents: 'none' }}>{currencySymbol}</span>
-                  </div>
-                  <InlineInput
-                    type="text"
-                    theme={theme}
-                    value={editValues.note}
-                    onChange={(e) => setEditValues(prev => ({ ...prev, note: e.target.value }))}
-                    maxLength={64}
-                    placeholder={translations.insert.outflowSection.tableColumns?.note || 'Note'}
-                  />
-                  <InlineInput
-                  type="date"
-                    theme={theme}
-                    value={editValues.date}
-                    onChange={(e) => setEditValues(prev => ({ ...prev, date: e.target.value }))}
-                    max={currentDate}
-                  />
-                  {renderSharedEditControls()}
-                  {renderPurposeSelect()}
-                </CardEditGrid>
-                <CardActionsRow>
-                  <ActionBtn
-                    className="edit"
-                    onClick={handleSaveInline}
-                    disabled={isSaving}
-                    title={translations.insert.outflowSection.editButton}
-                  >
-                    <FontAwesomeIcon icon={faCheck} />
-                  </ActionBtn>
-                  <ActionBtn
-                    className="cancel"
-                    onClick={handleCancelInline}
-                    disabled={isSaving}
-                    title={translations.insert.outflowSection.cancelEdit}
-                  >
-                    <FontAwesomeIcon icon={faRotateLeft} />
-                  </ActionBtn>
-                </CardActionsRow>
-              </TxCard>
-            );
-          }
 
           return (
             <TxCard key={index} theme={theme} $gradient={rowGradient}>
@@ -1959,7 +1900,19 @@ export default function OutflowSection({
           <FieldLabel theme={theme}>{translations.transactionPurpose.label}</FieldLabel>
           <Select
             value={categoryOutflow.purpose || inferTransactionPurpose('outflow', Number(categoryOutflow.key))}
-            onChange={(event) => setCategoryOutflow((current) => ({...current, purpose: event.target.value}))}
+            onChange={(event) => {
+              const nextPurpose = event.target.value;
+              setCategoryOutflow((current) => ({...current, purpose: nextPurpose}));
+              // A typology already picked (e.g. "cap") can stop making sense
+              // under the new purpose (e.g. switching to "expense") — reset
+              // it instead of silently keeping an invalid combination.
+              const allowedLabels = TYPOLOGY_LABELS_BY_PURPOSE[nextPurpose] || DEFAULT_TYPOLOGY_LABELS;
+              const currentItem = paymentTags.find((item) => item.index === typoOutflow.key);
+              if (currentItem && !allowedLabels.includes(currentItem.label)) {
+                setTypoOutflow({ key: '', value: '' });
+                setMakeRecurring?.(false);
+              }
+            }}
             disabled={isSharedExpense}
             sx={selectSx}
             MenuProps={getMuiSelectMenuProps(theme)}
@@ -1996,13 +1949,17 @@ export default function OutflowSection({
             <MenuItem value="">
               <em>{translations.insert.outflowSection.placeholderTypology}</em>
             </MenuItem>
-            {sortTagsByLanguage(paymentTags, language, 'payment').map((item) =>
-              item.label !== 'none' && (
-                <MenuItem key={item.index} value={item.index}>
-                  {translateTag(item.label, language, 'payment')}
-                </MenuItem>
-              ),
-            )}
+            {(() => {
+              const effectivePurpose = categoryOutflow.purpose || inferTransactionPurpose('outflow', Number(categoryOutflow.key));
+              const allowedLabels = TYPOLOGY_LABELS_BY_PURPOSE[effectivePurpose] || DEFAULT_TYPOLOGY_LABELS;
+              return sortTagsByLanguage(paymentTags, language, 'payment').map((item) =>
+                allowedLabels.includes(item.label) && (
+                  <MenuItem key={item.index} value={item.index}>
+                    {translateTag(item.label, language, 'payment')}
+                  </MenuItem>
+                ),
+              );
+            })()}
           </Select>
         </FormField>
 
@@ -2370,6 +2327,7 @@ export default function OutflowSection({
             </CardViewWrap>
         )}
       </TableSection>
+      {renderEditModal()}
     </SectionWrapper>
   );
 }

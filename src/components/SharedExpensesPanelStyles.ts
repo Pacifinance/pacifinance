@@ -123,3 +123,53 @@ export const SecondaryButton = styled.button`
   font-weight: 500;
   cursor: pointer;
 `;
+
+// Plain styled <select> themed via the explicit `theme` prop (like every
+// other component in this file) rather than ThemedSelect's ThemeContext —
+// SharedExpensesPanel receives `theme` as a prop from its caller, with no
+// guarantee a ThemeContext.Provider wraps its mount point.
+export const StatusSelect = styled.select`
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.5rem 0.6rem;
+  border-radius: 8px;
+  border: 1px solid ${(p) => (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : '#e2e8f0')};
+  background: ${(p) => (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.04)' : 'white')};
+  color: ${(p) => p.theme.textColor};
+  font-size: 0.85rem;
+  outline: none;
+
+  option {
+    background: ${(p) => (p.theme.mode === 'dark' ? '#1e293b' : '#ffffff')};
+    color: ${(p) => (p.theme.mode === 'dark' ? '#e2e8f0' : '#1e293b')};
+  }
+
+  &:focus { border-color: ${(p) => p.theme.buttonBackgroundColor}; }
+`;
+
+export const MonthGroupHeader = styled.button`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  padding: 0.5rem 0.2rem;
+  margin-top: 0.4rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: ${(p) => p.theme.textColor};
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: capitalize;
+  opacity: 0.8;
+
+  span.count {
+    font-weight: 500;
+    opacity: 0.6;
+    text-transform: none;
+    margin-left: 0.35rem;
+  }
+
+  svg { opacity: 0.6; }
+`;

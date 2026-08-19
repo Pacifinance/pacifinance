@@ -1,5 +1,6 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import styled from 'styled-components';
+import ThemedSelect from './ThemedSelect';
 import type {SharedExpenseReceivableDto} from '../types/api';
 
 interface TransactionRow { id: number; amount: number; notes?: string; }
@@ -25,7 +26,6 @@ const Segments = styled.div`display:grid;grid-template-columns:1fr 1fr;gap:.4rem
 const Segment = styled.button<{$active:boolean}>`border:1px solid ${p => p.$active ? p.theme.buttonBackgroundColor : (p.theme.mode === 'dark' ? 'rgba(255,255,255,.13)' : 'rgba(15,23,42,.12)')};border-radius:8px;padding:.55rem;background:${p => p.$active ? `${p.theme.buttonBackgroundColor}22` : 'transparent'};color:${p => p.theme.textColor};font-weight:650;cursor:pointer;`;
 const Field = styled.label`display:grid;gap:.35rem;font-size:.78rem;font-weight:650;`;
 const Control = styled.input`width:100%;box-sizing:border-box;padding:.6rem .7rem;border-radius:8px;border:1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,.17)' : 'rgba(15,23,42,.14)'};background:${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,.07)' : '#fff'};color:${p => p.theme.textColor};`;
-const Select = styled.select`width:100%;box-sizing:border-box;padding:.6rem .7rem;border-radius:8px;border:1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,.17)' : 'rgba(15,23,42,.14)'};background:${p => p.theme.mode === 'dark' ? '#252c37' : '#fff'};color:${p => p.theme.textColor};color-scheme:${p => p.theme.mode === 'dark' ? 'dark' : 'light'};option{background:${p => p.theme.mode === 'dark' ? '#252c37' : '#fff'};color:${p => p.theme.textColor};}`;
 const Preview = styled.div`font-size:.78rem;opacity:.78;`;
 const Help = styled.p`margin:0;font-size:.75rem;line-height:1.45;opacity:.7;`;
 const Actions = styled.div`display:flex;justify-content:flex-end;gap:.5rem;`;
@@ -58,7 +58,7 @@ export default function SharedTransactionLinkModal({theme, mode, transaction, re
         {method === 'people' ? <Field>{labels.people}<Control theme={theme} type="number" min="2" step="1" value={people} onChange={e => setPeople(e.target.value)} onBlur={() => { if (!validPeople) setPeople(2); }}/></Field> : <Field>{labels.ownShare}<Control theme={theme} type="number" min="0" max={transaction.amount} step="0.01" value={share} onChange={e => setShare(e.target.value)}/></Field>}
         <Preview>{labels.ownShare}: {Number.isFinite(ownShare) ? `${currencySymbol}${ownShare.toFixed(2)}` : '—'} · {labels.owed}: {Number.isFinite(ownShare) ? `${currencySymbol}${Math.max(0, transaction.amount - ownShare).toFixed(2)}` : '—'}</Preview>
       </> : <>
-        <Field>{labels.chooseExpense}<Select theme={theme} value={receivableId} onChange={e => setReceivableId(e.target.value)}><option value="">{pending.length ? `— ${labels.chooseExpense} —` : labels.noReceivables}</option>{pending.map(item => <option key={item.id} value={item.id}>{item.notes || '—'} · {currencySymbol}{Math.max(0, item.receivableAmount - item.settledAmount).toFixed(2)}</option>)}</Select></Field>
+        <Field>{labels.chooseExpense}<ThemedSelect style={{width: '100%'}} value={receivableId} onChange={e => setReceivableId(e.target.value)}><option value="">{pending.length ? `— ${labels.chooseExpense} —` : labels.noReceivables}</option>{pending.map(item => <option key={item.id} value={item.id}>{item.notes || '—'} · {currencySymbol}{Math.max(0, item.receivableAmount - item.settledAmount).toFixed(2)}</option>)}</ThemedSelect></Field>
         <Help>{labels.reimbursementHelp}</Help>
       </>}
       <Actions><Button theme={theme} type="button" onClick={onClose}>{labels.cancel}</Button><Button theme={theme} type="button" $primary disabled={!valid || saving} onClick={submit}>{existingReceivable ? labels.update : labels.confirm}</Button></Actions>

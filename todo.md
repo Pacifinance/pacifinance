@@ -202,3 +202,14 @@
 - [~] Auto-detect known bank formats (Fineco, Intesa, Revolut, N26) <!-- roadmap:auto-detect-bank-format -->
 - [ ] OFX/QIF file support <!-- roadmap:OFX/QIF-support -->
 - [ ] Recurring import: remember the last file and suggest an update
+- [ ] Full non-cash investment reward integration: a Trade Republic
+      "BENEFITS_SAVEBACK" row (and similar broker DRIP/reinvestment rows) is
+      currently just tagged `purpose: investment` and excluded from income
+      stats (`src/utils/dataImport/bankFormats.ts` `annotateRow`) - it
+      doesn't yet actually connect to `user_investment_holdings`
+      (`server/src/db/models/investments.ts`) to bump the funded holding's
+      quantity/invested_amount. No existing mechanism does this end-to-end
+      (confirmed: the "link as reimbursement" flow assumes real cash moved,
+      and the dividend-import parser never touches holding quantity) - needs
+      new plumbing connecting the regular-transactions import domain to the
+      separate investment-holdings domain.

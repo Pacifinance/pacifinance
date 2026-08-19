@@ -7,6 +7,7 @@ import { UserContext } from '../contexts/UserContext';
 import apiClient from '../services/apiClient';
 import mockCryptoData from '../data/mockCryptoData';
 import TradingViewWidget, { LazyTradingViewWidget } from '../components/TradingViewWidget';
+import ThemedSelect from '../components/ThemedSelect';
 import { preloadTradingViewScripts } from '../components/TradingViewWidget';
 import { AreaChart } from 'recharts/lib/chart/AreaChart';
 import { Area } from 'recharts/lib/cartesian/Area';
@@ -941,30 +942,6 @@ const ResultsCount = styled.span`
 
   @media (max-width: 768px) {
     font-size: 0.72rem;
-  }
-`;
-
-const SortSelect = styled.select`
-  padding: 0.4rem 0.7rem;
-  border-radius: 8px;
-  font-size: 0.8rem;
-  font-weight: 500;
-  cursor: pointer;
-  background: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.03)'};
-  color: ${p => p.theme.textColor};
-  border: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)'};
-  transition: all 0.2s;
-
-  &:focus { outline: none; border-color: ${p => p.theme.buttonBackgroundColor}; }
-
-  option {
-    background: ${p => p.theme.mode === 'dark' ? '#2d2d2d' : 'white'};
-    color: ${p => p.theme.mode === 'dark' ? 'white' : '#1f2937'};
-  }
-
-  @media (max-width: 768px) {
-    font-size: 16px !important;
-    padding: 0.35rem 0.5rem;
   }
 `;
 
@@ -2064,13 +2041,13 @@ export default function MarketPrices() {
               ? (t.searching || 'Searching the market...')
               : `${processedCryptoList.length} ${t.assetsFound || 'assets'}`}
           </ResultsCount>
-          <SortSelect theme={theme} value={sortBy} onChange={e => setSortBy(e.target.value)}>
+          <ThemedSelect compact value={sortBy} onChange={e => setSortBy(e.target.value)}>
             <option value="marketCap">{t.sort?.marketCap || 'Market Cap'}</option>
             <option value="priceDesc">{t.sort?.priceDesc || 'Price ↓'}</option>
             <option value="priceAsc">{t.sort?.priceAsc || 'Price ↑'}</option>
             <option value="change">{t.sort?.change || 'Change 7D'}</option>
             <option value="name">{t.sort?.name || 'Name'}</option>
-          </SortSelect>
+          </ThemedSelect>
         </SortRow>
 
         {/* Asset Grid */}

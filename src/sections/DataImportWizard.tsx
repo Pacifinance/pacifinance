@@ -64,6 +64,7 @@ import { computeVoucherSplit } from '../utils/voucherSplit';
 import ImportPlatformGuide from '../components/ImportPlatformGuide';
 import MonthTransactionsViewer from './MonthTransactionsViewer';
 import CategoryPicker from '../components/CategoryPicker';
+import ThemedSelect from '../components/ThemedSelect';
 import { findLikelyDuplicates, findDuplicatesWithinBatch, findLikelyTransfers } from '../utils/duplicateDetection';
 import { inferPaymentTypeLabel, suggestNoteFromHistory } from '../utils/transactionNoteSuggestions';
 
@@ -198,20 +199,6 @@ const PreviewTable = styled.div`
   }
 `;
 
-const SelectField = styled.select`
-  width: 100%;
-  padding: 0.6rem 0.8rem;
-  border: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)'};
-  border-radius: 8px;
-  background-color: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : '#fff'};
-  color: ${p => p.theme.mode === 'dark' ? '#fff' : '#000'};
-  font-size: 0.9rem;
-
-  option {
-    background-color: ${p => p.theme.mode === 'dark' ? '#2d2d2d' : '#ffffff'};
-    color: ${p => p.theme.mode === 'dark' ? '#ffffff' : '#000000'};
-  }
-`;
 
 const CategoryPickerWrap = styled.div`
   min-width: 160px;
@@ -483,13 +470,6 @@ const AmountInputWrap = styled.div`
   }
 `;
 
-const CompactSelect = styled(SelectField)`
-  min-width: 0;
-  padding: 0.5rem 2rem 0.5rem 0.65rem;
-  font-size: 0.78rem;
-  color-scheme: ${p => p.theme.mode === 'dark' ? 'dark' : 'light'};
-`;
-
 const ImportOptionHelp = styled.small`
   display: block;
   min-width: 0;
@@ -645,7 +625,9 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
   const [dateFormat, setDateFormat] = useState('');
   const [transactionType, setTransactionType] = useState('auto');
   const [defaultOutflowCategory, setDefaultOutflowCategory] = useState(9999);
+  const [defaultOutflowUserCategoryId, setDefaultOutflowUserCategoryId] = useState(null);
   const [defaultIncomeCategory, setDefaultIncomeCategory] = useState(9999);
+  const [defaultIncomeUserCategoryId, setDefaultIncomeUserCategoryId] = useState(null);
   const [defaultPaymentType, setDefaultPaymentType] = useState(-1); // -1 = not yet initialized
   const [savedMappings, setSavedMappings] = useState(() => loadSavedMappings());
   const [mappingName, setMappingName] = useState('');
@@ -1048,7 +1030,9 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
     setDateFormat(m.dateFormat || '');
     setTransactionType(m.transactionType || 'auto');
     setDefaultOutflowCategory(m.defaultOutflowCategoryIndex ?? m.defaultCategoryIndex ?? 9999);
+    setDefaultOutflowUserCategoryId(m.defaultOutflowUserCategoryId ?? null);
     setDefaultIncomeCategory(m.defaultIncomeCategoryIndex ?? 9999);
+    setDefaultIncomeUserCategoryId(m.defaultIncomeUserCategoryId ?? null);
     if (m.defaultPaymentTypeIndex !== undefined) setDefaultPaymentType(m.defaultPaymentTypeIndex);
   };
 
@@ -1074,7 +1058,9 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
       },
       dateFormat, transactionType,
       defaultOutflowCategoryIndex: defaultOutflowCategory,
+      defaultOutflowUserCategoryId,
       defaultIncomeCategoryIndex: defaultIncomeCategory,
+      defaultIncomeUserCategoryId,
       defaultPaymentTypeIndex: defaultPaymentType,
     };
     saveMapping(mappingName.trim(), mapping);
@@ -1104,14 +1090,35 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
       dateFormat, transactionType, defaultCategoryIndex: defaultOutflowCategory,
     };
     const { valid: rawValid, errors } = processRows(rows, mapping);
-    // Post-process: assign correct default category for incomes
+    // Some detected bank formats need to override a specific row's purpose
+    // and/or keep it out of statistics beyond what the generic column
+    // mapping can express (e.g. Trade Republic's cashback-into-shares reward
+    // rows) — see bankFormats.ts annotateRow.
+    const bankFormat = detectBankFormat(headers);
+    // Post-process: assign correct default category (and, when the default
+    // itself is a user's custom sub-category, the matching userCategoryId)
+    // for incomes vs. outflows — processRows only knows about a single
+    // numeric defaultCategoryIndex, not the outflow/income split. Also
+    // applies any per-row bank-format annotation on top.
     const valid = rawValid.map(tx => {
-      if (!tx.isOutflow && tx.categoryIndex === defaultOutflowCategory) {
+      const annotation = bankFormat?.annotateRow?.(rows[tx.rowIndex]) || null;
+      const annotated = annotation
+        ? { ...tx, purpose: annotation.purpose ?? tx.purpose, excludeFromStatistics: annotation.excludeFromStatistics ?? tx.excludeFromStatistics }
+        : tx;
+      if (!annotated.isOutflow && annotated.categoryIndex === defaultOutflowCategory) {
         // Row used the outflow default — replace with income default
         const tag = incomesTags.find(it => it.index === defaultIncomeCategory);
-        return { ...tx, categoryIndex: defaultIncomeCategory, categoryLabel: translateTag(tag?.label, language, 'income') || 'Other' };
+        return {
+          ...annotated,
+          categoryIndex: defaultIncomeCategory,
+          categoryLabel: translateTag(tag?.label, language, 'income') || 'Other',
+          userCategoryId: defaultIncomeUserCategoryId,
+        };
       }
-      return tx;
+      if (annotated.isOutflow && annotated.categoryIndex === defaultOutflowCategory) {
+        return { ...annotated, userCategoryId: defaultOutflowUserCategoryId };
+      }
+      return annotated;
     });
     setValidTx(valid);
     setErrorTx(errors);
@@ -1236,7 +1243,11 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
   };
 
   const getEffectiveCategory = (tx) => {
-    const userCategoryId = rowUserCategoryIds[tx.rowIndex] ?? null;
+    // Falls back to the row's own userCategoryId (e.g. set by the mapping
+    // step's default-category picker) the same way idx falls back to
+    // tx.categoryIndex — not just to null — so a custom sub-category chosen
+    // as the import default survives into the review step.
+    const userCategoryId = rowUserCategoryIds[tx.rowIndex] !== undefined ? rowUserCategoryIds[tx.rowIndex] : (tx.userCategoryId ?? null);
     const idx = rowCategories[tx.rowIndex] !== undefined ? rowCategories[tx.rowIndex] : tx.categoryIndex;
     return { index: idx, label: resolveCategoryLabel(idx, tx.isOutflow, userCategoryId), userCategoryId };
   };
@@ -1255,7 +1266,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
     // Build final list with category and note overrides
     const finalTx = importableTx.map(tx => {
       const idx = rowCategories[tx.rowIndex] !== undefined ? rowCategories[tx.rowIndex] : tx.categoryIndex;
-      const userCategoryId = rowUserCategoryIds[tx.rowIndex] ?? null;
+      const userCategoryId = rowUserCategoryIds[tx.rowIndex] !== undefined ? rowUserCategoryIds[tx.rowIndex] : (tx.userCategoryId ?? null);
       let modified = { ...tx, categoryIndex: idx, categoryLabel: resolveCategoryLabel(idx, tx.isOutflow, userCategoryId), userCategoryId };
       if (rowNotes[tx.rowIndex] !== undefined) {
         modified = { ...modified, notes: rowNotes[tx.rowIndex] };
@@ -1315,6 +1326,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
               ? inferredType.index
               : defaultPaymentType;
             const expense = toAPIFormat({ ...tx, notes: effectiveNote, amount: toEUR(tx.amount) }, paymentType).transaction;
+            if (tx.excludeFromStatistics) expense.exclude_from_statistics = true;
             const rowAccount = liquidityAccounts.find((item) => String(item.id) === String(rowAccountIds[tx.rowIndex])) || account;
             if (rowAccount) {
               expense.balance_source = {
@@ -1765,10 +1777,10 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                 <label style={{ color: theme.textColor, fontSize: '0.85rem', fontWeight: 500, display: 'block', marginBottom: 4 }}>
                   📅 {t.dateColumn || 'Date'} *
                 </label>
-                <SelectField theme={theme} value={dateCol} onChange={e => setDateCol(parseInt(e.target.value))}>
+                <ThemedSelect style={{ width: '100%' }} value={dateCol} onChange={e => setDateCol(parseInt(e.target.value))}>
                   <option value={-1}>— {t.selectColumn || 'Select column'} —</option>
                   {columnOptions.map(({ index, label }) => <option key={index} value={index}>{label}</option>)}
-                </SelectField>
+                </ThemedSelect>
               </div>
 
               {/* Date Format */}
@@ -1776,10 +1788,10 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                 <label style={{ color: theme.textColor, fontSize: '0.85rem', fontWeight: 500, display: 'block', marginBottom: 4 }}>
                   📅 {t.dateFormat || 'Date format'} *
                 </label>
-                <SelectField theme={theme} value={dateFormat} onChange={e => setDateFormat(e.target.value)}>
+                <ThemedSelect style={{ width: '100%' }} value={dateFormat} onChange={e => setDateFormat(e.target.value)}>
                   <option value="">— {t.selectFormat || 'Select format'} —</option>
                   {DATE_FORMATS.map(f => <option key={f.label} value={f.label}>{f.label}</option>)}
-                </SelectField>
+                </ThemedSelect>
               </div>
 
               {/* Amount Column — single or dual mode */}
@@ -1788,10 +1800,10 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                   <label style={{ color: theme.textColor, fontSize: '0.85rem', fontWeight: 500, display: 'block', marginBottom: 4 }}>
                     💰 {t.amountColumn || 'Amount'} *
                   </label>
-                  <SelectField theme={theme} value={amountCol} onChange={e => setAmountCol(parseInt(e.target.value))}>
+                  <ThemedSelect style={{ width: '100%' }} value={amountCol} onChange={e => setAmountCol(parseInt(e.target.value))}>
                     <option value={-1}>— {t.selectColumn || 'Select column'} —</option>
                     {columnOptions.map(({ index, label }) => <option key={index} value={index}>{label}</option>)}
-                  </SelectField>
+                  </ThemedSelect>
                 </div>
               ) : (
                 <>
@@ -1799,19 +1811,19 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                     <label style={{ color: theme.textColor, fontSize: '0.85rem', fontWeight: 500, display: 'block', marginBottom: 4 }}>
                       📉 {t.outflowColumn || 'Outflow column'} ({t.optional || 'optional'})
                     </label>
-                    <SelectField theme={theme} value={outflowCol} onChange={e => setOutflowCol(parseInt(e.target.value))}>
+                    <ThemedSelect style={{ width: '100%' }} value={outflowCol} onChange={e => setOutflowCol(parseInt(e.target.value))}>
                       <option value={-1}>— {t.noColumn || 'None'} —</option>
                       {columnOptions.map(({ index, label }) => <option key={index} value={index}>{label}</option>)}
-                    </SelectField>
+                    </ThemedSelect>
                   </div>
                   <div>
                     <label style={{ color: theme.textColor, fontSize: '0.85rem', fontWeight: 500, display: 'block', marginBottom: 4 }}>
                       📈 {t.incomeColumn || 'Income column'} ({t.optional || 'optional'})
                     </label>
-                    <SelectField theme={theme} value={incomeCol} onChange={e => setIncomeCol(parseInt(e.target.value))}>
+                    <ThemedSelect style={{ width: '100%' }} value={incomeCol} onChange={e => setIncomeCol(parseInt(e.target.value))}>
                       <option value={-1}>— {t.noColumn || 'None'} —</option>
                       {columnOptions.map(({ index, label }) => <option key={index} value={index}>{label}</option>)}
-                    </SelectField>
+                    </ThemedSelect>
                   </div>
                 </>
               )}
@@ -1842,11 +1854,11 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                   <label style={{ color: theme.textColor, fontSize: '0.85rem', fontWeight: 500, display: 'block', marginBottom: 4 }}>
                     📊 {t.transactionType || 'Transaction type'}
                   </label>
-                  <SelectField theme={theme} value={transactionType} onChange={e => setTransactionType(e.target.value)}>
+                  <ThemedSelect style={{ width: '100%' }} value={transactionType} onChange={e => setTransactionType(e.target.value)}>
                     <option value="auto">{t.typeAuto || 'Auto (- = outflow, + = income)'}</option>
                     <option value="outflow">{t.typeAllOutflows || 'All outflows'}</option>
                     <option value="income">{t.typeAllIncomes || 'All incomes'}</option>
-                  </SelectField>
+                  </ThemedSelect>
                 </div>
               )}
 
@@ -1855,10 +1867,10 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                 <label style={{ color: theme.textColor, fontSize: '0.85rem', fontWeight: 500, display: 'block', marginBottom: 4 }}>
                   📁 {t.categoryColumnFile || 'Category column in your file'} ({t.optional || 'optional'})
                 </label>
-                <SelectField theme={theme} value={categoryCol} onChange={e => setCategoryCol(parseInt(e.target.value))}>
+                <ThemedSelect style={{ width: '100%' }} value={categoryCol} onChange={e => setCategoryCol(parseInt(e.target.value))}>
                   <option value={-1}>— {t.noColumn || 'None'} —</option>
                   {columnOptions.map(({ index, label }) => <option key={index} value={index}>{label}</option>)}
-                </SelectField>
+                </ThemedSelect>
               </div>
 
               {/* Default Category for Outflows */}
@@ -1868,11 +1880,24 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                     🏷️ {t.defaultOutflowCategory || 'Default outflow category'}
                     <InfoTooltip theme={theme} data-tip={t.defaultCategoryInfo || 'This category will be assigned to all imported transactions. You can change each one individually in the next step.'}>i</InfoTooltip>
                   </label>
-                  <SelectField theme={theme} value={defaultOutflowCategory} onChange={e => setDefaultOutflowCategory(parseInt(e.target.value))}>
-                    {(outflowsTags.length > 0 ? outflowsTags : EXPENSE_CATEGORY_CODES).map(c => (
-                      <option key={c.index} value={c.index}>{translateTag(c.label, language, 'expense') || c.translationKey}</option>
-                    ))}
-                  </SelectField>
+                  <CategoryPicker
+                    theme={theme}
+                    officialTags={outflowsTags.length > 0 ? outflowsTags : EXPENSE_CATEGORY_CODES}
+                    customCategories={customCategories}
+                    categoryType="expense"
+                    categoryKey={defaultOutflowCategory}
+                    userCategoryId={defaultOutflowUserCategoryId}
+                    onSelect={({ categoryKey, userCategoryId }) => {
+                      setDefaultOutflowCategory(categoryKey);
+                      setDefaultOutflowUserCategoryId(userCategoryId);
+                    }}
+                    onCreateCategory={(parentIndex, label) => (
+                      addCustomCategory
+                        ? addCustomCategory({ label, parent_index: parentIndex, is_expense: true })
+                        : Promise.reject(new Error('addCustomCategory unavailable'))
+                    )}
+                    placeholder={t.defaultOutflowCategory || 'Default outflow category'}
+                  />
                 </div>
               )}
 
@@ -1883,15 +1908,24 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                     🏷️ {t.defaultIncomeCategory || 'Default income category'}
                     <InfoTooltip theme={theme} data-tip={t.defaultIncomeCategoryInfo || 'This category will be assigned to all imported incomes. You can change each one individually in the next step.'}>i</InfoTooltip>
                   </label>
-                  <SelectField theme={theme} value={defaultIncomeCategory} onChange={e => setDefaultIncomeCategory(parseInt(e.target.value))}>
-                    {incomesTags.length > 0 ? (
-                      incomesTags.map(c => (
-                        <option key={c.index} value={c.index}>{translateTag(c.label, language, 'income') || c.label}</option>
-                      ))
-                    ) : (
-                      <option value={9999}>Other</option>
+                  <CategoryPicker
+                    theme={theme}
+                    officialTags={incomesTags}
+                    customCategories={customCategories}
+                    categoryType="income"
+                    categoryKey={defaultIncomeCategory}
+                    userCategoryId={defaultIncomeUserCategoryId}
+                    onSelect={({ categoryKey, userCategoryId }) => {
+                      setDefaultIncomeCategory(categoryKey);
+                      setDefaultIncomeUserCategoryId(userCategoryId);
+                    }}
+                    onCreateCategory={(parentIndex, label) => (
+                      addCustomCategory
+                        ? addCustomCategory({ label, parent_index: parentIndex, is_expense: false })
+                        : Promise.reject(new Error('addCustomCategory unavailable'))
                     )}
-                  </SelectField>
+                    placeholder={t.defaultIncomeCategory || 'Default income category'}
+                  />
                 </div>
               )}
 
@@ -1901,13 +1935,13 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                   <label style={{ color: theme.textColor, fontSize: '0.85rem', fontWeight: 500, display: 'block', marginBottom: 4 }}>
                     💳 {t.defaultPaymentType || 'Payment type'}
                   </label>
-                  <SelectField theme={theme} value={defaultPaymentType} onChange={e => setDefaultPaymentType(parseInt(e.target.value))}>
+                  <ThemedSelect style={{ width: '100%' }} value={defaultPaymentType} onChange={e => setDefaultPaymentType(parseInt(e.target.value))}>
                     {paymentTags.map(pt => (
                       <option key={pt.index} value={pt.index}>
                         {translateTag(pt.label, language, 'payment') || pt.label}
                       </option>
                     ))}
-                  </SelectField>
+                  </ThemedSelect>
                 </div>
               )}
 
@@ -1916,10 +1950,10 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                 <label style={{ color: theme.textColor, fontSize: '0.85rem', fontWeight: 500, display: 'block', marginBottom: 4 }}>
                   📝 {t.notesColumn || 'Notes'} ({t.optional || 'optional'})
                 </label>
-                <SelectField theme={theme} value={notesCol} onChange={e => setNotesCol(parseInt(e.target.value))}>
+                <ThemedSelect style={{ width: '100%' }} value={notesCol} onChange={e => setNotesCol(parseInt(e.target.value))}>
                   <option value={-1}>— {t.noColumn || 'None'} —</option>
                   {columnOptions.map(({ index, label }) => <option key={index} value={index}>{label}</option>)}
-                </SelectField>
+                </ThemedSelect>
               </div>
             </div>
 
@@ -2072,7 +2106,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
             <PaymentSourceFields>
               <PaymentField theme={theme}>
                 <span>{t.paymentAccount || t.paymentSourceTitle || 'Payment account'}</span>
-                <CompactSelect theme={theme} value={selectedAccountId} onChange={(event) => setSelectedAccountId(event.target.value)}>
+                <ThemedSelect compact value={selectedAccountId} onChange={(event) => setSelectedAccountId(event.target.value)}>
                   <option value="">{t.noLinkedAccount || 'Do not link an account'}</option>
                   <optgroup label={t.genericAccountGroup || 'Generic balance'}>
                     {genericAssetOptions.map((opt) => (
@@ -2087,7 +2121,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                     </optgroup>
                   )}
                   <option value="new">{t.createPaymentAccount || '+ Create a payment account'}</option>
-                </CompactSelect>
+                </ThemedSelect>
               </PaymentField>
               {selectedAccountId === 'new' && (
                 <NewAccountFields>
@@ -2097,11 +2131,11 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                   </PaymentField>
                   <PaymentField theme={theme}>
                     <span>{t.accountType || 'Account type'}</span>
-                    <CompactSelect theme={theme} value={newAccountAssetKey} onChange={(event) => setNewAccountAssetKey(event.target.value)}>
+                    <ThemedSelect compact value={newAccountAssetKey} onChange={(event) => setNewAccountAssetKey(event.target.value)}>
                       <option value="bank">{t.bankAccount || 'Bank'}</option>
                       <option value="digitalServices">{t.digitalAccount || 'Payment platform'}</option>
                       <option value="cash">{t.cashAccount || 'Cash'}</option>
-                    </CompactSelect>
+                    </ThemedSelect>
                   </PaymentField>
                 </NewAccountFields>
               )}
@@ -2229,6 +2263,11 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                             {flaggedRows[tx.rowIndex]?.kind === 'transfer' && (
                               <Badge $variant="warning" title={t.transferHint || 'Matches an opposite-flow entry with the same amount — might be a transfer between your own accounts, not real income/spending.'}>
                                 {t.transferBadge || 'Possible transfer'}
+                              </Badge>
+                            )}
+                            {tx.excludeFromStatistics && (
+                              <Badge $variant="warning" title={t.cashbackRewardHint || 'This reward was invested directly, not received as cash — marked as investment and excluded from income statistics.'}>
+                                {t.cashbackRewardBadge || 'Cashback reward'}
                               </Badge>
                             )}
                           </div>
@@ -2359,8 +2398,8 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                           ) : (receivables.some((item) => item.status !== 'settled') || Object.keys(rowSharedExpenses).length > 0) && (
                             <ImportOptionPanel theme={theme}>
                               <ImportOptionTitle as="div" theme={theme}>{t.linkReimbursement || 'Link as reimbursement'}</ImportOptionTitle>
-                              <CompactSelect
-                                theme={theme}
+                              <ThemedSelect
+                                compact
                                 aria-label={t.linkReimbursement || 'Link as reimbursement'}
                                 value={rowReimbursements[tx.rowIndex] ?? ''}
                                 onChange={(event) => setRowReimbursements((current) => {
@@ -2383,11 +2422,11 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                                       .replace('{amount}', `${currencySymbol}${Math.max(0, item.amount - Number(rowSharedExpenses[item.rowIndex] || 0)).toFixed(2)}`)}
                                   </option>
                                 ))}
-                              </CompactSelect>
+                              </ThemedSelect>
                               {rowReimbursements[tx.rowIndex] && (
                                 <>
-                                  <CompactSelect
-                                    theme={theme}
+                                  <ThemedSelect
+                                    compact
                                     aria-label={t.selectReceivingAccount || 'Select receiving account'}
                                     value={rowAccountIds[tx.rowIndex] ?? selectedAccountId}
                                     onChange={(event) => setRowAccountIds((current) => ({ ...current, [tx.rowIndex]: event.target.value }))}
@@ -2399,7 +2438,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
                                     {liquidityAccounts.map((accountItem) => (
                                       <option key={accountItem.id} value={accountItem.id}>{accountItem.label}</option>
                                     ))}
-                                  </CompactSelect>
+                                  </ThemedSelect>
                                   <ImportOptionHelp theme={theme}>
                                     {t.reimbursementStatsHelp || 'It updates the receivable and account, but is excluded from income statistics.'}
                                   </ImportOptionHelp>

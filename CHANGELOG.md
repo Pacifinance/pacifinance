@@ -9,6 +9,52 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+### Fixed
+- Consistency and correctness pass across the CSV import wizard and the
+  Aggiungi entrate/uscite flow, prompted by live-testing a real Trade
+  Republic export:
+  - Standardized every dropdown that wasn't already using the app's own
+    `CategoryPicker` (categories, with sub-category support) or `ThemedSelect`
+    (everything else) - column-mapping and default-category pickers in the
+    CSV import wizard, several selects in Settings/Goals & Limits/Liquidity
+    Accounts/Investment panels, and 6 profile-field selects in the sidebar
+    that had no dark-mode styling at all. Category *filters* (Outflows/
+    Incomes/insert-values) now also list the user's own custom
+    sub-categories, nested under their parent via `<optgroup>`, not just the
+    official tags.
+  - CSV import duplicate detection no longer widens its match window just
+    because two transactions share a broad official category (e.g.
+    "Alimentari") - that's true of dozens of unrelated purchases, so on its
+    own it was flagging genuinely unrelated transactions days apart (even
+    across a month boundary) as possible duplicates. Widening the window now
+    requires either a shared merchant token in the notes or a match on the
+    user's own specific custom sub-category.
+  - A Trade Republic "saveback" cashback reward that Trade Republic invests
+    directly (no cash ever hits the account) was being imported as plain
+    income, inflating income statistics. It's now tagged as an investment
+    purpose and excluded from income statistics, with a badge in the import
+    review explaining why. Actually crediting the reward to the holding it
+    funded is a bigger, separate change - tracked in `todo.md`.
+  - The outflow "Tipo di movimento" (purpose) and "Tipologia" (payment type)
+    fields could previously be combined in ways that don't make sense (e.g.
+    "Piano di accumulo" on a plain expense). Tipologia's options now depend
+    on the selected purpose, and switching purpose resets an option that's
+    no longer valid instead of silently keeping it.
+  - Replaced the cramped inline edit grid in Outflows/Incomes card view -
+    and, in a follow-up, the equally cramped inline row edit in table view
+    too - with a single shared centered modal (reusing the same modal
+    primitives `CategoryPicker`'s create-category dialog already uses),
+    at every screen size, instead of one popup for mobile and a different
+    inline layout for desktop.
+  - Outflows/Incomes table view on mobile no longer pins the category column
+    left and the edit/delete column right - that combination left only a
+    narrow sliver of the table actually scrollable, showing one value at a
+    time and making the table hard to read. The whole row now scrolls
+    together as one unit, like a normal mobile table.
+  - Shared expenses are now grouped by month (collapsible, newest first)
+    with a filter panel (note search, status, date range), instead of one
+    long flat list.
+
 ### Added
 - Recurring transaction templates (subscriptions, rent, salary) can now pick
   a source/destination account and sub-account, the same grouped picker used

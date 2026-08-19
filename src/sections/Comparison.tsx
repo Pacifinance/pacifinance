@@ -1,11 +1,8 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useLocalizedNavigate } from '../hooks/useLocalizedNavigate';
 import { Section } from '../styles/MyStyled';
-import { 
+import {
     getTotalValue,
-    getPercentageRankOnBalance,
-    getPercentageRankOnIncomes,
-    getPercentageRankOnOutflows,
     getPercentageRankOnBalanceSimilar,
     getPercentageRankOnIncomesSimilar,
     getPercentageRankOnOutflowsSimilar,
@@ -16,395 +13,58 @@ import {
     getTotalOutflowsParentCategoryPerMonth,
     getAveragesAllSavingsRates,
     getAveragesSimilarSavingsRates,
-    getAveragesAllExpensesByCategory,
     getAveragesSimilarExpensesByCategory
 } from '../utils/userDataSelectors';
-import { 
-  StyledMonth, 
-  StyledLabel, 
-  StyledRankingsSection, 
-  StandardPageTitleGreen, 
-  StyledRankingPage, 
-  CenteredRankings 
-} from '../styles/MyStyled';
 import InfoIcon from '@mui/icons-material/Info';
 import { resolveTagKeyFromLocalized, translateTag } from '../data/tagTranslations';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
 import EqualIcon from '@mui/icons-material/DragHandle';
-import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
-import BarChartIcon from '@mui/icons-material/BarChart';
-import PieChartIcon from '@mui/icons-material/PieChart';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import SavingsIcon from '@mui/icons-material/Savings';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import TipsAndUpdatesIcon from '@mui/icons-material/TipsAndUpdates';
 import PersonIcon from '@mui/icons-material/Person';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
-import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium';
-import GroupIcon from '@mui/icons-material/Group';
-import PublicIcon from '@mui/icons-material/Public';
-import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
-import StarIcon from '@mui/icons-material/Star';
-import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
-import ThumbUpIcon from '@mui/icons-material/ThumbUp';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import ShieldOutlinedIcon from '@mui/icons-material/ShieldOutlined';
 import TuneIcon from '@mui/icons-material/Tune';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';
+import PieChartIcon from '@mui/icons-material/PieChart';
+import BarChartIcon from '@mui/icons-material/BarChart';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import PublicIcon from '@mui/icons-material/Public';
+import FlagCircleIcon from '@mui/icons-material/FlagCircle';
+import MapIcon from '@mui/icons-material/Map';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import ScheduleIcon from '@mui/icons-material/Schedule';
 import Tooltip from '@mui/material/Tooltip';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
-import { useServices } from '../contexts/ServiceContext';
+import { useDemoServices } from '../hooks/useDemoServices';
 import { useDeployment } from '../contexts/DeploymentContext';
 import { getCategoryColor } from '../data/categoryColors';
-import Leaderboard from './Leaderboard';
 
-const ComparisonContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  padding: 1rem;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding-bottom: 6rem;
-  
-  @media (max-width: 768px) {
-    padding: 0.5rem;
-    gap: 1.25rem;
-    padding-bottom: 4rem;
-  }
+/**
+ * Comparison — an anonymous "mirror", not a leaderboard. The page never
+ * shows another individual user's data (server-side privacy floor is
+ * MIN_COHORT=20 participants, enforced by server/src/services/similarUsers.ts
+ * and customBenchmark.ts — see docs referenced in AGENTS.md/todo.md): every
+ * number here is either the user's own, or an aggregate (percentile/median)
+ * over an anonymous group. The page leads with a small number of plain-
+ * language insights about the user's own situation, and keeps every raw
+ * number one tap away in a collapsed accordion instead of showing a dense
+ * grid of stats up front.
+ */
+
+const fadeInUp = keyframes`
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
 `;
 
-const SectionHeader = styled.div`
-  text-align: center;
-  margin-bottom: 1.25rem;
-  
-  h1 {
-    background: ${props => `linear-gradient(135deg, white 0%, white 70%, ${props.theme.secondaryColor} 100%)`};
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    font-size: 1.8rem;
-    font-weight: 700;
-    margin-bottom: 0.4rem;
-    
-    @media (max-width: 768px) {
-      font-size: 1.5rem;
-    }
-  }
-  
-  p {
-    color: ${props => props.theme.textColor};
-    font-size: 1rem;
-    
-    @media (max-width: 768px) {
-      font-size: 0.9rem;
-    }
-  }
-`;
-
-export const SectionTabs = styled.div`
-  display: flex;
-  justify-content: center;
-  margin-bottom: 0.5rem;
-  background: ${props => props.theme.cardBackgroundColor};
-  border-radius: 12px;
-  padding: 0.5rem;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  width: fit-content;
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
-
-  @media (max-width: 768px) {
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    width: 100%;
-    max-width: 100%;
-  }
-`;
-
-const TabButton = styled.button`
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 8px;
-  background: ${props => props.active ? props.theme.buttonBackgroundColor : 'transparent'};
-  color: ${props => props.active ? 'white' : props.theme.textColor};
-  font-weight: ${props => props.active ? '600' : '400'};
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  
-  &:hover {
-    background: ${props => props.active ? props.theme.buttonBackgroundColor : `${props.theme.buttonBackgroundColor}15`};
-  }
-  
-  @media (max-width: 768px) {
-    padding: 0.5rem 1rem;
-    font-size: 0.9rem;
-  }
-`;
-
-const GridContainer = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 1.25rem;
-  
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-    gap: 0.75rem;
-  }
-`;
-
-const TopGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1.25rem;
-  
-  @media (max-width: 1100px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  
-  @media (max-width: 600px) {
-    grid-template-columns: 1fr;
-    gap: 0.75rem;
-  }
-`;
-
-const BottomGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1.25rem;
-  margin-top: 1.25rem;
-  
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-    gap: 0.75rem;
-    margin-top: 0.75rem;
-  }
-`;
-
-const BenchmarkOverview = styled.section`
-  background: ${props => props.theme.mode === 'dark' ? 'linear-gradient(145deg, rgba(22,32,43,.96), rgba(17,25,35,.96))' : 'linear-gradient(145deg, #ffffff, #f8fafc)'};
-  border: 1px solid ${props => props.theme.borderColor || 'rgba(15, 23, 42, 0.1)'};
-  border-radius: 18px;
-  padding: 1.4rem;
-  margin-bottom: 1.25rem;
-
-  .overview-heading {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 1rem;
-    margin-bottom: 1rem;
-  }
-
-  h2 {
-    color: ${props => props.theme.textColor};
-    font-size: 1.15rem;
-    margin: 0 0 0.25rem;
-  }
-
-  p {
-    color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.65)' : 'rgba(15,23,42,0.65)'};
-    font-size: 0.86rem;
-    line-height: 1.45;
-    margin: 0;
-  }
-
-  .profile-action {
-    align-items: center;
-    background: transparent;
-    border: 1px solid ${props => props.theme.borderColor || 'rgba(15, 23, 42, 0.16)'};
-    border-radius: 6px;
-    color: ${props => props.theme.textColor};
-    cursor: pointer;
-    display: flex;
-    flex: 0 0 auto;
-    gap: 0.35rem;
-    padding: 0.5rem 0.7rem;
-  }
-
-  .overview-actions { display: flex; flex: 0 0 auto; gap: 0.45rem; }
-  .benchmark-toggle { background: ${props => props.theme.buttonBackgroundColor}; border: 1px solid ${props => props.theme.buttonBackgroundColor}; border-radius: 10px; color: white; cursor: pointer; font-weight: 700; padding: 0.6rem 0.85rem; }
-  .benchmark-unavailable { background: ${props => props.theme.mode === 'dark' ? 'rgba(251,191,36,.08)' : '#fffbeb'}; border: 1px solid ${props => props.theme.mode === 'dark' ? 'rgba(251,191,36,.24)' : '#fde68a'}; border-radius: 12px; color: ${props => props.theme.textColor}; margin-top: 1rem; padding: .9rem 1rem; }
-  .benchmark-unavailable strong { display: block; font-size: .88rem; margin-bottom: .25rem; }
-  .benchmark-unavailable p { font-size: .78rem; margin: 0; opacity: .75; }
-
-  @media (max-width: 600px) {
-    padding: 1rem;
-    .overview-heading { align-items: stretch; flex-direction: column; }
-    .overview-actions { align-items: center; display: grid; grid-template-columns: auto 1fr 1fr; }
-    .profile-action, .benchmark-toggle { justify-content: center; }
-  }
-`;
-
-const ComparisonGuide = styled.section`
-  display: grid;
-  grid-template-columns: minmax(250px, 1.25fr) repeat(3, minmax(150px, 1fr));
-  gap: 0.75rem;
-  padding: 1rem;
-  border: 1px solid ${props => props.theme.mode === 'dark' ? 'rgba(16,185,129,.22)' : 'rgba(5,150,105,.2)'};
-  border-radius: 16px;
-  background: ${props => props.theme.mode === 'dark' ? 'rgba(6,78,59,.12)' : 'rgba(236,253,245,.72)'};
-
-  .guide-intro, .guide-item { display: flex; gap: .7rem; align-items: flex-start; }
-  .guide-intro svg { color: ${props => props.theme.buttonBackgroundColor}; margin-top: .1rem; }
-  .guide-copy { min-width: 0; }
-  strong { color: ${props => props.theme.textColor}; display: block; font-size: .88rem; margin-bottom: .18rem; }
-  p { color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,.68)' : '#64748b'}; font-size: .78rem; line-height: 1.42; margin: 0; }
-  .guide-number { align-items: center; background: ${props => props.theme.buttonBackgroundColor}20; border-radius: 8px; color: ${props => props.theme.buttonBackgroundColor}; display: inline-flex; flex: 0 0 auto; font-size: .76rem; font-weight: 800; height: 25px; justify-content: center; width: 25px; }
-
-  @media (max-width: 900px) { grid-template-columns: 1fr 1fr; }
-  @media (max-width: 560px) { grid-template-columns: 1fr; padding: .9rem; }
-`;
-
-const ComparisonLayers = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: .55rem;
-  margin: .25rem 0 1rem;
-  padding: .75rem 1rem;
-  border-radius: 14px;
-  background: ${props => props.theme.mode === 'dark' ? 'rgba(15,23,42,.72)' : '#f8fafc'};
-  border: 1px solid ${props => props.theme.borderColor || 'rgba(148,163,184,.2)'};
-  color: ${props => props.theme.textColor};
-  .layer { display: inline-flex; align-items: center; gap: .4rem; border-radius: 999px; padding: .36rem .62rem; font-size: .78rem; font-weight: 700; }
-  .layer.you { background: ${props => props.theme.buttonBackgroundColor}22; color: ${props => props.theme.buttonBackgroundColor}; }
-  .layer.group { background: rgba(59,130,246,.14); color: ${props => props.theme.mode === 'dark' ? '#93c5fd' : '#1d4ed8'}; }
-  .layer.general { background: ${props => props.theme.mode === 'dark' ? 'rgba(148,163,184,.14)' : '#e2e8f0'}; color: ${props => props.theme.mode === 'dark' ? '#cbd5e1' : '#475569'}; }
-  small { opacity: .7; font-weight: 500; }
-`;
-
-const InfoTrigger = styled.span`
-  align-items: center;
-  background: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,.1)' : 'rgba(15,23,42,.07)'};
-  border: 1px solid ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,.14)' : 'rgba(15,23,42,.1)'};
-  border-radius: 50%;
-  color: ${props => props.theme.mode === 'dark' ? '#f8fafc' : '#334155'};
-  cursor: help;
-  display: inline-flex;
-  flex: 0 0 auto;
-  height: 28px;
-  justify-content: center;
-  width: 28px;
-  svg { color: currentColor; font-size: 17px; }
-`;
-
-const BenchmarkRankGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.65rem;
-  margin-bottom: 1rem;
-
-  @media (max-width: 600px) {
-    grid-template-columns: 1fr;
-  }
-`;
-
-const BenchmarkRank = styled.div`
-  background: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.035)' : '#f6f8fa'};
-  border-radius: 6px;
-  padding: 0.8rem;
-
-  span { color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.62)' : '#64748b'}; font-size: 0.76rem; }
-  strong { color: ${props => props.theme.textColor}; display: block; font-size: 1.15rem; margin-top: 0.2rem; }
-`;
-
-const DistributionGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.65rem;
-  margin-bottom: 1rem;
-
-  .distribution-card { background: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.025)' : '#fbfcfd'}; border: 1px solid ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.07)' : '#e5e7eb'}; border-radius: 6px; padding: 0.75rem; }
-  span { color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.62)' : '#64748b'}; display: block; font-size: 0.74rem; }
-  strong { color: ${props => props.theme.textColor}; display: block; font-size: 0.92rem; margin-top: 0.2rem; }
-  small { color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.52)' : '#64748b'}; display: block; font-size: 0.7rem; margin-top: 0.25rem; }
-  @media (max-width: 600px) { grid-template-columns: 1fr; }
-`;
-
-const LongitudinalGrid = styled.div`
-  border-top: 1px solid ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : '#e5e7eb'};
-  display: grid;
-  gap: 0.6rem;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  margin: 1rem 0;
-  padding-top: 1rem;
-  .trend-card { background: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.025)' : '#fbfcfd'}; border-radius: 6px; padding: 0.75rem; }
-  span { color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.62)' : '#64748b'}; display: block; font-size: 0.74rem; }
-  strong { color: ${props => props.theme.textColor}; display: block; font-size: 0.92rem; margin-top: 0.25rem; }
-  small { color: ${props => props.theme.mode === 'dark' ? '#86efac' : '#15803d'}; display: block; font-size: 0.7rem; margin-top: 0.25rem; }
-  @media (max-width: 600px) { grid-template-columns: 1fr; }
-`;
-
-const BenchmarkOptInCard = styled.div`
-  align-items: center;
-  background: ${props => props.theme.mode === 'dark' ? 'rgba(7,145,100,0.10)' : '#effaf5'};
-  border: 1px solid ${props => props.theme.mode === 'dark' ? 'rgba(52,211,153,0.28)' : '#b7ead2'};
-  border-radius: 8px;
-  display: flex;
-  gap: 0.8rem;
-  justify-content: space-between;
-  margin-top: 1rem;
-  padding: 0.85rem;
-
-  strong { color: ${props => props.theme.textColor}; display: block; font-size: 0.86rem; margin-bottom: 0.2rem; }
-  p { color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.7)' : '#475569'}; font-size: 0.76rem; margin: 0; }
-  button { background: ${props => props.theme.buttonBackgroundColor}; border: 0; border-radius: 6px; color: white; cursor: pointer; flex: 0 0 auto; font-weight: 700; padding: 0.55rem 0.7rem; }
-  button:disabled { cursor: wait; opacity: 0.65; }
-  @media (max-width: 600px) { align-items: stretch; flex-direction: column; button { width: 100%; } }
-`;
-
-const CohortDetails = styled.div`
-  border-top: 1px solid ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : '#e5e7eb'};
-  display: grid;
-  gap: 0.75rem;
-  padding-top: 0.9rem;
-
-  .cohort-line { align-items: center; display: flex; flex-wrap: wrap; gap: 0.45rem; }
-  .cohort-line > svg { color: ${props => props.theme.buttonBackgroundColor}; font-size: 1.05rem; }
-  .cohort-label { color: ${props => props.theme.textColor}; font-size: 0.8rem; font-weight: 600; margin-right: 0.2rem; }
-  .factor-chip {
-    background: ${props => props.theme.mode === 'dark' ? 'rgba(7,145,100,0.15)' : '#e8f7f1'};
-    border-radius: 999px;
-    color: ${props => props.theme.mode === 'dark' ? '#65d6ae' : '#087554'};
-    font-size: 0.74rem;
-    padding: 0.28rem 0.55rem;
-  }
-  .privacy-note { align-items: center; display: flex; gap: 0.45rem; }
-  .privacy-note svg { color: ${props => props.theme.mode === 'dark' ? '#94a3b8' : '#64748b'}; font-size: 1rem; }
-`;
-
-const CohortCustomizer = styled.div`
-  border-top: 1px solid ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : '#e5e7eb'};
-  margin-top: 1rem;
-  padding-top: 1rem;
-
-  .customizer-header { align-items: flex-start; display: flex; gap: 0.65rem; justify-content: space-between; }
-  h3 { color: ${props => props.theme.textColor}; font-size: 0.9rem; margin: 0 0 0.15rem; }
-  p { color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.62)' : '#64748b'}; font-size: 0.78rem; margin: 0; }
-  .factor-options { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.8rem; }
-  .factor-option {
-    align-items: center; background: transparent; border: 1px solid ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.16)' : '#dbe2ea'};
-    border-radius: 999px; color: ${props => props.theme.textColor}; cursor: pointer; display: inline-flex; font-size: 0.78rem; gap: 0.35rem; padding: 0.42rem 0.62rem;
-  }
-  .factor-option.selected { background: ${props => props.theme.buttonBackgroundColor}; border-color: ${props => props.theme.buttonBackgroundColor}; color: white; }
-  .factor-option:disabled { cursor: not-allowed; opacity: 0.42; }
-  .customizer-actions { align-items: center; display: flex; flex-wrap: wrap; gap: 0.65rem; margin-top: 0.85rem; }
-  .apply-factors { background: ${props => props.theme.buttonBackgroundColor}; border: 0; border-radius: 6px; color: white; cursor: pointer; font-weight: 700; padding: 0.52rem 0.8rem; }
-  .apply-factors:disabled { cursor: wait; opacity: 0.65; }
-  .reset-factors { background: transparent; border: 0; color: ${props => props.theme.buttonBackgroundColor}; cursor: pointer; font-size: 0.78rem; font-weight: 600; padding: 0.35rem; }
-  .customizer-error { color: #dc2626; font-size: 0.78rem; }
-  .cohort-preview { color: ${props => props.theme.mode === 'dark' ? '#fbbf24' : '#a16207'}; font-size: 0.78rem; }
-  .cohort-preview.ready { color: ${props => props.theme.mode === 'dark' ? '#86efac' : '#15803d'}; }
+const drawArc = keyframes`
+  from { stroke-dashoffset: var(--arc-full); }
+  to { stroke-dashoffset: var(--arc-offset); }
 `;
 
 const DEFAULT_FACTOR_GROUPS = ['career', 'location', 'lifeStage', 'household'];
@@ -426,704 +86,550 @@ export const getBenchmarkOptInCopy = (selfHosted, benchmarkOverview) => (
     }
 );
 
-const ExpandableCardContent = styled.div`
-  max-height: ${props => props.expanded ? 'none' : '280px'};
-  overflow: hidden;
-  position: relative;
-  transition: max-height 0.35s ease;
-  
-  ${props => !props.expanded && `
-    &::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 48px;
-      background: linear-gradient(transparent, ${props.theme.mode === 'dark' ? props.theme.primaryColor : 'white'});
-      pointer-events: none;
-    }
-  `}
-`;
+/* ─── Layout ─── */
 
-const ExpandToggle = styled.button`
+const PageContainer = styled.div`
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.3rem;
+  flex-direction: column;
+  gap: 1.75rem;
   width: 100%;
-  padding: 0.4rem 0;
-  margin-top: 0.25rem;
-  background: none;
-  border: none;
-  border-top: 1px solid ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'};
-  color: ${props => props.theme.buttonBackgroundColor};
-  font-size: 0.78rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: opacity 0.2s;
-  
-  &:hover {
-    opacity: 0.8;
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 1.25rem 1rem 6rem;
+
+  @media (max-width: 768px) {
+    gap: 1.25rem;
+    padding: 0.75rem 0.75rem 4rem;
   }
 `;
 
-const ComparisonCard = styled.div`
-  background: ${props => props.theme.mode === 'dark' ? props.theme.primaryColor : 'white'};
-  border-radius: 16px;
-  padding: 1.25rem;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-  border: 1px solid ${props => props.theme.borderColor || 'transparent'};
-  transition: all 0.25s ease;
+/* ─── Hero ─── */
+
+const HeroCard = styled.section`
   position: relative;
   overflow: hidden;
-  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
-  font-weight: 500;
-  
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
-  }
-  
+  text-align: center;
+  padding: 2.25rem 1.5rem 1.75rem;
+  border-radius: 24px;
+  background: ${p => p.theme.mode === 'dark'
+    ? 'linear-gradient(160deg, rgba(7,145,100,0.14) 0%, rgba(15,23,42,0.55) 55%)'
+    : 'linear-gradient(160deg, rgba(7,145,100,0.09) 0%, rgba(255,255,255,0.92) 55%)'};
+  border: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.06)'};
+  box-shadow: ${p => p.theme.mode === 'dark' ? '0 20px 60px rgba(0,0,0,0.35)' : '0 14px 40px rgba(15,23,42,0.08)'};
+
   &::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: ${props => props.accent || props.theme.buttonBackgroundColor};
-    opacity: 0.7;
-    border-radius: 0 0 2px 2px;
+    top: -60%;
+    right: -20%;
+    width: 60%;
+    height: 220%;
+    background: radial-gradient(circle, ${p => p.theme.buttonBackgroundColor}22 0%, transparent 70%);
+    pointer-events: none;
   }
-  
-  @media (max-width: 768px) {
-    padding: 1rem;
+
+  @media (max-width: 600px) {
+    padding: 1.75rem 1rem 1.25rem;
+    border-radius: 18px;
   }
 `;
 
-const CardHeader = styled.div`
-  display: flex;
+const HeroEyebrow = styled.div`
+  display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 0.75rem;
-  
-  h3 {
-    color: ${props => props.theme.textColor};
-    font-size: 1.1rem;
-    font-weight: 600;
-    margin: 0;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
+  gap: 0.4rem;
+  padding: 0.32rem 0.75rem;
+  border-radius: 999px;
+  background: ${p => p.theme.buttonBackgroundColor}18;
+  color: ${p => p.theme.buttonBackgroundColor};
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
 `;
 
-const MetricRow = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.75rem 0;
-  border-bottom: 1px solid ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : '#eee'};
-  
-  &:last-child {
-    border-bottom: none;
-  }
-  
-  .label {
-    color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)'};
-    font-size: 0.9rem;
-    font-weight: 500;
-  }
-  
-  .value {
-    color: ${props => props.theme.textColor};
-    font-weight: 600;
-    font-size: 1.1rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
+const HeroTitle = styled.h1`
+  margin: 0 0 0.5rem;
+  font-size: clamp(1.6rem, 3.2vw, 2.25rem);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  background: ${p => p.theme.mode === 'dark'
+    ? `linear-gradient(135deg, #ffffff 0%, #ffffff 55%, ${p.theme.buttonBackgroundColor} 100%)`
+    : `linear-gradient(135deg, #0f172a 0%, #0f172a 55%, ${p.theme.buttonBackgroundColor} 100%)`};
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 `;
 
-const BalanceValueContainer = styled.div`
-  display: flex;
+const HeroSubtitle = styled.p`
+  margin: 0 auto 1.5rem;
+  max-width: 480px;
+  color: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.72)' : 'rgba(15,23,42,0.68)'};
+  font-size: 0.98rem;
+  line-height: 1.5;
+`;
+
+const GaugeFigure = styled.div`
+  position: relative;
+  display: inline-flex;
   flex-direction: column;
-  align-items: flex-end;
-  gap: 0.25rem;
-  
-  .main-value {
-    color: ${props => props.theme.textColor};
-    font-weight: 600;
-    font-size: 1.1rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-  
-  .growth-value {
-    color: ${props => props.growth > 0 ? '#27ae60' : props.growth < 0 ? '#e74c3c' : props.theme.mode === 'dark' ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)'};
-    font-size: 0.8rem;
-    font-weight: 500;
-    text-align: right;
-  }
+  align-items: center;
+  gap: 0.6rem;
+  animation: ${fadeInUp} 0.5s ease-out both;
 `;
 
-const ComingSoonCard = styled(ComparisonCard)`
+const GaugeValue = styled.div`
+  position: absolute;
+  top: 54%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   display: flex;
   flex-direction: column;
   align-items: center;
+
+  strong {
+    font-size: 2.1rem;
+    font-weight: 800;
+    color: ${p => p.theme.textColor};
+    line-height: 1;
+  }
+  span {
+    margin-top: 0.2rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.55)' : 'rgba(15,23,42,0.5)'};
+  }
+`;
+
+const GaugeCaption = styled.p`
+  margin: 0;
+  max-width: 320px;
+  color: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.62)' : 'rgba(15,23,42,0.58)'};
+  font-size: 0.82rem;
+  line-height: 1.45;
+`;
+
+const HeadlineChips = styled.div`
+  display: flex;
+  flex-wrap: wrap;
   justify-content: center;
-  text-align: center;
-  min-height: 200px;
-  background: linear-gradient(135deg, ${props => props.theme.mode === 'dark' ? props.theme.primaryColor : 'white'} 0%, ${props => props.theme.buttonBackgroundColor}15 100%);
-  
-  h3 {
-    color: ${props => props.theme.textColor};
-    font-weight: 600;
-    margin: 0.5rem 0;
-  }
-  
-  p {
-    color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)'};
-    font-weight: 500;
-  }
-  
-  .coming-soon-text {
-    color: ${props => props.theme.buttonBackgroundColor};
-    font-size: 1.2rem;
-    font-weight: 600;
-    margin-top: 1rem;
-  }
+  gap: 0.6rem;
+  margin-top: 1.5rem;
+`;
+
+const HeadlineChip = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.9rem;
+  border-radius: 14px;
+  background: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.85)'};
+  border: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.06)'};
+  animation: ${fadeInUp} 0.45s ease-out both;
+  animation-delay: ${p => p.$delay || '0s'};
+
+  svg { font-size: 1.15rem; color: ${p => p.theme.buttonBackgroundColor}; }
+
+  .chip-value { font-weight: 800; font-size: 0.98rem; color: ${p => p.theme.textColor}; }
+  .chip-label { font-size: 0.74rem; color: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.55)' : 'rgba(15,23,42,0.55)'}; }
+`;
+
+const HeroCTA = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.4rem;
+  padding: 0.75rem 1.4rem;
+  border: 0;
+  border-radius: 12px;
+  background: ${p => p.theme.buttonBackgroundColor};
+  color: white;
+  font-weight: 700;
+  font-size: 0.92rem;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 10px 24px ${p => p.theme.buttonBackgroundColor}35;
+
+  &:hover:not(:disabled) { transform: translateY(-1px); }
+  &:disabled { opacity: 0.65; cursor: wait; }
+`;
+
+/* ─── Insight cards ─── */
+
+const InsightList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
 `;
 
 const InsightCard = styled.div`
-  background: linear-gradient(135deg, ${props => props.theme.buttonBackgroundColor}10 0%, ${props => props.theme.buttonBackgroundColor}05 100%);
-  border-radius: 12px;
-  padding: 1rem 1.25rem;
-  margin: 0.75rem 0;
-  border-left: 3px solid ${props => props.theme.buttonBackgroundColor}aa;
-  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
-  
-  h4 {
-    color: ${props => props.theme.textColor};
-    margin: 0 0 0.5rem 0;
+  display: flex;
+  gap: 0.8rem;
+  padding: 1rem 1.1rem;
+  border-radius: 14px;
+  background: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.035)' : '#ffffff'};
+  border: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.07)' : 'rgba(15,23,42,0.06)'};
+  border-left: 3px solid ${p => p.$tone === 'warning' ? '#f59e0b' : p.theme.buttonBackgroundColor};
+  animation: ${fadeInUp} 0.4s ease-out both;
+
+  .insight-icon {
+    flex: 0 0 auto;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    font-weight: 600;
+    justify-content: center;
+    background: ${p => (p.$tone === 'warning' ? '#f59e0b' : p.theme.buttonBackgroundColor)}18;
+    color: ${p => p.$tone === 'warning' ? '#f59e0b' : p.theme.buttonBackgroundColor};
+    svg { font-size: 1.1rem; }
   }
-  
-  p {
-    color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.8)'};
-    margin: 0;
-    line-height: 1.5;
-    font-weight: 500;
-  }
+  h4 { margin: 0 0 0.2rem; font-size: 0.92rem; font-weight: 700; color: ${p => p.theme.textColor}; }
+  p { margin: 0; font-size: 0.84rem; line-height: 1.5; color: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.72)' : 'rgba(15,23,42,0.68)'}; }
 `;
 
-// Progress bar for percentages
-const ProgressBarContainer = styled.div`
-  width: 100%;
-  margin: 0.5rem 0;
-`;
+/* ─── Profile nudge ─── */
 
-const ProgressBarRow = styled.div`
+const ProfileNudge = styled.button`
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  margin-bottom: 0.5rem;
-  
-  .label {
-    min-width: 80px;
-    font-size: 0.85rem;
-    color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.7)'};
-    font-weight: 500;
-  }
-  
-  .bar-wrapper {
-    flex: 1;
-    height: 10px;
-    background: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : '#e5e7eb'};
-    border-radius: 5px;
-    overflow: hidden;
-  }
-  
-  .bar-fill {
-    height: 100%;
-    border-radius: 5px;
-    transition: width 0.5s ease;
-  }
-  
-  .percentage {
-    min-width: 45px;
-    text-align: right;
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: ${props => props.theme.textColor};
-  }
-`;
-
-const AllocationBenchmarks = styled.div`
-  margin: -0.15rem 0 0.85rem 80px;
-  padding-left: 0.75rem;
-  border-left: 2px solid ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'};
-
-  .benchmark-row {
-    display: flex;
-    justify-content: space-between;
-    gap: 0.75rem;
-    padding: 0.15rem 0;
-    font-size: 0.75rem;
-    color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.55)' : 'rgba(0,0,0,0.52)'};
-  }
-
-  .benchmark-value { font-weight: 600; }
-
-  @media (max-width: 520px) {
-    margin-left: 0;
-  }
-`;
-
-const SavingsRateDisplay = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 0.75rem 0;
-  
-  .rate-value {
-    font-size: 2rem;
-    font-weight: 700;
-    color: ${props => props.positive ? '#27ae60' : props.negative ? '#e74c3c' : props.theme.textColor};
-    display: flex;
-    align-items: baseline;
-    gap: 0.25rem;
-    
-    span {
-      font-size: 1.2rem;
-    }
-  }
-  
-  .rate-label {
-    font-size: 0.8rem;
-    color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)'};
-    margin-top: 0.25rem;
-  }
-`;
-
-const CategoryBar = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.4rem 0;
-  
-  .color-dot {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    flex-shrink: 0;
-  }
-  
-  .category-name {
-    flex: 1;
-    font-size: 0.85rem;
-    color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.7)'};
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  
-  .category-value {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: ${props => props.theme.textColor};
-    min-width: 60px;
-    text-align: right;
-  }
-  
-  .category-percent {
-    font-size: 0.8rem;
-    color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)'};
-    min-width: 40px;
-    text-align: right;
-  }
-`;
-
-const ProfileBanner = styled.div`
-  background: linear-gradient(135deg, ${props => props.theme.buttonBackgroundColor}15 0%, ${props => props.theme.buttonBackgroundColor}08 100%);
-  border: 1px solid ${props => props.theme.buttonBackgroundColor}30;
-  border-radius: 16px;
-  padding: 1.25rem;
-  margin-bottom: 1.25rem;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  cursor: pointer;
-  transition: all 0.25s ease;
-  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
-  position: relative;
-  overflow: hidden;
-  
-  &:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 6px 16px ${props => props.theme.buttonBackgroundColor}20;
-    border-color: ${props => props.theme.buttonBackgroundColor}50;
-  }
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, ${props => props.theme.buttonBackgroundColor}, ${props => props.theme.buttonBackgroundColor}88);
-    opacity: 0.6;
-  }
-  
-  @media (max-width: 768px) {
-    flex-direction: column;
-    text-align: center;
-    padding: 1rem;
-    gap: 0.75rem;
-  }
-`;
-
-const BannerIcon = styled.div`
-  background: linear-gradient(135deg, ${props => props.theme.buttonBackgroundColor}, ${props => props.theme.buttonBackgroundColor}dd);
-  border-radius: 50%;
-  padding: 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 12px ${props => props.theme.buttonBackgroundColor}30;
-  min-width: 56px;
-  height: 56px;
-`;
-
-const BannerContent = styled.div`
-  flex: 1;
-  
-  h3 {
-    color: ${props => props.theme.textColor};
-    font-size: 1.15rem;
-    font-weight: 700;
-    margin: 0 0 0.35rem 0;
-    
-    @media (max-width: 768px) {
-      font-size: 1.05rem;
-    }
-  }
-  
-  p {
-    color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.7)'};
-    font-size: 0.9rem;
-    line-height: 1.5;
-    margin: 0;
-    
-    @media (max-width: 768px) {
-      font-size: 0.85rem;
-    }
-  }
-`;
-
-const BannerAction = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: ${props => props.theme.buttonBackgroundColor};
-  font-weight: 600;
-  font-size: 1rem;
-  
-  @media (max-width: 768px) {
-    justify-content: center;
-    margin-top: 0.5rem;
-  }
-`;
-
-// Modern Rankings Components
-const RankingsContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
   width: 100%;
-  max-width: none;
-  .benchmark-unavailable { background: ${props => props.theme.mode === 'dark' ? 'rgba(148,163,184,.08)' : 'rgba(226,232,240,.55)'}; border: 1px solid ${props => props.theme.mode === 'dark' ? 'rgba(148,163,184,.2)' : 'rgba(148,163,184,.35)'}; border-radius: 12px; padding: 1rem; }
-  .benchmark-unavailable strong { color: ${props => props.theme.textColor}; display: block; font-size: .9rem; margin-bottom: .25rem; }
-  .benchmark-unavailable p { color: ${props => props.theme.textColor}; font-size: .8rem; margin: 0; opacity: .75; }
-  
-  @media (max-width: 768px) {
-    gap: 1rem;
-  }
-`;
+  padding: 0.9rem 1.1rem;
+  border-radius: 14px;
+  border: 1px dashed ${p => p.theme.buttonBackgroundColor}55;
+  background: ${p => p.theme.buttonBackgroundColor}0d;
+  color: ${p => p.theme.textColor};
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.2s ease;
 
-const RankingsHeader = styled.div`
-  text-align: center;
-  background: linear-gradient(135deg, ${props => props.theme.mode === 'dark' ? 'rgba(31, 41, 55, 0.6)' : 'rgba(255, 255, 255, 0.85)'} 0%, ${props => props.theme.mode === 'dark' ? 'rgba(17, 24, 39, 0.7)' : '#f8fafc'} 100%);
-  border-radius: 18px;
-  padding: 1.5rem;
-  border: 1px solid ${props => props.theme.mode === 'dark' ? 'rgba(75, 85, 99, 0.25)' : 'rgba(156, 163, 175, 0.15)'};
-  box-shadow: ${props => props.theme.mode === 'dark' ? '0 4px 10px -2px rgba(0, 0, 0, 0.3)' : '0 2px 8px -2px rgba(0, 0, 0, 0.08)'};
-  
-  h2 {
-    color: ${props => props.theme.textColor};
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin: 0 0 0.4rem 0;
+  &:hover { background: ${p => p.theme.buttonBackgroundColor}18; }
+
+  .nudge-icon {
+    flex: 0 0 auto;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.6rem;
-    
-    @media (max-width: 768px) {
-      font-size: 1.25rem;
-      flex-direction: column;
-      gap: 0.4rem;
-    }
-  }
-  
-  .month-indicator {
-    background: linear-gradient(135deg, ${props => props.theme.buttonBackgroundColor}, ${props => props.theme.buttonBackgroundColor}cc);
+    background: ${p => p.theme.buttonBackgroundColor};
     color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    font-size: 0.9rem;
-    font-weight: 600;
+    svg { font-size: 1.1rem; }
+  }
+  strong { display: block; font-size: 0.86rem; }
+  span { display: block; font-size: 0.78rem; opacity: 0.72; margin-top: 0.1rem; }
+  .nudge-arrow { margin-left: auto; flex: 0 0 auto; opacity: 0.6; }
+`;
+
+/* ─── Accordion ─── */
+
+const SectionLabel = styled.h2`
+  margin: 0.25rem 0 0;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.45)' : 'rgba(15,23,42,0.42)'};
+`;
+
+const AccordionList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+`;
+
+const AccordionItem = styled.div`
+  border-radius: 16px;
+  background: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.035)' : '#ffffff'};
+  border: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.07)' : 'rgba(15,23,42,0.06)'};
+  overflow: hidden;
+  transition: border-color 0.2s ease;
+`;
+
+const AccordionHeader = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  width: 100%;
+  padding: 1rem 1.1rem;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  text-align: left;
+
+  .accordion-icon {
+    flex: 0 0 auto;
+    width: 38px;
+    height: 38px;
+    border-radius: 11px;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    margin: 1rem auto 0;
-    width: fit-content;
-    box-shadow: 0 4px 12px ${props => props.theme.buttonBackgroundColor}40;
+    justify-content: center;
+    background: linear-gradient(135deg, ${p => p.theme.buttonBackgroundColor}, ${p => p.theme.buttonBackgroundColor}bb);
+    color: white;
+    svg { font-size: 1.15rem; }
+  }
+  .accordion-copy { flex: 1; min-width: 0; }
+  .accordion-copy strong { display: block; font-size: 0.94rem; color: ${p => p.theme.textColor}; }
+  .accordion-copy span { display: block; font-size: 0.78rem; margin-top: 0.15rem; color: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.55)' : 'rgba(15,23,42,0.55)'}; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  .accordion-chevron {
+    flex: 0 0 auto;
+    display: flex;
+    color: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.5)' : 'rgba(15,23,42,0.45)'};
+    transition: transform 0.25s ease;
+    transform: rotate(${p => p.$open ? '180deg' : '0deg'});
   }
 `;
 
-const RankingsGrid = styled.div`
+const AccordionBody = styled.div`
+  display: grid;
+  grid-template-rows: ${p => p.$open ? '1fr' : '0fr'};
+  transition: grid-template-rows 0.3s ease;
+
+  > div { overflow: hidden; }
+
+  .accordion-body-inner {
+    padding: 0 1.1rem 1.1rem;
+    border-top: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(15,23,42,0.05)'};
+    padding-top: 0.9rem;
+  }
+`;
+
+/* ─── Comparison rows (inside accordion bodies) ─── */
+
+const CompareRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(15,23,42,0.045)'};
+  font-size: 0.86rem;
+
+  &:last-child { border-bottom: none; }
+
+  .compare-label { color: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.62)' : 'rgba(15,23,42,0.6)'}; }
+  .compare-value { display: flex; align-items: center; gap: 0.35rem; font-weight: 700; color: ${p => p.theme.textColor}; }
+  .compare-value svg { font-size: 1rem; }
+`;
+
+const BigStat = styled.div`
+  text-align: center;
+  padding: 0.4rem 0 1rem;
+
+  strong { display: block; font-size: 1.7rem; font-weight: 800; color: ${p => p.theme.textColor}; }
+  small { display: block; margin-top: 0.2rem; font-size: 0.78rem; color: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.55)' : 'rgba(15,23,42,0.55)'}; }
+`;
+
+const BarRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.3rem 0;
+
+  .bar-dot { width: 10px; height: 10px; border-radius: 50%; flex: 0 0 auto; }
+  .bar-name { flex: 1; min-width: 0; font-size: 0.82rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.78)' : 'rgba(15,23,42,0.72)'}; }
+  .bar-track { flex: 1; height: 7px; border-radius: 4px; background: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.06)'}; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 4px; transition: width 0.6s ease; }
+  .bar-value { flex: 0 0 auto; min-width: 46px; text-align: right; font-size: 0.8rem; font-weight: 700; color: ${p => p.theme.textColor}; }
+`;
+
+const EmptyState = styled.div`
+  padding: 0.9rem 1rem;
+  border-radius: 12px;
+  background: ${p => p.theme.mode === 'dark' ? 'rgba(148,163,184,0.08)' : 'rgba(226,232,240,0.55)'};
+  border: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(148,163,184,0.2)' : 'rgba(148,163,184,0.35)'};
+
+  strong { display: block; font-size: 0.85rem; color: ${p => p.theme.textColor}; margin-bottom: 0.2rem; }
+  p { margin: 0; font-size: 0.78rem; color: ${p => p.theme.textColor}; opacity: 0.75; line-height: 1.45; }
+`;
+
+/* ─── Cohort card ─── */
+
+const CohortCard = styled.section`
+  border-radius: 18px;
+  padding: 1.25rem;
+  background: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.035)' : '#ffffff'};
+  border: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.07)' : 'rgba(15,23,42,0.06)'};
+
+  .cohort-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 0.9rem; }
+  h3 { margin: 0 0 0.25rem; font-size: 1rem; font-weight: 700; color: ${p => p.theme.textColor}; }
+  .cohort-head p { margin: 0; font-size: 0.82rem; line-height: 1.5; color: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.65)' : 'rgba(15,23,42,0.6)'}; }
+
+  .factor-options { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.9rem 0; }
+  .customizer-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.65rem; margin-top: 0.6rem; }
+  .apply-factors { background: ${p => p.theme.buttonBackgroundColor}; border: 0; border-radius: 10px; color: white; cursor: pointer; font-weight: 700; font-size: 0.82rem; padding: 0.55rem 0.9rem; }
+  .apply-factors:disabled { cursor: wait; opacity: 0.6; }
+  .reset-factors { background: none; border: 0; color: ${p => p.theme.buttonBackgroundColor}; cursor: pointer; font-size: 0.78rem; font-weight: 600; }
+  .customizer-error { color: #ef4444; font-size: 0.78rem; }
+  .cohort-preview { font-size: 0.78rem; color: ${p => p.theme.mode === 'dark' ? '#fbbf24' : '#a16207'}; }
+  .cohort-preview.ready { color: ${p => p.theme.mode === 'dark' ? '#86efac' : '#15803d'}; }
+  .cohort-relaxed-note { display: block; margin-top: 0.3rem; font-size: 0.76rem; line-height: 1.4; color: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.55)' : 'rgba(15,23,42,0.55)'}; }
+
+  .privacy-line { display: flex; align-items: center; gap: 0.5rem; margin-top: 1rem; padding-top: 0.9rem; border-top: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(15,23,42,0.05)'}; }
+  .privacy-line svg { flex: 0 0 auto; font-size: 1rem; color: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.5)' : 'rgba(15,23,42,0.45)'}; }
+  .privacy-line p { margin: 0; font-size: 0.76rem; line-height: 1.45; color: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.55)' : 'rgba(15,23,42,0.55)'}; }
+`;
+
+const FactorChip = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.42rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.14)' : '#dbe2ea'};
+  background: ${p => p.$selected ? p.theme.buttonBackgroundColor : 'transparent'};
+  color: ${p => p.$selected ? 'white' : p.theme.textColor};
+  border-color: ${p => p.$selected ? p.theme.buttonBackgroundColor : undefined};
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:disabled { cursor: not-allowed; opacity: 0.4; }
+`;
+
+/* ─── Geography ─── */
+
+const GeographyGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1.25rem;
-  width: 100%;
-  
-  @media (max-width: 1024px) {
+  gap: 0.9rem;
+
+  @media (max-width: 700px) {
     grid-template-columns: 1fr;
-    gap: 1rem;
   }
 `;
 
-const RankingGroup = styled.div`
-  background: ${props => props.theme.mode === 'dark' ? 'rgba(31, 41, 55, 0.5)' : 'rgba(255, 255, 255, 0.8)'};
-  border-radius: 16px;
-  padding: 1.25rem;
-  border: 1px solid ${props => props.theme.mode === 'dark' ? 'rgba(75, 85, 99, 0.25)' : 'rgba(156, 163, 175, 0.15)'};
-  backdrop-filter: blur(10px);
-  transition: all 0.25s ease;
-  
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: ${props => props.theme.mode === 'dark' ? '0 10px 20px -4px rgba(0, 0, 0, 0.4)' : '0 6px 16px -3px rgba(0, 0, 0, 0.08)'};
-  }
-  
-  .group-header {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    margin-bottom: 1rem;
-    padding-bottom: 0.75rem;
-    border-bottom: 1px solid ${props => props.theme.mode === 'dark' ? 'rgba(75, 85, 99, 0.25)' : 'rgba(156, 163, 175, 0.15)'};
-    
-    .icon-container {
-      background: linear-gradient(135deg, ${props => props.theme.buttonBackgroundColor}, ${props => props.theme.buttonBackgroundColor}dd);
-      border-radius: 50%;
-      padding: 0.75rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 10px ${props => props.theme.buttonBackgroundColor}25;
-    }
-    
-    h3 {
-      color: ${props => props.theme.textColor};
-      font-size: 1.15rem;
-      font-weight: 700;
-      margin: 0;
-    }
-  }
-`;
-
-const RankingCard = styled.div`
-  background: ${props => {
-    if (props.isTop) return `linear-gradient(135deg, ${props.theme.buttonBackgroundColor}15, ${props.theme.buttonBackgroundColor}08)`;
-    if (props.isLow) return props.theme.mode === 'dark' ? 'rgba(99, 102, 241, 0.06)' : 'rgba(99, 102, 241, 0.04)';
-    return props.theme.mode === 'dark' ? 'rgba(75, 85, 99, 0.15)' : 'rgba(243, 244, 246, 0.7)';
-  }};
-  border: 1px solid ${props => {
-    if (props.isTop) return props.theme.buttonBackgroundColor + '30';
-    if (props.isLow) return props.theme.mode === 'dark' ? 'rgba(99, 102, 241, 0.2)' : 'rgba(99, 102, 241, 0.15)';
-    return 'transparent';
-  }};
-  border-radius: 12px;
-  padding: 1rem;
-  margin-bottom: 0.65rem;
-  transition: all 0.25s ease;
-  cursor: pointer;
+const GeographyCard = styled.section`
   position: relative;
-  overflow: hidden;
-  
-  &:hover {
-    transform: translateX(3px);
-    box-shadow: 0 4px 14px rgba(0,0,0,0.08);
-  }
-  
-  &::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 3px;
-    opacity: 0.7;
-    background: ${props => {
-      if (props.isTop) return `linear-gradient(180deg, ${props.theme.buttonBackgroundColor}, ${props.theme.buttonBackgroundColor}aa)`;
-      if (props.isLow) return 'linear-gradient(180deg, #6366f1, #4f46e5)';
-      return 'linear-gradient(180deg, #9ca3af, #6b7280)';
-    }};
-  }
-  
-  .rank-header {
+  border-radius: 18px;
+  padding: 1.25rem;
+  background: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.035)' : '#ffffff'};
+  border: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.07)' : 'rgba(15,23,42,0.06)'};
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+
+  .geo-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    margin-bottom: 0.5rem;
-    
-    h4 {
-      color: ${props => props.theme.textColor};
-      font-size: 1rem;
-      font-weight: 600;
-      margin: 0;
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-    }
-    
-    .rank-badge {
-      background: ${props => {
-        if (props.isTop) return `linear-gradient(135deg, ${props.theme.buttonBackgroundColor}, ${props.theme.buttonBackgroundColor}dd)`;
-        if (props.isLow) return 'linear-gradient(135deg, #6366f1, #4f46e5)';
-        return 'linear-gradient(135deg, #6b7280, #4b5563)';
-      }};
-      color: white;
-      padding: 0.25rem 0.75rem;
-      border-radius: 20px;
-      font-size: 0.8rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 0.25rem;
-    }
-  }
-  
-  .rank-description {
-    color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)'};
-    font-size: 0.85rem;
-    line-height: 1.4;
-    margin: 0;
-  }
-`;
-
-const MotivationalPopup = styled.div`
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: ${props => props.theme.mode === 'dark' ? 'rgba(17, 24, 39, 0.95)' : 'rgba(255, 255, 255, 0.95)'};
-  backdrop-filter: blur(20px);
-  border-radius: 20px;
-  padding: 2rem;
-  max-width: 440px;
-  width: 90%;
-  border: 1px solid ${props => props.theme.mode === 'dark' ? 'rgba(75, 85, 99, 0.3)' : 'rgba(156, 163, 175, 0.2)'};
-  box-shadow: ${props => props.theme.mode === 'dark' ? '0 25px 50px -12px rgba(0, 0, 0, 0.8)' : '0 25px 50px -12px rgba(0, 0, 0, 0.25)'};
-  z-index: 1000;
-  text-align: center;
-  animation: popupSlideIn 0.3s ease-out;
-  
-  @keyframes popupSlideIn {
-    from {
-      opacity: 0;
-      transform: translate(-50%, -60%);
-    }
-    to {
-      opacity: 1;
-      transform: translate(-50%, -50%);
-    }
-  }
-  
-  .popup-icon {
-    font-size: 3rem;
-    margin-bottom: 0.75rem;
-  }
-  
-  h3 {
-    color: ${props => props.theme.textColor};
-    font-size: 1.3rem;
-    font-weight: 700;
-    margin: 0 0 0.75rem 0;
-  }
-  
-  p {
-    color: ${props => props.theme.mode === 'dark' ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.7)'};
-    font-size: 0.95rem;
-    line-height: 1.5;
-    margin: 0 0 1.5rem 0;
-  }
-  
-  button {
-    background: linear-gradient(135deg, ${props => props.theme.buttonBackgroundColor}, ${props => props.theme.buttonBackgroundColor}dd);
+    justify-content: center;
+    background: linear-gradient(135deg, ${p => p.theme.buttonBackgroundColor}, ${p => p.theme.buttonBackgroundColor}bb);
     color: white;
-    border: none;
-    padding: 0.75rem 2rem;
-    border-radius: 20px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    
-    &:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px ${props => props.theme.buttonBackgroundColor}40;
-    }
+    svg { font-size: 1.2rem; }
   }
+  h3 { margin: 0; font-size: 0.96rem; font-weight: 700; color: ${p => p.theme.textColor}; }
+  p { margin: 0; font-size: 0.82rem; line-height: 1.5; color: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.65)' : 'rgba(15,23,42,0.6)'}; }
 `;
 
-const PopupOverlay = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 999;
+const ComingSoonBadge = styled.span`
+  position: absolute;
+  top: 1.1rem;
+  right: 1.1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.28rem 0.6rem;
+  border-radius: 999px;
+  background: ${p => p.theme.mode === 'dark' ? 'rgba(251,191,36,0.14)' : '#fffbeb'};
+  color: ${p => p.theme.mode === 'dark' ? '#fbbf24' : '#a16207'};
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  svg { font-size: 0.85rem; }
 `;
 
-function Comparison({ theme, userData, isHidden}) {
+const GeoCountryAction = styled.button`
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.2rem;
+  padding: 0.55rem 0.85rem;
+  border-radius: 10px;
+  border: 0;
+  background: ${p => p.theme.buttonBackgroundColor};
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+
+  &:disabled { opacity: 0.6; cursor: wait; }
+`;
+
+const CountryResult = styled.div`
+  margin-top: 0.4rem;
+  padding-top: 0.7rem;
+  border-top: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(15,23,42,0.05)'};
+`;
+
+/* ─── Small building blocks ─── */
+
+const GaugeArc = ({ value, theme, size = 176 }) => {
+    const stroke = 14;
+    const radius = (size - stroke) / 2;
+    const half = Math.PI * radius;
+    const clamped = value === null ? 0 : Math.max(1, Math.min(100, value));
+    const offset = half - (clamped / 100) * half;
+    const cx = size / 2;
+    const cy = size / 2 + 6;
+    const path = `M ${stroke / 2} ${cy} A ${radius} ${radius} 0 0 1 ${size - stroke / 2} ${cy}`;
+    const trackColor = theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.07)';
+    return (
+        <svg width={size} height={size / 2 + stroke} viewBox={`0 0 ${size} ${size / 2 + stroke}`} role="img" aria-hidden="true">
+            <path d={path} fill="none" stroke={trackColor} strokeWidth={stroke} strokeLinecap="round" />
+            {value !== null && (
+                <path
+                    d={path}
+                    fill="none"
+                    stroke={theme.buttonBackgroundColor}
+                    strokeWidth={stroke}
+                    strokeLinecap="round"
+                    strokeDasharray={half}
+                    style={{
+                        '--arc-full': half,
+                        '--arc-offset': offset,
+                        animation: `${drawArc} 1s ease-out forwards`,
+                    }}
+                />
+            )}
+            <circle cx={cx} cy={cy} r="1" opacity="0" />
+        </svg>
+    );
+};
+
+function Comparison({ theme, userData, isHidden }) {
     const { language, translations } = useContext(LanguageContext);
     const { formatAmount } = useContext(CurrencyContext);
-    const { rankingService, userService, statsService } = useServices();
+    const { rankingService, userService, statsService } = useDemoServices();
     const { selfHosted } = useDeployment();
-    const optInCopy = getBenchmarkOptInCopy(selfHosted, translations.comparison.benchmarkOverview);
-    const [activeTab, setActiveTab] = useState('insights');
-    const [expandedCards, setExpandedCards] = useState({});
-    const [showMotivationalPopup, setShowMotivationalPopup] = useState(false);
-    const [popupContent, setPopupContent] = useState({ type: '', title: '', message: '', icon: '' });
+    const navigate = useLocalizedNavigate();
+    const t = translations.comparison;
+    const optInCopy = getBenchmarkOptInCopy(selfHosted, t.benchmarkOverview);
+
+    const [expandedSections, setExpandedSections] = useState({});
     const [selectedFactorGroups, setSelectedFactorGroups] = useState(DEFAULT_FACTOR_GROUPS);
     const [customBenchmark, setCustomBenchmark] = useState(null);
     const [isCustomBenchmarkLoading, setIsCustomBenchmarkLoading] = useState(false);
     const [customBenchmarkError, setCustomBenchmarkError] = useState('');
     const [cohortPreview, setCohortPreview] = useState(null);
-    const [isBenchmarkExpanded, setIsBenchmarkExpanded] = useState(false);
     const [hasBenchmarkConsent, setHasBenchmarkConsent] = useState(userData?.benchmarkConsent === true);
     const [isSavingBenchmarkConsent, setIsSavingBenchmarkConsent] = useState(false);
     const [behaviourBenchmark, setBehaviourBenchmark] = useState(null);
-    const navigate = useLocalizedNavigate();
+    const [countryBenchmark, setCountryBenchmark] = useState(null);
+    const [isCountryBenchmarkLoading, setIsCountryBenchmarkLoading] = useState(false);
+    const [countryBenchmarkError, setCountryBenchmarkError] = useState('');
 
     useEffect(() => {
         let cancelled = false;
@@ -1163,29 +669,12 @@ function Comparison({ theme, userData, isHidden}) {
             const result = await rankingService.getCustomBenchmark(selectedFactorGroups);
             setCustomBenchmark(result);
             if (!result?.available) {
-                setCustomBenchmarkError(translations.comparison.benchmarkOverview?.noCohort || 'Not enough comparable profiles for this selection yet.');
+                setCustomBenchmarkError(t.benchmarkOverview?.noCohort || 'Not enough comparable profiles for this selection yet.');
             }
         } catch {
-            setCustomBenchmarkError(translations.comparison.benchmarkOverview?.customError || 'Unable to refresh the comparison. Try again.');
+            setCustomBenchmarkError(t.benchmarkOverview?.customError || 'Unable to refresh the comparison. Try again.');
         } finally {
             setIsCustomBenchmarkLoading(false);
-        }
-    };
-
-    const enableCommunityComparison = async () => {
-        if (!userService?.setBenchmarkConsent || isSavingBenchmarkConsent) return;
-        setIsSavingBenchmarkConsent(true);
-        try {
-            const result = await userService.setBenchmarkConsent(true);
-            setHasBenchmarkConsent(result?.benchmarkConsent === true);
-            setIsBenchmarkExpanded(true);
-        } catch {
-            setCustomBenchmarkError(
-                translations.comparison.benchmarkOverview?.optInError
-                || 'Unable to activate community comparison. Please try again.'
-            );
-        } finally {
-            setIsSavingBenchmarkConsent(false);
         }
     };
 
@@ -1195,84 +684,47 @@ function Comparison({ theme, userData, isHidden}) {
         setCustomBenchmarkError('');
     };
 
-    // Funzioni helper per Rankings
-    const getRankLevel = (rank) => {
-        if (!rank || rank === '' || isNaN(rank)) return 'none';
-        const numRank = parseFloat(rank);
-        if (numRank <= 20) return 'top';
-        if (numRank >= 70) return 'low';
-        return 'medium';
-    };
-
-    const getRankDescription = (rank, category, isExpense = false) => {
-        if (!rank || rank === '' || isNaN(rank)) return translations.leaderboard.rankings.noData;
-        
-        const numRank = Math.min(parseFloat(rank), 99);
-        const level = getRankLevel(numRank);
-        
-        const categoryKey = isExpense ? 'outflows' : category;
-        const descriptions = translations.leaderboard.rankings.descriptions[categoryKey];
-        
-        if (descriptions) {
-            return descriptions[level] || descriptions.medium;
+    const enableCommunityComparison = async () => {
+        if (!userService?.setBenchmarkConsent || isSavingBenchmarkConsent) return;
+        setIsSavingBenchmarkConsent(true);
+        try {
+            const result = await userService.setBenchmarkConsent(true);
+            setHasBenchmarkConsent(result?.benchmarkConsent === true);
+        } catch {
+            setCustomBenchmarkError(t.benchmarkOverview?.optInError || 'Unable to activate community comparison. Please try again.');
+        } finally {
+            setIsSavingBenchmarkConsent(false);
         }
-        
-        // Fallback generico
-        if (level === 'top') return `${translations.leaderboard.rankings.topPerformance} Top ${numRank}%`;
-        if (level === 'low') return `${translations.leaderboard.rankings.canImprove} Top ${numRank}%`;
-        return `${translations.leaderboard.rankings.goodPerformance} Top ${numRank}%`;
     };
 
-    const showMotivationalMessage = (rank, category, isExpense = false) => {
-        if (!rank || rank === '' || isNaN(rank)) return;
-        
-        const numRank = parseFloat(rank);
-        const level = getRankLevel(numRank);
-        
-        const categoryKey = isExpense ? 'outflows' : category;
-        const motivationalTexts = translations.leaderboard.rankings.motivational[level];
-        
-        const content = {
-            type: level,
-            title: motivationalTexts.title,
-            message: motivationalTexts[categoryKey] || motivationalTexts.balance,
-            icon: level === 'top' ? '🏆' : level === 'medium' ? '⭐' : '💪'
-        };
-        
-        setPopupContent(content);
-        setShowMotivationalPopup(true);
+    const toggleSection = (id) => {
+        setExpandedSections((prev) => ({ ...prev, [id]: !prev[id] }));
     };
 
-    const getCurrentMonth = () => {
-        const monthDate = userData?.preMonthDate || new Date();
-        
-        // Get the month number and year
-        const date = new Date(monthDate);
-        const monthNumber = date.getMonth(); // 0-based month (0 = January, 8 = September)
-        const year = date.getFullYear();
-        
-        // Manual mapping for reliable translation
-        const monthNames = {
-            it: ['gennaio', 'febbraio', 'marzo', 'aprile', 'maggio', 'giugno', 
-                 'luglio', 'agosto', 'settembre', 'ottobre', 'novembre', 'dicembre'],
-            en: ['January', 'February', 'March', 'April', 'May', 'June',
-                 'July', 'August', 'September', 'October', 'November', 'December']
-        };
-        
-        const monthName = monthNames[language] ? monthNames[language][monthNumber] : monthNames.en[monthNumber];
-        return `${monthName} ${year}`;
+    const loadCountryBenchmark = async () => {
+        if (!rankingService?.getCustomBenchmark || isCountryBenchmarkLoading) return;
+        setIsCountryBenchmarkLoading(true);
+        setCountryBenchmarkError('');
+        try {
+            const result = await rankingService.getCustomBenchmark(['location']);
+            setCountryBenchmark(result);
+            if (!result?.available) {
+                setCountryBenchmarkError(t.geography?.countryUnavailable || 'Not enough people from your country compare yet.');
+            }
+        } catch {
+            setCountryBenchmarkError(t.benchmarkOverview?.customError || 'Unable to refresh the comparison. Try again.');
+        } finally {
+            setIsCountryBenchmarkLoading(false);
+        }
     };
 
     // Index 0 is the partial current month. Community monthly benchmarks use
     // the last complete month, so compare the user's index 1 to the same period.
     const userIncomesArray = getIncomesArray(userData) || [];
     const userOutflowsArray = getOutflowsArray(userData) || [];
-
-    const ProfileCompletionPercentage = getProfileCompletionPercentage(userData);
-    
     const getLastCompleteMonth = (array) => Number(array?.[1]) || 0;
 
-    // Get averages from userData (fetched from /stats/averages API)
+    const ProfileCompletionPercentage = getProfileCompletionPercentage(userData);
     const userAverages = userData?.averages || { all: {}, similar: {} };
     const benchmarkMetadata = customBenchmark?.available ? {
         generatedAt: customBenchmark.generatedAt,
@@ -1293,27 +745,33 @@ function Comparison({ theme, userData, isHidden}) {
         && Object.values(benchmarkMetadata?.cohortSizes ?? {}).some((size) => size >= minimumBenchmarkSize);
     const allComparisonAvailable = hasBenchmarkConsent
         && (userAverages.all?.benchmark?.populationSize ?? 0) >= minimumBenchmarkSize;
+    // How many other people are consenting so far, regardless of whether that's enough yet -
+    // turns "not available yet" into a legible, growing number instead of an open-ended wait.
+    const communityPopulationSize = Math.max(
+        userAverages.all?.benchmark?.populationSize ?? 0,
+        benchmarkMetadata?.populationSize ?? 0
+    );
 
     const hasProfileValue = (field) => field && field.index !== -1 && Boolean(field.label);
     const profileFactorGroups = [
         {
             id: 'career',
-            label: translations.comparison.benchmarkOverview?.factors?.career || 'Work and career',
+            label: t.benchmarkOverview?.factors?.career || 'Work and career',
             fields: ['job', 'jobType', 'workTime', 'yearsOfExperience']
         },
         {
             id: 'location',
-            label: translations.comparison.benchmarkOverview?.factors?.location || 'Geographic area',
+            label: t.benchmarkOverview?.factors?.location || 'Geographic area',
             fields: ['jobCountry', 'country', 'remoteType']
         },
         {
             id: 'lifeStage',
-            label: translations.comparison.benchmarkOverview?.factors?.lifeStage || 'Life stage',
+            label: t.benchmarkOverview?.factors?.lifeStage || 'Life stage',
             fields: ['age']
         },
         {
             id: 'household',
-            label: translations.comparison.benchmarkOverview?.factors?.household || 'Home and family',
+            label: t.benchmarkOverview?.factors?.household || 'Home and family',
             fields: ['livingSituation', 'housingType', 'children']
         }
     ].map(group => ({ ...group, available: group.fields.some(field => hasProfileValue(userData?.profile?.[field])) }));
@@ -1322,12 +780,20 @@ function Comparison({ theme, userData, isHidden}) {
         ? profileFactorGroups.filter(group => customBenchmark.factors.includes(group.id))
         : profileFactorGroups.filter(group => group.available);
 
+    const countryFactorAvailable = profileFactorGroups.find(group => group.id === 'location')?.available ?? false;
+
+    // Labels for whichever factors a relaxed cohort actually ended up using, so the
+    // "we broadened this" copy can name them instead of just saying "some factors".
+    const factorLabel = (id) => profileFactorGroups.find(group => group.id === id)?.label || id;
+    const relaxedNoticeFor = (appliedFactors) => (t.benchmarkOverview?.relaxedNotice || 'Not enough people matched your full selection yet, so this comparison uses a broader group based on: {factors}.')
+        .replace('{factors}', appliedFactors.map(factorLabel).join(', '));
+
     const similarRanks = {
         balance: similarComparisonAvailable ? (customBenchmark?.available ? customBenchmark.rankings.balance : getPercentageRankOnBalanceSimilar(userData)) : 0,
         incomes: similarComparisonAvailable ? (customBenchmark?.available ? customBenchmark.rankings.incomes : getPercentageRankOnIncomesSimilar(userData)) : 0,
         outflows: similarComparisonAvailable ? (customBenchmark?.available ? customBenchmark.rankings.outflows : getPercentageRankOnOutflowsSimilar(userData)) : 0
     };
-    
+
     const comparisonData = {
         avgBalance: {
             user: {
@@ -1335,12 +801,10 @@ function Comparison({ theme, userData, isHidden}) {
                 growth12Months: getBalanceGrowth12Months(userData)
             },
             similarUsers: {
-                current: similarComparisonAvailable ? (customBenchmark?.available ? customBenchmark.averages.balances : userAverages.similar?.balances ?? null) : null,
-                growth12Months: null // Will be added when API provides this data
+                current: similarComparisonAvailable ? (customBenchmark?.available ? customBenchmark.averages.balances : userAverages.similar?.balances ?? null) : null
             },
             allUsers: {
-                current: allComparisonAvailable ? userAverages.all?.balances ?? null : null,
-                growth12Months: null // Will be added when API provides this data
+                current: allComparisonAvailable ? userAverages.all?.balances ?? null : null
             }
         },
         avgIncome: {
@@ -1355,73 +819,53 @@ function Comparison({ theme, userData, isHidden}) {
         }
     };
 
-    // Calculate Savings Rate (last 12 months)
     const calculateSavingsRate = () => {
         const totalIncomes = userIncomesArray.slice(0, 12).reduce((sum, val) => sum + (val || 0), 0);
         const totalOutflows = userOutflowsArray.slice(0, 12).reduce((sum, val) => sum + (val || 0), 0);
-        
         if (totalIncomes <= 0) return null;
         return ((totalIncomes - totalOutflows) / totalIncomes) * 100;
     };
-    
     const userSavingsRate = calculateSavingsRate();
-
-    // Get averages savings rates from API
     const allUsersSavingsRate = allComparisonAvailable ? getAveragesAllSavingsRates(userData) : null;
     const similarUsersSavingsRate = similarComparisonAvailable ? getAveragesSimilarSavingsRates(userData) : null;
 
-    // Get averages expenses by category from API
-    const allUsersExpensesByCategory = allComparisonAvailable ? getAveragesAllExpensesByCategory(userData) : null;
     const similarUsersExpensesByCategory = similarComparisonAvailable ? getAveragesSimilarExpensesByCategory(userData) : null;
 
-    // Calculate Asset Allocation
     const calculateAssetAllocation = () => {
         const currentBalance = userData?.balances?.[0]?.balance || {};
         const totalValue = getTotalValue(userData) || 0;
-        
         if (totalValue <= 0) return [];
-        
-        // Group assets into categories
         const liquid = (currentBalance.cash || 0) + (currentBalance.bank || 0) + (currentBalance.digitalServices || 0) + (currentBalance.emergencyFund || 0);
         const investments = (currentBalance.stocks || 0) + (currentBalance.etf || 0) + (currentBalance.bonds || 0) + (currentBalance.funds || 0) + (currentBalance.commodities || 0);
         const crypto = (currentBalance.bitcoin || 0) + (currentBalance.crypto || 0);
-        
         const similarAllocation = similarComparisonAvailable && customBenchmark?.available
             ? customBenchmark.averages.assetAllocation
             : similarComparisonAvailable ? userAverages.similar?.assetAllocation : null;
         const allAllocation = allComparisonAvailable ? userAverages.all?.assetAllocation : null;
-        const allocations = [
-            { key: 'liquid', name: translations.comparison.cards.assetAllocation.liquid || 'Liquidity', value: liquid, percentage: (liquid / totalValue) * 100, color: '#3498db' },
-            { key: 'investments', name: translations.comparison.cards.assetAllocation.investments || 'Investments', value: investments, percentage: (investments / totalValue) * 100, color: '#27ae60' },
-            { key: 'crypto', name: translations.comparison.cards.assetAllocation.crypto || 'Crypto', value: crypto, percentage: (crypto / totalValue) * 100, color: '#f39c12' }
+        return [
+            { key: 'liquid', name: t.cards.assetAllocation.liquid || 'Liquidity', value: liquid, percentage: (liquid / totalValue) * 100, color: '#3498db' },
+            { key: 'investments', name: t.cards.assetAllocation.investments || 'Investments', value: investments, percentage: (investments / totalValue) * 100, color: '#27ae60' },
+            { key: 'crypto', name: t.cards.assetAllocation.crypto || 'Crypto', value: crypto, percentage: (crypto / totalValue) * 100, color: '#f39c12' }
         ].map(asset => ({
             ...asset,
             similarPercentage: similarAllocation?.[asset.key] ?? null,
             allPercentage: allAllocation?.[asset.key] ?? null
-        }));
-        
-        return allocations.sort((a, b) => b.percentage - a.percentage);
+        })).sort((a, b) => b.percentage - a.percentage);
     };
-    
     const assetAllocation = calculateAssetAllocation();
 
-    // Calculate Spending by Category (last 12 months)
     const calculateSpendingByCategory = () => {
         const totalOutflowsPerCategory = getTotalOutflowsParentCategoryPerMonth(userData);
         const categoryTotals = {};
-        
-        // Sum up all categories across 12 months
         for (let i = 0; i < 12; i++) {
             const monthData = totalOutflowsPerCategory[i] || {};
             Object.entries(monthData).forEach(([category, amount]) => {
                 categoryTotals[category] = (categoryTotals[category] || 0) + amount;
             });
         }
-        
         const totalSpending = Object.values(categoryTotals).reduce((sum, val) => sum + val, 0);
         if (totalSpending <= 0) return [];
-        
-        const categories = Object.entries(categoryTotals)
+        return Object.entries(categoryTotals)
             .map(([name, value]) => {
                 const tagKey =
                     resolveTagKeyFromLocalized(name, 'en', 'expense') ||
@@ -1437,10 +881,7 @@ function Comparison({ theme, userData, isHidden}) {
                 };
             })
             .sort((a, b) => b.value - a.value);
-        
-        return categories;
     };
-    
     const spendingByCategory = calculateSpendingByCategory();
 
     const formatCurrency = (value) => {
@@ -1452,10 +893,9 @@ function Comparison({ theme, userData, isHidden}) {
     const formatGrowthPercentage = (value) => {
         if (isHidden) return '****';
         if (value === null || value === undefined) return '';
-        if (value === 0) return translations.comparison.cards.avgBalance.noGrowthData;
-        
+        if (value === 0) return t.cards.avgBalance.noGrowthData;
         const sign = value > 0 ? '+' : '';
-        return `${sign}${value.toFixed(1)}% ${translations.comparison.cards.avgBalance.growth12Months}`;
+        return `${sign}${value.toFixed(1)}% ${t.cards.avgBalance.growth12Months}`;
     };
 
     const getComparisonIcon = (userValue, compareValue) => {
@@ -1465,23 +905,14 @@ function Comparison({ theme, userData, isHidden}) {
         return <EqualIcon style={{ color: '#f39c12' }} />;
     };
 
-    const getBalanceComparisonIcon = (userBalance, compareBalance) => {
-        if (compareBalance?.current === null || compareBalance?.current === undefined) return null;
-        if (userBalance.current > compareBalance.current) return <TrendingUpIcon style={{ color: '#27ae60' }} />;
-        if (userBalance.current < compareBalance.current) return <TrendingDownIcon style={{ color: '#e74c3c' }} />;
-        return <EqualIcon style={{ color: '#f39c12' }} />;
-    };
-
     const generateInsights = () => {
         const insights = [];
-        const { avgOutflows } = comparisonData;
-        
         if (similarRanks.balance > 0) {
             insights.push({
                 type: 'positive',
-                title: (translations.comparison.actionableInsights?.percentileTitle || 'Net worth: top {rank}% among similar profiles')
+                title: (t.actionableInsights?.percentileTitle || 'Net worth: top {rank}% among similar profiles')
                     .replace('{rank}', Math.min(similarRanks.balance, 100)),
-                description: translations.comparison.actionableInsights?.percentileDescription || 'The percentile uses the specific cohort for net worth, not the undifferentiated average of all users.'
+                description: t.actionableInsights?.percentileDescription || 'The percentile uses the specific cohort for net worth, not the undifferentiated average of all users.'
             });
         }
 
@@ -1489,9 +920,7 @@ function Comparison({ theme, userData, isHidden}) {
             const categoryIndex = userData?.tags?.outflowsTags?.find(
                 tag => tag.label === category.tagKey || translateTag(tag.label, 'en', 'expense') === category.name
             )?.index;
-            const peerAverage = categoryIndex !== undefined
-                ? similarUsersExpensesByCategory?.[categoryIndex]
-                : null;
+            const peerAverage = categoryIndex !== undefined ? similarUsersExpensesByCategory?.[categoryIndex] : null;
             return { ...category, peerAverage, difference: peerAverage == null ? 0 : category.value - peerAverage };
         }).filter(category => category.peerAverage > 0 && category.difference > Math.max(50, category.peerAverage * 0.1))
           .sort((a, b) => b.difference - a.difference);
@@ -1502,9 +931,8 @@ function Comparison({ theme, userData, isHidden}) {
             const contribution = totalGap > 0 ? Math.round((opportunity.difference / totalGap) * 100) : 0;
             insights.push({
                 type: 'warning',
-                title: (translations.comparison.actionableInsights?.categoryTitle || 'Dig deeper: {category}')
-                    .replace('{category}', opportunity.displayName),
-                description: (translations.comparison.actionableInsights?.categoryDescription || 'Over the last 12 months you spent {difference} more than your cohort average in this parent category: it accounts for {contribution}% of the detected deviations.')
+                title: (t.actionableInsights?.categoryTitle || 'Dig deeper: {category}').replace('{category}', opportunity.displayName),
+                description: (t.actionableInsights?.categoryDescription || 'Over the last 12 months you spent {difference} more than your cohort average in this parent category: it accounts for {contribution}% of the detected deviations.')
                     .replace('{difference}', formatCurrency(opportunity.difference))
                     .replace('{contribution}', contribution)
             });
@@ -1514,816 +942,441 @@ function Comparison({ theme, userData, isHidden}) {
             const gap = similarUsersSavingsRate - userSavingsRate;
             insights.push({
                 type: 'warning',
-                title: translations.comparison.actionableInsights?.savingsTitle || 'Room on your savings rate',
-                description: (translations.comparison.actionableInsights?.savingsDescription || 'Your cohort saves on average {gap} percentage points more. Above-average categories can suggest where to start.')
+                title: t.actionableInsights?.savingsTitle || 'Room on your savings rate',
+                description: (t.actionableInsights?.savingsDescription || 'Your cohort saves on average {gap} percentage points more. Above-average categories can suggest where to start.')
                     .replace('{gap}', gap.toFixed(1))
             });
-        } else if (insights.length === 0 && avgOutflows.similarUsers !== null) {
+        } else if (insights.length === 0 && comparisonData.avgOutflows.similarUsers !== null) {
             insights.push({
                 type: 'positive',
-                title: translations.comparison.actionableInsights?.balancedTitle || 'Profile in balance with your cohort',
-                description: translations.comparison.actionableInsights?.balancedDescription || 'No significant deviations found. Keep monitoring the trend, which is more useful than any single month.'
+                title: t.actionableInsights?.balancedTitle || 'Profile in balance with your cohort',
+                description: t.actionableInsights?.balancedDescription || 'No significant deviations found. Keep monitoring the trend, which is more useful than any single month.'
             });
         }
-        
         return insights;
     };
+    const insights = similarComparisonAvailable ? generateInsights() : [];
 
-    const renderBenchmarkOverview = () => {
-        const cohortSizes = benchmarkMetadata?.cohortSizes
-            ? Object.values(benchmarkMetadata.cohortSizes).filter(size => size > 0)
-            : [];
-        const minCohortSize = cohortSizes.length > 0 ? Math.min(...cohortSizes) : null;
-        const maxCohortSize = cohortSizes.length > 0 ? Math.max(...cohortSizes) : null;
-        const cohortLabel = minCohortSize === null
-            ? (translations.comparison.benchmarkOverview?.waiting || 'Cohort being prepared')
-            : minCohortSize === maxCohortSize
-                ? `${minCohortSize}`
-                : `${minCohortSize}-${maxCohortSize}`;
-        const updatedAt = benchmarkMetadata?.generatedAt
-            ? new Intl.DateTimeFormat(language === 'it' ? 'it-IT' : 'en-GB', {
-                day: '2-digit', month: 'short', year: 'numeric'
-            }).format(new Date(benchmarkMetadata.generatedAt))
-            : '--';
+    const behaviourCards = [
+        { key: 'savingConsistency', title: t.rankingsAccessory.savingConsistency, description: t.rankingsAccessory.savingConsistencyDescription, suffix: '%' },
+        { key: 'investmentRegularity', title: t.rankingsAccessory.investmentRegularity, description: t.rankingsAccessory.investmentRegularityDescription, suffix: '%' },
+        { key: 'contributionFrequency', title: t.rankingsAccessory.contributionFrequency, description: t.rankingsAccessory.contributionFrequencyDescription, suffix: '' },
+        { key: 'goalProgress', title: t.rankingsAccessory.goalProgress, description: t.rankingsAccessory.goalProgressDescription, suffix: '%' },
+    ];
 
-        const rankCards = [
-            { label: translations.leaderboard.rankings.balance, value: similarRanks.balance },
-            { label: translations.leaderboard.rankings.income, value: similarRanks.incomes },
-            { label: translations.leaderboard.rankings.outflows, value: similarRanks.outflows }
-        ];
-        const distributions = customBenchmark?.available ? null : userAverages.similar?.distributions;
-        const distributionCards = [
-            {key: 'balances', label: translations.comparison.cards.avgBalance.title},
-            {key: 'incomes', label: translations.comparison.cards.avgIncome.title},
-            {key: 'expenses', label: translations.comparison.cards.avgOutflows.title}
-        ].map(({key, label}) => ({key, label, summary: distributions?.[key]})).filter(({summary}) => summary?.count > 0);
-        const longitudinal = customBenchmark?.available ? [] : (userAverages.similar?.longitudinal || []);
+    const cohortSizes = benchmarkMetadata?.cohortSizes ? Object.values(benchmarkMetadata.cohortSizes).filter(size => size > 0) : [];
+    const minCohortSize = cohortSizes.length > 0 ? Math.min(...cohortSizes) : null;
+    const maxCohortSize = cohortSizes.length > 0 ? Math.max(...cohortSizes) : null;
+    const cohortLabel = minCohortSize === null
+        ? (t.benchmarkOverview?.waiting || 'Cohort being prepared')
+        : minCohortSize === maxCohortSize ? `${minCohortSize}` : `${minCohortSize}-${maxCohortSize}`;
+    const updatedAt = benchmarkMetadata?.generatedAt
+        ? new Intl.DateTimeFormat(language === 'it' ? 'it-IT' : 'en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).format(new Date(benchmarkMetadata.generatedAt))
+        : '--';
 
-        return (
-            <BenchmarkOverview theme={theme}>
-                <div className="overview-heading">
-                    <div>
-                        <h2>{translations.comparison.benchmarkOverview?.title || 'Your personal comparison'}</h2>
-                        <p>{translations.comparison.benchmarkOverview?.description || 'Compare net worth, income and outflows with a group of users with a similar profile.'}</p>
-                    </div>
-                    <div className="overview-actions">
-                        <Tooltip title={translations.comparison.benchmarkOverview?.groupHelp || 'The comparison group brings together users with similar profile characteristics. We only show aggregated results, and only when the sample size is sufficient.'}>
-                            <InfoTrigger theme={theme} role="img" aria-label={translations.comparison.benchmarkOverview.groupHelp}><InfoIcon /></InfoTrigger>
-                        </Tooltip>
-                        <button className="benchmark-toggle" type="button" onClick={() => setIsBenchmarkExpanded((open) => !open)} aria-expanded={isBenchmarkExpanded}>
-                            {isBenchmarkExpanded
-                                ? (translations.comparison.benchmarkOverview?.hide || 'Hide')
-                                : (translations.comparison.benchmarkOverview?.show || 'View comparison')}
-                        </button>
-                        <button className="profile-action" onClick={() => navigate('/profile')}>
-                            <TuneIcon fontSize="small" />
-                            {translations.comparison.benchmarkOverview?.editProfile || 'Profile'}
-                        </button>
-                    </div>
-                </div>
-
-                {!hasBenchmarkConsent && (
-                    <BenchmarkOptInCard theme={theme}>
-                        <div>
-                            <strong>{optInCopy.title}</strong>
-                            <p>{optInCopy.description}</p>
-                        </div>
-                        <button type="button" onClick={enableCommunityComparison} disabled={isSavingBenchmarkConsent}>
-                            {isSavingBenchmarkConsent
-                                ? (translations.comparison.benchmarkOverview?.optInSaving || 'Activating...')
-                                : (translations.comparison.benchmarkOverview?.optInAction || 'Enable comparison')}
-                        </button>
-                    </BenchmarkOptInCard>
-                )}
-
-                {isBenchmarkExpanded && hasBenchmarkConsent && similarComparisonAvailable && <>
-                <BenchmarkRankGrid>
-                    {rankCards.map(card => (
-                        <BenchmarkRank key={card.label} theme={theme}>
-                            <span>{card.label}</span>
-                            <strong>{card.value > 0 ? `Top ${Math.min(card.value, 100)}%` : '--'}</strong>
-                        </BenchmarkRank>
-                    ))}
-                </BenchmarkRankGrid>
-
-                {distributionCards.length > 0 && (
-                    <DistributionGrid theme={theme}>
-                        {distributionCards.map(({key, label, summary}) => (
-                            <div className="distribution-card" key={key}>
-                                <span>{label}</span>
-                                <strong>{(translations.comparison.benchmarkOverview?.median || 'Median')}: {formatCurrency(summary.median)}</strong>
-                                <small>{(translations.comparison.benchmarkOverview?.interquartileRange || 'Interquartile range')}: {formatCurrency(summary.firstQuartile)} - {formatCurrency(summary.thirdQuartile)} · n={summary.count}</small>
-                            </div>
-                        ))}
-                    </DistributionGrid>
-                )}
-
-                {longitudinal.length > 0 && (
-                    <LongitudinalGrid theme={theme}>
-                        {longitudinal.map((point) => (
-                            <div className="trend-card" key={point.monthsAgo}>
-                                <span>{(translations.comparison.benchmarkOverview?.monthsAgo || '{months} months ago').replace('{months}', point.monthsAgo)}</span>
-                                <strong>{(translations.comparison.benchmarkOverview?.median || 'Median')}: {formatCurrency(point.balances)}</strong>
-                                <small>{(translations.comparison.benchmarkOverview?.reliability?.[point.reliability] || 'Affidabilità in aggiornamento')} · n={point.contributorCount}</small>
-                            </div>
-                        ))}
-                    </LongitudinalGrid>
-                )}
-
-                <CohortDetails theme={theme}>
-                    <div className="cohort-line">
-                        <QueryStatsIcon />
-                        <span className="cohort-label">{translations.comparison.benchmarkOverview?.basedOn || 'Comparison based on'}</span>
-                        {displayedFactorGroups.map(group => <span className="factor-chip" key={group.id}>{group.label}</span>)}
-                    </div>
-                    <div className="privacy-note">
-                        <ShieldOutlinedIcon />
-                        <p>{(translations.comparison.benchmarkOverview?.privacy || 'Aggregated data only. Cohorts: {count} users; minimum privacy threshold: {minimum}. Updated: {updated}.')
-                            .replace('{count}', cohortLabel)
-                            .replace('{minimum}', benchmarkMetadata?.minimumCohortSize || 20)
-                            .replace('{updated}', updatedAt)}</p>
-                    </div>
-                </CohortDetails>
-
-                <CohortCustomizer theme={theme}>
-                    <div className="customizer-header">
-                        <div>
-                            <h3>{translations.comparison.benchmarkOverview?.customizeTitle || 'Customize similar users'}</h3>
-                            <p>{translations.comparison.benchmarkOverview?.customizeDescription || 'Choose which parts of your profile matter for your comparison. Data stays aggregated and anonymous.'}</p>
-                        </div>
-                        <TuneIcon fontSize="small" color="action" />
-                    </div>
-                    <div className="factor-options">
-                        {profileFactorGroups.map(group => (
-                            <button
-                                key={group.id}
-                                type="button"
-                                className={`factor-option ${group.available && selectedFactorGroups.includes(group.id) ? 'selected' : ''}`}
-                                onClick={() => toggleFactorGroup(group.id)}
-                                disabled={!group.available}
-                                aria-pressed={group.available && selectedFactorGroups.includes(group.id)}
-                                title={!group.available ? (translations.comparison.benchmarkOverview?.factorUnavailable || 'Complete this part of your profile to use it.') : undefined}
-                            >
-                                {group.label}
-                            </button>
-                        ))}
-                    </div>
-                    <div className="customizer-actions">
-                        <button
-                            type="button"
-                            className="apply-factors"
-                            onClick={applyCustomBenchmark}
-                            disabled={isCustomBenchmarkLoading || !profileFactorGroups.some(group => group.available && selectedFactorGroups.includes(group.id))}
-                        >
-                            {isCustomBenchmarkLoading
-                                ? (translations.comparison.benchmarkOverview?.calculating || 'Calculating...')
-                                : (translations.comparison.benchmarkOverview?.applyFactors || 'Update comparison')}
-                        </button>
-                        {customBenchmark && (
-                            <button type="button" className="reset-factors" onClick={resetCustomBenchmark}>
-                                {translations.comparison.benchmarkOverview?.resetFactors || 'Use recommended comparison'}
-                            </button>
-                        )}
-                        {customBenchmarkError && <span className="customizer-error">{customBenchmarkError}</span>}
-                        {cohortPreview && (
-                            <span className={`cohort-preview ${cohortPreview.available ? 'ready' : ''}`}>
-                                {(translations.comparison.benchmarkOverview?.preview || 'Preview: {count} comparable profiles (minimum {minimum}).')
-                                    .replace('{count}', cohortPreview.cohort.size)
-                                    .replace('{minimum}', cohortPreview.cohort.minimumSize)}
-                            </span>
-                        )}
-                    </div>
-                </CohortCustomizer>
-                </>}
-                {isBenchmarkExpanded && hasBenchmarkConsent && !similarComparisonAvailable && (
-                    <div className="benchmark-unavailable" role="status">
-                        <strong>{translations.comparison.benchmarkOverview?.comparisonUnavailable || 'Comparison group not available yet'}</strong>
-                        <p>{(translations.comparison.benchmarkOverview?.comparisonUnavailableDescription || 'We will show the comparison when the group reaches the minimum privacy threshold of {minimum} participants. Until then, no other users’ statistics are shown as a substitute.')
-                            .replace('{minimum}', String(minimumBenchmarkSize))}</p>
-                    </div>
-                )}
-            </BenchmarkOverview>
-        );
-    };
-
-    const renderProfileBanner = () => (
-        <ProfileBanner 
-            theme={theme} 
-            onClick={() => navigate('/profile')}
-            data-umami-event="comparison-complete-profile"
-        >
-            <BannerIcon theme={theme}>
-                <PersonIcon style={{ fontSize: '2rem', color: 'white' }} />
-            </BannerIcon>
-            <BannerContent theme={theme}>
-                <h3>{translations.comparison.profileBanner?.title || '🚀 Unlock personalized comparisons!'}</h3>
-                <p>
-                    {translations.comparison.profileBanner?.description || 'Complete your profile on the Account page to get anonymous, automated comparisons with users similar to you. Find out how you rank against other professionals!'}
-                </p>
-            </BannerContent>
-            <BannerAction theme={theme}>
-                {translations.comparison.profileBanner?.action || 'Complete profile'}
-                <ArrowForwardIcon />
-            </BannerAction>
-        </ProfileBanner>
-    );
-
-    const toggleCardExpand = (cardId) => {
-        setExpandedCards(prev => ({ ...prev, [cardId]: !prev[cardId] }));
-    };
-
-    const renderInsightsTab = () => (
-        <>
-            {ProfileCompletionPercentage !== 100 && renderProfileBanner()}
-            <ComparisonGuide theme={theme} aria-label={translations.comparison.guide.title}>
-                <div className="guide-intro">
-                    <ShieldOutlinedIcon />
-                    <div className="guide-copy">
-                        <strong>{translations.comparison.guide.title}</strong>
-                        <p>{translations.comparison.guide.description}</p>
-                    </div>
-                </div>
-                <div className="guide-item"><span className="guide-number">1</span><div><strong>{translations.comparison.guide.youTitle}</strong><p>{translations.comparison.guide.youDescription}</p></div></div>
-                <div className="guide-item"><span className="guide-number">2</span><div><strong>{translations.comparison.guide.similarTitle}</strong><p>{translations.comparison.guide.similarDescription}</p></div></div>
-                <div className="guide-item"><span className="guide-number">3</span><div><strong>{translations.comparison.guide.allTitle}</strong><p>{translations.comparison.guide.allDescription}</p></div></div>
-            </ComparisonGuide>
-            {renderBenchmarkOverview()}
-            <ComparisonLayers theme={theme} aria-label={translations.comparison.layers.title}>
-                <strong>{translations.comparison.layers.title}</strong>
-                <span className="layer you">1 · {translations.comparison.layers.you}</span>
-                <span className="layer group">2 · {translations.comparison.layers.group}</span>
-                <span className="layer general">3 · {translations.comparison.layers.general}</span>
-                <small>{translations.comparison.layers.hint}</small>
-            </ComparisonLayers>
-            <TopGrid>
-                <ComparisonCard theme={theme} accent="#3498db">
-                    <CardHeader theme={theme}>
-                        <h3><AccountBalanceIcon /> {translations.comparison.cards.avgBalance.title}</h3>
-                        <Tooltip title={translations.comparison.cards.avgBalance.description}>
-                            <InfoTrigger theme={theme}><InfoIcon /></InfoTrigger>
-                        </Tooltip>
-                    </CardHeader>
-                    <MetricRow theme={theme}>
-                        <span className="label">{translations.comparison.cards.avgBalance.yourBalance}</span>
-                        <BalanceValueContainer theme={theme} growth={comparisonData.avgBalance.user.growth12Months}>
-                            <div className="main-value">
-                                {formatCurrency(comparisonData.avgBalance.user.current)}
-                            </div>
-                            <div className="growth-value">
-                                {formatGrowthPercentage(comparisonData.avgBalance.user.growth12Months)}
-                            </div>
-                        </BalanceValueContainer>
-                    </MetricRow>
-                    <MetricRow theme={theme}>
-                        <span className="label">{translations.comparison.cards.avgBalance.avgSimilar}</span>
-                        <BalanceValueContainer theme={theme} growth={comparisonData.avgBalance.similarUsers.growth12Months}>
-                            <div className="main-value">
-                                {formatCurrency(comparisonData.avgBalance.similarUsers.current)}
-                                {getBalanceComparisonIcon(comparisonData.avgBalance.user, comparisonData.avgBalance.similarUsers)}
-                            </div>
-                            <div className="growth-value">
-                                {formatGrowthPercentage(comparisonData.avgBalance.similarUsers.growth12Months)}
-                            </div>
-                        </BalanceValueContainer>
-                    </MetricRow>
-                    <MetricRow theme={theme}>
-                        <span className="label">{translations.comparison.cards.avgBalance.avgAll}</span>
-                        <BalanceValueContainer theme={theme} growth={comparisonData.avgBalance.allUsers.growth12Months}>
-                            <div className="main-value">
-                                {formatCurrency(comparisonData.avgBalance.allUsers.current)}
-                                {getBalanceComparisonIcon(comparisonData.avgBalance.user, comparisonData.avgBalance.allUsers)}
-                            </div>
-                            <div className="growth-value">
-                                {formatGrowthPercentage(comparisonData.avgBalance.allUsers.growth12Months)}
-                            </div>
-                        </BalanceValueContainer>
-                    </MetricRow>
-                </ComparisonCard>
-
-                <ComparisonCard theme={theme} accent="#27ae60">
-                    <CardHeader theme={theme}>
-                        <h3><MonetizationOnIcon /> {translations.comparison.cards.avgIncome.title}</h3>
-                        <Tooltip title={translations.comparison.cards.avgIncome.description}>
-                            <InfoTrigger theme={theme}><InfoIcon /></InfoTrigger>
-                        </Tooltip>
-                    </CardHeader>
-                    <MetricRow theme={theme}>
-                        <span className="label">{translations.comparison.cards.avgIncome.yourIncome}</span>
-                        <span className="value">
-                            {formatCurrency(comparisonData.avgIncome.user)}
+    const accordionSections = [
+        {
+            id: 'balance',
+            icon: <AccountBalanceIcon />,
+            title: t.cards.avgBalance.title,
+            teaser: t.cards.avgBalance.description,
+            render: () => (
+                <>
+                    <BigStat theme={theme}>
+                        <strong>{formatCurrency(comparisonData.avgBalance.user.current)}</strong>
+                        <small>{formatGrowthPercentage(comparisonData.avgBalance.user.growth12Months) || t.cards.avgBalance.yourBalance}</small>
+                    </BigStat>
+                    <CompareRow theme={theme}>
+                        <span className="compare-label">{t.cards.avgBalance.avgSimilar}</span>
+                        <span className="compare-value">
+                            {comparisonData.avgBalance.similarUsers.current !== null ? <>{formatCurrency(comparisonData.avgBalance.similarUsers.current)}{getComparisonIcon(comparisonData.avgBalance.user.current, comparisonData.avgBalance.similarUsers.current)}</> : (translations.general.comingSoon || 'Coming soon')}
                         </span>
-                    </MetricRow>
-                    <MetricRow theme={theme}>
-                        <span className="label">{translations.comparison.cards.avgIncome.avgSimilar}</span>
-                        <span className="value">
-                            {formatCurrency(comparisonData.avgIncome.similarUsers)}
-                            {getComparisonIcon(comparisonData.avgIncome.user, comparisonData.avgIncome.similarUsers)}
+                    </CompareRow>
+                    <CompareRow theme={theme}>
+                        <span className="compare-label">{t.cards.avgBalance.avgAll}</span>
+                        <span className="compare-value">
+                            {comparisonData.avgBalance.allUsers.current !== null ? <>{formatCurrency(comparisonData.avgBalance.allUsers.current)}{getComparisonIcon(comparisonData.avgBalance.user.current, comparisonData.avgBalance.allUsers.current)}</> : (translations.general.comingSoon || 'Coming soon')}
                         </span>
-                    </MetricRow>
-                    <MetricRow theme={theme}>
-                        <span className="label">{translations.comparison.cards.avgIncome.avgAll}</span>
-                        <span className="value">
-                            {formatCurrency(comparisonData.avgIncome.allUsers)}
-                            {getComparisonIcon(comparisonData.avgIncome.user, comparisonData.avgIncome.allUsers)}
+                    </CompareRow>
+                </>
+            )
+        },
+        {
+            id: 'cashflow',
+            icon: <MonetizationOnIcon />,
+            title: t.accordion?.cashflowTitle || 'Income & outflows',
+            teaser: t.accordion?.cashflowDescription || 'Last complete month, compared to your cohort',
+            render: () => (
+                <>
+                    <CompareRow theme={theme}>
+                        <span className="compare-label">{t.cards.avgIncome.yourIncome}</span>
+                        <span className="compare-value">{formatCurrency(comparisonData.avgIncome.user)}</span>
+                    </CompareRow>
+                    <CompareRow theme={theme}>
+                        <span className="compare-label">{t.cards.avgIncome.avgSimilar}</span>
+                        <span className="compare-value">{formatCurrency(comparisonData.avgIncome.similarUsers)}{getComparisonIcon(comparisonData.avgIncome.user, comparisonData.avgIncome.similarUsers)}</span>
+                    </CompareRow>
+                    <CompareRow theme={theme}>
+                        <span className="compare-label">{t.cards.avgOutflows.yourOutflows}</span>
+                        <span className="compare-value">{formatCurrency(comparisonData.avgOutflows.user)}</span>
+                    </CompareRow>
+                    <CompareRow theme={theme}>
+                        <span className="compare-label">{t.cards.avgOutflows.avgSimilar}</span>
+                        <span className="compare-value">{formatCurrency(comparisonData.avgOutflows.similarUsers)}{getComparisonIcon(comparisonData.avgOutflows.similarUsers, comparisonData.avgOutflows.user)}</span>
+                    </CompareRow>
+                </>
+            )
+        },
+        {
+            id: 'savings',
+            icon: <SavingsIcon />,
+            title: t.cards.savingsRate.title,
+            teaser: t.cards.savingsRate.description,
+            render: () => userSavingsRate !== null ? (
+                <>
+                    <BigStat theme={theme}>
+                        <strong style={{ color: userSavingsRate >= 20 ? '#27ae60' : userSavingsRate < 0 ? '#e74c3c' : theme.textColor }}>
+                            {isHidden ? '****' : `${userSavingsRate.toFixed(1)}%`}
+                        </strong>
+                        <small>{t.cards.savingsRate.last12Months}</small>
+                    </BigStat>
+                    <CompareRow theme={theme}>
+                        <span className="compare-label">{t.cards.savingsRate.avgSimilar}</span>
+                        <span className="compare-value">
+                            {similarUsersSavingsRate !== null ? <>{isHidden ? '****' : `${similarUsersSavingsRate.toFixed(1)}%`}{getComparisonIcon(userSavingsRate, similarUsersSavingsRate)}</> : (translations.general.comingSoon || 'Coming soon')}
                         </span>
-                    </MetricRow>
-                </ComparisonCard>
-
-                <ComparisonCard theme={theme} accent="#e74c3c">
-                    <CardHeader theme={theme}>
-                        <h3><TrendingDownIcon /> {translations.comparison.cards.avgOutflows.title}</h3>
-                        <Tooltip title={translations.comparison.cards.avgOutflows.description}>
-                            <InfoTrigger theme={theme}><InfoIcon /></InfoTrigger>
-                        </Tooltip>
-                    </CardHeader>
-                    <MetricRow theme={theme}>
-                        <span className="label">{translations.comparison.cards.avgOutflows.yourOutflows}</span>
-                        <span className="value">
-                            {formatCurrency(comparisonData.avgOutflows.user)}
+                    </CompareRow>
+                    <CompareRow theme={theme}>
+                        <span className="compare-label">{t.cards.savingsRate.avgAll}</span>
+                        <span className="compare-value">
+                            {allUsersSavingsRate !== null ? <>{isHidden ? '****' : `${allUsersSavingsRate.toFixed(1)}%`}{getComparisonIcon(userSavingsRate, allUsersSavingsRate)}</> : (translations.general.comingSoon || 'Coming soon')}
                         </span>
-                    </MetricRow>
-                    <MetricRow theme={theme}>
-                        <span className="label">{translations.comparison.cards.avgOutflows.avgSimilar}</span>
-                        <span className="value">
-                            {formatCurrency(comparisonData.avgOutflows.similarUsers)}
-                            {getComparisonIcon(comparisonData.avgOutflows.similarUsers, comparisonData.avgOutflows.user)}
-                        </span>
-                    </MetricRow>
-                    <MetricRow theme={theme}>
-                        <span className="label">{translations.comparison.cards.avgOutflows.avgAll}</span>
-                        <span className="value">
-                            {formatCurrency(comparisonData.avgOutflows.allUsers)}
-                            {getComparisonIcon(comparisonData.avgOutflows.allUsers, comparisonData.avgOutflows.user)}
-                        </span>
-                    </MetricRow>
-                </ComparisonCard>
-
-                {/* Savings Rate Card */}
-                <ComparisonCard theme={theme} accent="#9b59b6">
-                    <CardHeader theme={theme}>
-                        <h3><SavingsIcon /> {translations.comparison.cards.savingsRate.title}</h3>
-                        <Tooltip title={translations.comparison.cards.savingsRate.description}>
-                            <InfoTrigger theme={theme}><InfoIcon /></InfoTrigger>
-                        </Tooltip>
-                    </CardHeader>
-                    {userSavingsRate !== null ? (
-                        <>
-                            <SavingsRateDisplay theme={theme} positive={userSavingsRate >= 20} negative={userSavingsRate < 0}>
-                                <div className="rate-value">
-                                    {isHidden ? '****' : `${userSavingsRate.toFixed(1)}`}<span>%</span>
-                                </div>
-                                <div className="rate-label">{translations.comparison.cards.savingsRate.last12Months}</div>
-                            </SavingsRateDisplay>
-                            <MetricRow theme={theme}>
-                                <span className="label">{translations.comparison.cards.savingsRate.yourRate}</span>
-                                <span className="value" style={{ color: userSavingsRate >= 20 ? '#27ae60' : userSavingsRate < 0 ? '#e74c3c' : theme.textColor }}>
-                                    {isHidden ? '****' : `${userSavingsRate.toFixed(1)}%`}
-                                </span>
-                            </MetricRow>
-                            <MetricRow theme={theme}>
-                                <span className="label">{translations.comparison.cards.savingsRate.avgSimilar}</span>
-                                <span className="value">
-                                    {similarUsersSavingsRate !== null ? (
-                                        <>
-                                            {isHidden ? '****' : `${similarUsersSavingsRate.toFixed(1)}%`}
-                                            {getComparisonIcon(userSavingsRate, similarUsersSavingsRate)}
-                                        </>
-                                    ) : (
-                                        translations.general.comingSoon || 'Coming soon'
-                                    )}
-                                </span>
-                            </MetricRow>
-                            <MetricRow theme={theme}>
-                                <span className="label">{translations.comparison.cards.savingsRate.avgAll}</span>
-                                <span className="value">
-                                    {allUsersSavingsRate !== null ? (
-                                        <>
-                                            {isHidden ? '****' : `${allUsersSavingsRate.toFixed(1)}%`}
-                                            {getComparisonIcon(userSavingsRate, allUsersSavingsRate)}
-                                        </>
-                                    ) : (
-                                        translations.general.comingSoon || 'Coming soon'
-                                    )}
-                                </span>
-                            </MetricRow>
-                        </>
-                    ) : (
-                        <div style={{ textAlign: 'center', padding: '2rem 0', color: theme.mode === 'dark' ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)' }}>
-                            {translations.comparison.cards.savingsRate.noData}
-                        </div>
+                    </CompareRow>
+                </>
+            ) : (
+                <EmptyState theme={theme}><p>{t.cards.savingsRate.noData}</p></EmptyState>
+            )
+        },
+        {
+            id: 'assets',
+            icon: <PieChartIcon />,
+            title: t.cards.assetAllocation.title,
+            teaser: t.cards.assetAllocation.description,
+            render: () => assetAllocation.length > 0 ? assetAllocation.map((asset) => (
+                <div key={asset.key} style={{ marginBottom: '0.6rem' }}>
+                    <BarRow theme={theme}>
+                        <span className="bar-dot" style={{ background: asset.color }} />
+                        <span className="bar-name">{asset.name}</span>
+                        <span className="bar-track"><span className="bar-fill" style={{ width: `${asset.percentage}%`, background: asset.color }} /></span>
+                        <span className="bar-value">{isHidden ? '**%' : `${asset.percentage.toFixed(0)}%`}</span>
+                    </BarRow>
+                    {asset.similarPercentage !== null && (
+                        <CompareRow theme={theme} style={{ paddingLeft: '1.5rem' }}>
+                            <span className="compare-label">{t.cards.assetAllocation.avgSimilar}</span>
+                            <span className="compare-value">{isHidden ? '**%' : `${asset.similarPercentage.toFixed(0)}%`}</span>
+                        </CompareRow>
                     )}
-                </ComparisonCard>
-            </TopGrid>
-
-            <BottomGrid>
-                {/* Asset Allocation Card */}
-                <ComparisonCard theme={theme} accent="#16a085">
-                    <CardHeader theme={theme}>
-                        <h3><PieChartIcon /> {translations.comparison.cards.assetAllocation.title}</h3>
-                        <Tooltip title={translations.comparison.cards.assetAllocation.description}>
-                            <InfoTrigger theme={theme}><InfoIcon /></InfoTrigger>
-                        </Tooltip>
-                    </CardHeader>
-                    {assetAllocation.length > 0 ? (
-                        <>
-                            <ExpandableCardContent expanded={expandedCards['assets']} theme={theme}>
-                                <ProgressBarContainer>
-                                    {assetAllocation.map((asset, index) => (
-                                        <React.Fragment key={asset.key}>
-                                            <ProgressBarRow theme={theme}>
-                                                <span className="label">{asset.name}</span>
-                                                <div className="bar-wrapper">
-                                                    <div className="bar-fill" style={{ width: `${asset.percentage}%`, background: asset.color }} />
-                                                </div>
-                                                <span className="percentage">
-                                                    {isHidden ? '**%' : `${asset.percentage.toFixed(0)}%`}
-                                                </span>
-                                            </ProgressBarRow>
-                                            <AllocationBenchmarks theme={theme}>
-                                                <div className="benchmark-row">
-                                                    <span>{translations.comparison.cards.assetAllocation.avgSimilar || 'Similar Users Average'}</span>
-                                                    <span className="benchmark-value">{asset.similarPercentage === null ? (translations.general.comingSoon || '—') : (isHidden ? '**%' : `${asset.similarPercentage.toFixed(0)}%`)}</span>
-                                                </div>
-                                                <div className="benchmark-row">
-                                                    <span>{translations.comparison.cards.assetAllocation.avgAll || 'All Users Average'}</span>
-                                                    <span className="benchmark-value">{asset.allPercentage === null ? (translations.general.comingSoon || '—') : (isHidden ? '**%' : `${asset.allPercentage.toFixed(0)}%`)}</span>
-                                                </div>
-                                            </AllocationBenchmarks>
-                                        </React.Fragment>
-                                    ))}
-                                    <div style={{ marginTop: '1rem', paddingTop: '0.75rem', borderTop: `1px solid ${theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : '#eee'}` }}>
-                                        {assetAllocation.map((asset, index) => (
-                                            <CategoryBar key={index} theme={theme}>
-                                                <div className="color-dot" style={{ background: asset.color }} />
-                                                <span className="category-name">{asset.name}</span>
-                                                <span className="category-value">
-                                                    {isHidden ? '****' : formatCurrency(asset.value)}
-                                                </span>
-                                            </CategoryBar>
-                                        ))}
-                                    </div>
-                                </ProgressBarContainer>
-                            </ExpandableCardContent>
-                            {assetAllocation.length > 3 && (
-                                <ExpandToggle theme={theme} onClick={() => toggleCardExpand('assets')}>
-                                    {expandedCards['assets'] ? (
-                                        <><KeyboardArrowUpIcon sx={{ fontSize: 16 }} /> {translations.comparison.cards.showLess || 'Show less'}</>
-                                    ) : (
-                                        <><KeyboardArrowDownIcon sx={{ fontSize: 16 }} /> {translations.comparison.cards.showMore || 'Show more'}</>
-                                    )}
-                                </ExpandToggle>
-                            )}
-                        </>
-                    ) : (
-                        <div style={{ textAlign: 'center', padding: '2rem 0', color: theme.mode === 'dark' ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)' }}>
-                            {translations.comparison.cards.assetAllocation.noAssets}
-                        </div>
-                    )}
-                </ComparisonCard>
-
-                {/* Spending by Category Card */}
-                <ComparisonCard theme={theme} accent="#e67e22">
-                    <CardHeader theme={theme}>
-                        <h3><BarChartIcon /> {translations.comparison.cards.spendingCategories.title}</h3>
-                        <Tooltip title={translations.comparison.cards.spendingCategories.description}>
-                            <InfoTrigger theme={theme}><InfoIcon /></InfoTrigger>
-                        </Tooltip>
-                    </CardHeader>
-                    {spendingByCategory.length > 0 ? (
-                        <>
-                            <ExpandableCardContent expanded={expandedCards['spending']} theme={theme}>
-                                <div style={{ fontSize: '0.85rem', color: theme.mode === 'dark' ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)', marginBottom: '0.5rem' }}>
-                                    {translations.comparison.cards.spendingCategories.topCategories}
-                                </div>
-                                {spendingByCategory.slice(0, 5).map((category, index) => {
-                                // Find the category index to look up averages.
-                                // category.name is the EN translation of the label (see
-                                // userDataTransformers), so it's compared against the
-                                // same i18n translation: tags from the DB no longer
-                                // carry a translations field.
-                                const categoryIndex = userData?.tags?.outflowsTags?.find(
-                                    t => t.label === category.tagKey || translateTag(t.label, 'en', 'expense') === category.name
-                                )?.index;
-                                
-                                const similarAvg = categoryIndex !== undefined && similarUsersExpensesByCategory ? similarUsersExpensesByCategory[categoryIndex] : null;
-                                const allAvg = categoryIndex !== undefined && allUsersExpensesByCategory ? allUsersExpensesByCategory[categoryIndex] : null;
-                                
-                                return (
-                                    <div key={index} style={{ marginBottom: '0.75rem' }}>
-                                        <CategoryBar theme={theme}>
-                                            <div className="color-dot" style={{ background: category.color }} />
-                                            <span className="category-name">{category.displayName}</span>
-                                            <span className="category-value">
-                                                {isHidden ? '****' : formatCurrency(category.value)}
-                                            </span>
-                                            <span className="category-percent">
-                                                {isHidden ? '**%' : `${category.percentage.toFixed(0)}%`}
-                                            </span>
-                                        </CategoryBar>
-                                        {(similarAvg !== null && similarAvg !== undefined && similarAvg > 0) && (
-                                            <div style={{ 
-                                                display: 'flex', 
-                                                justifyContent: 'space-between', 
-                                                alignItems: 'center',
-                                                paddingLeft: '1.5rem', 
-                                                fontSize: '0.78rem', 
-                                                color: theme.mode === 'dark' ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)',
-                                                marginTop: '2px'
-                                            }}>
-                                                <span>{translations.comparison.cards.spendingCategories.avgSimilar || translations.comparison.cards.avgOutflows.avgSimilar}</span>
-                                                <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                                    {isHidden ? '****' : formatCurrency(similarAvg)}
-                                                    {getComparisonIcon(similarAvg, category.value)}
-                                                </span>
-                                            </div>
-                                        )}
-                                        {(allAvg !== null && allAvg !== undefined && allAvg > 0) && (
-                                            <div style={{ 
-                                                display: 'flex', 
-                                                justifyContent: 'space-between', 
-                                                alignItems: 'center',
-                                                paddingLeft: '1.5rem', 
-                                                fontSize: '0.78rem', 
-                                                color: theme.mode === 'dark' ? 'rgba(255,255,255,0.45)' : 'rgba(0,0,0,0.45)',
-                                                marginTop: '1px'
-                                            }}>
-                                                <span>{translations.comparison.cards.spendingCategories.avgAll || translations.comparison.cards.avgOutflows.avgAll}</span>
-                                                <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                                    {isHidden ? '****' : formatCurrency(allAvg)}
-                                                    {getComparisonIcon(allAvg, category.value)}
-                                                </span>
-                                            </div>
-                                        )}
-                                    </div>
-                                );
-                            })}
-                                {spendingByCategory.length > 5 && (
-                                    <>
-                                        <div style={{ fontSize: '0.8rem', color: theme.mode === 'dark' ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)', marginTop: '0.75rem', marginBottom: '0.25rem' }}>
-                                            {translations.comparison.cards.spendingCategories.otherCategories} ({spendingByCategory.length - 5})
-                                        </div>
-                                        <CategoryBar theme={theme}>
-                                            <div className="color-dot" style={{ background: '#7f8c8d' }} />
-                                            <span className="category-name">{translations.comparison.cards.assetAllocation.other || 'Other'}</span>
-                                            <span className="category-value">
-                                                {isHidden ? '****' : formatCurrency(spendingByCategory.slice(5).reduce((sum, c) => sum + c.value, 0))}
-                                            </span>
-                                            <span className="category-percent">
-                                                {isHidden ? '**%' : `${spendingByCategory.slice(5).reduce((sum, c) => sum + c.percentage, 0).toFixed(0)}%`}
-                                            </span>
-                                        </CategoryBar>
-                                    </>
-                                )}
-                            </ExpandableCardContent>
-                            <ExpandToggle theme={theme} onClick={() => toggleCardExpand('spending')}>
-                                {expandedCards['spending'] ? (
-                                    <><KeyboardArrowUpIcon sx={{ fontSize: 16 }} /> {translations.comparison.cards.showLess || 'Show less'}</>
-                                ) : (
-                                    <><KeyboardArrowDownIcon sx={{ fontSize: 16 }} /> {translations.comparison.cards.showMore || 'Show more'}</>
-                                )}
-                            </ExpandToggle>
-                        </>
-                    ) : (
-                        <div style={{ textAlign: 'center', padding: '2rem 0', color: theme.mode === 'dark' ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)' }}>
-                            {translations.comparison.cards.spendingCategories.noExpenses}
-                        </div>
-                    )}
-                </ComparisonCard>
-            </BottomGrid>
-
-            {generateInsights().map((insight, index) => (
-                <InsightCard key={index} theme={theme}>
-                    <h4><TipsAndUpdatesIcon /> {insight.title}</h4>
-                    <p>{insight.description}</p>
-                </InsightCard>
-            ))}
-        </>
-    );
-
-    const renderLegacyRankingsTab = () => {
-        const balanceRank = allComparisonAvailable ? getPercentageRankOnBalance(userData) : 0;
-        const incomeRank = allComparisonAvailable ? getPercentageRankOnIncomes(userData) : 0;
-        const expenseRank = allComparisonAvailable ? getPercentageRankOnOutflows(userData) : 0;
-        const balanceSimilarRank = similarComparisonAvailable ? (customBenchmark?.available ? customBenchmark.rankings.balance : getPercentageRankOnBalanceSimilar(userData)) : 0;
-        const incomeSimilarRank = similarComparisonAvailable ? (customBenchmark?.available ? customBenchmark.rankings.incomes : getPercentageRankOnIncomesSimilar(userData)) : 0;
-        const expenseSimilarRank = similarComparisonAvailable ? (customBenchmark?.available ? customBenchmark.rankings.outflows : getPercentageRankOnOutflowsSimilar(userData)) : 0;
-
-        if (!allComparisonAvailable && !similarComparisonAvailable) {
-            return <RankingsContainer>
-                <RankingsHeader theme={theme}><h2><EmojiEventsIcon style={{ fontSize: '1.8rem', color: theme.buttonBackgroundColor }} />{translations.leaderboard.rankings.title}</h2></RankingsHeader>
-                <div className="benchmark-unavailable" role="status">
-                    <strong>{translations.comparison.benchmarkOverview?.comparisonUnavailable || 'Comparison group not available yet'}</strong>
-                    <p>{(translations.comparison.benchmarkOverview?.comparisonUnavailableDescription || 'We will show rankings when the privacy threshold is met: {minimum}.').replace('{minimum}', String(minimumBenchmarkSize))}</p>
                 </div>
-            </RankingsContainer>;
+            )) : (
+                <EmptyState theme={theme}><p>{t.cards.assetAllocation.noAssets}</p></EmptyState>
+            )
+        },
+        {
+            id: 'spending',
+            icon: <BarChartIcon />,
+            title: t.cards.spendingCategories.title,
+            teaser: t.cards.spendingCategories.description,
+            render: () => spendingByCategory.length > 0 ? spendingByCategory.slice(0, 6).map((category) => (
+                <BarRow key={category.name} theme={theme}>
+                    <span className="bar-dot" style={{ background: category.color }} />
+                    <span className="bar-name">{category.displayName}</span>
+                    <span className="bar-track"><span className="bar-fill" style={{ width: `${category.percentage}%`, background: category.color }} /></span>
+                    <span className="bar-value">{isHidden ? '****' : formatCurrency(category.value)}</span>
+                </BarRow>
+            )) : (
+                <EmptyState theme={theme}><p>{t.cards.spendingCategories.noExpenses}</p></EmptyState>
+            )
+        },
+        {
+            id: 'behaviour',
+            icon: <QueryStatsIcon />,
+            title: t.accordion?.behaviourTitle || t.rankingsAccessory.title,
+            teaser: t.rankingsAccessory.description,
+            render: () => behaviourCards.map((card) => {
+                const personalValue = behaviourBenchmark?.available && behaviourBenchmark.personal ? behaviourBenchmark.personal[card.key] : null;
+                const rankValue = behaviourBenchmark?.available && behaviourBenchmark.rankings ? behaviourBenchmark.rankings[card.key] : null;
+                return (
+                    <CompareRow key={card.key} theme={theme}>
+                        <span className="compare-label">{card.title}</span>
+                        <span className="compare-value">
+                            {personalValue != null
+                                ? `${personalValue.toFixed(1)}${card.suffix} · Top ${Math.max(1, 100 - (rankValue ?? 100))}%`
+                                : (translations.general.comingSoon || 'Coming soon')}
+                        </span>
+                    </CompareRow>
+                );
+            })
         }
+    ];
 
-        const RankCard = ({ title, rank, icon, isExpense = false, category }) => (
-            <RankingCard 
-                theme={theme} 
-                isTop={getRankLevel(rank) === 'top'}
-                isLow={getRankLevel(rank) === 'low'}
-                onClick={() => showMotivationalMessage(rank, category, isExpense)}
-            >
-                <div className="rank-header">
-                    <h4>
-                        {icon}
-                        {title}
-                    </h4>
-                    <div className="rank-badge">
-                        {getRankLevel(rank) === 'top' && <EmojiEventsIcon style={{ fontSize: '1rem' }} />}
-                        {getRankLevel(rank) === 'low' && <TrendingDownIcon style={{ fontSize: '1rem' }} />}
-                        {getRankLevel(rank) === 'medium' && <TrendingUpIcon style={{ fontSize: '1rem' }} />}
-                        {rank && !isNaN(rank) ? `Top ${Math.min(parseFloat(rank), 99)}%` : 'N/A'}
-                    </div>
-                </div>
-                <p className="rank-description">
-                    {isHidden ? '****' : getRankDescription(rank, category, isExpense)}
-                </p>
-            </RankingCard>
-        );
-
-        return (
-            <RankingsContainer>
-                {ProfileCompletionPercentage !== 100 && renderProfileBanner()}
-                
-                <RankingsHeader theme={theme}>
-                    <h2>
-                        <EmojiEventsIcon style={{ fontSize: '1.8rem', color: theme.buttonBackgroundColor }} />
-                        {translations.leaderboard.rankings.title}
-                    </h2>
-                    <div className="month-indicator">
-                        <CalendarTodayIcon style={{ fontSize: '1rem' }} />
-                        {translations.leaderboard.rankings.monthData} {getCurrentMonth()}
-                    </div>
-                </RankingsHeader>
-
-                <RankingsGrid>
-                    {/* Classifica Generale */}
-                    <RankingGroup theme={theme}>
-                        <div className="group-header">
-                            <div className="icon-container">
-                                <PublicIcon style={{ fontSize: '1.5rem', color: 'white' }} />
-                            </div>
-                            <div>
-                                <h3>{translations.leaderboard.rankings.generalRanking}</h3>
-                                <p style={{ 
-                                    color: theme.mode === 'dark' ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)', 
-                                    margin: 0, 
-                                    fontSize: '0.9rem' 
-                                }}>
-                                    {translations.leaderboard.rankings.generalSubtitle}
-                                </p>
-                            </div>
-                        </div>
-                        
-                        <RankCard 
-                            title={translations.leaderboard.rankings.balance} 
-                            rank={balanceRank}
-                            icon={<AccountBalanceIcon style={{ fontSize: '1.2rem', marginRight: '0.25rem' }} />}
-                            category="balance"
-                        />
-                        
-                        <RankCard 
-                            title={translations.leaderboard.rankings.income} 
-                            rank={incomeRank}
-                            icon={<MonetizationOnIcon style={{ fontSize: '1.2rem', marginRight: '0.25rem' }} />}
-                            category="income"
-                        />
-                        
-                        <RankCard 
-                            title={translations.leaderboard.rankings.outflows} 
-                            rank={expenseRank}
-                            icon={<TrendingDownIcon style={{ fontSize: '1.2rem', marginRight: '0.25rem' }} />}
-                            category="outflows"
-                            isExpense={true}
-                        />
-                    </RankingGroup>
-
-                    {/* Classifica Utenti Simili */}
-                    <RankingGroup theme={theme}>
-                        <div className="group-header">
-                            <div className="icon-container">
-                                <GroupIcon style={{ fontSize: '1.5rem', color: 'white' }} />
-                            </div>
-                            <div>
-                                <h3>{translations.leaderboard.rankings.similarRanking}</h3>
-                                <p style={{ 
-                                    color: theme.mode === 'dark' ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)', 
-                                    margin: 0, 
-                                    fontSize: '0.9rem' 
-                                }}>
-                                    {translations.leaderboard.rankings.similarSubtitle}
-                                </p>
-                            </div>
-                        </div>
-                        
-                        <RankCard 
-                            title={translations.leaderboard.rankings.balance} 
-                            rank={balanceSimilarRank}
-                            icon={<AccountBalanceIcon style={{ fontSize: '1.2rem', marginRight: '0.25rem' }} />}
-                            category="balance"
-                        />
-                        
-                        <RankCard 
-                            title={translations.leaderboard.rankings.income} 
-                            rank={incomeSimilarRank}
-                            icon={<MonetizationOnIcon style={{ fontSize: '1.2rem', marginRight: '0.25rem' }} />}
-                            category="income"
-                        />
-                        
-                        <RankCard 
-                            title={translations.leaderboard.rankings.outflows} 
-                            rank={expenseSimilarRank}
-                            icon={<TrendingDownIcon style={{ fontSize: '1.2rem', marginRight: '0.25rem' }} />}
-                            category="outflows"
-                            isExpense={true}
-                        />
-                    </RankingGroup>
-                </RankingsGrid>
-
-                {/* Popup Motivazionale */}
-                {showMotivationalPopup && (
-                    <>
-                        <PopupOverlay onClick={() => setShowMotivationalPopup(false)} />
-                        <MotivationalPopup theme={theme}>
-                            <div className="popup-icon">{popupContent.icon}</div>
-                            <h3>{popupContent.title}</h3>
-                            <p>{popupContent.message}</p>
-                            <button onClick={() => setShowMotivationalPopup(false)}>
-                                {translations.leaderboard.rankings.popup.close}
-                            </button>
-                        </MotivationalPopup>
-                    </>
-                )}
-            </RankingsContainer>
-        );
-    };
-
-    const renderRankingsTab = () => {
-        const t = translations.comparison.rankingsAccessory;
-        const cards = [
-            {key: 'savingConsistency', title: t.savingConsistency, description: t.savingConsistencyDescription, suffix: '%'},
-            {key: 'investmentRegularity', title: t.investmentRegularity, description: t.investmentRegularityDescription, suffix: '%'},
-            {key: 'contributionFrequency', title: t.contributionFrequency, description: t.contributionFrequencyDescription, suffix: ''},
-            {key: 'goalProgress', title: t.goalProgress, description: t.goalProgressDescription, suffix: '%'},
-        ];
-        return <RankingsContainer>
-            <RankingsHeader theme={theme}>
-                <h2><EmojiEventsIcon style={{ fontSize: '1.8rem', color: theme.buttonBackgroundColor }} />{t.title}</h2>
-                <div className="month-indicator">{t.accessoryLabel}</div>
-            </RankingsHeader>
-            <p style={{color: theme.textColor, opacity: .72, margin: '0 0 1rem'}}>{t.description}</p>
-            <RankingsGrid>
-                {cards.map((card) => <RankingGroup theme={theme} key={card.title}>
-                    <div className="group-header">
-                        <div className="icon-container"><QueryStatsIcon style={{ fontSize: '1.5rem', color: 'white' }} /></div>
-                        <div><h3>{card.title}</h3><p style={{color: theme.textColor, opacity: .68, margin: 0, fontSize: '.86rem'}}>{card.description}</p></div>
-                    </div>
-                    {behaviourBenchmark?.available && behaviourBenchmark.personal && behaviourBenchmark.rankings ? <div className="benchmark-unavailable" role="status">
-                        <strong>{behaviourBenchmark.personal[card.key] == null ? '—' : `${behaviourBenchmark.personal[card.key]!.toFixed(1)}${card.suffix}`} · {behaviourBenchmark.rankings[card.key] == null ? '—' : `Top ${Math.max(1, 100 - behaviourBenchmark.rankings[card.key]!)}%`}</strong>
-                        <p>{t.waitingForMetricDescription}</p>
-                    </div> : <div className="benchmark-unavailable" role="status">
-                        <strong>{similarComparisonAvailable ? t.waitingForMetric : t.waitingForGroup}</strong>
-                        <p>{similarComparisonAvailable ? t.waitingForMetricDescription : t.waitingForGroupDescription.replace('{minimum}', String(minimumBenchmarkSize))}</p>
-                    </div>}
-                </RankingGroup>)}
-            </RankingsGrid>
-        </RankingsContainer>;
-    };
+    const overallGaugeValue = similarComparisonAvailable && similarRanks.balance > 0 ? Math.min(similarRanks.balance, 100) : null;
 
     return (
         <Section theme={theme}>
-            <ComparisonContainer>
-                <SectionHeader theme={theme}>
-                    <h1>{translations.comparison.title}</h1>
-                    <p>{translations.comparison.subtitle}</p>
-                </SectionHeader>
+            <PageContainer>
+                <HeroCard theme={theme}>
+                    <HeroEyebrow theme={theme}><ShieldOutlinedIcon fontSize="small" /> {t.hero?.eyebrow || 'Anonymous & aggregate only'}</HeroEyebrow>
+                    <HeroTitle theme={theme}>{t.title}</HeroTitle>
+                    <HeroSubtitle theme={theme}>{t.subtitle}</HeroSubtitle>
 
-                <SectionTabs theme={theme}>
-                    <TabButton 
-                        theme={theme} 
-                        active={activeTab === 'insights'} 
-                        onClick={() => setActiveTab('insights')}
-                        data-umami-event="comparison-tab-insights"
-                    >
-                        <BarChartIcon />
-                        {translations.comparison.sections.insights.title}
-                    </TabButton>
-                    <TabButton 
-                        theme={theme} 
-                        active={activeTab === 'rankings'} 
-                        onClick={() => setActiveTab('rankings')}
-                        data-umami-event="comparison-tab-rankings"
-                    >
-                        <CompareArrowsIcon />
-                        {translations.comparison.rankingsAccessory.title}
-                    </TabButton>
-                </SectionTabs>
+                    {!hasBenchmarkConsent ? (
+                        <>
+                            <GaugeFigure theme={theme}>
+                                <GaugeArc value={null} theme={theme} />
+                                <GaugeValue theme={theme}><LockOutlinedIcon style={{ fontSize: '1.6rem', color: theme.mode === 'dark' ? 'rgba(255,255,255,0.45)' : 'rgba(15,23,42,0.35)' }} /></GaugeValue>
+                            </GaugeFigure>
+                            <GaugeCaption theme={theme}>{optInCopy.description}</GaugeCaption>
+                            <HeroCTA theme={theme} type="button" onClick={enableCommunityComparison} disabled={isSavingBenchmarkConsent}>
+                                {isSavingBenchmarkConsent ? (t.benchmarkOverview?.optInSaving || 'Activating...') : optInCopy.title}
+                            </HeroCTA>
+                        </>
+                    ) : (
+                        <>
+                            <GaugeFigure theme={theme}>
+                                <GaugeArc value={overallGaugeValue} theme={theme} />
+                                <GaugeValue theme={theme}>
+                                    {overallGaugeValue !== null ? (
+                                        <>
+                                            <strong>{isHidden ? '**' : `${overallGaugeValue}`}<span style={{ fontSize: '1.1rem' }}>%</span></strong>
+                                            <span>{t.hero?.gaugeLabel || 'Percentile'}</span>
+                                        </>
+                                    ) : (
+                                        <ScheduleIcon style={{ fontSize: '1.6rem', color: theme.mode === 'dark' ? 'rgba(255,255,255,0.45)' : 'rgba(15,23,42,0.35)' }} />
+                                    )}
+                                </GaugeValue>
+                            </GaugeFigure>
+                            <GaugeCaption theme={theme}>
+                                {overallGaugeValue !== null
+                                    ? (t.hero?.gaugeCaption || 'Your net worth compared to people with a similar profile.')
+                                    : (t.hero?.gaugeLockedDescription || 'We will show this as soon as your comparison group reaches the minimum privacy threshold.')}
+                            </GaugeCaption>
+                            <HeadlineChips>
+                                <HeadlineChip theme={theme} $delay="0s">
+                                    <AccountBalanceIcon />
+                                    <div><div className="chip-value">{similarRanks.balance > 0 ? `${Math.min(similarRanks.balance, 100)}%` : '—'}</div><div className="chip-label">{t.hero?.balanceLabel || 'Net worth'}</div></div>
+                                </HeadlineChip>
+                                <HeadlineChip theme={theme} $delay="0.06s">
+                                    <MonetizationOnIcon />
+                                    <div><div className="chip-value">{similarRanks.incomes > 0 ? `${Math.min(similarRanks.incomes, 100)}%` : '—'}</div><div className="chip-label">{t.hero?.incomeLabel || 'Income'}</div></div>
+                                </HeadlineChip>
+                                <HeadlineChip theme={theme} $delay="0.12s">
+                                    <TrendingDownIcon />
+                                    <div><div className="chip-value">{similarRanks.outflows > 0 ? `${Math.min(similarRanks.outflows, 100)}%` : '—'}</div><div className="chip-label">{t.hero?.outflowsLabel || 'Frugality'}</div></div>
+                                </HeadlineChip>
+                            </HeadlineChips>
+                        </>
+                    )}
+                </HeroCard>
 
-                {activeTab === 'insights' && renderInsightsTab()}
-                {activeTab === 'rankings' && renderRankingsTab()}
-            </ComparisonContainer>
+                {ProfileCompletionPercentage !== 100 && (
+                    <ProfileNudge theme={theme} type="button" onClick={() => navigate('/profile')} data-umami-event="comparison-complete-profile">
+                        <span className="nudge-icon"><PersonIcon fontSize="small" /></span>
+                        <div>
+                            <strong>{t.profileBanner?.title || 'Complete your profile'}</strong>
+                            <span>{t.profileBanner?.description}</span>
+                        </div>
+                        <span className="nudge-arrow"><ArrowForwardIcon fontSize="small" /></span>
+                    </ProfileNudge>
+                )}
+
+                {hasBenchmarkConsent && insights.length > 0 && (
+                    <InsightList>
+                        {insights.map((insight, index) => (
+                            <InsightCard key={index} theme={theme} $tone={insight.type === 'warning' ? 'warning' : 'positive'}>
+                                <span className="insight-icon"><TipsAndUpdatesIcon /></span>
+                                <div>
+                                    <h4>{insight.title}</h4>
+                                    <p>{insight.description}</p>
+                                </div>
+                            </InsightCard>
+                        ))}
+                    </InsightList>
+                )}
+
+                {hasBenchmarkConsent && !similarComparisonAvailable && !allComparisonAvailable && (
+                    <EmptyState theme={theme} role="status">
+                        <strong>{t.benchmarkOverview?.comparisonUnavailable || 'Comparison group not available yet'}</strong>
+                        <p>{(t.benchmarkOverview?.comparisonUnavailableDescription || 'We will show the comparison when the group reaches the minimum privacy threshold of {minimum} participants.').replace('{minimum}', String(minimumBenchmarkSize))}</p>
+                        {communityPopulationSize > 0 && (
+                            <p style={{ marginTop: '0.4rem', fontWeight: 700 }}>
+                                {(t.benchmarkOverview?.comparisonUnavailableProgress || '{count} of {minimum} people so far.')
+                                    .replace('{count}', String(communityPopulationSize))
+                                    .replace('{minimum}', String(minimumBenchmarkSize))}
+                            </p>
+                        )}
+                    </EmptyState>
+                )}
+
+                {hasBenchmarkConsent && (similarComparisonAvailable || allComparisonAvailable) && (
+                    <>
+                        <SectionLabel theme={theme}>{t.accordion?.sectionLabel || 'Explore the detail'}</SectionLabel>
+                        <AccordionList>
+                            {accordionSections.map((section) => {
+                                const open = Boolean(expandedSections[section.id]);
+                                return (
+                                    <AccordionItem key={section.id} theme={theme}>
+                                        <AccordionHeader theme={theme} type="button" $open={open} onClick={() => toggleSection(section.id)} aria-expanded={open}>
+                                            <span className="accordion-icon">{section.icon}</span>
+                                            <span className="accordion-copy">
+                                                <strong>{section.title}</strong>
+                                                <span>{section.teaser}</span>
+                                            </span>
+                                            <span className="accordion-chevron"><KeyboardArrowDownIcon /></span>
+                                        </AccordionHeader>
+                                        <AccordionBody theme={theme} $open={open}>
+                                            <div>
+                                                <div className="accordion-body-inner">{section.render()}</div>
+                                            </div>
+                                        </AccordionBody>
+                                    </AccordionItem>
+                                );
+                            })}
+                        </AccordionList>
+                    </>
+                )}
+
+                <SectionLabel theme={theme}>{t.benchmarkOverview?.customizeTitle || 'Your comparison group'}</SectionLabel>
+                <CohortCard theme={theme}>
+                    <div className="cohort-head">
+                        <div>
+                            <h3>{t.benchmarkOverview?.customizeTitle || 'Customize similar users'}</h3>
+                            <p>{t.benchmarkOverview?.customizeDescription || 'Choose which parts of your profile matter for your comparison. Data stays aggregated and anonymous.'}</p>
+                        </div>
+                        <Tooltip title={t.benchmarkOverview?.groupHelp || ''}>
+                            <span style={{ display: 'inline-flex', cursor: 'help', opacity: 0.6 }}><InfoIcon fontSize="small" /></span>
+                        </Tooltip>
+                    </div>
+
+                    {hasBenchmarkConsent ? (
+                        <>
+                            <div className="factor-options">
+                                {profileFactorGroups.map((group) => (
+                                    <FactorChip
+                                        key={group.id}
+                                        theme={theme}
+                                        type="button"
+                                        $selected={group.available && selectedFactorGroups.includes(group.id)}
+                                        onClick={() => toggleFactorGroup(group.id)}
+                                        disabled={!group.available}
+                                        title={!group.available ? (t.benchmarkOverview?.factorUnavailable || 'Complete this part of your profile to use it.') : undefined}
+                                        aria-pressed={group.available && selectedFactorGroups.includes(group.id)}
+                                    >
+                                        {group.label}
+                                    </FactorChip>
+                                ))}
+                            </div>
+                            <div className="customizer-actions">
+                                <button
+                                    type="button"
+                                    className="apply-factors"
+                                    onClick={applyCustomBenchmark}
+                                    disabled={isCustomBenchmarkLoading || !profileFactorGroups.some(group => group.available && selectedFactorGroups.includes(group.id))}
+                                >
+                                    {isCustomBenchmarkLoading ? (t.benchmarkOverview?.calculating || 'Calculating...') : (t.benchmarkOverview?.applyFactors || 'Update comparison')}
+                                </button>
+                                {customBenchmark && (
+                                    <button type="button" className="reset-factors" onClick={resetCustomBenchmark}>
+                                        {t.benchmarkOverview?.resetFactors || 'Use recommended comparison'}
+                                    </button>
+                                )}
+                                {customBenchmarkError && <span className="customizer-error">{customBenchmarkError}</span>}
+                                {cohortPreview && (
+                                    <span className={`cohort-preview ${cohortPreview.available ? 'ready' : ''}`}>
+                                        {(t.benchmarkOverview?.preview || 'Preview: {count} comparable profiles (minimum {minimum}).')
+                                            .replace('{count}', cohortPreview.cohort.size)
+                                            .replace('{minimum}', cohortPreview.cohort.minimumSize)}
+                                        {cohortPreview.relaxed && (
+                                            <span className="cohort-relaxed-note">{relaxedNoticeFor(cohortPreview.factors)}</span>
+                                        )}
+                                    </span>
+                                )}
+                            </div>
+                            {customBenchmark?.available && customBenchmark.relaxed && (
+                                <div className="privacy-line">
+                                    <TuneIcon />
+                                    <p>{relaxedNoticeFor(customBenchmark.factors)}</p>
+                                </div>
+                            )}
+                            {displayedFactorGroups.length > 0 && (
+                                <div className="privacy-line">
+                                    <ShieldOutlinedIcon />
+                                    <p>{(t.benchmarkOverview?.privacy || 'Aggregated data only. Cohorts: {count} users; minimum privacy threshold: {minimum}. Updated: {updated}.')
+                                        .replace('{count}', cohortLabel)
+                                        .replace('{minimum}', benchmarkMetadata?.minimumCohortSize || 20)
+                                        .replace('{updated}', updatedAt)}</p>
+                                </div>
+                            )}
+                        </>
+                    ) : (
+                        <EmptyState theme={theme}>
+                            <p>{t.benchmarkOverview?.description || 'Compare net worth, income and outflows with a group of users with a similar profile.'}</p>
+                        </EmptyState>
+                    )}
+                </CohortCard>
+
+                <SectionLabel theme={theme}>{t.geography?.title || 'Geography'}</SectionLabel>
+                <GeographyGrid>
+                    <GeographyCard theme={theme}>
+                        <span className="geo-icon"><FlagCircleIcon /></span>
+                        <h3>{t.geography?.countryTitle || 'Compare by country'}</h3>
+                        <p>{t.geography?.countryDescription || 'Isolate geography from your other profile factors to see how you compare to people in your country.'}</p>
+                        {!hasBenchmarkConsent ? (
+                            <p style={{ fontSize: '0.78rem', opacity: 0.6, margin: 0 }}>{t.geography?.countryNeedsConsent || 'Enable comparison above to use this.'}</p>
+                        ) : !countryFactorAvailable ? (
+                            <GeoCountryAction theme={theme} type="button" onClick={() => navigate('/profile')}>
+                                <TuneIcon fontSize="small" /> {t.geography?.countryProfileIncomplete || 'Add your country to your profile'}
+                            </GeoCountryAction>
+                        ) : (
+                            <>
+                                <GeoCountryAction theme={theme} type="button" onClick={loadCountryBenchmark} disabled={isCountryBenchmarkLoading}>
+                                    <PublicIcon fontSize="small" />
+                                    {isCountryBenchmarkLoading ? (t.benchmarkOverview?.calculating || 'Calculating...') : (t.geography?.countryCTA || 'See my country comparison')}
+                                </GeoCountryAction>
+                                {countryBenchmarkError && <span style={{ fontSize: '0.78rem', color: '#ef4444' }}>{countryBenchmarkError}</span>}
+                                {countryBenchmark?.available && (
+                                    <CountryResult theme={theme}>
+                                        <CompareRow theme={theme}>
+                                            <span className="compare-label">{t.hero?.balanceLabel || 'Net worth'}</span>
+                                            <span className="compare-value">{`Top ${Math.min(countryBenchmark.rankings.balance, 100)}%`}</span>
+                                        </CompareRow>
+                                        <CompareRow theme={theme}>
+                                            <span className="compare-label">{t.hero?.incomeLabel || 'Income'}</span>
+                                            <span className="compare-value">{`Top ${Math.min(countryBenchmark.rankings.incomes, 100)}%`}</span>
+                                        </CompareRow>
+                                        <CompareRow theme={theme}>
+                                            <span className="compare-label">{t.hero?.outflowsLabel || 'Frugality'}</span>
+                                            <span className="compare-value">{`Top ${Math.min(countryBenchmark.rankings.outflows, 100)}%`}</span>
+                                        </CompareRow>
+                                        <span style={{ fontSize: '0.74rem', opacity: 0.6 }}>
+                                            {(t.benchmarkOverview?.preview || 'Preview: {count} comparable profiles (minimum {minimum}).')
+                                                .replace('{count}', countryBenchmark.cohort.size)
+                                                .replace('{minimum}', countryBenchmark.cohort.minimumSize)}
+                                        </span>
+                                    </CountryResult>
+                                )}
+                            </>
+                        )}
+                    </GeographyCard>
+
+                    <GeographyCard theme={theme}>
+                        <ComingSoonBadge theme={theme}><ScheduleIcon fontSize="inherit" /> {t.geography?.regionComingSoon || 'Coming soon'}</ComingSoonBadge>
+                        <span className="geo-icon"><MapIcon /></span>
+                        <h3>{t.geography?.regionTitle || 'Region & city'}</h3>
+                        <p>{t.geography?.regionDescription || "We don't collect region or city yet, so we can't compare at that level. It's on the roadmap, along with a clickable map and a cost-of-living-adjusted view."}</p>
+                        <p style={{ fontSize: '0.76rem', opacity: 0.55 }}>{t.geography?.mapFutureNote || 'A future step: simulate how a job or location change could affect your numbers, always shown as an assumption, never as advice.'}</p>
+                    </GeographyCard>
+                </GeographyGrid>
+            </PageContainer>
         </Section>
     );
 }

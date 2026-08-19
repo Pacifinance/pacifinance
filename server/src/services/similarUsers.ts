@@ -364,6 +364,65 @@ export function selectCustomSimilarUserIds(
 }
 
 /**
+ * Order in which factor groups are dropped when a requested combination is
+ * too narrow to reach MIN_COHORT: household first, then lifeStage, then
+ * career. `location` is deliberately never auto-dropped here - across every
+ * WEIGHTS table above, jobCountry/housingType are consistently the highest-
+ * or near-highest-weighted single field (cost of living dominates nominal
+ * balance/income/outflow differences), so a comparison that drops geography
+ * to hit a headcount stops being meaningful. The other three groups are
+ * ordered by how narrow they typically make a cohort (household combines 3
+ * categorical fields - the most ways to mismatch - down to lifeStage's
+ * single ordinal field), not by their similarity-score weight.
+ */
+export const FACTOR_RELAXATION_ORDER: ComparisonFactorGroup[] = ["household", "lifeStage", "career"]
+
+export type RelaxedSimilarUsersResult = SimilarUsersResult & {
+    /** Factor groups actually used to build the cohort - a subset of the request, in canonical order. */
+    appliedFactors: ComparisonFactorGroup[],
+    /** Requested factor groups dropped to reach the privacy threshold, in the order they were dropped. */
+    droppedFactors: ComparisonFactorGroup[]
+}
+
+/**
+ * Same cohort as selectCustomSimilarUserIds, but when the exact requested
+ * combination doesn't reach MIN_COHORT, progressively drops factor groups
+ * (per FACTOR_RELAXATION_ORDER) and retries until one combination clears the
+ * threshold or there is nothing left it's allowed to drop. Never adds a
+ * factor group the caller didn't request, and never drops `location`
+ * automatically - see FACTOR_RELAXATION_ORDER. Lets a comparison that would
+ * otherwise be "not enough data" on an exact multi-factor match instead
+ * degrade gracefully to a broader, still-labeled comparison as the
+ * platform's population grows.
+ */
+export function selectCustomSimilarUserIdsWithRelaxation(
+    snapshot: ProfilesSnapshot,
+    referenceUserId: string,
+    factorGroups: ComparisonFactorGroup[],
+    opts: { ignoreTestUsers?: boolean } = {}
+): RelaxedSimilarUsersResult {
+    const requested = FACTOR_GROUP_NAMES.filter((group) => factorGroups.includes(group))
+
+    let working = requested
+    const dropped: ComparisonFactorGroup[] = []
+    let result = selectCustomSimilarUserIds(snapshot, referenceUserId, working, opts)
+
+    while (result.insufficientData || result.userIds.length < MIN_COHORT) {
+        const toDrop = FACTOR_RELAXATION_ORDER.find((group) => working.includes(group))
+        if (!toDrop) break
+        working = working.filter((group) => group !== toDrop)
+        dropped.push(toDrop)
+        result = selectCustomSimilarUserIds(snapshot, referenceUserId, working, opts)
+    }
+
+    return {
+        ...result,
+        appliedFactors: working,
+        droppedFactors: dropped
+    }
+}
+
+/**
  * Convenience one-shot wrapper around fetchProfilesSnapshot + selectSimilarUserIds
  * for callers resolving a single cohort (e.g. one-off scripts, tests). Callers
  * resolving many cohorts in the same run should use those two functions directly
@@ -379,5 +438,6 @@ async function getSimilarUserIds(
 }
 
 export default {
-    getSimilarUserIds, fetchProfilesSnapshot, fetchMonthlyProfilesSnapshot, selectSimilarUserIds, selectCustomSimilarUserIds, similarityScore, selectCohort
+    getSimilarUserIds, fetchProfilesSnapshot, fetchMonthlyProfilesSnapshot, selectSimilarUserIds,
+    selectCustomSimilarUserIds, selectCustomSimilarUserIdsWithRelaxation, similarityScore, selectCohort
 }

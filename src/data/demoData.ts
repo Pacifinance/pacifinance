@@ -282,6 +282,11 @@ export const generateDemoData = () => {
   };
 
   // ── Averages ──
+  // `benchmark` on each bucket mirrors server/src/cache/items/averages.ts's
+  // BenchmarkMetadata shape - Comparison.tsx reads populationSize/cohortSizes/
+  // minimumCohortSize from it to decide whether a comparison is "available",
+  // so without it the redesigned page would show its own empty state in demo.
+  const benchmarkGeneratedAt = new Date().toISOString();
   const averages = {
     all: {
       balances: 5591,
@@ -294,6 +299,13 @@ export const generateDemoData = () => {
         6: 200, 7: 150, 8: 500, 9: 100, 10: 50,
         11: 300, 12: 80, 13: 0, 14: 60, 15: 120, 9999: 40,
       },
+      benchmark: {
+        generatedAt: benchmarkGeneratedAt,
+        populationSize: 1284,
+        minimumCohortSize: 20,
+        cohortSizes: { balances: 1284, incomes: 1284, expenses: 1284, savingsRates: 1284 },
+        averageSimilarity: { balances: null, incomes: null, expenses: null, savingsRates: null },
+      },
     },
     similar: {
       balances: 36859,
@@ -305,6 +317,13 @@ export const generateDemoData = () => {
         1: 235, 2: 437, 3: 3024, 4: 1978, 5: 2348,
         6: 1571, 7: 1037, 8: 3902, 9: 674, 10: 52,
         11: 2431, 12: 165, 13: 0, 14: 178, 15: 868, 9999: 105,
+      },
+      benchmark: {
+        generatedAt: benchmarkGeneratedAt,
+        populationSize: 214,
+        minimumCohortSize: 20,
+        cohortSizes: { balances: 41, incomes: 46, expenses: 38, savingsRates: 44 },
+        averageSimilarity: { balances: 0.74, incomes: 0.71, expenses: 0.69, savingsRates: 0.7 },
       },
     },
   };
@@ -357,6 +376,10 @@ export const generateDemoData = () => {
     userType: 'demo',
     username: 'PaciDemo',
     profileCompletionPercentage: 82,
+    // On by default in the demo so the Comparison page shows its full
+    // potential immediately instead of behind an opt-in wall a visitor
+    // would have to know to click.
+    benchmarkConsent: true,
 
     // Currency
     currency: 'EUR',

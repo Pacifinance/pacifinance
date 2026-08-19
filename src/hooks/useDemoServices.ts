@@ -27,8 +27,9 @@ import type {
   InvestmentSettingsDto, InvestmentDividendDto, InvestmentDividendSummaryResponse,
   InvestmentTransactionDto, InvestmentTransactionsGetResponse,
   LiquidityAccountDto, LiquidityAccountHistoryDto, RecurringTransactionDto,
-  GoalDto, SharedExpenseReceivableDto,
+  GoalDto, SharedExpenseReceivableDto, BehaviourBenchmarkResponse, BenchmarkConsentResponse,
 } from '../types/api';
+import type { ComparisonFactorGroup, CustomBenchmark, CustomBenchmarkPreview } from '../services/rankingService';
 
 // A recent date a few days in the past, so "last updated"/"last paid"
 // fields never look stale no matter when the demo is opened.
@@ -113,6 +114,42 @@ const DEMO_SHARED_EXPENSES: SharedExpenseReceivableDto[] = [
   { id: -601, date: daysAgoDate(6), notes: 'Cena di compleanno - gruppo di 4', totalAmount: 160, ownShare: 40, receivableAmount: 120, settledAmount: 0, status: 'pending', expenseId: null },
 ];
 
+const DEMO_BEHAVIOUR_BENCHMARK: BehaviourBenchmarkResponse = {
+  available: true,
+  minimumCohortSize: 20,
+  cohortSize: 214,
+  personal: { savingConsistency: 78, investmentRegularity: 65, contributionFrequency: 3.2, goalProgress: 54 },
+  rankings: { savingConsistency: 72, investmentRegularity: 68, contributionFrequency: 55, goalProgress: 61 },
+};
+
+const ALL_FACTOR_GROUPS: ComparisonFactorGroup[] = ['career', 'location', 'lifeStage', 'household'];
+
+/**
+ * Shared by getCustomBenchmark/previewCustomBenchmark so both agree, and so
+ * the demo also shows off automatic factor relaxation - mirroring the
+ * priority order in server/src/services/similarUsers.ts's
+ * FACTOR_RELAXATION_ORDER (household dropped first, location never dropped).
+ * A broad, everything-selected request demonstrates a broadened cohort; a
+ * narrower one (e.g. the "compare by country" card, which asks for
+ * `location` alone) is already specific enough and comes back exact.
+ */
+const demoRelaxedFactors = (rawFactors: ComparisonFactorGroup[]) => {
+  const requestedFactors = rawFactors.length > 0 ? rawFactors : ALL_FACTOR_GROUPS;
+  const relaxed = requestedFactors.length >= 3 && requestedFactors.includes('household');
+  const factors = relaxed ? requestedFactors.filter((factor) => factor !== 'household') : requestedFactors;
+  return { requestedFactors, factors, relaxed };
+};
+
+/** Same balances/income/expenses/ranking figures as averages.similar/rankings
+ * in demoData.ts, so the customizer and "compare by country" card feel
+ * consistent with the hero gauge and accordion instead of contradicting them. */
+const demoCustomBenchmarkCohort = (relaxed: boolean) => ({
+  size: relaxed ? 46 : 34,
+  populationSize: 214,
+  minimumSize: 20,
+  averageSimilarity: relaxed ? 0.68 : 0.74,
+});
+
 export const useDemoServices = () => {
   const services = useServices();
   const { isDemoMode } = useAuth();
@@ -147,6 +184,33 @@ export const useDemoServices = () => {
         changePassword: async () => { throw new Error('Not available in demo mode'); },
         generateRecoveryCode: async () => { throw new Error('Not available in demo mode'); },
         getRecoveryCodeStatus: async () => ({ configured: false, generated_at: null }),
+        // Demo data already ships with benchmarkConsent: true (see demoData.ts),
+        // so this only matters if something explicitly re-toggles it.
+        setBenchmarkConsent: async (contribute: boolean): Promise<BenchmarkConsentResponse> => ({ benchmarkConsent: contribute }),
+      },
+      statsService: {
+        ...services.statsService,
+        getBehaviourBenchmark: async (): Promise<BehaviourBenchmarkResponse> => DEMO_BEHAVIOUR_BENCHMARK,
+      },
+      rankingService: {
+        ...services.rankingService,
+        previewCustomBenchmark: async (rawFactors: ComparisonFactorGroup[]): Promise<CustomBenchmarkPreview> => {
+          const { requestedFactors, factors, relaxed } = demoRelaxedFactors(rawFactors);
+          return { requestedFactors, factors, relaxed, available: true, cohort: demoCustomBenchmarkCohort(relaxed) };
+        },
+        getCustomBenchmark: async (rawFactors: ComparisonFactorGroup[]): Promise<CustomBenchmark> => {
+          const { requestedFactors, factors, relaxed } = demoRelaxedFactors(rawFactors);
+          return {
+            available: true,
+            requestedFactors,
+            factors,
+            relaxed,
+            generatedAt: new Date().toISOString(),
+            cohort: demoCustomBenchmarkCohort(relaxed),
+            averages: { balances: 36859, incomes: 2506, expenses: 1358, assetAllocation: { liquid: 38, investments: 50, crypto: 12 } },
+            rankings: { balance: 78, incomes: 68, outflows: 38 },
+          };
+        },
       },
       investmentService: {
         ...services.investmentService,

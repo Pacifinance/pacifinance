@@ -1,8 +1,9 @@
 import { describe, expect, it } from "vitest"
 
 import {
-    similarityScore, selectCohort, normalizeComparisonFactorGroups, MIN_COHORT, MAX_COHORT,
-    type ProfileTagIds, type OrdinalTagMeta
+    similarityScore, selectCohort, selectCustomSimilarUserIdsWithRelaxation,
+    normalizeComparisonFactorGroups, FACTOR_RELAXATION_ORDER, MIN_COHORT, MAX_COHORT,
+    type ProfileTagIds, type OrdinalTagMeta, type ProfilesSnapshot
 } from "../src/services/similarUsers"
 
 // age tags: client_index 0..4 (5 brackets), yearsOfExperience: 0..3 (4 brackets)
@@ -170,5 +171,80 @@ describe("selectCohort", () => {
         const result = selectCohort(candidates, populationSize)
         expect(result.insufficientData).toBe(false)
         expect(result.userIds.length).toBeGreaterThan(0)
+    })
+})
+
+describe("selectCustomSimilarUserIdsWithRelaxation", () => {
+    it("drops household, then lifeStage, then career, in that fixed priority order - never location", () => {
+        expect(FACTOR_RELAXATION_ORDER).toEqual(["household", "lifeStage", "career"])
+    })
+
+
+    // 5 profiles matching the reference on every field (career+location+lifeStage+household).
+    const perfectMatches = Array.from({ length: 5 }, (_, i) => profile({ id: `perfect${i}` }))
+    // 20 profiles matching only workTime+country+remoteType (weight 13/100 - below the 0.2 floor
+    // with all 4 groups active, but 13/63 ≈ 0.206 once household+lifeStage are dropped and the
+    // remaining career+location weight (63) becomes the new denominator).
+    const partialMatches = Array.from({ length: 20 }, (_, i) => profile({
+        id: `partial${i}`,
+        job_tag_id: null, job_type_tag_id: null, years_of_experience_tag_id: null,
+        job_country_tag_id: null, age_tag_id: null,
+        housing_type_tag_id: null, living_situation_tag_id: null, children_tag_id: null
+    }))
+    const reference = profile({ id: "ref" })
+    const snapshot: ProfilesSnapshot = { profiles: [reference, ...perfectMatches, ...partialMatches], tagMeta }
+
+    it("uses the exact requested combination when it already clears the threshold", () => {
+        const plentySnapshot: ProfilesSnapshot = {
+            profiles: [reference, ...Array.from({ length: 25 }, (_, i) => profile({ id: `match${i}` }))],
+            tagMeta
+        }
+        const result = selectCustomSimilarUserIdsWithRelaxation(plentySnapshot, "ref", ["career", "location"])
+        expect(result.appliedFactors).toEqual(["career", "location"])
+        expect(result.droppedFactors).toEqual([])
+        expect(result.userIds.length).toBeGreaterThanOrEqual(MIN_COHORT)
+    })
+
+    it("drops household then lifeStage, in that order, to reach MIN_COHORT", () => {
+        const result = selectCustomSimilarUserIdsWithRelaxation(snapshot, "ref", ["career", "location", "lifeStage", "household"])
+        expect(result.appliedFactors).toEqual(["career", "location"])
+        expect(result.droppedFactors).toEqual(["household", "lifeStage"])
+        expect(result.userIds.length).toBeGreaterThanOrEqual(MIN_COHORT)
+        expect(result.insufficientData).toBe(false)
+    })
+
+    it("stops relaxing once the threshold is met instead of dropping further factors", () => {
+        // perfectMatches alone (25 -> 5) already clear MIN_COHORT with career+location+lifeStage
+        // (household would be dropped first, lifeStage should never need to go).
+        const soloSnapshot: ProfilesSnapshot = {
+            profiles: [reference, ...perfectMatches, ...Array.from({ length: 20 }, (_, i) => profile({ id: `extra${i}` }))],
+            tagMeta
+        }
+        const result = selectCustomSimilarUserIdsWithRelaxation(soloSnapshot, "ref", ["career", "location", "lifeStage", "household"])
+        expect(result.appliedFactors).toEqual(["career", "location", "lifeStage", "household"])
+        expect(result.droppedFactors).toEqual([])
+    })
+
+    it("never drops location, even when nothing else is left to relax", () => {
+        // A tiny population where even the maximally-relaxed cohort can't reach MIN_COHORT.
+        const tinySnapshot: ProfilesSnapshot = {
+            profiles: [reference, ...Array.from({ length: 3 }, (_, i) => profile({ id: `tiny${i}` }))],
+            tagMeta
+        }
+        const result = selectCustomSimilarUserIdsWithRelaxation(tinySnapshot, "ref", ["location"])
+        expect(result.appliedFactors).toEqual(["location"])
+        expect(result.droppedFactors).toEqual([])
+    })
+
+    it("only relaxes within the requested factors, never adding one back", () => {
+        // Requesting career+household only: relaxation may drop household, then career, but must
+        // never introduce location or lifeStage since they were never requested.
+        const result = selectCustomSimilarUserIdsWithRelaxation(snapshot, "ref", ["career", "household"])
+        for (const applied of result.appliedFactors) {
+            expect(["career", "household"]).toContain(applied)
+        }
+        for (const dropped of result.droppedFactors) {
+            expect(["career", "household"]).toContain(dropped)
+        }
     })
 })

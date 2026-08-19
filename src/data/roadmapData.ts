@@ -416,6 +416,30 @@ const roadmapData: RoadmapItem[] = [
     icon: '⚖️',
     completedDate: '2026-08',
   },
+  {
+    id: 'comparison-redesign',
+    title: { it: 'Nuova Pagina Confronto', en: 'Comparison Page Redesign' },
+    description: {
+      it: 'La pagina Confronto è ora uno specchio finanziario: un gauge di percentile, intuizioni in linguaggio semplice e dettagli progressivi al posto delle griglie dense di sempre, più un nuovo confronto per Paese completamente anonimo.',
+      en: 'The Comparison page is now a financial mirror: a percentile gauge, plain-language insight and progressive detail instead of the old dense stat grids, plus a new fully anonymous by-country comparison.'
+    },
+    status: 'completed',
+    category: 'ux',
+    icon: '🪞',
+    completedDate: '2026-08',
+  },
+  {
+    id: 'cohort-relaxation',
+    title: { it: 'Rilassamento Automatico del Confronto', en: 'Automatic Cohort Relaxation' },
+    description: {
+      it: 'Se troppo pochi utenti corrispondono a tutti i criteri scelti, il confronto si allarga automaticamente rinunciando prima a casa/famiglia, poi età, poi lavoro — mai all\'area geografica — mostrando sempre in modo chiaro su quali criteri si basa il risultato.',
+      en: 'When too few people match every chosen factor, the comparison automatically broadens by dropping household, then age, then career - never geography - and always shows plainly which factors the result is actually based on.'
+    },
+    status: 'completed',
+    category: 'feature',
+    icon: '🎚️',
+    completedDate: '2026-08',
+  },
   /* ──────────── IN PROGRESS ──────────── */
   {
     id: 'push-notifications',

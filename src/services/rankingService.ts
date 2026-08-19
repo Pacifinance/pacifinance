@@ -18,7 +18,12 @@ export type ComparisonFactorGroup = 'career' | 'location' | 'lifeStage' | 'house
 
 export interface CustomBenchmark {
   available: boolean;
+  /** Factor groups the client asked for. */
+  requestedFactors: ComparisonFactorGroup[];
+  /** Factor groups the cohort actually uses - a subset of requestedFactors once relaxed. */
   factors: ComparisonFactorGroup[];
+  /** True once one or more requestedFactors were dropped to reach the privacy threshold. */
+  relaxed: boolean;
   generatedAt: string;
   cohort: {
     size: number;
@@ -46,7 +51,9 @@ export interface AssetAllocation {
 }
 
 export interface CustomBenchmarkPreview {
+  requestedFactors: ComparisonFactorGroup[];
   factors: ComparisonFactorGroup[];
+  relaxed: boolean;
   available: boolean;
   cohort: CustomBenchmark['cohort'];
 }

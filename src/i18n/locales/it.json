@@ -1255,45 +1255,46 @@
         }
     },
     "comparison": {
-        "layers": {"title":"Come leggere i dati","you":"Tu","group":"Gruppo di confronto","general":"Riferimento generale","hint":"I dati degli altri utenti compaiono solo quando la soglia privacy è rispettata."},
-        "rankingsAccessory": {"title":"Indicatori comportamentali","accessoryLabel":"Vista accessoria","description":"Le classifiche non valutano patrimonio, reddito o rendimento assoluto. Misurano solo abitudini osservabili e progresso verso i tuoi obiettivi.","savingConsistency":"Costanza nel risparmio","savingConsistencyDescription":"Mesi in cui hai raggiunto il tuo obiettivo di risparmio.","investmentRegularity":"Regolarità degli investimenti","investmentRegularityDescription":"Continuità dei mesi con almeno un contributo d'investimento.","contributionFrequency":"Frequenza dei contributi","contributionFrequencyDescription":"Numero di contributi nei mesi osservati, confrontato solo con gruppi sufficientemente grandi.","goalProgress":"Progresso sugli obiettivi","goalProgressDescription":"Avanzamento rispetto agli obiettivi che hai scelto di monitorare.","waitingForMetric":"Indicatore in preparazione","waitingForMetricDescription":"Servono dati storici omogenei e un gruppo sufficiente prima di pubblicare questo confronto.","waitingForGroup":"Gruppo di confronto non ancora disponibile","waitingForGroupDescription":"L'indicatore apparirà quando il gruppo raggiungerà almeno {minimum} partecipanti."},
-        "guide": {"title": "Un confronto utile, senza esporre i tuoi dati", "description": "Partecipando, i tuoi valori confluiscono solo in statistiche aggregate e anonime.", "youTitle": "Tu", "youDescription": "I tuoi dati, visibili soltanto a te.", "similarTitle": "Gruppo di confronto", "similarDescription": "Un gruppo anonimo costruito con i fattori del profilo che scegli.", "allTitle": "Riferimento generale", "allDescription": "La statistica generale della community, meno personalizzata."},
-        "title": "Confronto Anonimo",
-        "subtitle": "Confronta le tue performance finanziarie con utenti simili in modo anonimo",
+        "title": "Il tuo specchio finanziario",
+        "subtitle": "Capisci come stai andando, in modo del tutto anonimo — niente classifiche, solo spunti utili per migliorare la tua situazione.",
+        "hero": {
+            "eyebrow": "Solo dati aggregati e anonimi",
+            "gaugeLabel": "Percentile",
+            "gaugeCaption": "Il tuo patrimonio rispetto a persone con un profilo simile al tuo.",
+            "gaugeLockedDescription": "Lo mostreremo appena il tuo gruppo di confronto raggiungerà la soglia minima di privacy.",
+            "balanceLabel": "Patrimonio",
+            "incomeLabel": "Entrate",
+            "outflowsLabel": "Sobrietà di spesa"
+        },
+        "rankingsAccessory": {"title":"Indicatori comportamentali","description":"Le classifiche non valutano patrimonio, reddito o rendimento assoluto. Misurano solo abitudini osservabili e progresso verso i tuoi obiettivi.","savingConsistency":"Costanza nel risparmio","savingConsistencyDescription":"Mesi in cui hai raggiunto il tuo obiettivo di risparmio.","investmentRegularity":"Regolarità degli investimenti","investmentRegularityDescription":"Continuità dei mesi con almeno un contributo d'investimento.","contributionFrequency":"Frequenza dei contributi","contributionFrequencyDescription":"Numero di contributi nei mesi osservati, confrontato solo con gruppi sufficientemente grandi.","goalProgress":"Progresso sugli obiettivi","goalProgressDescription":"Avanzamento rispetto agli obiettivi che hai scelto di monitorare."},
+        "accordion": {
+            "sectionLabel": "Approfondisci",
+            "cashflowTitle": "Entrate e uscite",
+            "cashflowDescription": "L'ultimo mese completo, a confronto con il tuo gruppo",
+            "behaviourTitle": "Comportamento finanziario"
+        },
         "benchmarkOverview": {
             "title": "Il tuo confronto personale",
-            "description": "Confronta patrimonio, entrate e uscite con gruppi di utenti dal profilo simile.",
-            "editProfile": "Profilo",
-            "show": "Vedi confronto",
-            "hide": "Riduci",
+            "description": "Attiva il confronto per vedere patrimonio, entrate e uscite rispetto a un gruppo di utenti dal profilo simile.",
             "groupHelp": "Un gruppo di confronto riunisce utenti con caratteristiche di profilo simili. Mostriamo solo risultati aggregati quando la numerosità è sufficiente.",
             "optInTitle": "Sblocca il confronto con utenti simili",
             "optInDescription": "Attiva il consenso per ricevere benchmark aggregati. Non condividiamo transazioni, note o identità.",
             "optInTitleSelfHosted": "Sblocca il confronto con gli altri utenti di questa istanza",
             "optInDescriptionSelfHosted": "Attiva il consenso per confrontarti solo con altri utenti di questa istanza self-hosted. Il confronto community tra istanze diverse è una funzionalità pianificata, non ancora disponibile. Non condividiamo transazioni, note o identità.",
-            "optInAction": "Attiva confronto",
             "optInSaving": "Attivazione...",
             "optInError": "Non è stato possibile attivare il confronto community. Riprova.",
-            "basedOn": "Gruppo basato su",
             "waiting": "Gruppo in preparazione",
             "privacy": "Solo dati aggregati. Gruppo: {count} utenti; soglia privacy minima: {minimum}. Aggiornato: {updated}.",
-            "customizeTitle": "Personalizza utenti simili",
+            "customizeTitle": "Il tuo gruppo di confronto",
             "customizeDescription": "Scegli quali parti del profilo contano nel confronto. I dati restano aggregati e anonimi.",
             "applyFactors": "Aggiorna confronto",
             "resetFactors": "Usa confronto consigliato",
             "calculating": "Calcolo in corso...",
-            "noCohort": "Non ci sono ancora abbastanza profili comparabili per questo gruppo.", "comparisonUnavailable": "Gruppo di confronto non ancora disponibile", "comparisonUnavailableDescription": "Mostreremo il confronto quando il gruppo raggiungerà la soglia minima di privacy di {minimum} partecipanti. Nel frattempo non mostriamo statistiche di altri utenti come sostituto.",
+            "noCohort": "Non ci sono ancora abbastanza profili comparabili per questo gruppo.", "comparisonUnavailable": "Gruppo di confronto non ancora disponibile", "comparisonUnavailableDescription": "Mostreremo il confronto quando il gruppo raggiungerà la soglia minima di privacy di {minimum} partecipanti. Nel frattempo non mostriamo statistiche di altri utenti come sostituto.", "comparisonUnavailableProgress": "{count} persone su {minimum} finora.",
             "customError": "Non è stato possibile aggiornare il confronto. Riprova.",
             "factorUnavailable": "Completa questa parte del profilo per usarla nel confronto.",
             "preview": "Anteprima: {count} profili comparabili (minimo {minimum}).",
-            "median": "Mediana",
-            "interquartileRange": "Intervallo centrale",
-            "monthsAgo": "{months} mesi fa",
-            "reliability": {
-                "low": "Affidabilità iniziale",
-                "medium": "Affidabilità media",
-                "high": "Affidabilità alta"
-            },
+            "relaxedNotice": "Non ci sono ancora abbastanza persone che rispettano tutti i criteri scelti: questo confronto usa quindi un gruppo più ampio basato su: {factors}.",
             "factors": {
                 "career": "Lavoro e carriera",
                 "location": "Area geografica",
@@ -1301,29 +1302,10 @@
                 "household": "Casa e famiglia"
             }
         },
-        "sections": {
-            "rankings": {
-                "title": "Classifiche",
-                "description": "Vedi come ti posizioni rispetto ad altri utenti"
-            },
-            "insights": {
-                "title": "Confronto Finanziario",
-                "description": "Scopri pattern e opportunità"
-            },
-            "spending": {
-                "title": "Analisi Uscite",
-                "description": "Confronta le tue abitudini di uscita"
-            },
-            "benchmarks": {
-                "title": "Benchmark",
-                "description": "Confronti per settore e demografia"
-            }
-        },
         "cards": {
             "avgBalance": {
-                "title": "Patrimonio Medio",
-                "description": "Confronta il tuo patrimonio attuale e la crescita negli ultimi 12 mesi con altri utenti",
-                "yourBalance": "Il Tuo Patrimonio",
+                "title": "Patrimonio",
+                "description": "Il tuo patrimonio e la sua crescita negli ultimi 12 mesi",
                 "avgSimilar": "Mediana gruppo di confronto",
                 "avgAll": "Riferimento generale",
                 "growth12Months": "ultimi 12 mesi",
@@ -1331,14 +1313,12 @@
             },
             "avgIncome": {
                 "title": "Entrate Mensili",
-                "description": "Confronta le entrate dell'ultimo mese completo",
                 "yourIncome": "Le tue entrate",
                 "avgSimilar": "Mediana gruppo di confronto",
                 "avgAll": "Riferimento generale"
             },
             "avgOutflows": {
                 "title": "Uscite Mensili",
-                "description": "Confronta le uscite dell'ultimo mese completo",
                 "yourOutflows": "Le tue uscite",
                 "avgSimilar": "Mediana gruppo di confronto",
                 "avgAll": "Riferimento generale"
@@ -1346,37 +1326,28 @@
             "savingsRate": {
                 "title": "Tasso di Risparmio",
                 "description": "I tuoi risparmi come percentuale delle entrate",
-                "yourRate": "Il tuo tasso",
                 "avgAll": "Media Tutti gli Utenti",
                 "avgSimilar": "Media Utenti Simili",
                 "last12Months": "Ultimi 12 mesi",
                 "noData": "Dati insufficienti"
             },
             "assetAllocation": {
-                "title": "Allocazione Asset",
+                "title": "Allocazione Patrimonio",
                 "description": "Come distribuisci la tua ricchezza",
                 "liquid": "Liquidità",
                 "investments": "Investimenti",
                 "crypto": "Crypto",
-                "other": "Altro",
                 "avgSimilar": "Media Utenti Simili",
                 "avgAll": "Media Tutti gli Utenti",
                 "noAssets": "Nessun asset registrato"
             },
             "spendingCategories": {
-                "title": "Uscite per Categoria",
-                "description": "Dove spendi i tuoi soldi (ultimi 12 mesi)",
-                "topCategories": "Categorie principali",
-                "otherCategories": "Altre categorie",
+                "title": "Spese per Categoria",
+                "description": "Dove vanno i tuoi soldi (ultimi 12 mesi)",
                 "noExpenses": "Nessuna spesa registrata",
                 "avgSimilar": "Media Utenti Simili",
                 "avgAll": "Media Tutti gli Utenti"
-            },
-            "showMore": "Mostra tutto",
-            "showLess": "Riduci"
-        },
-        "insights": {
-            "average": "Stai performando nella media"
+            }
         },
         "actionableInsights": {
             "percentileTitle": "Patrimonio: top {rank}% tra profili simili",
@@ -1390,11 +1361,20 @@
         },
         "profileBanner": {
             "title": "Rendi più preciso il tuo gruppo di confronto",
-            "description": "Completa il profilo per trovare utenti davvero simili a te. Questo migliora il confronto, ma non attiva la partecipazione: il consenso anonimo si gestisce separatamente qui sotto.",
-            "action": "Completa profilo"
+            "description": "Completa il profilo per trovare utenti davvero simili a te."
         },
-        "tips": {
-            "title": "Suggerimenti Personalizzati"
+        "geography": {
+            "title": "Geografia",
+            "countryTitle": "Confronto per Paese",
+            "countryDescription": "Isola la posizione geografica dagli altri fattori del profilo per vedere come ti confronti con chi vive nel tuo Paese.",
+            "countryNeedsConsent": "Attiva il confronto qui sopra per usare questa funzione.",
+            "countryProfileIncomplete": "Aggiungi il tuo Paese al profilo",
+            "countryCTA": "Vedi il confronto per Paese",
+            "countryUnavailable": "Non ci sono ancora abbastanza persone del tuo Paese per un confronto anonimo.",
+            "regionComingSoon": "Prossimamente",
+            "regionTitle": "Regione e città",
+            "regionDescription": "Non raccogliamo ancora regione o città, quindi non possiamo confrontarti a questo livello. È nella roadmap, insieme a una mappa cliccabile e a un confronto corretto per il costo della vita.",
+            "mapFutureNote": "Un passo futuro: simulare come un cambio di lavoro o città potrebbe influire sui tuoi numeri — sempre mostrato come ipotesi, mai come consiglio."
         }
     },
     "leaderboard": {
@@ -1420,15 +1400,10 @@
             "title": "Le tue classifiche",
             "monthData": "Dati di",
             "generalRanking": "Classifica Generale",
-            "generalSubtitle": "Confronto con tutti gli utenti",
             "similarRanking": "Utenti Simili",
-            "similarSubtitle": "Confronto con profili simili al tuo",
             "balance": "Patrimonio",
             "income": "Entrate",
             "outflows": "Uscite",
-            "topPerformance": "Ottima posizione!",
-            "goodPerformance": "Buona posizione",
-            "canImprove": "Spazio per crescere",
             "noData": "Dati non disponibili",
             "descriptions": {
                 "balance": {

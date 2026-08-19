@@ -1255,45 +1255,46 @@
         }
     },
     "comparison": {
-        "layers": {"title":"How to read this","you":"You","group":"Comparison group","general":"General reference","hint":"Other users' data appears only when the privacy threshold is met."},
-        "rankingsAccessory": {"title":"Behavior indicators","accessoryLabel":"Secondary view","description":"These rankings do not judge wealth, income or absolute returns. They describe observable habits and progress toward your own goals.","savingConsistency":"Saving consistency","savingConsistencyDescription":"Months in which you reached your saving target.","investmentRegularity":"Investment regularity","investmentRegularityDescription":"Continuity of months with at least one investment contribution.","contributionFrequency":"Contribution frequency","contributionFrequencyDescription":"Number of contributions in the observed period, shown only for sufficiently large groups.","goalProgress":"Goal progress","goalProgressDescription":"Progress toward the goals you chose to track.","waitingForMetric":"Indicator being prepared","waitingForMetricDescription":"Comparable history and a sufficiently large group are required before this comparison can be published.","waitingForGroup":"Comparison group not available yet","waitingForGroupDescription":"This indicator will appear when the group reaches at least {minimum} participants."},
-        "guide": {"title": "Useful comparisons without exposing your data", "description": "When you participate, your values are used only in anonymous, aggregated statistics.", "youTitle": "You", "youDescription": "Your data, visible only to you.", "similarTitle": "Comparison group", "similarDescription": "An anonymous group built from the profile factors you choose.", "allTitle": "General reference", "allDescription": "The broader community reference, with less personalization."},
-        "title": "Anonymous Comparison",
-        "subtitle": "Compare your financial performance with similar users anonymously",
+        "title": "Your financial mirror",
+        "subtitle": "See how you're doing, fully anonymously — no leaderboards, just useful insight for you.",
+        "hero": {
+            "eyebrow": "Aggregate, anonymous data only",
+            "gaugeLabel": "Percentile",
+            "gaugeCaption": "Your net worth compared to people with a similar profile.",
+            "gaugeLockedDescription": "We'll show this as soon as your comparison group reaches the minimum privacy threshold.",
+            "balanceLabel": "Net worth",
+            "incomeLabel": "Income",
+            "outflowsLabel": "Frugality"
+        },
+        "rankingsAccessory": {"title":"Behavior indicators","description":"These rankings do not judge wealth, income or absolute returns. They describe observable habits and progress toward your own goals.","savingConsistency":"Saving consistency","savingConsistencyDescription":"Months in which you reached your saving target.","investmentRegularity":"Investment regularity","investmentRegularityDescription":"Continuity of months with at least one investment contribution.","contributionFrequency":"Contribution frequency","contributionFrequencyDescription":"Number of contributions in the observed period, shown only for sufficiently large groups.","goalProgress":"Goal progress","goalProgressDescription":"Progress toward the goals you chose to track."},
+        "accordion": {
+            "sectionLabel": "Explore the detail",
+            "cashflowTitle": "Income & outflows",
+            "cashflowDescription": "Your last complete month, against your comparison group",
+            "behaviourTitle": "Financial behavior"
+        },
         "benchmarkOverview": {
             "title": "Your personal comparison",
-            "description": "Compare net worth, income and outflows with groups of users sharing a similar profile.",
-            "editProfile": "Profile",
-            "show": "View comparison",
-            "hide": "Collapse",
+            "description": "Enable comparison to see net worth, income and outflows against a group of users with a similar profile.",
             "groupHelp": "A comparison group contains users with similar profile characteristics. Results are aggregated and shown only when the group is sufficiently large.",
             "optInTitle": "Unlock comparisons with similar users",
             "optInDescription": "Opt in to receive aggregated benchmarks. We never share transactions, notes or identity.",
             "optInTitleSelfHosted": "Unlock comparisons with other users of this instance",
             "optInDescriptionSelfHosted": "Opt in to compare against other users of this self-hosted instance only. Cross-instance community comparison is a planned feature, not available yet. We never share transactions, notes or identity.",
-            "optInAction": "Enable comparison",
             "optInSaving": "Activating...",
             "optInError": "Unable to activate community comparison. Please try again.",
-            "basedOn": "Group based on",
             "waiting": "Group being prepared",
             "privacy": "Aggregated data only. Group: {count} users; minimum privacy threshold: {minimum}. Updated: {updated}.",
-            "customizeTitle": "Customize similar users",
+            "customizeTitle": "Your comparison group",
             "customizeDescription": "Choose which parts of your profile matter in the comparison. Data stays aggregated and anonymous.",
             "applyFactors": "Update comparison",
             "resetFactors": "Use recommended comparison",
             "calculating": "Calculating...",
-            "noCohort": "There are not enough comparable profiles for this group yet.", "comparisonUnavailable": "Comparison group not available yet", "comparisonUnavailableDescription": "We will show the comparison when the group reaches the minimum privacy threshold of {minimum} participants. Until then, we do not show other users' statistics as a substitute.",
+            "noCohort": "There are not enough comparable profiles for this group yet.", "comparisonUnavailable": "Comparison group not available yet", "comparisonUnavailableDescription": "We will show the comparison when the group reaches the minimum privacy threshold of {minimum} participants. Until then, we do not show other users' statistics as a substitute.", "comparisonUnavailableProgress": "{count} of {minimum} people so far.",
             "customError": "Unable to update the comparison. Try again.",
             "factorUnavailable": "Complete this part of your profile to use it in the comparison.",
             "preview": "Preview: {count} comparable profiles (minimum {minimum}).",
-            "median": "Median",
-            "interquartileRange": "Middle range",
-            "monthsAgo": "{months} months ago",
-            "reliability": {
-                "low": "Early reliability",
-                "medium": "Medium reliability",
-                "high": "High reliability"
-            },
+            "relaxedNotice": "Not enough people matched your full selection yet, so this comparison uses a broader group based on: {factors}.",
             "factors": {
                 "career": "Work and career",
                 "location": "Geographic area",
@@ -1301,29 +1302,10 @@
                 "household": "Home and family"
             }
         },
-        "sections": {
-            "rankings": {
-                "title": "Rankings",
-                "description": "See how you rank compared to other users"
-            },
-            "insights": {
-                "title": "Financial Comparison",
-                "description": "Discover patterns and opportunities"
-            },
-            "spending": {
-                "title": "Spending Analysis",
-                "description": "Compare your spending habits"
-            },
-            "benchmarks": {
-                "title": "Benchmarks",
-                "description": "Industry and demographic comparisons"
-            }
-        },
         "cards": {
             "avgBalance": {
-                "title": "Average Balance",
-                "description": "Compare your current balance and 12-month growth with other users",
-                "yourBalance": "Your Balance",
+                "title": "Net Worth",
+                "description": "Your net worth and its growth over the last 12 months",
                 "avgSimilar": "Comparison-group median",
                 "avgAll": "General reference",
                 "growth12Months": "last 12 months",
@@ -1331,14 +1313,12 @@
             },
             "avgIncome": {
                 "title": "Monthly Income",
-                "description": "Compare income from the last complete month",
                 "yourIncome": "Your Income",
                 "avgSimilar": "Comparison-group median",
                 "avgAll": "General reference"
             },
             "avgOutflows": {
                 "title": "Monthly Outflows",
-                "description": "Compare outflows from the last complete month",
                 "yourOutflows": "Your Outflows",
                 "avgSimilar": "Comparison-group median",
                 "avgAll": "General reference"
@@ -1346,7 +1326,6 @@
             "savingsRate": {
                 "title": "Savings Rate",
                 "description": "Your savings as percentage of income",
-                "yourRate": "Your rate",
                 "avgAll": "All Users Avg",
                 "avgSimilar": "Similar Users Avg",
                 "last12Months": "Last 12 months",
@@ -1358,25 +1337,17 @@
                 "liquid": "Liquid",
                 "investments": "Investments",
                 "crypto": "Crypto",
-                "other": "Other",
                 "avgSimilar": "Similar Users Avg",
                 "avgAll": "All Users Avg",
                 "noAssets": "No assets recorded"
             },
             "spendingCategories": {
                 "title": "Spending by Category",
-                "description": "Where you spend your money (last 12 months)",
-                "topCategories": "Top categories",
-                "otherCategories": "Other categories",
+                "description": "Where your money goes (last 12 months)",
                 "noExpenses": "No expenses recorded",
                 "avgSimilar": "Similar Users Avg",
                 "avgAll": "All Users Avg"
-            },
-            "showMore": "Show all",
-            "showLess": "Show less"
-        },
-        "insights": {
-            "average": "You're performing around average"
+            }
         },
         "actionableInsights": {
             "percentileTitle": "Net worth: top {rank}% among similar profiles",
@@ -1390,11 +1361,20 @@
         },
         "profileBanner": {
             "title": "Make your comparison group more accurate",
-            "description": "Complete your profile to find genuinely similar users. This improves the comparison but does not enable participation: anonymous consent is managed separately below.",
-            "action": "Complete profile"
+            "description": "Complete your profile to find genuinely similar users."
         },
-        "tips": {
-            "title": "Personalized Tips"
+        "geography": {
+            "title": "Geography",
+            "countryTitle": "Compare by country",
+            "countryDescription": "Isolate geography from your other profile factors to see how you compare to people in your country.",
+            "countryNeedsConsent": "Enable comparison above to use this.",
+            "countryProfileIncomplete": "Add your country to your profile",
+            "countryCTA": "See my country comparison",
+            "countryUnavailable": "Not enough people from your country compare yet.",
+            "regionComingSoon": "Coming soon",
+            "regionTitle": "Region & city",
+            "regionDescription": "We don't collect region or city yet, so we can't compare at that level. It's on the roadmap, along with a clickable map and a cost-of-living-adjusted view.",
+            "mapFutureNote": "A future step: simulate how a job or location change could affect your numbers, always shown as an assumption, never as advice."
         }
     },
     "leaderboard": {
@@ -1420,15 +1400,10 @@
             "title": "Your Rankings",
             "monthData": "Data from",
             "generalRanking": "General Ranking",
-            "generalSubtitle": "Comparison with all users",
             "similarRanking": "Similar Users",
-            "similarSubtitle": "Comparison with profiles similar to yours",
             "balance": "Balance",
             "income": "Income",
             "outflows": "Outflows",
-            "topPerformance": "Great position!",
-            "goodPerformance": "Good position",
-            "canImprove": "Room for growth",
             "noData": "Data not available",
             "descriptions": {
                 "balance": {

@@ -12,27 +12,31 @@ import similarUsers, {
 const CACHE_TTL_SECONDS = 300
 const PREVIEW_CACHE_TTL_SECONDS = 60
 
+type CohortInfo = {
+    size: number,
+    populationSize: number,
+    minimumSize: number,
+    averageSimilarity: number | null
+}
+
 export type CustomBenchmarkPreview = {
+    /** Factor groups actually requested by the client. */
+    requestedFactors: ComparisonFactorGroup[],
+    /** Factor groups the returned cohort is actually built from - a subset of requestedFactors once relaxed. */
     factors: ComparisonFactorGroup[],
+    /** True once one or more requestedFactors had to be dropped to reach the privacy threshold. */
+    relaxed: boolean,
     available: boolean,
-    cohort: {
-        size: number,
-        populationSize: number,
-        minimumSize: number,
-        averageSimilarity: number | null
-    }
+    cohort: CohortInfo
 }
 
 export type CustomBenchmark = {
     available: boolean,
+    requestedFactors: ComparisonFactorGroup[],
     factors: ComparisonFactorGroup[],
+    relaxed: boolean,
     generatedAt: string,
-    cohort: {
-        size: number,
-        populationSize: number,
-        minimumSize: number,
-        averageSimilarity: number | null
-    },
+    cohort: CohortInfo,
     averages: {
         balances: number | null,
         incomes: number | null,
@@ -71,8 +75,8 @@ function previewCacheKey(userId: string, factors: ComparisonFactorGroup[]) {
 
 /** Returns cohort size and quality without fetching financial metrics. */
 async function previewCustomBenchmark(userId: string, rawFactors: unknown): Promise<CustomBenchmarkPreview> {
-    const factors = normalizeComparisonFactorGroups(rawFactors)
-    const key = previewCacheKey(userId, factors)
+    const requestedFactors = normalizeComparisonFactorGroups(rawFactors)
+    const key = previewCacheKey(userId, requestedFactors)
     try {
         const cached = await redis.get<CustomBenchmarkPreview>(key)
         if (cached) return cached
@@ -81,9 +85,11 @@ async function previewCustomBenchmark(userId: string, rawFactors: unknown): Prom
     }
 
     const snapshot = await similarUsers.fetchProfilesSnapshot()
-    const cohort = similarUsers.selectCustomSimilarUserIds(snapshot, userId, factors)
+    const cohort = similarUsers.selectCustomSimilarUserIdsWithRelaxation(snapshot, userId, requestedFactors)
     const result: CustomBenchmarkPreview = {
-        factors,
+        requestedFactors,
+        factors: cohort.appliedFactors,
+        relaxed: cohort.droppedFactors.length > 0,
         available: !cohort.insufficientData && cohort.userIds.length >= MIN_COHORT,
         cohort: {
             size: cohort.userIds.length,
@@ -107,8 +113,8 @@ async function previewCustomBenchmark(userId: string, rawFactors: unknown): Prom
  * any financial details in the browser or cache key.
  */
 async function getCustomBenchmark(userId: string, rawFactors: unknown): Promise<CustomBenchmark> {
-    const factors = normalizeComparisonFactorGroups(rawFactors)
-    const key = cacheKey(userId, factors)
+    const requestedFactors = normalizeComparisonFactorGroups(rawFactors)
+    const key = cacheKey(userId, requestedFactors)
     let cached: CustomBenchmark | null = null
     try {
         cached = await redis.get<CustomBenchmark>(key)
@@ -118,11 +124,13 @@ async function getCustomBenchmark(userId: string, rawFactors: unknown): Promise<
     if (cached) return cached
 
     const snapshot = await similarUsers.fetchProfilesSnapshot()
-    const cohort = similarUsers.selectCustomSimilarUserIds(snapshot, userId, factors)
+    const cohort = similarUsers.selectCustomSimilarUserIdsWithRelaxation(snapshot, userId, requestedFactors)
     const generatedAt = new Date().toISOString()
 
     const base = {
-        factors,
+        requestedFactors,
+        factors: cohort.appliedFactors,
+        relaxed: cohort.droppedFactors.length > 0,
         generatedAt,
         cohort: {
             size: cohort.userIds.length,

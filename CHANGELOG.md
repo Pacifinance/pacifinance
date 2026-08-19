@@ -146,6 +146,26 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   that's honest about not collecting that data yet while laying the
   groundwork (see `todo.md`) for a future clickable map and location/job
   change simulator.
+- Custom comparison cohorts (the factor customizer and the new "compare by
+  country" view) now relax automatically instead of just reporting "not
+  enough data": when the exact combination of factors you picked doesn't
+  reach the privacy threshold, the server progressively drops household,
+  then life stage, then career and retries - geography is never dropped
+  automatically, since cost of living dominates nominal financial
+  differences more than any other single factor. The comparison always says
+  plainly which factors it actually ended up using when it had to broaden.
+  The main percentile comparison also now shows a running "X of 20 people
+  so far" count instead of a bare "not available yet" while the platform is
+  still small, so it's clear the wait is about community size, not something
+  broken.
+- The public demo account ("Try Demo") now shows the redesigned Comparison
+  page fully populated instead of behind its opt-in wall or in an empty
+  state: demo data ships with benchmark consent already granted and realistic
+  cohort/population numbers, and the demo now mocks the behaviour-benchmark
+  and custom-cohort endpoints (factor customizer, "compare by country")
+  instead of leaving them to hit a real backend that doesn't exist in demo
+  mode - including a demo-only simulation of the new automatic factor
+  relaxation, so a visitor can see that in action too.
 - Migrated Tailwind CSS from v3 to v4: switched from the PostCSS plugin to
   the official `@tailwindcss/vite` plugin (removes `postcss.config.js`
   entirely), dropped `autoprefixer`/`postcss` (built into v4), and kept the

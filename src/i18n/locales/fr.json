@@ -1217,10 +1217,11 @@
             "applyFactors": "Mettre à jour la comparaison",
             "resetFactors": "Utiliser la comparaison recommandée",
             "calculating": "Calcul en cours...",
-            "noCohort": "Il n'y a pas encore assez de profils comparables pour ce groupe.", "comparisonUnavailable": "Groupe de comparaison indisponible", "comparisonUnavailableDescription": "La comparaison apparaîtra lorsque le groupe atteindra le seuil de confidentialité de {minimum} participants. En attendant, nous n'affichons pas les statistiques d'autres utilisateurs comme remplacement.",
+            "noCohort": "Il n'y a pas encore assez de profils comparables pour ce groupe.", "comparisonUnavailable": "Groupe de comparaison indisponible", "comparisonUnavailableDescription": "La comparaison apparaîtra lorsque le groupe atteindra le seuil de confidentialité de {minimum} participants. En attendant, nous n'affichons pas les statistiques d'autres utilisateurs comme remplacement.", "comparisonUnavailableProgress": "{count} personnes sur {minimum} jusqu'à présent.",
             "customError": "Impossible de mettre à jour la comparaison. Réessaie.",
             "factorUnavailable": "Complète cette partie de ton profil pour l'utiliser dans la comparaison.",
             "preview": "Aperçu : {count} profils comparables (minimum {minimum}).",
+            "relaxedNotice": "Il n'y a pas encore assez de personnes correspondant à tous tes critères, donc cette comparaison utilise un groupe plus large basé sur : {factors}.",
             "factors": { "career": "Travail et carrière", "location": "Zone géographique", "lifeStage": "Étape de vie", "household": "Logement et famille" }
         },
         "cards": {

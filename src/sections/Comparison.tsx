@@ -41,7 +41,7 @@ import Tooltip from '@mui/material/Tooltip';
 import styled, { keyframes } from 'styled-components';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
-import { useServices } from '../contexts/ServiceContext';
+import { useDemoServices } from '../hooks/useDemoServices';
 import { useDeployment } from '../contexts/DeploymentContext';
 import { getCategoryColor } from '../data/categoryColors';
 
@@ -470,6 +470,7 @@ const CohortCard = styled.section`
   .customizer-error { color: #ef4444; font-size: 0.78rem; }
   .cohort-preview { font-size: 0.78rem; color: ${p => p.theme.mode === 'dark' ? '#fbbf24' : '#a16207'}; }
   .cohort-preview.ready { color: ${p => p.theme.mode === 'dark' ? '#86efac' : '#15803d'}; }
+  .cohort-relaxed-note { display: block; margin-top: 0.3rem; font-size: 0.76rem; line-height: 1.4; color: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.55)' : 'rgba(15,23,42,0.55)'}; }
 
   .privacy-line { display: flex; align-items: center; gap: 0.5rem; margin-top: 1rem; padding-top: 0.9rem; border-top: 1px solid ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(15,23,42,0.05)'}; }
   .privacy-line svg { flex: 0 0 auto; font-size: 1rem; color: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.5)' : 'rgba(15,23,42,0.45)'}; }
@@ -611,7 +612,7 @@ const GaugeArc = ({ value, theme, size = 176 }) => {
 function Comparison({ theme, userData, isHidden }) {
     const { language, translations } = useContext(LanguageContext);
     const { formatAmount } = useContext(CurrencyContext);
-    const { rankingService, userService, statsService } = useServices();
+    const { rankingService, userService, statsService } = useDemoServices();
     const { selfHosted } = useDeployment();
     const navigate = useLocalizedNavigate();
     const t = translations.comparison;
@@ -744,6 +745,12 @@ function Comparison({ theme, userData, isHidden }) {
         && Object.values(benchmarkMetadata?.cohortSizes ?? {}).some((size) => size >= minimumBenchmarkSize);
     const allComparisonAvailable = hasBenchmarkConsent
         && (userAverages.all?.benchmark?.populationSize ?? 0) >= minimumBenchmarkSize;
+    // How many other people are consenting so far, regardless of whether that's enough yet -
+    // turns "not available yet" into a legible, growing number instead of an open-ended wait.
+    const communityPopulationSize = Math.max(
+        userAverages.all?.benchmark?.populationSize ?? 0,
+        benchmarkMetadata?.populationSize ?? 0
+    );
 
     const hasProfileValue = (field) => field && field.index !== -1 && Boolean(field.label);
     const profileFactorGroups = [
@@ -774,6 +781,12 @@ function Comparison({ theme, userData, isHidden }) {
         : profileFactorGroups.filter(group => group.available);
 
     const countryFactorAvailable = profileFactorGroups.find(group => group.id === 'location')?.available ?? false;
+
+    // Labels for whichever factors a relaxed cohort actually ended up using, so the
+    // "we broadened this" copy can name them instead of just saying "some factors".
+    const factorLabel = (id) => profileFactorGroups.find(group => group.id === id)?.label || id;
+    const relaxedNoticeFor = (appliedFactors) => (t.benchmarkOverview?.relaxedNotice || 'Not enough people matched your full selection yet, so this comparison uses a broader group based on: {factors}.')
+        .replace('{factors}', appliedFactors.map(factorLabel).join(', '));
 
     const similarRanks = {
         balance: similarComparisonAvailable ? (customBenchmark?.available ? customBenchmark.rankings.balance : getPercentageRankOnBalanceSimilar(userData)) : 0,
@@ -1194,6 +1207,13 @@ function Comparison({ theme, userData, isHidden }) {
                     <EmptyState theme={theme} role="status">
                         <strong>{t.benchmarkOverview?.comparisonUnavailable || 'Comparison group not available yet'}</strong>
                         <p>{(t.benchmarkOverview?.comparisonUnavailableDescription || 'We will show the comparison when the group reaches the minimum privacy threshold of {minimum} participants.').replace('{minimum}', String(minimumBenchmarkSize))}</p>
+                        {communityPopulationSize > 0 && (
+                            <p style={{ marginTop: '0.4rem', fontWeight: 700 }}>
+                                {(t.benchmarkOverview?.comparisonUnavailableProgress || '{count} of {minimum} people so far.')
+                                    .replace('{count}', String(communityPopulationSize))
+                                    .replace('{minimum}', String(minimumBenchmarkSize))}
+                            </p>
+                        )}
                     </EmptyState>
                 )}
 
@@ -1275,9 +1295,18 @@ function Comparison({ theme, userData, isHidden }) {
                                         {(t.benchmarkOverview?.preview || 'Preview: {count} comparable profiles (minimum {minimum}).')
                                             .replace('{count}', cohortPreview.cohort.size)
                                             .replace('{minimum}', cohortPreview.cohort.minimumSize)}
+                                        {cohortPreview.relaxed && (
+                                            <span className="cohort-relaxed-note">{relaxedNoticeFor(cohortPreview.factors)}</span>
+                                        )}
                                     </span>
                                 )}
                             </div>
+                            {customBenchmark?.available && customBenchmark.relaxed && (
+                                <div className="privacy-line">
+                                    <TuneIcon />
+                                    <p>{relaxedNoticeFor(customBenchmark.factors)}</p>
+                                </div>
+                            )}
                             {displayedFactorGroups.length > 0 && (
                                 <div className="privacy-line">
                                     <ShieldOutlinedIcon />

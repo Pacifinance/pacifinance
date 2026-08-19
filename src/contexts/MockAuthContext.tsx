@@ -404,7 +404,13 @@ export const mockUserData = {
         { typology: 'commodities', value: 8000, date: new Date().toISOString().split('T')[0] }
     ],
     
+    // On by default so the Comparison page renders fully in local dev too.
+    benchmarkConsent: true,
+
     // Averages data from /stats/averages API
+    // `benchmark` mirrors server/src/cache/items/averages.ts's BenchmarkMetadata
+    // shape - Comparison.tsx needs populationSize/cohortSizes/minimumCohortSize
+    // from it to treat a comparison as "available".
     averages: {
         all: {
             balances: 5591.08,
@@ -416,6 +422,13 @@ export const mockUserData = {
                 1: 120, 2: 80, 3: 350, 4: 450, 5: 600,
                 6: 200, 7: 150, 8: 500, 9: 100, 10: 50,
                 11: 300, 12: 80, 13: 0, 14: 60, 15: 120, 9999: 40
+            },
+            benchmark: {
+                generatedAt: new Date().toISOString(),
+                populationSize: 1284,
+                minimumCohortSize: 20,
+                cohortSizes: { balances: 1284, incomes: 1284, expenses: 1284, savingsRates: 1284 },
+                averageSimilarity: { balances: null, incomes: null, expenses: null, savingsRates: null }
             }
         },
         similar: {
@@ -428,6 +441,13 @@ export const mockUserData = {
                 1: 235, 2: 437, 3: 3024, 4: 1978, 5: 2348,
                 6: 1571, 7: 1037, 8: 3902, 9: 674, 10: 52,
                 11: 2431, 12: 165, 13: 0, 14: 178, 15: 868, 9999: 105
+            },
+            benchmark: {
+                generatedAt: new Date().toISOString(),
+                populationSize: 214,
+                minimumCohortSize: 20,
+                cohortSizes: { balances: 41, incomes: 46, expenses: 38, savingsRates: 44 },
+                averageSimilarity: { balances: 0.74, incomes: 0.71, expenses: 0.69, savingsRates: 0.7 }
             }
         }
     },

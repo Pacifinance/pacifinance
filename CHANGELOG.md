@@ -18,6 +18,24 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   moment benchmark consent was on and the gauge had a value to animate.
   Added a render smoke test for `Comparison` so this class of runtime-only
   bug (invisible to lint/types/pure-function tests) fails a test run again.
+- Comparison page polish from live-testing on a deployed preview:
+  - The percentile gauge is now a full ring instead of a semicircle dome, and
+    its number/label are centered with plain flexbox instead of a hand-tuned
+    `top: 54%` guess - the old shape made pixel-perfect centering inherently
+    fiddly; a full circle's visual center trivially matches its bounding box.
+  - The gauge caption and the three headline chips (net worth/income/
+    frugality percentiles) didn't explain what the percentage actually meant.
+    The caption now states it explicitly ("higher than X% of people with a
+    similar profile"), and a new line under the chips clarifies that higher
+    is always better, including for the frugality (outflow) one.
+  - The info icon next to "Your comparison group" rendered black in dark
+    mode (no theme-aware color was set, so it fell back to the browser
+    default instead of inheriting one) - same class of bug as any other
+    icon with no explicit color, now fixed here explicitly since no
+    centralized icon-color helper exists in this codebase.
+  - "Spending by Category" only ever showed the user's own amounts - added
+    the same "vs. your comparison group" line every other accordion section
+    already has, per category.
 - Consistency and correctness pass across the CSV import wizard and the
   Aggiungi entrate/uscite flow, prompted by live-testing a real Trade
   Republic export:

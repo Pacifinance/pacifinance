@@ -62,16 +62,16 @@ const fadeInUp = keyframes`
   to { opacity: 1; transform: translateY(0); }
 `;
 
-const drawArc = keyframes`
-  from { stroke-dashoffset: var(--arc-full); }
-  to { stroke-dashoffset: var(--arc-offset); }
+const drawRing = keyframes`
+  from { stroke-dashoffset: var(--ring-full); }
+  to { stroke-dashoffset: var(--ring-offset); }
 `;
 
 // A keyframes object can only be interpolated inside an actual styled-components
 // tagged template (here) - interpolating it into a plain JS template string for
 // a raw inline `style` prop throws at runtime (styled-components error #12).
-const AnimatedArcPath = styled.path`
-  animation: ${drawArc} 1s ease-out forwards;
+const AnimatedRingCircle = styled.circle`
+  animation: ${drawRing} 1s ease-out forwards;
 `;
 
 const DEFAULT_FACTOR_GROUPS = ['career', 'location', 'lifeStage', 'household'];
@@ -178,7 +178,6 @@ const HeroSubtitle = styled.p`
 `;
 
 const GaugeFigure = styled.div`
-  position: relative;
   display: inline-flex;
   flex-direction: column;
   align-items: center;
@@ -186,14 +185,22 @@ const GaugeFigure = styled.div`
   animation: ${fadeInUp} 0.5s ease-out both;
 `;
 
+// A relative box exactly the size of the ring SVG, so the value overlay below
+// can center itself with plain flexbox instead of a hand-tuned top/left
+// percentage - that's what previously left the number looking off-center.
+const GaugeRingBox = styled.div`
+  position: relative;
+  display: inline-flex;
+  filter: drop-shadow(0 6px 16px ${p => p.theme.buttonBackgroundColor}30);
+`;
+
 const GaugeValue = styled.div`
   position: absolute;
-  top: 54%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  inset: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
 
   strong {
     font-size: 2.1rem;
@@ -202,7 +209,7 @@ const GaugeValue = styled.div`
     line-height: 1;
   }
   span {
-    margin-top: 0.2rem;
+    margin-top: 0.25rem;
     font-size: 0.72rem;
     font-weight: 600;
     text-transform: uppercase;
@@ -225,6 +232,12 @@ const HeadlineChips = styled.div`
   justify-content: center;
   gap: 0.6rem;
   margin-top: 1.5rem;
+`;
+
+const ChipsCaption = styled.p`
+  margin: 0.6rem 0 0;
+  font-size: 0.72rem;
+  color: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.45)' : 'rgba(15,23,42,0.42)'};
 `;
 
 const HeadlineChip = styled.div`
@@ -583,32 +596,39 @@ const CountryResult = styled.div`
 
 /* ─── Small building blocks ─── */
 
-const GaugeArc = ({ value, theme, size = 176 }) => {
+// A full ring (not a semicircle dome) - both because a circle's own visual
+// center trivially matches its bounding box (so the value overlay centers
+// perfectly via flexbox, unlike the old dome shape) and because it reads as
+// a more familiar "percentile ring" pattern.
+const GaugeRing = ({ value, theme, size = 176, children }) => {
     const stroke = 14;
     const radius = (size - stroke) / 2;
-    const half = Math.PI * radius;
+    const circumference = 2 * Math.PI * radius;
     const clamped = value === null ? 0 : Math.max(1, Math.min(100, value));
-    const offset = half - (clamped / 100) * half;
-    const cx = size / 2;
-    const cy = size / 2 + 6;
-    const path = `M ${stroke / 2} ${cy} A ${radius} ${radius} 0 0 1 ${size - stroke / 2} ${cy}`;
+    const offset = circumference - (clamped / 100) * circumference;
+    const center = size / 2;
     const trackColor = theme.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.07)';
     return (
-        <svg width={size} height={size / 2 + stroke} viewBox={`0 0 ${size} ${size / 2 + stroke}`} role="img" aria-hidden="true">
-            <path d={path} fill="none" stroke={trackColor} strokeWidth={stroke} strokeLinecap="round" />
-            {value !== null && (
-                <AnimatedArcPath
-                    d={path}
-                    fill="none"
-                    stroke={theme.buttonBackgroundColor}
-                    strokeWidth={stroke}
-                    strokeLinecap="round"
-                    strokeDasharray={half}
-                    style={{ '--arc-full': half, '--arc-offset': offset }}
-                />
-            )}
-            <circle cx={cx} cy={cy} r="1" opacity="0" />
-        </svg>
+        <GaugeRingBox theme={theme} style={{ width: size, height: size }}>
+            <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} role="img" aria-hidden="true">
+                <circle cx={center} cy={center} r={radius} fill="none" stroke={trackColor} strokeWidth={stroke} />
+                {value !== null && (
+                    <AnimatedRingCircle
+                        cx={center}
+                        cy={center}
+                        r={radius}
+                        fill="none"
+                        stroke={theme.buttonBackgroundColor}
+                        strokeWidth={stroke}
+                        strokeLinecap="round"
+                        strokeDasharray={circumference}
+                        transform={`rotate(-90 ${center} ${center})`}
+                        style={{ '--ring-full': circumference, '--ring-offset': offset }}
+                    />
+                )}
+            </svg>
+            <GaugeValue theme={theme}>{children}</GaugeValue>
+        </GaugeRingBox>
     );
 };
 
@@ -874,13 +894,20 @@ function Comparison({ theme, userData, isHidden }) {
                     resolveTagKeyFromLocalized(name, 'en', 'expense') ||
                     resolveTagKeyFromLocalized(name, language, 'expense') ||
                     String(name).toLowerCase();
+                const categoryIndex = userData?.tags?.outflowsTags?.find(
+                    tag => tag.label === tagKey || translateTag(tag.label, 'en', 'expense') === name
+                )?.index;
+                const peerAverage = similarComparisonAvailable && categoryIndex !== undefined
+                    ? similarUsersExpensesByCategory?.[categoryIndex] ?? null
+                    : null;
                 return {
                     name,
                     tagKey,
                     displayName: translateTag(tagKey, language, 'expense') || name,
                     value,
                     percentage: (value / totalSpending) * 100,
-                    color: getCategoryColor(tagKey, language)
+                    color: getCategoryColor(tagKey, language),
+                    peerAverage
                 };
             })
             .sort((a, b) => b.value - a.value);
@@ -919,14 +946,10 @@ function Comparison({ theme, userData, isHidden }) {
             });
         }
 
-        const categoryOpportunities = spendingByCategory.map(category => {
-            const categoryIndex = userData?.tags?.outflowsTags?.find(
-                tag => tag.label === category.tagKey || translateTag(tag.label, 'en', 'expense') === category.name
-            )?.index;
-            const peerAverage = categoryIndex !== undefined ? similarUsersExpensesByCategory?.[categoryIndex] : null;
-            return { ...category, peerAverage, difference: peerAverage == null ? 0 : category.value - peerAverage };
-        }).filter(category => category.peerAverage > 0 && category.difference > Math.max(50, category.peerAverage * 0.1))
-          .sort((a, b) => b.difference - a.difference);
+        const categoryOpportunities = spendingByCategory
+            .map(category => ({ ...category, difference: category.peerAverage == null ? 0 : category.value - category.peerAverage }))
+            .filter(category => category.peerAverage > 0 && category.difference > Math.max(50, category.peerAverage * 0.1))
+            .sort((a, b) => b.difference - a.difference);
 
         if (categoryOpportunities.length > 0) {
             const opportunity = categoryOpportunities[0];
@@ -1090,12 +1113,20 @@ function Comparison({ theme, userData, isHidden }) {
             title: t.cards.spendingCategories.title,
             teaser: t.cards.spendingCategories.description,
             render: () => spendingByCategory.length > 0 ? spendingByCategory.slice(0, 6).map((category) => (
-                <BarRow key={category.name} theme={theme}>
-                    <span className="bar-dot" style={{ background: category.color }} />
-                    <span className="bar-name">{category.displayName}</span>
-                    <span className="bar-track"><span className="bar-fill" style={{ width: `${category.percentage}%`, background: category.color }} /></span>
-                    <span className="bar-value">{isHidden ? '****' : formatCurrency(category.value)}</span>
-                </BarRow>
+                <div key={category.name} style={{ marginBottom: '0.6rem' }}>
+                    <BarRow theme={theme}>
+                        <span className="bar-dot" style={{ background: category.color }} />
+                        <span className="bar-name">{category.displayName}</span>
+                        <span className="bar-track"><span className="bar-fill" style={{ width: `${category.percentage}%`, background: category.color }} /></span>
+                        <span className="bar-value">{isHidden ? '****' : formatCurrency(category.value)}</span>
+                    </BarRow>
+                    {category.peerAverage !== null && (
+                        <CompareRow theme={theme} style={{ paddingLeft: '1.5rem' }}>
+                            <span className="compare-label">{t.cards.spendingCategories.avgSimilar}</span>
+                            <span className="compare-value">{isHidden ? '****' : formatCurrency(category.peerAverage)}</span>
+                        </CompareRow>
+                    )}
+                </div>
             )) : (
                 <EmptyState theme={theme}><p>{t.cards.spendingCategories.noExpenses}</p></EmptyState>
             )
@@ -1135,8 +1166,9 @@ function Comparison({ theme, userData, isHidden }) {
                     {!hasBenchmarkConsent ? (
                         <>
                             <GaugeFigure theme={theme}>
-                                <GaugeArc value={null} theme={theme} />
-                                <GaugeValue theme={theme}><LockOutlinedIcon style={{ fontSize: '1.6rem', color: theme.mode === 'dark' ? 'rgba(255,255,255,0.45)' : 'rgba(15,23,42,0.35)' }} /></GaugeValue>
+                                <GaugeRing value={null} theme={theme}>
+                                    <LockOutlinedIcon style={{ fontSize: '1.6rem', color: theme.mode === 'dark' ? 'rgba(255,255,255,0.45)' : 'rgba(15,23,42,0.35)' }} />
+                                </GaugeRing>
                             </GaugeFigure>
                             <GaugeCaption theme={theme}>{optInCopy.description}</GaugeCaption>
                             <HeroCTA theme={theme} type="button" onClick={enableCommunityComparison} disabled={isSavingBenchmarkConsent}>
@@ -1146,8 +1178,7 @@ function Comparison({ theme, userData, isHidden }) {
                     ) : (
                         <>
                             <GaugeFigure theme={theme}>
-                                <GaugeArc value={overallGaugeValue} theme={theme} />
-                                <GaugeValue theme={theme}>
+                                <GaugeRing value={overallGaugeValue} theme={theme}>
                                     {overallGaugeValue !== null ? (
                                         <>
                                             <strong>{isHidden ? '**' : `${overallGaugeValue}`}<span style={{ fontSize: '1.1rem' }}>%</span></strong>
@@ -1156,11 +1187,11 @@ function Comparison({ theme, userData, isHidden }) {
                                     ) : (
                                         <ScheduleIcon style={{ fontSize: '1.6rem', color: theme.mode === 'dark' ? 'rgba(255,255,255,0.45)' : 'rgba(15,23,42,0.35)' }} />
                                     )}
-                                </GaugeValue>
+                                </GaugeRing>
                             </GaugeFigure>
                             <GaugeCaption theme={theme}>
                                 {overallGaugeValue !== null
-                                    ? (t.hero?.gaugeCaption || 'Your net worth compared to people with a similar profile.')
+                                    ? (t.hero?.gaugeCaption || 'Higher than {value}% of people with a similar profile to yours.').replace('{value}', isHidden ? '**' : String(overallGaugeValue))
                                     : (t.hero?.gaugeLockedDescription || 'We will show this as soon as your comparison group reaches the minimum privacy threshold.')}
                             </GaugeCaption>
                             <HeadlineChips>
@@ -1177,6 +1208,7 @@ function Comparison({ theme, userData, isHidden }) {
                                     <div><div className="chip-value">{similarRanks.outflows > 0 ? `${Math.min(similarRanks.outflows, 100)}%` : '—'}</div><div className="chip-label">{t.hero?.outflowsLabel || 'Frugality'}</div></div>
                                 </HeadlineChip>
                             </HeadlineChips>
+                            <ChipsCaption theme={theme}>{t.hero?.chipsCaption || 'Percentiles vs. your comparison group - higher is always better, including for frugality.'}</ChipsCaption>
                         </>
                     )}
                 </HeroCard>
@@ -1256,7 +1288,7 @@ function Comparison({ theme, userData, isHidden }) {
                             <p>{t.benchmarkOverview?.customizeDescription || 'Choose which parts of your profile matter for your comparison. Data stays aggregated and anonymous.'}</p>
                         </div>
                         <Tooltip title={t.benchmarkOverview?.groupHelp || ''}>
-                            <span style={{ display: 'inline-flex', cursor: 'help', opacity: 0.6 }}><InfoIcon fontSize="small" /></span>
+                            <span style={{ display: 'inline-flex', cursor: 'help', color: theme.mode === 'dark' ? 'rgba(255,255,255,0.55)' : 'rgba(15,23,42,0.45)' }}><InfoIcon fontSize="small" /></span>
                         </Tooltip>
                     </div>
 

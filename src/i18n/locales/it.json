@@ -1260,7 +1260,8 @@
         "hero": {
             "eyebrow": "Solo dati aggregati e anonimi",
             "gaugeLabel": "Percentile",
-            "gaugeCaption": "Il tuo patrimonio rispetto a persone con un profilo simile al tuo.",
+            "gaugeCaption": "Il tuo patrimonio supera quello del {value}% delle persone con un profilo simile al tuo.",
+            "chipsCaption": "Percentili rispetto al tuo gruppo di confronto — più alto è sempre meglio, anche per la spesa.",
             "gaugeLockedDescription": "Lo mostreremo appena il tuo gruppo di confronto raggiungerà la soglia minima di privacy.",
             "balanceLabel": "Patrimonio",
             "incomeLabel": "Entrate",

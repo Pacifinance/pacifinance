@@ -1192,7 +1192,8 @@
         "hero": {
             "eyebrow": "Nur aggregierte, anonyme Daten",
             "gaugeLabel": "Perzentil",
-            "gaugeCaption": "Dein Vermögen im Vergleich zu Personen mit ähnlichem Profil.",
+            "gaugeCaption": "Höher als bei {value}% der Personen mit einem ähnlichen Profil wie deinem.",
+            "chipsCaption": "Perzentile im Vergleich zu deiner Vergleichsgruppe — höher ist immer besser, auch bei den Ausgaben.",
             "gaugeLockedDescription": "Wir zeigen dies, sobald deine Vergleichsgruppe die Mindestgröße zum Datenschutz erreicht.",
             "balanceLabel": "Vermögen",
             "incomeLabel": "Einkommen",

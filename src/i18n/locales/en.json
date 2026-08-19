@@ -1260,7 +1260,8 @@
         "hero": {
             "eyebrow": "Aggregate, anonymous data only",
             "gaugeLabel": "Percentile",
-            "gaugeCaption": "Your net worth compared to people with a similar profile.",
+            "gaugeCaption": "Higher than {value}% of people with a similar profile to yours.",
+            "chipsCaption": "Percentiles vs. your comparison group - higher is always better, including for frugality.",
             "gaugeLockedDescription": "We'll show this as soon as your comparison group reaches the minimum privacy threshold.",
             "balanceLabel": "Net worth",
             "incomeLabel": "Income",

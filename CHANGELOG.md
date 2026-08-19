@@ -10,6 +10,42 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 ## [Unreleased]
 
 ### Fixed
+- The redesigned Comparison page's percentile gauge crashed the whole page at
+  render time (a styled-components `keyframes` object was interpolated into
+  a plain inline `style` string instead of an actual styled-components
+  template, which styled-components deliberately throws on) - visible in
+  the browser console as `Uncaught Error ... errors.md#12`, reachable the
+  moment benchmark consent was on and the gauge had a value to animate.
+  Added a render smoke test for `Comparison` so this class of runtime-only
+  bug (invisible to lint/types/pure-function tests) fails a test run again.
+- Comparison page polish from live-testing on a deployed preview:
+  - The percentile gauge is now a full ring instead of a semicircle dome, and
+    its number/label are centered with plain flexbox instead of a hand-tuned
+    `top: 54%` guess - the old shape made pixel-perfect centering inherently
+    fiddly; a full circle's visual center trivially matches its bounding box.
+  - The gauge caption and the three headline chips (net worth/income/
+    frugality percentiles) didn't explain what the percentage actually meant.
+    The caption now states it explicitly ("higher than X% of people with a
+    similar profile"), and a new line under the chips clarifies that higher
+    is always better, including for the frugality (outflow) one.
+  - The info icon next to "Your comparison group" rendered black in dark
+    mode (no theme-aware color was set, so it fell back to the browser
+    default instead of inheriting one) - same class of bug as any other
+    icon with no explicit color, now fixed here explicitly since no
+    centralized icon-color helper exists in this codebase.
+  - "Spending by Category" only ever showed the user's own amounts - added
+    the same "vs. your comparison group" line every other accordion section
+    already has, per category.
+  - The gauge caption (the sentence explaining what the percentile means) was
+    missing `margin: 0 auto` on its `max-width`-constrained box, so it hugged
+    the left edge of the card instead of centering under the now-circular
+    gauge above it.
+- Insert Data's "outflows"/"income" secondary tools row (CSV/Excel,
+  Ricorrenti, Spese condivise) stayed capped at an old 1000px width on
+  desktop while the page around it (`ContentWrapper`/`SectionCard`) was
+  widened to 1400px in a previous change, leaving a wide dead strip to its
+  right instead of right-aligning against the same edge as the form card
+  beneath it.
 - Consistency and correctness pass across the CSV import wizard and the
   Aggiungi entrate/uscite flow, prompted by live-testing a real Trade
   Republic export:

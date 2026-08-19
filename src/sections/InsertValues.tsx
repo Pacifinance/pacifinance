@@ -225,7 +225,9 @@ const ToolsBar = styled.div`
   justify-content: flex-end;
   gap: 0.35rem;
   width: 100%;
-  max-width: 1000px;
+  /* No max-width of its own - fills ContentWrapper (1400px) so it right-aligns
+     against the same edge as SectionCard below it, instead of stopping short
+     at an old, narrower cap and leaving a stretch of dead space on the right. */
   margin: 0 auto 1rem;
 
   @media (max-width: 768px) {

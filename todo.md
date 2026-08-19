@@ -134,9 +134,12 @@
 - [~] Derived insights: highlight the parent category with the largest economic gap vs the cohort; add trend and percentage contribution to the gap
 - [x] Longitudinal 3/6/12-month benchmarks using a stable group, with an update date, sample size and a reliability indicator <!-- roadmap:benchmark-longitudinal -->
 - [ ] Benchmarks for emergency runway, fixed costs/income ratio, saving rate and asset diversification
+- [x] Comparison page redesign: narrative, progressive-disclosure "mirror" layout (percentile gauge, plain-language insights, collapsed detail sections) replacing the dense always-visible stat grids, plus a compare-by-country view that isolates geography as the only cohort factor via the existing custom-cohort endpoint <!-- roadmap:comparison-redesign -->
 - [ ] Comparisons by job, experience, work region, remote work and household composition; always show range and sample size
 - [ ] Cost-of-living normalization by geographic area, while keeping the nominal comparison visible too
 - [ ] Job/location change simulator as an observational scenario with explicit assumptions, never presented as advice or causation
+- [ ] Region/city as a profile field (beyond the existing country), to unlock comparison at that finer granularity
+- [ ] Clickable map view for geographic comparison (region/city/country); likely a lightweight SVG-map dependency such as `react-simple-maps` + `topojson-client` — not installed today, evaluate when this is picked up
 - [~] Opt-in community stats protocol for self-hosted instances: sending only rounded monthly buckets and aggregates, never transactions — v1 spec in `docs/COMMUNITY_STATS_PROTOCOL.md`; endpoint and signing still to be implemented
 - [ ] Signed/versioned benchmark snapshots for self-hosted instances, short contribution retention and verifiable revocation
 - [ ] Anti-differencing/Sybil protections, a contribution quality score, and bias auditing for rare cohorts

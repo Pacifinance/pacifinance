@@ -69,11 +69,13 @@ function notesLookRelated(a: DuplicateCheckItem, b: DuplicateCheckItem): boolean
   return [...aTokens].some((token) => bTokens.has(token));
 }
 
+// Only a match on the user's own CUSTOM sub-category counts as a strong
+// enough signal to widen the match window — a shared OFFICIAL category
+// (e.g. "Alimentari") is far too broad: dozens of unrelated purchases share
+// it, so on its own it used to falsely widen the window for two completely
+// different merchants days apart.
 function sameSpecificCategory(a: DuplicateCheckItem, b: DuplicateCheckItem): boolean {
-  if (a.userCategoryId != null || b.userCategoryId != null) {
-    return a.userCategoryId != null && a.userCategoryId === b.userCategoryId;
-  }
-  return a.categoryIndex != null && a.categoryIndex !== 9999 && a.categoryIndex === b.categoryIndex;
+  return a.userCategoryId != null && a.userCategoryId === b.userCategoryId;
 }
 
 function isMatch(a: DuplicateCheckItem, b: DuplicateCheckItem, { maxDaysApart = 1, amountEpsilon = 0.01 }: MatchOptions): number | null {

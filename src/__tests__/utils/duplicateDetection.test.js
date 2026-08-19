@@ -60,6 +60,21 @@ describe('findLikelyDuplicates', () => {
     const existing = { date: '2026-07-10', amount: 5, notes: 'Market' };
     expect(findLikelyDuplicates([candidate], [existing])).toHaveLength(0);
   });
+
+  it('does not widen the window just because both share the same broad official category', () => {
+    // Two unrelated purchases, different merchants, both "Alimentari" (index 3) —
+    // sharing a broad official category is too weak a signal on its own to
+    // treat a 3-day gap (crossing a month boundary) as a possible duplicate.
+    const candidate = { date: '2026-08-03', amount: 3, notes: 'IL CHIOSCO DEL MOLO', categoryIndex: 3 };
+    const existing = { date: '2026-07-31', amount: 3, notes: "HEMINGWAY'S PUB", categoryIndex: 3 };
+    expect(findLikelyDuplicates([candidate], [existing])).toHaveLength(0);
+  });
+
+  it('still widens the window when both share the same CUSTOM sub-category', () => {
+    const candidate = { date: '2026-07-12', amount: 5, notes: 'LABORATORIO DI FIORI', categoryIndex: 3, userCategoryId: 42 };
+    const existing = { date: '2026-07-10', amount: 5, notes: 'Rosa', categoryIndex: 3, userCategoryId: 42 };
+    expect(findLikelyDuplicates([candidate], [existing])).toHaveLength(1);
+  });
 });
 
 describe('findDuplicatesWithinBatch', () => {

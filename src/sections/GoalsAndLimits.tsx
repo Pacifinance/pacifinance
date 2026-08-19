@@ -19,6 +19,7 @@ import {
   getCustomCategories
 } from '../utils/userDataSelectors';
 import CategoryPicker from '../components/CategoryPicker';
+import ThemedSelect from '../components/ThemedSelect';
 import {
     FaBullseye, 
     FaChartLine, 
@@ -994,7 +995,8 @@ const ProfileSettings = ({ theme }) => {
 
             <FormGroup theme={theme}>
               <label>{translations?.goals?.sourceLabel || (language === 'it' ? 'Origine del valore' : 'Value source')}</label>
-              <select
+              <ThemedSelect
+                style={{ width: '100%' }}
                 value={modalGoalData.linkedAssetKey || ''}
                 onChange={(e) => handleModalInputChange('linkedAssetKey', e.target.value || null)}
               >
@@ -1002,7 +1004,7 @@ const ProfileSettings = ({ theme }) => {
                 {ASSET_KEYS.map((key) => (
                   <option key={key} value={key}>{translations?.assets?.[key] || key}</option>
                 ))}
-              </select>
+              </ThemedSelect>
             </FormGroup>
 
             <FormGroup theme={theme}>
@@ -1061,7 +1063,8 @@ const ProfileSettings = ({ theme }) => {
 
             <FormGroup theme={theme}>
               <label>{language === 'it' ? 'Tipo obiettivo' : 'Goal type'}</label>
-              <select
+              <ThemedSelect
+                style={{ width: '100%' }}
                 value={modalGoalData.type}
                 onChange={(e) => handleModalInputChange('type', e.target.value)}
               >
@@ -1069,7 +1072,7 @@ const ProfileSettings = ({ theme }) => {
                 <option value="purchase">{language === 'it' ? 'Acquisto' : 'Purchase'}</option>
                 <option value="investment">{language === 'it' ? 'Investimento' : 'Investment'}</option>
                 <option value="debt">{language === 'it' ? 'Pagamento debito' : 'Debt payment'}</option>
-              </select>
+              </ThemedSelect>
             </FormGroup>
 
             <ModalActions theme={theme}>

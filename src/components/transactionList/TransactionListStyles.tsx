@@ -270,12 +270,6 @@ export const CardActionsRow = styled.div`
   justify-content: flex-end;
 `;
 
-export const CardEditGrid = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-`;
-
 export const TotalCard = styled.div`
   border-radius: 10px;
   padding: 0.6rem 0.7rem;

@@ -1199,7 +1199,12 @@
             "markReceived": "Mark amount received",
             "deleteButton": "Delete",
             "amountReceivedLabel": "Amount received",
-            "confirmSettle": "Confirm"
+            "confirmSettle": "Confirm",
+            "searchLabel": "Note",
+            "searchPlaceholder": "Search...",
+            "statusFilterLabel": "Status",
+            "noMatchingResults": "No shared expenses match these filters.",
+            "unknownMonth": "—"
         },
         "deleteTransaction": {
             "titleOutflow": "Are you sure you want to delete this outflow?",
@@ -2478,6 +2483,8 @@
         "duplicateHint": "Looks like it might already be recorded — deselected by default.",
         "transferBadge": "Possible transfer",
         "transferHint": "Matches an opposite-flow entry with the same amount — might be a transfer between your own accounts, not real income/spending.",
+        "cashbackRewardBadge": "Cashback reward",
+        "cashbackRewardHint": "This reward was invested directly, not received as cash — marked as investment and excluded from income statistics.",
         "flaggedRowsNote": "{count} rows look like possible duplicates or transfers between your own accounts, and were deselected by default — check the badges below and re-select any that are actually genuine.",
         "matchedAgainstLabel": "Similar to:",
         "viewMonthButton": "👁️ View already-recorded transactions",

@@ -1199,7 +1199,12 @@
             "markReceived": "Segna importo ricevuto",
             "deleteButton": "Elimina",
             "amountReceivedLabel": "Importo ricevuto",
-            "confirmSettle": "Conferma"
+            "confirmSettle": "Conferma",
+            "searchLabel": "Nota",
+            "searchPlaceholder": "Cerca...",
+            "statusFilterLabel": "Stato",
+            "noMatchingResults": "Nessuna spesa condivisa corrisponde a questi filtri.",
+            "unknownMonth": "—"
         },
         "deleteTransaction": {
             "titleOutflow": "Sei sicuro di voler eliminare questa uscita?",
@@ -2478,6 +2483,8 @@
         "duplicateHint": "Sembra già registrata — deselezionata di default.",
         "transferBadge": "Possibile trasferimento",
         "transferHint": "Corrisponde a un'entrata/uscita di importo uguale — potrebbe essere uno spostamento tra i tuoi conti, non un'entrata o spesa reale.",
+        "cashbackRewardBadge": "Cashback investito",
+        "cashbackRewardHint": "Questo premio è stato investito direttamente, non ricevuto come liquidità — segnato come investimento ed escluso dalle statistiche di entrata.",
         "flaggedRowsNote": "{count} righe sembrano possibili duplicati o trasferimenti tra i tuoi conti, e sono state deselezionate di default — controlla i badge qui sotto e riseleziona quelle che sono invece genuine.",
         "matchedAgainstLabel": "Simile a:",
         "viewMonthButton": "👁️ Vedi transazioni già inserite",

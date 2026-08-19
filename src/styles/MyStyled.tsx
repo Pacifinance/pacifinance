@@ -1,4 +1,4 @@
-import { primaryColor, secondaryColor, backgroundColor, themes } from './Themes';
+import { primaryColor, secondaryColor, backgroundColor } from './Themes';
 import styled, { keyframes } from 'styled-components';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -1025,11 +1025,14 @@ export const StyledTable = styled.table`
   tbody tr:last-child td:first-child { border-bottom-left-radius: 10px; }
   tbody tr:last-child td:last-child  { border-bottom-right-radius: 10px; }
 
-  /* ── Actions column (edit/delete) always reachable ──
-     Sticky to the right at every width, not just mobile: with privacy mode
-     off, real category/note/date values are long enough that the table
-     overflows horizontally, and without this the edit/delete buttons scroll
-     out of view along with the rest of the row. */
+  /* ── Actions column (edit/delete) always reachable on desktop ──
+     Sticky to the right above the mobile breakpoint: with privacy mode off,
+     real category/note/date values are long enough that the table overflows
+     horizontally, and without this the edit/delete buttons scroll out of
+     view along with the rest of the row. Turned off on mobile below (see
+     "Responsive" — pinning this column AND the category column left only a
+     sliver of the table actually scrollable, showing one value at a time
+     and making the table hard to read at a glance). */
   th:last-child, td:last-child {
     position: sticky;
     right: 0;
@@ -1048,17 +1051,15 @@ export const StyledTable = styled.table`
     th, td { padding: 0.65rem 0.55rem; font-size: 0.8rem; }
     th { font-size: 0.7rem; }
 
-    th:first-child, td:first-child {
-      position: sticky;
-      left: 0;
-      z-index: 2;
-      box-shadow: 7px 0 12px -12px rgba(0,0,0,0.7);
+    /* Fully horizontally scrollable on mobile instead of pinning category
+       (left) and actions (right) — that combination left only a narrow
+       strip of the table actually scrollable, showing a single value at a
+       time and making it hard to tell which row/column you were reading. */
+    th:last-child, td:last-child {
+      position: static;
+      box-shadow: none;
     }
-    th:first-child { z-index: 4; }
-    tbody td:first-child {
-      background: ${(props) => props.theme.mode === 'dark' ? '#20252d' : '#fff'};
-      font-weight: 700;
-    }
+    tbody td:last-child { background: none; }
   }
 
   @media (max-width: 600px) {
@@ -2294,11 +2295,6 @@ export const InfoTitle = styled.h1`
   }
 `;
 
-export const StyledSelectContainer = styled.div`
-  display: flex;
-  align-items: center;
-`;
-
 export const StyledLabel = styled.h1`
   color: ${(props) => (props.theme.textColor)};
   font-size: clamp(1rem, 2vw, 1.5rem);
@@ -2318,25 +2314,6 @@ export const StyledLabel = styled.h1`
 export const StyledMonth = styled.span`
   font-size: 1.2em; /* Set the month size as you like */
   color: /* Insert the desired color */;
-`;
-
-export const StyledSelect = styled.select`
-  color: white;
-  background-color: transparent;
-  border: 0.05em solid white;
-  padding: 0.25em;
-  border-radius: 0.25em;
-  margin-right: 0.5em;
-
-  option {
-    background-color: ${themes.dark.backgroundColor}; /* Change the option's background */
-    color: ${themes.dark.textColor}; /* Change the option's text color */
-  }
-
-  option:hover {
-    box-shadow: 0 0 0.5em 5em ${themes.dark.buttonBackgroundColor} inset;
-  }
-
 `;
 
 export const StyledComingSoon = styled.div`

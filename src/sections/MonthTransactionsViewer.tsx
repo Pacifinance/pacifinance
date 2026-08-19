@@ -24,21 +24,7 @@ import { formatImportWeekday } from '../utils/dataImport';
 import {
   Overlay, ModalContainer, ModalHeader, ModalTitle, CloseButton, ModalBody,
 } from '../components/multiInsert/SharedStyles';
-
-const MonthSelect = styled.select`
-  width: 100%;
-  padding: 0.55rem 0.7rem;
-  border-radius: 8px;
-  border: 1px solid ${(p) => (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.12)')};
-  background: ${(p) => (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : '#fff')};
-  color: ${(p) => p.theme.textColor};
-  font-size: 0.9rem;
-
-  option {
-    background-color: ${(p) => (p.theme.mode === 'dark' ? '#1e1e2e' : '#ffffff')};
-    color: ${(p) => p.theme.textColor};
-  }
-`;
+import ThemedSelect from '../components/ThemedSelect';
 
 const SummaryRow = styled.div`
   display: flex;
@@ -159,11 +145,11 @@ export default function MonthTransactionsViewer({ theme, userData, onClose, init
           </CloseButton>
         </ModalHeader>
         <ModalBody theme={theme}>
-          <MonthSelect theme={theme} value={monthIndex} onChange={(e) => setMonthIndex(Number(e.target.value))}>
+          <ThemedSelect style={{ width: '100%' }} value={monthIndex} onChange={(e) => setMonthIndex(Number(e.target.value))}>
             {monthOptions.map((opt) => (
               <option key={opt.index} value={opt.index}>{opt.label}</option>
             ))}
-          </MonthSelect>
+          </ThemedSelect>
 
           <SummaryRow theme={theme}>
             <span style={{ color: '#dc3545' }}>{t.outflow || 'Outflow'}: {formatAmount(totalOutflows)}</span>

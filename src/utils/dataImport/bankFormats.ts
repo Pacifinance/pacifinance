@@ -55,6 +55,14 @@ export interface DetectedBankFormat {
   filterReasonKey?: string;
   /** Removes or replaces sensitive source values before preview and parsing. */
   sanitizeRow?: (row: string[]) => string[];
+  /**
+   * Per-row override for fields processRows() can't infer from the generic
+   * column mapping alone — e.g. Trade Republic's cashback-into-shares reward
+   * rows, which are real money moving straight into a holding, not a cash
+   * inflow, so they need `purpose: 'investment'` and to be kept out of
+   * income statistics rather than imported as generic income.
+   */
+  annotateRow?: (row: string[]) => { purpose?: string; excludeFromStatistics?: boolean } | null;
 }
 
 const findColumn = (header: string[], ...names: string[]): number => {
@@ -217,6 +225,17 @@ export function detectBankFormat(header: string[]): DetectedBankFormat | null {
         return true;
       },
       filterReasonKey: 'traderepublicInvestmentRowsSkipped',
+      // BENEFITS_SAVEBACK rows are a reward Trade Republic invests directly
+      // into an existing holding — no cash actually moves, so this isn't
+      // real income (unlike INTEREST_PAYMENT, which is genuine cash income
+      // and is left untouched). Flagging it keeps it out of income stats
+      // until it can be reconciled against the holding it funded (tracked
+      // separately in todo.md - not done automatically yet).
+      annotateRow: (row) => {
+        const type = (row[typeIdx] || '').trim().toUpperCase();
+        if (type === 'BENEFITS_SAVEBACK') return { purpose: 'investment', excludeFromStatistics: true };
+        return null;
+      },
     };
   }
 

@@ -312,7 +312,11 @@ const SectionCard = styled.div`
     ? '0 4px 24px rgba(0, 0, 0, 0.25)' 
     : '0 2px 16px rgba(0, 0, 0, 0.05)'};
   width: 100%;
-  max-width: 1000px;
+  /* Matches ContentWrapper's max-width - this is the actual visible card
+     (background/border/padding) wrapping the form+table for each tab, so
+     capping it independently at 1000px was still squeezing the table onto
+     a desktop screen even after ContentWrapper itself was widened. */
+  max-width: 1400px;
   overflow: hidden;
   animation: ${fadeIn} 0.3s ease-out;
   

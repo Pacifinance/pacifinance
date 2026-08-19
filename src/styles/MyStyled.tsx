@@ -918,7 +918,10 @@ export const StyledTable = styled.table`
   border-spacing: 0;
   width: 100%;
   min-width: 600px;
-  max-width: 1200px;
+  /* No fixed cap - let it fill whatever width the page's own container
+     allows (see InsertValues.tsx ContentWrapper) instead of getting stuck
+     at 1200px inside a wider page and forcing pointless horizontal scroll. */
+  max-width: 100%;
   color: ${(props) => props.theme.textColor};
   margin: 0 auto;
   font-size: 0.88rem;

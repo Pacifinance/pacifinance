@@ -80,7 +80,12 @@ const PageContainer = styled.div`
 `;
 
 const ContentWrapper = styled.div`
-  max-width: 1100px;
+  /* Wide enough that the transaction table (which can have 6+ columns) gets
+     real room on a desktop monitor instead of being squeezed into a 1100px
+     column and forced to horizontally scroll even when the browser window
+     has plenty of unused space either side - matches the wider content
+     width already used by other data-dense pages (Comparison, Knowledge). */
+  max-width: 1400px;
   margin: 0 auto;
   width: 100%;
 `;

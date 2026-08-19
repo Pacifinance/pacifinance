@@ -215,7 +215,7 @@ export default function SharedExpensesPanel({ theme, items, onClose, onChanged }
                 <FontAwesomeIcon icon={showFilters ? faSortUp : faSortDown} />
               </FilterToggleRow>
               <FilterPanel theme={theme} $open={showFilters}>
-                <FilterRow>
+                <FilterRow theme={theme}>
                   <FilterLabel theme={theme}>{t.searchLabel || translations?.general?.note || 'Note'}</FilterLabel>
                   <input
                     type="text"
@@ -225,7 +225,7 @@ export default function SharedExpensesPanel({ theme, items, onClose, onChanged }
                     style={{ width: '100%', boxSizing: 'border-box' }}
                   />
                 </FilterRow>
-                <FilterRow>
+                <FilterRow theme={theme}>
                   <FilterLabel theme={theme}>{t.statusFilterLabel || 'Status'}</FilterLabel>
                   <StatusSelect
                     theme={theme}
@@ -238,9 +238,9 @@ export default function SharedExpensesPanel({ theme, items, onClose, onChanged }
                     <option value="settled">{t.statusSettled || 'Recovered'}</option>
                   </StatusSelect>
                 </FilterRow>
-                <FilterRow>
+                <FilterRow theme={theme}>
                   <FilterLabel theme={theme}>{translations?.general?.date || 'Date'}</FilterLabel>
-                  <FilterInlineRow>
+                  <FilterInlineRow theme={theme}>
                     <input
                       type="date"
                       value={dateFilterStart}

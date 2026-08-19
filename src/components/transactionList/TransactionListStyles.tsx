@@ -310,20 +310,3 @@ export const ActionBtn = styled.button`
   }
 `;
 
-export const InlineInput = styled.input`
-  width: 100%;
-  min-width: 50px;
-  padding: 4px 6px;
-  border: 1.5px solid ${p => p.theme.mode === 'dark' ? 'rgba(59,130,246,0.4)' : 'rgba(59,130,246,0.3)'};
-  border-radius: 6px;
-  font-size: 0.82rem;
-  background: ${p => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : '#f8fafc'};
-  color: ${p => p.theme.textColor};
-  box-sizing: border-box;
-  outline: none;
-  font-family: inherit;
-  &:focus {
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 2px rgba(59,130,246,0.15);
-  }
-`;

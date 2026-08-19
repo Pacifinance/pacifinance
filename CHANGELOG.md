@@ -10,6 +10,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 ## [Unreleased]
 
 ### Fixed
+- The redesigned Comparison page's percentile gauge crashed the whole page at
+  render time (a styled-components `keyframes` object was interpolated into
+  a plain inline `style` string instead of an actual styled-components
+  template, which styled-components deliberately throws on) - visible in
+  the browser console as `Uncaught Error ... errors.md#12`, reachable the
+  moment benchmark consent was on and the gauge had a value to animate.
+  Added a render smoke test for `Comparison` so this class of runtime-only
+  bug (invisible to lint/types/pure-function tests) fails a test run again.
 - Consistency and correctness pass across the CSV import wizard and the
   Aggiungi entrate/uscite flow, prompted by live-testing a real Trade
   Republic export:

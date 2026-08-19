@@ -67,6 +67,13 @@ const drawArc = keyframes`
   to { stroke-dashoffset: var(--arc-offset); }
 `;
 
+// A keyframes object can only be interpolated inside an actual styled-components
+// tagged template (here) - interpolating it into a plain JS template string for
+// a raw inline `style` prop throws at runtime (styled-components error #12).
+const AnimatedArcPath = styled.path`
+  animation: ${drawArc} 1s ease-out forwards;
+`;
+
 const DEFAULT_FACTOR_GROUPS = ['career', 'location', 'lifeStage', 'household'];
 
 /** Title/description for the benchmark opt-in card: a self-hosted instance's
@@ -590,18 +597,14 @@ const GaugeArc = ({ value, theme, size = 176 }) => {
         <svg width={size} height={size / 2 + stroke} viewBox={`0 0 ${size} ${size / 2 + stroke}`} role="img" aria-hidden="true">
             <path d={path} fill="none" stroke={trackColor} strokeWidth={stroke} strokeLinecap="round" />
             {value !== null && (
-                <path
+                <AnimatedArcPath
                     d={path}
                     fill="none"
                     stroke={theme.buttonBackgroundColor}
                     strokeWidth={stroke}
                     strokeLinecap="round"
                     strokeDasharray={half}
-                    style={{
-                        '--arc-full': half,
-                        '--arc-offset': offset,
-                        animation: `${drawArc} 1s ease-out forwards`,
-                    }}
+                    style={{ '--arc-full': half, '--arc-offset': offset }}
                 />
             )}
             <circle cx={cx} cy={cy} r="1" opacity="0" />

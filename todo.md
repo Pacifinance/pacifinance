@@ -89,6 +89,7 @@
 
 ### Phase 1 — Entry friction (top priority)
 - [x] Quick-add from the dashboard/PWA: floating action button + popup, log an outflow in under 10 seconds (amount + category, everything else optional) <!-- roadmap:quick-add -->
+- [x] Single entry point for adding data: the "+" is global (desktop and mobile) and opens every add flow (quick add with "More details", full outflow/income/balance forms in an entry sheet, CSV/investment import, recurring, shared expenses) via `?add=`; "/insert-values" became the read-only Transactions page (`/transactions`) <!-- roadmap:unified-entry -->
 - [x] Recurring expenses/subscriptions: full end-to-end monthly recurrence (DB + backend + management UI) <!-- roadmap:recurring-transactions -->
 - [x] Paste-and-recognize: client-side parsing (smartPasteParser.ts) of free text into amount+category, inside quick-add — 100% client-side, zero server involvement
 - [x] Voice input = OS dictation in the paste-and-recognize field (the phone's keyboard mic transcribes, our parser recognizes it; the audio never touches our servers)

@@ -15,9 +15,9 @@ import {
   AccountBalance as AccountBalanceIcon,
   TrendingUp as TrendingUpIcon,
   TrendingDown as TrendingDownIcon,
+  Add as AddIcon,
 } from "@mui/icons-material";
 
-const DataImportWizard = lazy(() => import("./DataImportWizard"));
 const MultiOutflowInsert = lazy(() => import("./MultiOutflowInsert"));
 const MultiIncomeInsert = lazy(() => import("./MultiIncomeInsert"));
 const MultiBalanceInsert = lazy(() => import("./MultiBalanceInsert"));
@@ -42,6 +42,8 @@ import { findLikelyDuplicates } from '../utils/duplicateDetection';
 import { inferPaymentTypeLabel, suggestNoteFromHistory } from '../utils/transactionNoteSuggestions';
 import { learnFromTransaction } from '../utils/categoryPatterns';
 import { inferTransactionPurpose } from '../utils/transactionPurpose';
+import { translateTag } from '../data/tagTranslations';
+import { useEntrySheet } from '../hooks/useEntrySheet';
 const PastDateBalanceChoiceModal = lazy(() => import('./PastDateBalanceChoiceModal'));
 const EditTransactionModal = lazy(() => import('./EditTransactionModal'));
 const DuplicateWarningModal = lazy(() => import('./DuplicateWarningModal'));
@@ -71,6 +73,49 @@ const PageContainer = styled.div`
   
   @media (max-width: 768px) {
     padding: 3.5rem 0.75rem 0;
+  }
+`;
+
+/* Inside the entry sheet: no page chrome (the sheet has its own header). */
+const EntryContainer = styled.div`
+  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
+  width: 100%;
+`;
+
+const AddEntryBar = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  margin: 0 auto 0.75rem;
+  width: 100%;
+  max-width: 1400px;
+
+  @media (max-width: 768px) {
+    justify-content: stretch;
+  }
+`;
+
+const AddEntryButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  min-height: 40px;
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  border: none;
+  background: ${(props) => props.theme.buttonBackgroundColor};
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.2s ease;
+
+  &:hover { filter: brightness(1.08); }
+  & > svg { font-size: 1.15rem; }
+
+  @media (max-width: 768px) {
+    width: 100%;
   }
 `;
 
@@ -241,74 +286,20 @@ const SectionCard = styled.div`
     border-radius: 16px;
     margin-bottom: 1rem;
   }
-`;
 
-/* ── Import Modal ── */
-const ImportOverlay = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 9999;
-  background: ${(props) => props.theme.mode === 'dark'
-    ? 'rgba(0, 0, 0, 0.8)'
-    : 'rgba(15, 23, 42, 0.4)'};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
-  overflow-y: auto;
-  backdrop-filter: blur(6px);
-`;
+  /* Entry sheet: the sheet itself is the card. */
+  ${(props) => props.$flat && css`
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0.5rem 0 0;
+    margin-bottom: 0;
 
-const ImportModalContent = styled.div`
-  background: ${(props) => props.theme.backgroundColor};
-  border-radius: 20px;
-  padding: 2rem;
-  width: 100%;
-  max-width: 900px;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.3),
-              0 0 0 1px ${(props) => props.theme.mode === 'dark'
-                ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)'};
-  position: relative;
-
-  @media (max-width: 768px) {
-    padding: 1rem;
-    padding-bottom: 5rem;
-    border-radius: 14px;
-    max-height: 95vh;
-  }
-`;
-
-const ImportCloseButton = styled.button`
-  position: absolute;
-  top: 0.75rem;
-  right: 0.75rem;
-  background: ${(props) => props.theme.mode === 'dark' 
-    ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)'};
-  border: none;
-  cursor: pointer;
-  color: ${(props) => props.theme.textColor};
-  opacity: 0.6;
-  font-size: 1.1rem;
-  line-height: 1;
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.15s;
-  z-index: 10;
-
-  &:hover {
-    opacity: 1;
-    background: ${(props) => props.theme.mode === 'dark' 
-      ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)'};
-  }
+    @media (max-width: 768px) {
+      padding: 0.5rem 0 0;
+      margin-bottom: 0;
+    }
+  `}
 `;
 
 const BottomSpacer = styled.div`
@@ -327,7 +318,23 @@ export default function InsertValue({
   handleSetIsUpdated,
   isHidden,
   initialSection: _initialSection,
+  /**
+   * 'page'  — the Transactions page: history lists only (read-only balance),
+   *           every "add" action opens the global entry sheet instead.
+   * 'entry' — rendered inside that entry sheet (see EntrySheet.tsx): forms
+   *           only, same save logic as always (balance deltas, past-month
+   *           handling, duplicate checks) — nothing here was rewritten.
+   */
+  mode = 'page',
+  /** Entry mode: which form to show first ('outflow' | 'income' | 'balance'). */
+  entryType = null,
+  /** Entry mode: balance form month ({ month, year }). */
+  initialBalanceMonth = null,
+  /** Entry mode: values carried over from the quick-add popup ("More details"). */
+  prefill = null,
 }) {
+  const isEntryMode = mode === 'entry';
+  const { openEntry } = useEntrySheet();
   const { language, translations } = React.useContext(LanguageContext);
   const { currencySymbol, toEUR } = React.useContext(CurrencyContext);
   const { addCustomCategory, fetchMonthDetail } = useContext(UserContext) || {};
@@ -340,7 +347,6 @@ export default function InsertValue({
   const [isConfirmBalanceOpen, setIsConfirmBalanceOpen] = useState(false);
   const [showConfirmationDeleteIncome, setShowConfirmationDeleteIncome] = useState(false);
   const [showConfirmationDeleteOutflow, setShowConfirmationDeleteOutflow] = useState(false);
-  const [showImportWizard, setShowImportWizard] = useState(false);
   const [showMultiInsert, setShowMultiInsert] = useState(false);
   const [showMultiIncomeInsert, setShowMultiIncomeInsert] = useState(false);
   const [showMultiBalanceInsert, setShowMultiBalanceInsert] = useState(false);
@@ -527,8 +533,13 @@ export default function InsertValue({
   const [allOutflowsAdds, setAllOutflowsAdds] = useState([]);
   const [incomeDate, setIncomeDate] = useState(getTodayLocalISO());
   const [outflowDate, setOutflowDate] = useState(getTodayLocalISO());
-  const [balanceDate, setBalanceDate] = useState({ month: new Date().getMonth() + 1, year: new Date().getFullYear() });
-  const [activePage, setActivePage] = useState("outflows");
+  const [balanceDate, setBalanceDate] = useState(() => initialBalanceMonth
+    ?? { month: new Date().getMonth() + 1, year: new Date().getFullYear() });
+  const [activePage, setActivePage] = useState(() => {
+    if (entryType === 'balance') return 'bilancio';
+    if (entryType === 'income') return 'income';
+    return 'outflows';
+  });
   const [OutflowsTags, setOutflowsTags] = useState([]);
   const [incomesTags, setIncomesTags] = useState([]);
   const [paymentTags, setPaymentTags] = useState([]);
@@ -1133,6 +1144,37 @@ export default function InsertValue({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userData]);
 
+  // "More details" from the quick-add popup: carry over what the user already
+  // typed (amount, category, note) into the full form, once.
+  const prefillApplied = useRef(false);
+  useEffect(() => {
+    if (!isEntryMode || !prefill || prefillApplied.current || !userData) return;
+    prefillApplied.current = true;
+    const isOutflowEntry = entryType !== 'income';
+    const setAmount = isOutflowEntry ? setOutflow : setIncome;
+    const setNote = isOutflowEntry ? setNoteOutflowAreaValue : setNoteIncomeAreaValue;
+    if (prefill.amount) setAmount(String(prefill.amount));
+    if (prefill.note) setNote(prefill.note);
+    if (prefill.categoryIndex === '' || prefill.categoryIndex == null) return;
+    const categoryIndex = Number(prefill.categoryIndex);
+    const tags = isOutflowEntry ? getOutflowsTags(userData) : getIncomesTags(userData);
+    const tag = tags.find((item) => item.index === categoryIndex);
+    const parentValue = translateTag(tag?.label, language, isOutflowEntry ? 'expense' : 'income');
+    const custom = prefill.userCategoryId != null
+      ? getCustomCategories(userData).find((item) => item.id === prefill.userCategoryId)
+      : null;
+    const category = {
+      key: categoryIndex,
+      value: custom?.label || parentValue,
+      parentValue,
+      userCategoryId: custom ? custom.id : null,
+      userCategoryLabel: custom?.label,
+    };
+    if (isOutflowEntry) setCategoryOutflow({ ...category, purpose: inferTransactionPurpose('outflow', categoryIndex) });
+    else setCategoryIncome(category);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userData]);
+
   /**
    * Sync balance form fields with the snapshot of the selected month.
    *
@@ -1185,6 +1227,10 @@ export default function InsertValue({
     // Set the initial section from the URL param - only on first load
   useEffect(() => {
     if (initialSectionApplied.current) return; // Avoid running more than once
+    if (isEntryMode) {
+      initialSectionApplied.current = true;
+      return;
+    }
 
     const urlParams = new URLSearchParams(location.search);
     const sectionParam = urlParams.get('section');
@@ -1202,9 +1248,6 @@ export default function InsertValue({
           case 'outflow':
             setActivePage('outflows');
             break;
-          case 'import':
-            setShowImportWizard(true);
-            break;
           default:
             setActivePage('outflows');
         }
@@ -1214,7 +1257,7 @@ export default function InsertValue({
       // If there's no URL param, set the default and mark as applied
       initialSectionApplied.current = true;
     }
-  }, [location.search]); // Removed activePage from deps to avoid a loop
+  }, [location.search, isEntryMode]); // Removed activePage from deps to avoid a loop
 
   // Auto-hide success notifications with toast
   useEffect(() => {
@@ -2326,7 +2369,7 @@ export default function InsertValue({
   const renderPage = () => {
     if (activePage === "bilancio") {
       return (
-        <SectionCard theme={theme}>
+        <SectionCard theme={theme} $flat={isEntryMode}>
           <BalanceSection
             theme={theme}
             isHidden={isHidden}
@@ -2355,8 +2398,9 @@ export default function InsertValue({
             balanceDate={balanceDate}
             setBalanceDate={setBalanceDate}
             balancePlaceholders={balanceBaseValues}
-            onUpdateBalance={handleUpdateBalance}
-            onOpenMultiInsert={() => setShowMultiBalanceInsert(true)}
+            readOnly={!isEntryMode}
+            onUpdateBalance={isEntryMode ? handleUpdateBalance : () => openEntry('balance', { month: balanceDate })}
+            onOpenMultiInsert={isEntryMode ? () => setShowMultiBalanceInsert(true) : undefined}
             language={language}
             translations={translations}
             investmentHoldings={investmentHoldings}
@@ -2371,7 +2415,7 @@ export default function InsertValue({
       );
     } else if (activePage === "income") {
       return (
-        <SectionCard theme={theme}>
+        <SectionCard theme={theme} $flat={isEntryMode}>
           <IncomeSection
             theme={theme}
             isHidden={isHidden}
@@ -2409,7 +2453,8 @@ export default function InsertValue({
             onDeleteIncome={handleDeleteIncome}
             onSaveEdit={handleSaveEditIncome}
             onLinkReimbursement={(row) => openSharedLinkModal('income', row)}
-            onOpenMultiInsert={() => setShowMultiIncomeInsert(true)}
+            view={isEntryMode ? 'form' : 'list'}
+            onOpenMultiInsert={isEntryMode ? () => setShowMultiIncomeInsert(true) : undefined}
             selectedOption={selectedOption}
             setSelectedOption={setSelectedOption}
             balanceOptions={options}
@@ -2419,7 +2464,7 @@ export default function InsertValue({
       );
     } else if (activePage === "outflows") {
       return (
-        <SectionCard theme={theme}>
+        <SectionCard theme={theme} $flat={isEntryMode}>
           <OutflowSection
             theme={theme}
             isHidden={isHidden}
@@ -2462,7 +2507,8 @@ export default function InsertValue({
             onDeleteOutflow={handleDeleteOutflow}
             onSaveEdit={handleSaveEditOutflow}
             sharedReceivables={sharedReceivables}
-            onOpenMultiInsert={() => setShowMultiInsert(true)}
+            view={isEntryMode ? 'form' : 'list'}
+            onOpenMultiInsert={isEntryMode ? () => setShowMultiInsert(true) : undefined}
             selectedOption={selectedOption}
             setSelectedOption={setSelectedOption}
             balanceOptions={options}
@@ -2479,47 +2525,70 @@ export default function InsertValue({
     }
   };
 
+  // Page: history first (outflows, incomes, balance). Entry sheet: the same
+  // three forms, labelled as actions.
+  const tabs = isEntryMode
+    ? [
+      { key: 'outflows', icon: <TrendingDownIcon />, label: translations.insert.buttonOutflow },
+      { key: 'income', icon: <TrendingUpIcon />, label: translations.insert.buttonIncome },
+      { key: 'bilancio', icon: <AccountBalanceIcon />, label: translations.insert.buttonBalance },
+    ]
+    : [
+      { key: 'outflows', icon: <TrendingDownIcon />, label: translations.transactionsPage?.tabOutflows },
+      { key: 'income', icon: <TrendingUpIcon />, label: translations.transactionsPage?.tabIncome },
+      { key: 'bilancio', icon: <AccountBalanceIcon />, label: translations.transactionsPage?.tabBalance },
+    ];
+
+  const Container = isEntryMode ? EntryContainer : PageContainer;
+
   return (
-    <PageContainer theme={theme}>
+    <Container theme={theme}>
       <ContentWrapper>
-        <PageHeader>
-          <PageTitle theme={theme}>
-            {translations.insert.title}
-          </PageTitle>
-          <PageSubtitle theme={theme}>
-            {translations.insert.subtitle}
-          </PageSubtitle>
-        </PageHeader>
-        
+        {!isEntryMode && (
+          <PageHeader>
+            <PageTitle theme={theme}>
+              {translations.transactionsPage?.title}
+            </PageTitle>
+            <PageSubtitle theme={theme}>
+              {translations.transactionsPage?.subtitle}
+            </PageSubtitle>
+          </PageHeader>
+        )}
+
         <TabBar>
           <TabGroup theme={theme}>
-            <TabButton
-              theme={theme}
-              $isActive={activePage === "bilancio"}
-              onClick={() => setActivePage("bilancio")}
-            >
-              <AccountBalanceIcon />
-              <span>{translations.insert.buttonBalance}</span>
-            </TabButton>
-            <TabButton
-              theme={theme}
-              $isActive={activePage === "income"}
-              onClick={() => setActivePage("income")}
-            >
-              <TrendingUpIcon />
-              <span>{translations.insert.buttonIncome}</span>
-            </TabButton>
-            <TabButton
-              theme={theme}
-              $isActive={activePage === "outflows"}
-              onClick={() => setActivePage("outflows")}
-            >
-              <TrendingDownIcon />
-              <span>{translations.insert.buttonOutflow}</span>
-            </TabButton>
+            {tabs.map((tab) => (
+              <TabButton
+                key={tab.key}
+                type="button"
+                theme={theme}
+                $isActive={activePage === tab.key}
+                onClick={() => setActivePage(tab.key)}
+              >
+                {tab.icon}
+                <span>{tab.label}</span>
+              </TabButton>
+            ))}
           </TabGroup>
-          
         </TabBar>
+
+        {/* Page: one contextual shortcut into the same entry form the "+" opens
+            (balance has its own "update" button in the read-only view). */}
+        {!isEntryMode && activePage !== 'bilancio' && (
+          <AddEntryBar>
+            <AddEntryButton
+              type="button"
+              theme={theme}
+              onClick={() => openEntry(activePage === 'income' ? 'income' : 'outflow')}
+              data-umami-event={activePage === 'income' ? 'transactions-add-income' : 'transactions-add-outflow'}
+            >
+              <AddIcon />
+              {activePage === 'income'
+                ? translations.transactionsPage?.addIncome
+                : translations.transactionsPage?.addOutflow}
+            </AddEntryButton>
+          </AddEntryBar>
+        )}
 
         {renderPage()}
 
@@ -2587,33 +2656,6 @@ export default function InsertValue({
               onClose={() => setShowMultiBalanceInsert(false)}
             />
           </Suspense>
-        )}
-
-        {/* Import Wizard Modal */}
-        {showImportWizard && (
-          <ImportOverlay theme={theme} onClick={(e) => {
-            if (e.target === e.currentTarget) setShowImportWizard(false);
-          }}>
-            <ImportModalContent theme={theme}>
-              <ImportCloseButton theme={theme} onClick={() => setShowImportWizard(false)}>
-                ✕
-              </ImportCloseButton>
-              <Suspense fallback={
-                <div style={{ textAlign: 'center', padding: '2rem', color: theme.textColor }}>
-                  {translations.dataImport?.loading || (language === 'it' ? 'Caricamento...' : 'Loading...')}
-                </div>
-              }>
-                <DataImportWizard
-                  onClose={() => setShowImportWizard(false)}
-                  onImportComplete={() => {
-                    setShowImportWizard(false);
-                    handleSetIsUpdated(false);
-                    showSuccess(translations.dataImport?.importSuccess || (language === 'it' ? 'Importazione completata!' : 'Import completed!'));
-                  }}
-                />
-              </Suspense>
-            </ImportModalContent>
-          </ImportOverlay>
         )}
 
         <InsertModals
@@ -2727,8 +2769,8 @@ export default function InsertValue({
           </Suspense>
         )}
 
-        <BottomSpacer />
+        {!isEntryMode && <BottomSpacer />}
       </ContentWrapper>
-    </PageContainer>
+    </Container>
   );
 }

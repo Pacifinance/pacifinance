@@ -1,4 +1,14 @@
 {
+    "transactionsPage": {
+        "title": "Movimentações",
+        "subtitle": "Suas saídas, receitas e saldo, mês a mês",
+        "tabOutflows": "Saídas",
+        "tabIncome": "Receitas",
+        "tabBalance": "Saldo",
+        "addOutflow": "Adicionar saída",
+        "addIncome": "Adicionar receita",
+        "entrySheetTitle": "Novo lançamento"
+    },
     "importGuide": {
         "toggleLabel": "Onde encontro esse arquivo?",
         "platforms": {
@@ -431,7 +441,7 @@
         "dashboard": "Painel",
         "chartsStatistics": "Gráficos e Estatísticas",
         "statisticsShort": "Estatísticas",
-        "insert": "Inserir",
+        "insert": "Movimentações",
         "check": "Verificar Preços",
         "marketPrices": "Preços de Mercado",
         "leaderboard": "Classificação",
@@ -654,12 +664,17 @@
     },
     "dashboard": {
         "quickAdd": {
+            "groupAdd": "Adicionar",
+            "groupBalance": "Saldo",
+            "groupImport": "Importar",
+            "groupManage": "Gerenciar",
+            "importMovements": "Movimentações da conta",
+            "importInvestments": "Investimentos",
+            "moreDetails": "Mais detalhes (data, conta, recorrência…)",
             "title": "Adição rápida",
             "menuTitle": "O que você quer fazer?",
-            "menuManual": "Inserir manualmente",
             "menuBalance": "Atualizar saldo",
             "menuImportOutflowsIncome": "Importar CSV — despesas/receitas",
-            "menuImportInvestments": "Importar investimentos de CSV",
             "outflow": "Saída",
             "income": "Receita",
             "amountLabel": "Valor",

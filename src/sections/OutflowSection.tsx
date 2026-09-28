@@ -798,6 +798,8 @@ export default function OutflowSection({
   // months) — used instead of the single selected month whenever the date
   // filter is active, so a date range can span across months.
   flatOutflowsForRange,
+  // 'form' = add form only (entry sheet), 'list' = history only (Transactions page).
+  view = 'all',
 }) {
   const { language, translations } = React.useContext(LanguageContext);
   const { currencySymbol, formatNumber, fromEUR, toEUR } = React.useContext(CurrencyContext);
@@ -1844,6 +1846,7 @@ export default function OutflowSection({
 
   return (
     <SectionWrapper>
+      {view !== 'list' && (<>
       {/* ── Quick-add Form ── */}
       <FormCard>
         {/* Category */}
@@ -2078,6 +2081,9 @@ export default function OutflowSection({
         )}
       </FormFooter>
 
+      </>)}
+
+      {view !== 'form' && (<>
       {/* ── Transaction Table ── */}
       <TableSection theme={theme}>
         <TableHeader theme={theme}>
@@ -2303,6 +2309,7 @@ export default function OutflowSection({
         )}
       </TableSection>
       {renderEditModal()}
+      </>)}
     </SectionWrapper>
   );
 }

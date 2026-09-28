@@ -1,4 +1,14 @@
 {
+    "transactionsPage": {
+        "title": "Mouvements",
+        "subtitle": "Vos sorties, revenus et solde, mois par mois",
+        "tabOutflows": "Sorties",
+        "tabIncome": "Revenus",
+        "tabBalance": "Solde",
+        "addOutflow": "Ajouter une sortie",
+        "addIncome": "Ajouter un revenu",
+        "entrySheetTitle": "Nouvelle saisie"
+    },
     "importGuide": {
         "toggleLabel": "Où trouver ce fichier ?",
         "platforms": {
@@ -431,7 +441,7 @@
         "dashboard": "Tableau de bord",
         "chartsStatistics": "Graphiques et statistiques",
         "statisticsShort": "Statistiques",
-        "insert": "Insérer",
+        "insert": "Mouvements",
         "check": "Vérifier les prix",
         "marketPrices": "Prix du marché",
         "leaderboard": "Classement",
@@ -654,12 +664,17 @@
     },
     "dashboard": {
         "quickAdd": {
+            "groupAdd": "Ajouter",
+            "groupBalance": "Solde",
+            "groupImport": "Importer",
+            "groupManage": "Gérer",
+            "importMovements": "Mouvements du compte",
+            "importInvestments": "Investissements",
+            "moreDetails": "Plus de détails (date, compte, récurrence…)",
             "title": "Ajout rapide",
             "menuTitle": "Que voulez-vous faire ?",
-            "menuManual": "Saisir manuellement",
             "menuBalance": "Mettre à jour le bilan",
             "menuImportOutflowsIncome": "Importer CSV — dépenses/revenus",
-            "menuImportInvestments": "Importer des investissements depuis un CSV",
             "outflow": "Sortie",
             "income": "Revenu",
             "amountLabel": "Montant",

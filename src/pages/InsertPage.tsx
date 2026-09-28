@@ -45,7 +45,7 @@ function InsertPage() {
 
   // Handles clicking a navigation dot
   const handlePageClick = (pageIndex) => {
-    const pages = ['/dashboard', '/charts-statistics', '/insert-values', '/comparison'];
+    const pages = ['/dashboard', '/charts-statistics', '/transactions', '/comparison'];
     navigate(pages[pageIndex]);
   };
 

@@ -1,4 +1,14 @@
 {
+    "transactionsPage": {
+        "title": "Transactions",
+        "subtitle": "Your outflows, incomes and balance, month by month",
+        "tabOutflows": "Outflows",
+        "tabIncome": "Incomes",
+        "tabBalance": "Balance",
+        "addOutflow": "Add outflow",
+        "addIncome": "Add income",
+        "entrySheetTitle": "New entry"
+    },
     "importGuide": {
         "toggleLabel": "Where do I find this file?",
         "platforms": {
@@ -440,7 +450,7 @@
         "dashboard": "Dashboard",
         "chartsStatistics": "Charts and Statistics",
         "statisticsShort": "Statistics",
-        "insert": "Insert",
+        "insert": "Transactions",
         "check": "Check Prices",
         "marketPrices": "Market Prices",
         "leaderboard": "Leaderboard",
@@ -663,12 +673,17 @@
 
     "dashboard": {
         "quickAdd": {
+            "groupAdd": "Add",
+            "groupBalance": "Balance",
+            "groupImport": "Import",
+            "groupManage": "Manage",
+            "importMovements": "Account transactions",
+            "importInvestments": "Investments",
+            "moreDetails": "More details (date, account, recurring…)",
             "title": "Quick add",
             "menuTitle": "What do you want to do?",
-            "menuManual": "Enter manually",
             "menuBalance": "Update balance",
             "menuImportOutflowsIncome": "Import CSV — expenses/income",
-            "menuImportInvestments": "Import investments from CSV",
             "outflow": "Outflow",
             "income": "Income",
             "amountLabel": "Amount",

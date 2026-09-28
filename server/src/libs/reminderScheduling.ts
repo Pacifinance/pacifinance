@@ -82,7 +82,7 @@ export async function evaluateUser(
         const mostRecent = timestamps.length > 0 ? Math.max(...timestamps) : null
         if (mostRecent === null || now.getTime() - mostRecent > DATA_UPDATE_STALE_DAYS * DAY_MS) {
             const {title, body} = buildContent("dataUpdateReminder", pref.language, {})
-            messages.push({userId: pref.userId, type: "dataUpdateReminder", title, body, url: "/insert-values"})
+            messages.push({userId: pref.userId, type: "dataUpdateReminder", title, body, url: "/transactions?add=balance"})
         }
         lastSent.dataUpdateReminder = todayKey
     }
@@ -91,7 +91,7 @@ export async function evaluateUser(
         const count = await db.recurringTransactions.getUpcomingCountForUser(pref.userId, now, RECURRING_LOOKAHEAD_DAYS)
         if (count > 0) {
             const {title, body} = buildContent("recurringDue", pref.language, {count})
-            messages.push({userId: pref.userId, type: "recurringDue", title, body, url: "/insert-values"})
+            messages.push({userId: pref.userId, type: "recurringDue", title, body, url: "/transactions?add=recurring"})
         }
         lastSent.recurringDue = todayKey
     }

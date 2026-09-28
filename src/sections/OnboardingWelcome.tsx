@@ -1,6 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import styled, { keyframes, css } from 'styled-components';
 import { useLocalizedNavigate } from '../hooks/useLocalizedNavigate';
+import { useEntrySheet } from '../hooks/useEntrySheet';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
 import { ServiceContext } from '../contexts/ServiceContext';
@@ -256,6 +257,7 @@ const OnboardingWelcome = ({ userData, theme }) => {
   const services = useContext(ServiceContext);
   const userService = services?.userService;
   const navigate = useLocalizedNavigate();
+  const { openEntry } = useEntrySheet();
   const [dismissed, setDismissed] = useState(false);
   const [benchmarkConsent, setBenchmarkConsent] = useState(userData?.benchmarkConsent === true);
   const [isSavingBenchmarkConsent, setIsSavingBenchmarkConsent] = useState(false);
@@ -335,7 +337,7 @@ const OnboardingWelcome = ({ userData, theme }) => {
       description: t.step2Desc || `Enter your current assets: bank, cash, investments (${currencySymbol}).`,
       action: t.step2Action || 'Insert Balance',
       complete: hasBalance,
-      onClick: () => navigate('/insert-values?section=balance'),
+      onClick: () => openEntry('balance'),
     },
     {
       icon: <ExpenseIcon style={{ fontSize: 20 }} />,
@@ -343,7 +345,7 @@ const OnboardingWelcome = ({ userData, theme }) => {
       description: t.step3Desc || 'Add your monthly outflows to see where your money goes.',
       action: t.step3Action || 'Add Outflows',
       complete: hasOutflows,
-      onClick: () => navigate('/insert-values?section=outflow'),
+      onClick: () => openEntry('outflow'),
     },
     {
       icon: <InvestIcon style={{ fontSize: 20 }} />,
@@ -351,7 +353,7 @@ const OnboardingWelcome = ({ userData, theme }) => {
       description: t.step4Desc || 'Log your income sources to track savings and growth.',
       action: t.step4Action || 'Add Income',
       complete: hasIncomes,
-      onClick: () => navigate('/insert-values?section=income'),
+      onClick: () => openEntry('income'),
     },
     {
       icon: <ReminderIcon style={{ fontSize: 20 }} />,

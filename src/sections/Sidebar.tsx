@@ -6,7 +6,7 @@ import {
 import { BsBook, BsInfoCircle, BsGraphUp } from "react-icons/bs";
 import { FaUser, FaBullseye } from "react-icons/fa";
 import Tooltip from "@mui/material/Tooltip";
-import { HiOutlinePencilAlt } from "react-icons/hi";
+import { HiOutlineViewList } from "react-icons/hi";
 import { useLocation } from "react-router-dom";
 import { LocalizedLink } from "../components/LocalizedLink";
 import AvatarIcon from '../components/AvatarIcon';
@@ -178,7 +178,7 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
         const path = location.pathname;
         if (path === "/dashboard") return 0;
         if (path === "/charts-statistics") return 1;
-        if (path === "/insert-values") return 2;
+        if (path === "/transactions") return 2;
         if (path === "/comparison") return 3;
         if (path === "/knowledge") return 4;
         if (path === "/info") return 5;
@@ -465,8 +465,8 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                                     index: 1,
                                 },
                                 {
-                                    icon: HiOutlinePencilAlt,
-                                    route: "/insert-values",
+                                    icon: HiOutlineViewList,
+                                    route: "/transactions",
                                     tooltip: translations.sidebar.insert,
                                     index: 2,
                                 },

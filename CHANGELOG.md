@@ -9,6 +9,27 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+### Changed
+- One "+" to add anything. The quick-add menu is now grouped (Add / Balance /
+  Import / Manage) and opens every add flow on top of the current page:
+  quick outflow/income entry (with a "More details" link that carries what
+  you typed into the full form), the full outflow/income/balance forms with
+  multi-insert, CSV and investment imports, recurring and shared expenses.
+  Every flow has its own link (`?add=outflow|income|balance|import|...`), so
+  dashboard shortcuts, onboarding and push notifications open the right form
+  directly, and the phone's back button closes it.
+- The "Insert data" page became **Transactions** (`/transactions`): review
+  and edit your outflows, incomes and monthly balance; adding happens from
+  the "+" (or the page's own "Add" button, which opens the same form). Old
+  `/insert-values` links redirect, keeping their `?section=`.
+
+### Fixed
+- Toast notifications now appear above open dialogs instead of behind them.
+- Links without a language prefix now keep their query string when
+  redirected (e.g. notification links).
+- The quick-add button stays bottom-right on desktop instead of rendering
+  inside the sidebar.
+
 ### Fixed
 - CSV import no longer drops Trade Republic buy/sell trades: they are real
   cash leaving (or entering) the account, so a buy is now imported as an

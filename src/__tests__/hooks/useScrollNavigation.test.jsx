@@ -74,9 +74,9 @@ describe('useScrollNavigation', () => {
     expect(result.current.currentPageIndex).toBe(1);
   });
 
-  it('should return correct currentPageIndex for /insert-values', () => {
+  it('should return correct currentPageIndex for /transactions', () => {
     const { result } = renderHook(() => useScrollNavigation(true), {
-      wrapper: createWrapper('/it/insert-values'),
+      wrapper: createWrapper('/it/transactions'),
     });
 
     expect(result.current.currentPageIndex).toBe(2);

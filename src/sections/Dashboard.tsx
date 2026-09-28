@@ -642,7 +642,7 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                                                                 <BiListUl />
                                                             </button>
                                                             <LocalizedLink
-                                                                to="/insert-values?section=balance"
+                                                                to="/dashboard?add=balance"
                                                                 className="icon-action"
                                                                 aria-label={translations.dashboard.addBalance}
                                                                 title={translations.dashboard.addBalance}
@@ -707,7 +707,7 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                                                     <BiListUl />
                                                 </button>
                                                 <LocalizedLink
-                                                    to="/insert-values?section=balance"
+                                                    to="/dashboard?add=balance"
                                                     className="icon-action"
                                                     aria-label={translations.dashboard.addBalance}
                                                     title={translations.dashboard.addBalance}
@@ -844,13 +844,13 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                                             {item.name === translations.general.saved && translations.dashboard.saved}
                                         </div>
                                         {item.name === translations.general.incomes && (
-                                            <LocalizedLink to="/insert-values?section=income" className="income-outflow-button" data-umami-event="dashboard-add-income">
+                                            <LocalizedLink to="/dashboard?add=income" className="income-outflow-button" data-umami-event="dashboard-add-income">
                                                 <AiOutlinePlusCircle style={{ marginRight: '6px' }} />
                                                 {translations.dashboard.addIncome || 'Add Income'}
                                             </LocalizedLink>
                                         )}
                                         {item.name === translations.general.outflows && (
-                                            <LocalizedLink to="/insert-values?section=outflow" className="income-outflow-button" data-umami-event="dashboard-add-outflow">
+                                            <LocalizedLink to="/dashboard?add=outflow" className="income-outflow-button" data-umami-event="dashboard-add-outflow">
                                                 <AiOutlinePlusCircle style={{ marginRight: '6px' }} />
                                                 {translations.dashboard.addOutflow || 'Add Outflow'}
                                             </LocalizedLink>

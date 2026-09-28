@@ -78,6 +78,7 @@ export const ToastProvider = ({ children }) => {
           onClick={closeAllToasts}
           className="fixed z-50"
           style={{
+            zIndex: 12000,
             bottom: `${(isMobile ? TOAST_BASE_BOTTOM.mobile : TOAST_BASE_BOTTOM.desktop)
               + stackSize * (isMobile ? TOAST_SLOT_HEIGHT.mobile : TOAST_SLOT_HEIGHT.desktop)}px`,
             right: isMobile ? '8px' : '16px',

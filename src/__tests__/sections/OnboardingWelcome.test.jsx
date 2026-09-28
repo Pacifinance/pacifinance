@@ -27,6 +27,11 @@ vi.mock('../../hooks/useLocalizedNavigate', () => ({
   useLocalizedNavigate: () => mockNavigate,
 }));
 
+const mockOpenEntry = vi.fn();
+vi.mock('../../hooks/useEntrySheet', () => ({
+  useEntrySheet: () => ({ openEntry: mockOpenEntry }),
+}));
+
 // Import component after mocks
 import OnboardingWelcome from '../../sections/OnboardingWelcome';
 
@@ -262,22 +267,22 @@ describe('OnboardingWelcome', () => {
       expect(mockNavigate).toHaveBeenCalledWith('/profile');
     });
 
-    it('should navigate to /insert-values?section=balance when step 2 is clicked', () => {
+    it('should open the balance entry form when step 2 is clicked', () => {
       renderOnboarding();
       fireEvent.click(screen.getByText('Add Your Balance'));
-      expect(mockNavigate).toHaveBeenCalledWith('/insert-values?section=balance');
+      expect(mockOpenEntry).toHaveBeenCalledWith('balance');
     });
 
-    it('should navigate to /insert-values?section=outflow when step 3 is clicked', () => {
+    it('should open the outflow entry form when step 3 is clicked', () => {
       renderOnboarding();
       fireEvent.click(screen.getByText('Track Outflows'));
-      expect(mockNavigate).toHaveBeenCalledWith('/insert-values?section=outflow');
+      expect(mockOpenEntry).toHaveBeenCalledWith('outflow');
     });
 
-    it('should navigate to /insert-values?section=income when step 4 is clicked', () => {
+    it('should open the income entry form when step 4 is clicked', () => {
       renderOnboarding();
       fireEvent.click(screen.getByText('Record Income'));
-      expect(mockNavigate).toHaveBeenCalledWith('/insert-values?section=income');
+      expect(mockOpenEntry).toHaveBeenCalledWith('income');
     });
 
     it('should not navigate when clicking a completed step', () => {

@@ -82,6 +82,7 @@ const ToastNotification = ({
           : (isMobile ? 'translate-y-0 opacity-100' : 'translate-x-0 opacity-100')
       }`}
       style={{
+        zIndex: 12000,
         backgroundColor: bgColor,
         color: 'white',
         boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',

@@ -263,6 +263,20 @@ const PastMonthBanner = styled.div`
   }
 `;
 
+const AssetValue = styled.div`
+  width: 100%;
+  padding: 0.55rem 0.7rem;
+  border-radius: 8px;
+  color: ${(p) => p.theme.textColor};
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  box-sizing: border-box;
+  background: ${(p) => p.theme.mode === 'dark' ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.015)'};
+`;
+
 const HoldingsLinkButton = styled.button`
   display: flex;
   align-items: center;
@@ -345,6 +359,9 @@ export default function BalanceSection({
   onAssetBaseValueChange,
   investmentHoldingHistory = [],
   liquidityAccountHistory = [],
+  // Transactions page: show each asset's value for the month instead of an
+  // editable input — editing happens in the entry sheet (onUpdateBalance opens it).
+  readOnly = false,
 }) {
   const { currencySymbol, fromEUR, toEUR, formatAmount } = React.useContext(CurrencyContext);
   const navigate = useLocalizedNavigate();
@@ -575,18 +592,22 @@ export default function BalanceSection({
             </AttentionBadge>
           )}
         </AssetLabel>
-        <CurrencyInputWrapper>
-          <CurrencySymbol theme={theme}>{currencySymbol}</CurrencySymbol>
-          <CurrencyInput
-            type="text"
-            theme={theme}
-            $color={color}
-            value={isHidden ? '' : asset.value}
-            onChange={(e) => handleInputChange(e, asset.setter)}
-            onBlur={(e) => handleInputBlur(e, asset.setter)}
-            placeholder={isHidden ? '****' : placeholderValue}
-          />
-        </CurrencyInputWrapper>
+        {readOnly ? (
+          <AssetValue theme={theme}>{isHidden ? '****' : formatAmount(Number(placeholderAmount) || 0)}</AssetValue>
+        ) : (
+          <CurrencyInputWrapper>
+            <CurrencySymbol theme={theme}>{currencySymbol}</CurrencySymbol>
+            <CurrencyInput
+              type="text"
+              theme={theme}
+              $color={color}
+              value={isHidden ? '' : asset.value}
+              onChange={(e) => handleInputChange(e, asset.setter)}
+              onBlur={(e) => handleInputBlur(e, asset.setter)}
+              placeholder={isHidden ? '****' : placeholderValue}
+            />
+          </CurrencyInputWrapper>
+        )}
         {(isLiquidityKey || isInvestmentKey) && t && (
           <HoldingsLinkButton
             type="button"
@@ -607,7 +628,7 @@ export default function BalanceSection({
   return (
     <SectionWrapper>
       {/* Past-month banner */}
-      {!isCurrentMonth && (
+      {!readOnly && !isCurrentMonth && (
         <PastMonthBanner theme={theme}>
           <FontAwesomeIcon icon={faCircleInfo} />
           <div>

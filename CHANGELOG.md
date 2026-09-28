@@ -10,6 +10,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 ## [Unreleased]
 
 ### Fixed
+- CSV import no longer drops Trade Republic buy/sell trades: they are real
+  cash leaving (or entering) the account, so a buy is now imported as an
+  outflow in the Investment category (counted in outflows, never in
+  expenses) and a sale as investment proceeds kept out of income
+  statistics. The mapping step says how many trades were found and points
+  to "Import Investments" for recording quantity and price.
+- The quick-add "+" button (manual entry, balance update, CSV import,
+  investment import) was only reachable on desktop from the Dashboard, while
+  on mobile it's available on every page from the bottom bar. It's now on
+  every page on desktop too, and is the single entry point for adding
+  anything: recurring transactions and shared expenses moved into its menu,
+  replacing the separate "More tools" bar on the insert page.
 - The redesigned Comparison page's percentile gauge crashed the whole page at
   render time (a styled-components `keyframes` object was interpolated into
   a plain inline `style` string instead of an actual styled-components

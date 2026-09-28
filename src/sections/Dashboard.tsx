@@ -69,7 +69,6 @@ const OnboardingWelcome = lazy(() => import('./OnboardingWelcome'));
 import DashboardSkeleton from '../components/DashboardSkeleton';
 import DashboardToolbar from './DashboardToolbar';
 import DashboardCompactView from './DashboardCompactView';
-import QuickAddTransaction from './QuickAddTransaction';
 import { useDashboardLayout } from '../hooks/useDashboardLayout';
 import { FaExclamationTriangle, FaBullseye } from 'react-icons/fa';
 import { GiUmbrella } from 'react-icons/gi';
@@ -558,8 +557,6 @@ const Dashboard = ({ theme, userData, isHidden }) => {
                     </ModernBalanceOverview>
                     </ModernDashboardHeader>
                     </DashboardSectionSlot>}
-
-                {!isMobileScreen && <QuickAddTransaction theme={theme} />}
 
                 {/* View Mode: Compact (table) vs Cards (detailed sections) */}
                 {viewMode === 'compact' ? (

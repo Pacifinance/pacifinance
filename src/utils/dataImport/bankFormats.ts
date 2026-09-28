@@ -13,6 +13,8 @@
  * import fine through the generic manual-mapping flow.
  */
 
+import { INVESTMENT_CATEGORY_INDEX } from '../transactionPurpose';
+
 export type BankFormatId = 'revolut' | 'n26' | 'traderepublic' | 'paypal';
 
 /**
@@ -45,10 +47,9 @@ export interface DetectedBankFormat {
   mapping: BankColumnMapping;
   /**
    * Some exports mix rows that don't belong in this wizard at all — e.g.
-   * Trade Republic's unified export includes investment trades alongside
-   * cash movements, and trades belong in the Investment Import Wizard, not
-   * here. Return true to KEEP a row; rows this excludes are counted and
-   * reported to the user (see filterReasonKey) rather than silently dropped.
+   * PayPal's technical authorization/currency-conversion rows. Return true to
+   * KEEP a row; rows this excludes are counted and reported to the user (see
+   * filterReasonKey) rather than silently dropped.
    */
   filterRow?: (row: string[]) => boolean;
   /** i18n key (under dataImport.*) describing what filterRow excludes. */
@@ -62,7 +63,15 @@ export interface DetectedBankFormat {
    * inflow, so they need `purpose: 'investment'` and to be kept out of
    * income statistics rather than imported as generic income.
    */
-  annotateRow?: (row: string[]) => { purpose?: string; excludeFromStatistics?: boolean } | null;
+  annotateRow?: (row: string[]) => { purpose?: string; excludeFromStatistics?: boolean; categoryIndex?: number } | null;
+  /**
+   * Rows that are buy/sell trades of a security (e.g. Trade Republic's
+   * unified export). They are still real cash leaving/entering the account,
+   * so they ARE imported (as `purpose: 'investment'`, see annotateRow) — this
+   * only lets the wizard tell the user how many there are, since quantity and
+   * price still have to be recorded from the Investment Import Wizard.
+   */
+  isInvestmentTradeRow?: (row: string[]) => boolean;
 }
 
 const findColumn = (header: string[], ...names: string[]): number => {
@@ -201,11 +210,17 @@ export function detectBankFormat(header: string[]): DetectedBankFormat | null {
   if (hasAll(header, 'account_type', 'type', 'amount') && findColumn(header, 'date') !== -1) {
     const accountTypeIdx = findColumn(header, 'account_type');
     const typeIdx = findColumn(header, 'type');
+    const amountIdx = findColumn(header, 'amount');
+    const isTrade = (row: string[]): boolean => {
+      const accountType = (row[accountTypeIdx] || '').trim().toUpperCase();
+      const type = (row[typeIdx] || '').trim().toUpperCase();
+      return accountType === 'TRADING' || type === 'BUY' || type === 'SELL';
+    };
     return {
       bank: 'traderepublic',
       mapping: {
         dateCol: findColumn(header, 'date'),
-        amountCol: findColumn(header, 'amount'),
+        amountCol: amountIdx,
         notesCol: findColumn(header, 'name', 'description'),
         categoryCol: typeIdx,
         mccCol: findColumn(header, 'mcc_code', 'mcc') !== -1 ? findColumn(header, 'mcc_code', 'mcc') : null,
@@ -214,27 +229,25 @@ export function detectBankFormat(header: string[]): DetectedBankFormat | null {
         // even when they land on the same day.
         timeCol: findColumn(header, 'datetime') !== -1 ? findColumn(header, 'datetime') : null,
       },
-      // Trade Republic's export mixes cash-account movements with investment
-      // trades (account_type "TRADING", type "BUY"/"SELL") — those belong in
-      // the Investment Import Wizard, not here.
-      filterRow: (row) => {
-        const accountType = (row[accountTypeIdx] || '').trim().toUpperCase();
-        const type = (row[typeIdx] || '').trim().toUpperCase();
-        if (accountType === 'TRADING') return false;
-        if (type === 'BUY' || type === 'SELL') return false;
-        return true;
-      },
-      filterReasonKey: 'traderepublicInvestmentRowsSkipped',
+      isInvestmentTradeRow: isTrade,
       // BENEFITS_SAVEBACK rows are a reward Trade Republic invests directly
       // into an existing holding — no cash actually moves, so this isn't
       // real income (unlike INTEREST_PAYMENT, which is genuine cash income
       // and is left untouched). Flagging it keeps it out of income stats
       // until it can be reconciled against the holding it funded (tracked
       // separately in todo.md - not done automatically yet).
+      // Trades (account_type "TRADING", type "BUY"/"SELL") are real cash
+      // moving between the cash account and the portfolio: a buy is an
+      // outflow in the Investment category (counted in outflows, never in
+      // expenses), a sell is liquidation proceeds, not income.
       annotateRow: (row) => {
         const type = (row[typeIdx] || '').trim().toUpperCase();
         if (type === 'BENEFITS_SAVEBACK') return { purpose: 'investment', excludeFromStatistics: true };
-        return null;
+        if (!isTrade(row)) return null;
+        const amount = parseFloat((row[amountIdx] || '').replace(',', '.'));
+        return amount < 0
+          ? { purpose: 'investment', categoryIndex: INVESTMENT_CATEGORY_INDEX }
+          : { purpose: 'investment', excludeFromStatistics: true };
       },
     };
   }

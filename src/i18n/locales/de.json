@@ -925,8 +925,6 @@
         "buttonBalance": "Guthaben aktualisieren",
         "buttonIncome": "Einnahme hinzufügen",
         "buttonOutflow": "Ausgabe hinzufügen",
-        "toolsLabel": "Weitere Werkzeuge",
-        "importToolLabel": "CSV / Excel",
         "balanceSection": {
             "titleLiquidity": "Liquidität",
             "titleInvestments": "Investitionen",
@@ -2358,7 +2356,7 @@
                 "traderepublic": "Trade Republic",
                 "paypal": "PayPal"
         },
-        "bankRowsSkipped": "{count} Zeilen waren Investmentgeschäfte und wurden übersprungen — importiere sie stattdessen über „Investitionen importieren“.",
+        "investmentTradesImportedAsOutflows": "{count} Zeilen sind Investmentgeschäfte: Sie werden als „Investition“-Ausgänge importiert (zählen nicht als Ausgaben; Verkäufe zählen nicht als Einnahmen). Um Stückzahl und Kurs zu erfassen, nutze „Investitionen importieren“.",
         "retroHint": "{count} vergangene Transaktionen mit ähnlicher Notiz sind einer anderen Kategorie zugeordnet.",
         "retroHintSuggestion": "Sie können diese manuell im Verlauf aktualisieren.",
         "dismiss": "Schließen",

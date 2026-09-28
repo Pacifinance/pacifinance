@@ -24,7 +24,7 @@ import { createPortal } from 'react-dom';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faPlus, faCheck, faTimes, faKeyboard, faCommentDots, faMagic, faPencil, faFileImport, faChartLine, faWallet,
+  faPlus, faCheck, faTimes, faKeyboard, faCommentDots, faMagic, faPencil, faFileImport, faChartLine, faWallet, faRepeat, faUsers,
 } from '@fortawesome/free-solid-svg-icons';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
@@ -48,6 +48,8 @@ import {
 
 const DataImportWizard = lazy(() => import('./DataImportWizard'));
 const InvestmentImportWizard = lazy(() => import('./InvestmentImportWizard'));
+const RecurringTransactionsPanel = lazy(() => import('./RecurringTransactionsPanel'));
+const SharedExpensesPanel = lazy(() => import('./SharedExpensesPanel'));
 
 /* Bottom-right, above the mobile BottomNavBar (66-74px tall, see index.css). */
 const Fab = styled.button`
@@ -379,7 +381,9 @@ export default function QuickAddTransaction({ theme, showFab = true, menuOpen: c
   const { currencySymbol, toEUR } = useContext(CurrencyContext);
   const { userData, handleSetIsUpdated, addCustomCategory } = useContext(UserContext) || {};
   const { showError, showWarning } = useToast();
-  const { financeService, investmentService, liquidityAccountService } = useDemoServices();
+  const {
+    financeService, investmentService, liquidityAccountService, recurringTransactionService, sharedExpenseService,
+  } = useDemoServices();
   const navigate = useLocalizedNavigate();
 
   const t = translations?.dashboard?.quickAdd || {};
@@ -395,6 +399,12 @@ export default function QuickAddTransaction({ theme, showFab = true, menuOpen: c
   };
   const [showDataImport, setShowDataImport] = useState(false);
   const [showInvestmentImport, setShowInvestmentImport] = useState(false);
+  // Recurring / shared-expense management lives here (not as extra buttons on
+  // the insert page) so the "+" is the single entry point for adding anything.
+  const [showRecurringPanel, setShowRecurringPanel] = useState(false);
+  const [recurringItems, setRecurringItems] = useState([]);
+  const [showSharedExpensesPanel, setShowSharedExpensesPanel] = useState(false);
+  const [sharedReceivables, setSharedReceivables] = useState([]);
   const [open, setOpen] = useState(false);
   const [entryMode, setEntryMode] = useState('manual'); // 'manual' | 'paste'
   const [pasteText, setPasteText] = useState('');
@@ -461,6 +471,20 @@ export default function QuickAddTransaction({ theme, showFab = true, menuOpen: c
     () => Object.fromEntries(sourceEntries.map((entry) => [entry.label, entry])),
     [sourceEntries],
   );
+  // renderBalanceSourceMenuItems only reads the keys of this map.
+  const sourceOptions = useMemo(
+    () => Object.fromEntries(sourceEntries.map((entry) => [entry.label, entry.assetKey])),
+    [sourceEntries],
+  );
+
+  const refreshRecurringItems = async () => {
+    const items = await recurringTransactionService.getRecurring();
+    setRecurringItems(Array.isArray(items) ? items : []);
+  };
+  const refreshSharedReceivables = async () => {
+    const items = await sharedExpenseService.getReceivables();
+    setSharedReceivables(Array.isArray(items) ? items : []);
+  };
 
   // Matches the old SourceSelect native <select>'s look, translated to MUI sx.
   const sourceSelectSx = useMemo(() => ({
@@ -670,6 +694,24 @@ export default function QuickAddTransaction({ theme, showFab = true, menuOpen: c
                 <FontAwesomeIcon icon={faChartLine} />
                 {t.menuImportInvestments || 'Importa investimenti da CSV'}
               </MenuItemButton>
+              <MenuItemButton
+                type="button"
+                theme={theme}
+                data-umami-event="quick-add-recurring-open"
+                onClick={() => { setMenuOpen(false); setShowRecurringPanel(true); refreshRecurringItems(); }}
+              >
+                <FontAwesomeIcon icon={faRepeat} />
+                {translations?.recurringTransactions?.navLabel || 'Ricorrenti'}
+              </MenuItemButton>
+              <MenuItemButton
+                type="button"
+                theme={theme}
+                data-umami-event="quick-add-shared-expenses-open"
+                onClick={() => { setMenuOpen(false); setShowSharedExpensesPanel(true); refreshSharedReceivables(); }}
+              >
+                <FontAwesomeIcon icon={faUsers} />
+                {translations?.insert?.sharedExpensesPanel?.navLabel || 'Spese condivise'}
+              </MenuItemButton>
             </MenuList>
           </Popup>
         </Overlay>
@@ -695,6 +737,39 @@ export default function QuickAddTransaction({ theme, showFab = true, menuOpen: c
               </ModalBody>
             </ModalContainer>
           </ModalOverlay>
+        </Suspense>
+      ), document.body)}
+
+      {showRecurringPanel && createPortal((
+        <Suspense fallback={null}>
+          <RecurringTransactionsPanel
+            theme={theme}
+            items={recurringItems}
+            outflowsTags={getOutflowsTags(userData)}
+            incomesTags={getIncomesTags(userData)}
+            paymentTags={getPaymentTags(userData)}
+            customCategories={customCategories}
+            balanceOptions={sourceOptions}
+            balanceSourceMeta={sourceMeta}
+            onCreateCategory={(parentIndex, label, isExpense) => addCustomCategory({
+              label,
+              parent_index: parentIndex,
+              is_expense: isExpense,
+            })}
+            onClose={() => setShowRecurringPanel(false)}
+            onChanged={async () => { await refreshRecurringItems(); handleSetIsUpdated?.(false); }}
+          />
+        </Suspense>
+      ), document.body)}
+
+      {showSharedExpensesPanel && createPortal((
+        <Suspense fallback={null}>
+          <SharedExpensesPanel
+            theme={theme}
+            items={sharedReceivables}
+            onClose={() => setShowSharedExpensesPanel(false)}
+            onChanged={async () => { await refreshSharedReceivables(); handleSetIsUpdated?.(false); }}
+          />
         </Suspense>
       ), document.body)}
 

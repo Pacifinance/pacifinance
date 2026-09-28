@@ -106,14 +106,28 @@ describe('detectBankFormat', () => {
       expect(result.mapping.mccCol).toBe(22); // "mcc_code"
     });
 
-    it('filters out investment-trade rows (account_type TRADING / type BUY or SELL), keeps cash rows', () => {
-      const { filterRow } = detectBankFormat(header);
+    it('keeps investment-trade rows and imports buys as Investment outflows, sells outside income stats', () => {
+      const { filterRow, isInvestmentTradeRow, annotateRow } = detectBankFormat(header);
+      expect(filterRow).toBeUndefined();
       const cashRow = header.map(() => '');
-      cashRow[2] = 'DEFAULT'; cashRow[4] = 'CARD_TRANSACTION';
-      const tradeRow = header.map(() => '');
-      tradeRow[2] = 'TRADING'; tradeRow[4] = 'BUY';
-      expect(filterRow(cashRow)).toBe(true);
-      expect(filterRow(tradeRow)).toBe(false);
+      cashRow[2] = 'DEFAULT'; cashRow[4] = 'CARD_TRANSACTION'; cashRow[10] = '-12.50';
+      const buyRow = header.map(() => '');
+      buyRow[2] = 'TRADING'; buyRow[4] = 'BUY'; buyRow[10] = '-250.00';
+      const sellRow = header.map(() => '');
+      sellRow[2] = 'DEFAULT'; sellRow[4] = 'SELL'; sellRow[10] = '300.00';
+      expect(isInvestmentTradeRow(cashRow)).toBe(false);
+      expect(isInvestmentTradeRow(buyRow)).toBe(true);
+      expect(isInvestmentTradeRow(sellRow)).toBe(true);
+      expect(annotateRow(cashRow)).toBeNull();
+      expect(annotateRow(buyRow)).toEqual({ purpose: 'investment', categoryIndex: 8 });
+      expect(annotateRow(sellRow)).toEqual({ purpose: 'investment', excludeFromStatistics: true });
+    });
+
+    it('keeps saveback rewards out of income statistics', () => {
+      const { annotateRow } = detectBankFormat(header);
+      const row = header.map(() => '');
+      row[2] = 'DEFAULT'; row[4] = 'BENEFITS_SAVEBACK'; row[10] = '1.20';
+      expect(annotateRow(row)).toEqual({ purpose: 'investment', excludeFromStatistics: true });
     });
   });
 

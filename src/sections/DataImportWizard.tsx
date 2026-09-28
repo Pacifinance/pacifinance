@@ -670,17 +670,20 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
   const [bankFilterReasonKey, setBankFilterReasonKey] = useState(null);
   const bankFilterMessage = bankFilterReasonKey === 'paypalTechnicalRowsSkipped'
     ? t.paypalTechnicalRowsSkipped
-    : t.bankRowsSkipped;
+    : '';
   const [liquidityAccounts, setLiquidityAccounts] = useState([]);
   const [receivables, setReceivables] = useState([]);
   const [selectedAccountId, setSelectedAccountId] = useState('');
   const [newAccountLabel, setNewAccountLabel] = useState('');
   const [newAccountAssetKey, setNewAccountAssetKey] = useState('bank');
   const [updateAccountBalance, setUpdateAccountBalance] = useState(false);
-  // Rows a bank preset excluded as not belonging in this wizard (e.g. Trade
-  // Republic's investment trades — see bankFormats.ts filterRow) — reported
-  // to the user rather than silently dropped.
+  // Rows a bank preset excluded as not belonging in this wizard (e.g.
+  // PayPal's technical rows — see bankFormats.ts filterRow) — reported to the
+  // user rather than silently dropped.
   const [bankFilteredCount, setBankFilteredCount] = useState(0);
+  // Buy/sell trade rows (e.g. Trade Republic) — imported as investment
+  // outflows, but quantity/price still belong in the Investment Import Wizard.
+  const [bankInvestmentTradeCount, setBankInvestmentTradeCount] = useState(0);
   // Informational nudge shown after the user manually recategorizes a row, when
   // past transactions with a similar note are filed under a different category.
   const [retroHint, setRetroHint] = useState(null);
@@ -866,6 +869,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
       const bankFormat = detectBankFormat(h);
       setDetectedBank(bankFormat?.bank ?? null);
       setBankFilterReasonKey(bankFormat?.filterReasonKey ?? null);
+      setBankInvestmentTradeCount(bankFormat?.isInvestmentTradeRow ? r.filter(bankFormat.isInvestmentTradeRow).length : 0);
       setDualAmountMode(false);
       setMccCol(-1);
       setTimeCol(-1);
@@ -956,6 +960,7 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
     const bankFormat = detectBankFormat(h);
     setDetectedBank(bankFormat?.bank ?? null);
     setBankFilterReasonKey(bankFormat?.filterReasonKey ?? null);
+    setBankInvestmentTradeCount(bankFormat?.isInvestmentTradeRow ? r.filter(bankFormat.isInvestmentTradeRow).length : 0);
     setDualAmountMode(false);
     setMccCol(-1);
     setTimeCol(-1);
@@ -1103,7 +1108,15 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
     const valid = rawValid.map(tx => {
       const annotation = bankFormat?.annotateRow?.(rows[tx.rowIndex]) || null;
       const annotated = annotation
-        ? { ...tx, purpose: annotation.purpose ?? tx.purpose, excludeFromStatistics: annotation.excludeFromStatistics ?? tx.excludeFromStatistics }
+        ? {
+          ...tx,
+          purpose: annotation.purpose ?? tx.purpose,
+          excludeFromStatistics: annotation.excludeFromStatistics ?? tx.excludeFromStatistics,
+          ...(annotation.categoryIndex != null && {
+            categoryIndex: annotation.categoryIndex,
+            categoryLabel: resolveCategoryLabel(annotation.categoryIndex, tx.isOutflow, null),
+          }),
+        }
         : tx;
       if (!annotated.isOutflow && annotated.categoryIndex === defaultOutflowCategory) {
         // Row used the outflow default — replace with income default
@@ -1638,6 +1651,15 @@ const DataImportWizard = ({ onClose, onImportComplete }) => {
             {detectedBank === 'paypal' && (
               <InfoBanner theme={theme}>
                 <span>🔒 {t.paypalPrivacyNotice}</span>
+              </InfoBanner>
+            )}
+
+            {bankInvestmentTradeCount > 0 && (
+              <InfoBanner theme={theme}>
+                <span>
+                  ℹ️ {(t.investmentTradesImportedAsOutflows || '')
+                    .replace('{count}', bankInvestmentTradeCount)}
+                </span>
               </InfoBanner>
             )}
 

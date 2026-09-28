@@ -32,6 +32,7 @@ import { CurrencyContext } from '../contexts/CurrencyContext';
 import { UserContext } from '../contexts/UserContext';
 import { useToast } from '../contexts/ToastContext';
 import { useDemoServices } from '../hooks/useDemoServices';
+import { assetColors } from '../data/assetColors';
 import { useSpendingLimitAlert } from '../hooks/useSpendingLimitAlert';
 import { getOutflowsTags, getIncomesTags, getPaymentTags, getCustomCategories, getCurrentBalance } from '../utils/userDataSelectors';
 import { parseSmartPasteText } from '../utils/smartPasteParser';
@@ -54,6 +55,19 @@ const DataImportWizard = lazy(() => import('./DataImportWizard'));
 const InvestmentImportWizard = lazy(() => import('./InvestmentImportWizard'));
 const RecurringTransactionsPanel = lazy(() => import('./RecurringTransactionsPanel'));
 const SharedExpensesPanel = lazy(() => import('./SharedExpensesPanel'));
+
+/* One recognizable hue per "+" menu action, reusing the app's existing
+ * palette (data/assetColors.ts): outflows/incomes keep the same red/green
+ * they have everywhere else, the rest borrow distinct asset colors. */
+const MENU_TONES = {
+  outflow: assetColors.expense,
+  income: assetColors.income,
+  balance: assetColors.bank.light,
+  importMovements: assetColors.funds.light,
+  importInvestments: assetColors.stocks.primary,
+  recurring: assetColors.etf.dark,
+  shared: assetColors.bitcoin.primary,
+};
 
 /* Bottom-right, above the mobile BottomNavBar (66-74px tall, see index.css). */
 const Fab = styled.button`
@@ -201,9 +215,9 @@ const MoreDetailsButton = styled.button`
 const MenuItemButton = styled.button`
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.65rem;
   width: 100%;
-  padding: 0.85rem 0.9rem;
+  padding: 0.6rem 0.75rem;
   border-radius: 0.9rem;
   border: 1px solid ${(p) => (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.1)' : '#e2e8f0')};
   background: ${(p) => (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.015)')};
@@ -213,9 +227,25 @@ const MenuItemButton = styled.button`
   text-align: left;
   cursor: pointer;
 
-  svg { flex-shrink: 0; font-size: 1.1rem; opacity: 0.75; }
+  &:hover {
+    background: ${(p) => (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.03)')};
+    ${(p) => p.$tone && `border-color: ${p.$tone}80;`}
+  }
+`;
 
-  &:hover { background: ${(p) => (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.03)')}; }
+/* Tinted square behind each menu icon, colored with the action's tone. */
+const MenuIcon = styled.span`
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.6rem;
+  background: ${(p) => `${p.$tone}${p.theme.mode === 'dark' ? '2e' : '1f'}`};
+  color: ${(p) => p.$tone};
+
+  svg { font-size: 1rem; }
 `;
 
 const EntryModeSwitch = styled.div`
@@ -752,42 +782,42 @@ export default function QuickAddTransaction({ theme, showFab = true, menuOpen: c
             <MenuList>
               <MenuGroupLabel theme={theme}>{t.groupAdd}</MenuGroupLabel>
               <MenuGrid>
-                <MenuItemButton type="button" theme={theme} data-umami-event="quick-add-outflow" onClick={() => pickFromMenu(() => openQuickAdd(true))}>
-                  <FontAwesomeIcon icon={faArrowTrendDown} />
+                <MenuItemButton type="button" theme={theme} $tone={MENU_TONES.outflow} data-umami-event="quick-add-outflow" onClick={() => pickFromMenu(() => openQuickAdd(true))}>
+                  <MenuIcon theme={theme} $tone={MENU_TONES.outflow}><FontAwesomeIcon icon={faArrowTrendDown} /></MenuIcon>
                   {t.outflow || 'Uscita'}
                 </MenuItemButton>
-                <MenuItemButton type="button" theme={theme} data-umami-event="quick-add-income" onClick={() => pickFromMenu(() => openQuickAdd(false))}>
-                  <FontAwesomeIcon icon={faArrowTrendUp} />
+                <MenuItemButton type="button" theme={theme} $tone={MENU_TONES.income} data-umami-event="quick-add-income" onClick={() => pickFromMenu(() => openQuickAdd(false))}>
+                  <MenuIcon theme={theme} $tone={MENU_TONES.income}><FontAwesomeIcon icon={faArrowTrendUp} /></MenuIcon>
                   {t.income || 'Entrata'}
                 </MenuItemButton>
               </MenuGrid>
 
               <MenuGroupLabel theme={theme}>{t.groupBalance}</MenuGroupLabel>
-              <MenuItemButton type="button" theme={theme} data-umami-event="quick-add-balance" onClick={() => pickFromMenu(() => openEntry('balance'))}>
-                <FontAwesomeIcon icon={faWallet} />
+              <MenuItemButton type="button" theme={theme} $tone={MENU_TONES.balance} data-umami-event="quick-add-balance" onClick={() => pickFromMenu(() => openEntry('balance'))}>
+                <MenuIcon theme={theme} $tone={MENU_TONES.balance}><FontAwesomeIcon icon={faWallet} /></MenuIcon>
                 {t.menuBalance || 'Aggiorna bilancio'}
               </MenuItemButton>
 
               <MenuGroupLabel theme={theme}>{t.groupImport}</MenuGroupLabel>
               <MenuGrid>
-                <MenuItemButton type="button" theme={theme} onClick={() => pickFromMenu(() => openEntry('import'))}>
-                  <FontAwesomeIcon icon={faFileImport} />
+                <MenuItemButton type="button" theme={theme} $tone={MENU_TONES.importMovements} onClick={() => pickFromMenu(() => openEntry('import'))}>
+                  <MenuIcon theme={theme} $tone={MENU_TONES.importMovements}><FontAwesomeIcon icon={faFileImport} /></MenuIcon>
                   {t.importMovements}
                 </MenuItemButton>
-                <MenuItemButton type="button" theme={theme} onClick={() => pickFromMenu(() => openEntry('investmentImport'))}>
-                  <FontAwesomeIcon icon={faChartLine} />
+                <MenuItemButton type="button" theme={theme} $tone={MENU_TONES.importInvestments} onClick={() => pickFromMenu(() => openEntry('investmentImport'))}>
+                  <MenuIcon theme={theme} $tone={MENU_TONES.importInvestments}><FontAwesomeIcon icon={faChartLine} /></MenuIcon>
                   {t.importInvestments}
                 </MenuItemButton>
               </MenuGrid>
 
               <MenuGroupLabel theme={theme}>{t.groupManage}</MenuGroupLabel>
               <MenuGrid>
-                <MenuItemButton type="button" theme={theme} data-umami-event="quick-add-recurring-open" onClick={() => pickFromMenu(() => openEntry('recurring'))}>
-                  <FontAwesomeIcon icon={faRepeat} />
+                <MenuItemButton type="button" theme={theme} $tone={MENU_TONES.recurring} data-umami-event="quick-add-recurring-open" onClick={() => pickFromMenu(() => openEntry('recurring'))}>
+                  <MenuIcon theme={theme} $tone={MENU_TONES.recurring}><FontAwesomeIcon icon={faRepeat} /></MenuIcon>
                   {translations?.recurringTransactions?.navLabel || 'Ricorrenti'}
                 </MenuItemButton>
-                <MenuItemButton type="button" theme={theme} data-umami-event="quick-add-shared-expenses-open" onClick={() => pickFromMenu(() => openEntry('shared'))}>
-                  <FontAwesomeIcon icon={faUsers} />
+                <MenuItemButton type="button" theme={theme} $tone={MENU_TONES.shared} data-umami-event="quick-add-shared-expenses-open" onClick={() => pickFromMenu(() => openEntry('shared'))}>
+                  <MenuIcon theme={theme} $tone={MENU_TONES.shared}><FontAwesomeIcon icon={faUsers} /></MenuIcon>
                   {translations?.insert?.sharedExpensesPanel?.navLabel || 'Spese condivise'}
                 </MenuItemButton>
               </MenuGrid>

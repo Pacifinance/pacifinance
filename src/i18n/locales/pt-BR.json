@@ -934,6 +934,10 @@
         }
     },
     "insert": {
+        "limitAlert": {
+            "message": "Você passou do seu limite mensal de {limit}: este mês você está em {total} (+{over}). Só avisaremos de novo se continuar subindo.",
+            "muteForMonth": "Não me avisar mais este mês"
+        },
         "noteSuggestion": "Usar a nota sugerida: {note}",
         "title": "Inserir dados",
         "subtitle": "Gerencie seu saldo, receitas e saídas",

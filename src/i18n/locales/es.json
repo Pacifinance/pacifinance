@@ -936,6 +936,10 @@
         }
     },
     "insert": {
+        "limitAlert": {
+            "message": "Has superado tu límite mensual de {limit}: este mes vas por {total} (+{over}). Solo te avisaremos de nuevo si sigue subiendo.",
+            "muteForMonth": "No avisarme más este mes"
+        },
         "noteSuggestion": "Usar la nota sugerida: {note}",
         "title": "Insertar datos",
         "subtitle": "Gestiona tu balance, ingresos y gastos",

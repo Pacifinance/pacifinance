@@ -934,6 +934,10 @@
         }
     },
     "insert": {
+        "limitAlert": {
+            "message": "Vous avez dépassé votre limite mensuelle de {limit} : ce mois-ci vous êtes à {total} (+{over}). Nous ne vous préviendrons à nouveau que si cela continue d'augmenter.",
+            "muteForMonth": "Ne plus m'avertir ce mois-ci"
+        },
         "noteSuggestion": "Utiliser la note suggérée : {note}",
         "title": "Insérer des données",
         "subtitle": "Gère ton solde, tes revenus et tes sorties",

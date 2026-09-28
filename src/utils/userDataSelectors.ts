@@ -524,6 +524,12 @@ export const getAveragesSimilarExpensesByCategory = (userData: UserDataLike) => 
 
 // Goals and limits selectors (for backward compatibility)
 export const getMonthlySpendingLimit = (userData: UserDataLike): number => userData?.limits?.monthlySpendingLimit ?? DEFAULT_MONTHLY_SPENDING_LIMIT;
+/** True only when the user both enabled the fixed monthly limit and limit notifications
+ * (a disabled limit is still stored with a default amount, so the amount alone isn't enough). */
+export const isMonthlySpendingLimitAlertEnabled = (userData: UserDataLike): boolean =>
+  Boolean(userData?.limits?.notificationsEnabled)
+  && userData?.limits?.monthlySpendingLimitEnabled !== false
+  && (Number(userData?.limits?.monthlySpendingLimit) || 0) > 0;
 export const getSavingsGoalPercentage = (userData: UserDataLike): number => userData?.limits?.savingsGoalPercentage ?? DEFAULT_SAVINGS_GOAL_PERCENTAGE;
 export const getEmergencyFundTarget = (userData: UserDataLike): number => userData?.limits?.emergencyFundTarget ?? DEFAULT_EMERGENCY_FUND_TARGET;
 

@@ -32,12 +32,12 @@ import {
     getCashValue, getBankValue, getDigitalServicesValue, getEmergencyFund,
     getStocksValue, getEtfValue, getBitcoinValue, getCryptoValue, getBondsValue,
     getFundsValue, getCommoditiesValue, getOutflowsTags, getIncomesTags, getPaymentTags,
-    getAllOutflows, getAllIncomes, getExpensesArray, getBalanceForMonth, getCustomCategories,
+    getAllOutflows, getAllIncomes, getBalanceForMonth, getCustomCategories,
     getEntriesForMonthKey,
 } from '../utils/userDataSelectors';
 import { isPastMonthDate as isPastMonthDateUtil, getBalanceUserDateForMonth } from '../utils/balanceDeltaLogic';
 import { usePastDateBalancePref, PAST_DATE_BALANCE_CHOICES } from '../hooks/usePastDateBalancePref';
-import { addCurrency, roundCurrency } from '../utils/money';
+import { useSpendingLimitAlert } from '../hooks/useSpendingLimitAlert';
 import { findLikelyDuplicates } from '../utils/duplicateDetection';
 import { inferPaymentTypeLabel, suggestNoteFromHistory } from '../utils/transactionNoteSuggestions';
 import { learnFromTransaction } from '../utils/categoryPatterns';
@@ -339,6 +339,7 @@ export default function InsertValue({
   const { currencySymbol, toEUR } = React.useContext(CurrencyContext);
   const { addCustomCategory, fetchMonthDetail } = useContext(UserContext) || {};
   const { showSuccess, showError, showWarning } = useToast();
+  const checkSpendingLimit = useSpendingLimitAlert();
   const { financeService, investmentService, liquidityAccountService, recurringTransactionService, sharedExpenseService } = useDemoServices();
   const location = useLocation();
   const initialSectionApplied = useRef(false);
@@ -547,7 +548,16 @@ export default function InsertValue({
   // Notes coming from typing or a historical suggestion can reveal that the
   // expense is an installment. Keep the inferred type editable, but make the
   // form internally consistent instead of leaving it as a one-off payment.
+  // Once the user picks a typology themselves, the note never overrides it
+  // again (it used to: typing a note after choosing "single payment" could
+  // silently flip it to "periodic payment" from one similar past expense).
+  const paymentTypeChosenByUser = useRef(false);
+  const setTypoOutflowByUser = (value) => {
+    paymentTypeChosenByUser.current = true;
+    setTypoOutflow(value);
+  };
   useEffect(() => {
+    if (paymentTypeChosenByUser.current) return;
     const history = getAllOutflows(userData).flat().filter(Boolean);
     const inferredLabel = inferPaymentTypeLabel(noteOutflowAreaValue, history);
     if (!inferredLabel) return;
@@ -2130,30 +2140,17 @@ export default function InsertValue({
           setMakeOutflowRecurring(false);
         }
 
-        // Check the monthly spending limit AFTER a successful insert (outflows only)
-        if (isOutflow && inExJson.transaction.purpose === 'expense' && userData?.limits?.notificationsEnabled && userData?.limits?.monthlySpendingLimit) {
-          // Index 0 corresponds to the current month in the outflowsArray.
-          // In shared-expense mode, only the own-share (categoryAmountOverride)
-          // counts toward the limit — the rest was never really "spent".
-          const currentOutflowsThisMonth = getExpensesArray(userData)?.[0] || 0;
+        // Monthly spending limit (expenses only). In shared-expense mode only
+        // the own share (categoryAmountOverride) counts — the rest was never
+        // really "spent". Fires on crossing the limit / a new step above it,
+        // not on every expense (see utils/spendingLimitAlert.ts).
+        if (isOutflow && inExJson.transaction.purpose === 'expense') {
           const limitCheckAmount = categoryAmountOverride !== null
             ? categoryAmountOverride
             : parseFloat(originalOutflowAmount.replace(',', '.'));
-          const newTotal = addCurrency(currentOutflowsThisMonth, limitCheckAmount);
-
-          if (newTotal > userData.limits.monthlySpendingLimit) {
-            const exceeding = roundCurrency(newTotal - userData.limits.monthlySpendingLimit);
-            const warningMessage = language === 'it' 
-              ? `⚠️ Limite mensile superato! Hai raggiunto ${currencySymbol}${newTotal.toFixed(2)}, superando il tuo limite di ${currencySymbol}${userData.limits.monthlySpendingLimit} di ${currencySymbol}${exceeding.toFixed(2)}.`
-              : `⚠️ Monthly limit exceeded! You've reached ${currencySymbol}${newTotal.toFixed(2)}, exceeding your limit of ${currencySymbol}${userData.limits.monthlySpendingLimit} by ${currencySymbol}${exceeding.toFixed(2)}.`;
-            
-            // Delay so the success notification disappears first
-            setTimeout(() => {
-              showError(warningMessage, 7000); // Longer duration for an important warning
-            }, 2500); // 2.5s delay to avoid overlapping with the success toast
-          }
+          checkSpendingLimit({ amountEUR: toEUR(limitCheckAmount), date: outflowDate });
         }
-        
+
         if (selectedOption !== "") {
           const valueBalanceSelected = parseFloat(options[selectedOption]?.[0]) || 0;
           const outflowNumber = toEUR(parseFloat(originalOutflowAmount) || 0);
@@ -2471,7 +2468,7 @@ export default function InsertValue({
             categoryOutflow={categoryOutflow}
             setCategoryOutflow={setCategoryOutflow}
             typoOutflow={typoOutflow}
-            setTypoOutflow={setTypoOutflow}
+            setTypoOutflow={setTypoOutflowByUser}
             outflow={outflow}
             setOutflow={setOutflow}
             outflowDate={outflowDate}

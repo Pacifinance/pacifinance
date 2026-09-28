@@ -56,15 +56,28 @@ export function inferPaymentTypeLabel(
   if (PERIODIC_WORDS.test(normalized)) return 'periodic payment';
   if (SINGLE_WORDS.test(normalized)) return 'single payment';
 
+  // History fallback: only when a recurring-style type is the MOST COMMON one
+  // among past expenses sharing a word with this note. A single past
+  // "periodic payment" among many one-off "cena ..." expenses used to be
+  // enough to flip every new dinner to periodic.
   const tokens = new Set(tokenizeNote(normalized));
   if (tokens.size === 0) return null;
+  const counts = new Map<string, number>();
+  let matches = 0;
   for (const entry of history) {
     const sharesMerchant = tokenizeNote(entry.notes).some((token) => tokens.has(token));
     if (!sharesMerchant) continue;
+    matches += 1;
     const label = typeof entry.paymentType === 'string' ? entry.paymentType : entry.paymentType?.label;
-    if (label === 'subscription' || label === 'installment' || label === 'periodic payment') return label;
+    if (label) counts.set(label, (counts.get(label) || 0) + 1);
   }
-  return null;
+  let best: PaymentTypeLabel | null = null;
+  let bestCount = 0;
+  for (const label of ['subscription', 'installment', 'periodic payment'] as const) {
+    const count = counts.get(label) || 0;
+    if (count > bestCount) { best = label; bestCount = count; }
+  }
+  return best && bestCount * 2 > matches ? best : null;
 }
 
 /** Returns a historical note worth offering to the user; it never mutates the draft. */

@@ -29,8 +29,19 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   redirected (e.g. notification links).
 - The quick-add button stays bottom-right on desktop instead of rendering
   inside the sidebar.
-
-### Fixed
+- The monthly spending-limit alert no longer fires on every expense once the
+  month is over the limit: it appears when the limit is first crossed, then
+  only every further 5% of the limit (e.g. every 100 on a 2000 limit), and a
+  "Don't warn me again this month" button silences it until next month. It
+  is now a warning (not an error), translated in every language, uses the
+  selected display currency, only counts expenses dated in the current
+  month, respects a disabled limit (it used to keep alerting on the stored
+  default amount) and also works from quick add.
+- Choosing a payment type (e.g. "single payment") is no longer silently
+  overridden while typing the note, and the note-based guess from history
+  now requires the recurring type to be the most common one for that
+  merchant, instead of flipping to "periodic payment" because of a single
+  similar past expense.
 - CSV import no longer drops Trade Republic buy/sell trades: they are real
   cash leaving (or entering) the account, so a buy is now imported as an
   outflow in the Investment category (counted in outflows, never in

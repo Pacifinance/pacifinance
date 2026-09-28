@@ -39,6 +39,22 @@ describe('inferPaymentTypeLabel', () => {
     ])).toBe('subscription');
   });
 
+  it('ignores one recurring outlier among mostly one-off expenses at the same merchant', () => {
+    expect(inferPaymentTypeLabel('Cena da Mario', [
+      { notes: 'Cena ristorante', paymentType: { label: 'single payment' } },
+      { notes: 'Cena amici', paymentType: { label: 'single payment' } },
+      { notes: 'Cena aziendale', paymentType: { label: 'periodic payment' } },
+    ])).toBeNull();
+  });
+
+  it('still learns a recurring type when it is the most common one for that merchant', () => {
+    expect(inferPaymentTypeLabel('Palestra settembre', [
+      { notes: 'Palestra luglio', paymentType: { label: 'periodic payment' } },
+      { notes: 'Palestra agosto', paymentType: { label: 'periodic payment' } },
+      { notes: 'Palestra borraccia', paymentType: { label: 'single payment' } },
+    ])).toBe('periodic payment');
+  });
+
   it('does not infer a type for unrelated text', () => {
     expect(inferPaymentTypeLabel('Supermercato')).toBeNull();
   });

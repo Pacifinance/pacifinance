@@ -1002,6 +1002,10 @@
         }
     },
     "insert": {
+        "limitAlert": {
+            "message": "You're over your monthly limit of {limit}: this month you're at {total} (+{over}). We'll only warn you again if it keeps going up.",
+            "muteForMonth": "Don't warn me again this month"
+        },
         "noteSuggestion": "Use suggested note: {note}",
         "title": "Insert Data",
         "subtitle": "Manage your balance, income and outflows",

@@ -32,6 +32,7 @@ import { CurrencyContext } from '../contexts/CurrencyContext';
 import { UserContext } from '../contexts/UserContext';
 import { useToast } from '../contexts/ToastContext';
 import { useDemoServices } from '../hooks/useDemoServices';
+import { useSpendingLimitAlert } from '../hooks/useSpendingLimitAlert';
 import { getOutflowsTags, getIncomesTags, getPaymentTags, getCustomCategories, getCurrentBalance } from '../utils/userDataSelectors';
 import { parseSmartPasteText } from '../utils/smartPasteParser';
 import { learnFromTransaction, suggestCategory } from '../utils/categoryPatterns';
@@ -423,6 +424,7 @@ export default function QuickAddTransaction({ theme, showFab = true, menuOpen: c
   const { currencySymbol, toEUR } = useContext(CurrencyContext);
   const { userData, handleSetIsUpdated, addCustomCategory } = useContext(UserContext) || {};
   const { showError, showWarning } = useToast();
+  const checkSpendingLimit = useSpendingLimitAlert();
   const {
     financeService, investmentService, liquidityAccountService, recurringTransactionService, sharedExpenseService,
   } = useDemoServices();
@@ -696,6 +698,11 @@ export default function QuickAddTransaction({ theme, showFab = true, menuOpen: c
         if (source) {
           const deltaEUR = toEUR(amountNumber) * (isOutflow ? -1 : 1);
           await applySourceDelta(source, deltaEUR);
+        }
+        const purpose = inferTransactionPurpose(isOutflow ? 'outflow' : 'income', categoryIndex);
+        if (isOutflow && purpose === 'expense') {
+          // Before the refetch: the check adds this amount to the pre-save month total.
+          checkSpendingLimit({ amountEUR: toEUR(amountNumber), date: todayLocalISO() });
         }
         setJustAdded(true);
         handleSetIsUpdated?.(false); // triggers the userData refetch

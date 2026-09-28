@@ -12,20 +12,15 @@ import OutflowSection from "./OutflowSection";
 import InsertModals from "./InsertModals";
 import styled, { css, keyframes } from 'styled-components';
 import {
-  UploadFile as UploadFileIcon,
   AccountBalance as AccountBalanceIcon,
   TrendingUp as TrendingUpIcon,
   TrendingDown as TrendingDownIcon,
-  Repeat as RepeatIcon,
-  Groups as GroupsIcon,
 } from "@mui/icons-material";
 
 const DataImportWizard = lazy(() => import("./DataImportWizard"));
 const MultiOutflowInsert = lazy(() => import("./MultiOutflowInsert"));
 const MultiIncomeInsert = lazy(() => import("./MultiIncomeInsert"));
 const MultiBalanceInsert = lazy(() => import("./MultiBalanceInsert"));
-const RecurringTransactionsPanel = lazy(() => import("./RecurringTransactionsPanel"));
-const SharedExpensesPanel = lazy(() => import("./SharedExpensesPanel"));
 const SharedTransactionLinkModal = lazy(() => import("../components/SharedTransactionLinkModal"));
 import { groupAmountsByBalanceSource, parseFormattedAmount } from "../components/multiInsert/helpers";
 import { resolveBalanceSourceLabel, resolveFallbackAccountLabel } from "../components/multiInsert/balanceSourceMenu";
@@ -218,87 +213,6 @@ const TabButton = styled.button`
   }
 `;
 
-/* ── Secondary tools ── */
-const ToolsBar = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 0.35rem;
-  width: 100%;
-  /* No max-width of its own - fills ContentWrapper (1400px) so it right-aligns
-     against the same edge as SectionCard below it, instead of stopping short
-     at an old, narrower cap and leaving a stretch of dead space on the right. */
-  margin: 0 auto 1rem;
-
-  @media (max-width: 768px) {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 0.4rem;
-    margin-bottom: 0.75rem;
-  }
-`;
-
-const ToolsLabel = styled.span`
-  margin-right: 0.25rem;
-  color: ${(props) => props.theme.textColor};
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  opacity: 0.45;
-
-  @media (max-width: 768px) {
-    grid-column: 1 / -1;
-    margin: 0 0 0.05rem;
-  }
-`;
-
-const ToolButton = styled.button`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.35rem;
-  min-height: 34px;
-  padding: 0.35rem 0.65rem;
-  border-radius: 8px;
-  border: 1px solid ${(props) => props.theme.mode === 'dark'
-    ? 'rgba(255,255,255,0.12)'
-    : 'rgba(0,0,0,0.1)'};
-  background: transparent;
-  color: ${(props) => props.theme.buttonBackgroundColor};
-  font-family: inherit;
-  font-weight: 500;
-  font-size: 0.74rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  white-space: nowrap;
-
-  &:hover {
-    background: ${(props) => props.theme.buttonBackgroundColor}12;
-    border-color: ${(props) => props.theme.buttonBackgroundColor}50;
-    transform: translateY(-1px);
-  }
-  
-  & > svg {
-    font-size: 0.95rem;
-  }
-
-  @media (max-width: 768px) {
-    width: 100%;
-    min-width: 0;
-    padding: 0.4rem 0.3rem;
-    font-size: 0.7rem;
-    white-space: normal;
-    line-height: 1.15;
-  }
-
-  @media (max-width: 420px) {
-    flex-direction: column;
-    gap: 0.15rem;
-    min-height: 48px;
-  }
-`;
-
 /* ── Section Card ── */
 const SectionCard = styled.div`
   background: ${(props) => props.theme.mode === 'dark' 
@@ -430,13 +344,10 @@ export default function InsertValue({
   const [showMultiInsert, setShowMultiInsert] = useState(false);
   const [showMultiIncomeInsert, setShowMultiIncomeInsert] = useState(false);
   const [showMultiBalanceInsert, setShowMultiBalanceInsert] = useState(false);
-  const [showRecurringPanel, setShowRecurringPanel] = useState(false);
-  const [recurringItems, setRecurringItems] = useState([]);
   const [makeOutflowRecurring, setMakeOutflowRecurring] = useState(false);
   const [isSharedExpense, setIsSharedExpense] = useState(false);
   const [sharedPeopleCount, setSharedPeopleCount] = useState(2);
   const [sharedReceivables, setSharedReceivables] = useState([]);
-  const [showSharedExpensesPanel, setShowSharedExpensesPanel] = useState(false);
   const [sharedLinkModal, setSharedLinkModal] = useState(null);
 
   const refreshSharedReceivables = async () => {
@@ -486,11 +397,6 @@ export default function InsertValue({
     } catch {
       showError(translations.insert.sharedTransactionLink?.error || translations.errors?.generic);
     }
-  };
-
-  const refreshRecurringItems = async () => {
-    const items = await recurringTransactionService.getRecurring();
-    setRecurringItems(Array.isArray(items) ? items : []);
   };
 
   // Past-date balance decision modal (for single & multi insert past-month flows)
@@ -2615,42 +2521,6 @@ export default function InsertValue({
           
         </TabBar>
 
-        {/* Secondary workflows stay visually separate from the primary page tabs. */}
-        {activePage !== "bilancio" && (
-          <ToolsBar>
-            <ToolsLabel theme={theme}>{translations.insert.toolsLabel || 'Strumenti'}</ToolsLabel>
-            <ToolButton
-              type="button"
-              theme={theme}
-              onClick={() => setShowImportWizard(true)}
-              data-umami-event="insert-import-csv-open"
-            >
-              <UploadFileIcon />
-              {translations.insert.importToolLabel || 'CSV / Excel'}
-            </ToolButton>
-            <ToolButton
-              type="button"
-              theme={theme}
-              onClick={() => { setShowRecurringPanel(true); refreshRecurringItems(); }}
-              data-umami-event="insert-recurring-open"
-            >
-              <RepeatIcon />
-              {translations.recurringTransactions?.navLabel || 'Ricorrenti'}
-            </ToolButton>
-            {activePage === "outflows" && (
-              <ToolButton
-                type="button"
-                theme={theme}
-                onClick={() => { setShowSharedExpensesPanel(true); refreshSharedReceivables(); }}
-                data-umami-event="insert-shared-expenses-open"
-              >
-                <GroupsIcon />
-                {translations.insert.sharedExpensesPanel?.navLabel || 'Spese condivise'}
-              </ToolButton>
-            )}
-          </ToolsBar>
-        )}
-
         {renderPage()}
 
         {/* Multi-insert Outflow Modal */}
@@ -2715,40 +2585,6 @@ export default function InsertValue({
               theme={theme}
               onSubmitBatch={handleBatchBalanceSubmit}
               onClose={() => setShowMultiBalanceInsert(false)}
-            />
-          </Suspense>
-        )}
-
-        {/* Recurring transactions panel */}
-        {showRecurringPanel && (
-          <Suspense fallback={null}>
-            <RecurringTransactionsPanel
-              theme={theme}
-              items={recurringItems}
-              outflowsTags={OutflowsTags}
-              incomesTags={incomesTags}
-              paymentTags={paymentTags}
-              customCategories={getCustomCategories(userData)}
-              balanceOptions={options}
-              balanceSourceMeta={getBalanceSourceMeta()}
-              onCreateCategory={(parentIndex, label, isExpense) => addCustomCategory({
-                label,
-                parent_index: parentIndex,
-                is_expense: isExpense,
-              })}
-              onClose={() => setShowRecurringPanel(false)}
-              onChanged={refreshRecurringItems}
-            />
-          </Suspense>
-        )}
-
-        {showSharedExpensesPanel && (
-          <Suspense fallback={null}>
-            <SharedExpensesPanel
-              theme={theme}
-              items={sharedReceivables}
-              onClose={() => setShowSharedExpensesPanel(false)}
-              onChanged={refreshSharedReceivables}
             />
           </Suspense>
         )}

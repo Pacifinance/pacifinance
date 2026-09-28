@@ -746,7 +746,11 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                 )}
             </Top>
 
-            {isMobileScreen && (
+            {/* Quick add ("+") is global on every authenticated page: on mobile
+                it's opened from the bottom nav, on desktop by its own floating
+                button — so both expose the same menu (manual entry, balance,
+                CSV import, investment import). */}
+            {isMobileScreen ? (
                 <>
                     <QuickAddTransaction
                         theme={theme}
@@ -756,6 +760,8 @@ function Sidebar({ userData, handleSetIsUpdated, handleSetIsAuthenticated }) {
                     />
                     <BottomNavBar onQuickAdd={() => setShowMobileQuickAdd(true)} />
                 </>
+            ) : (
+                <QuickAddTransaction theme={theme} />
             )}
 
             <SidebarModals

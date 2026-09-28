@@ -993,8 +993,6 @@
         "buttonBalance": "Aggiorna Bilancio",
         "buttonIncome": "Aggiungi Entrate",
         "buttonOutflow": "Aggiungi Uscite",
-        "toolsLabel": "Altri strumenti",
-        "importToolLabel": "CSV / Excel",
         "balanceSection": {
             "titleLiquidity": "Liquidità",
             "titleInvestments": "Investimenti",
@@ -2451,7 +2449,7 @@
                 "traderepublic": "Trade Republic",
                 "paypal": "PayPal"
         },
-        "bankRowsSkipped": "{count} righe erano operazioni di investimento e sono state escluse — importale da \"Importa investimenti\".",
+        "investmentTradesImportedAsOutflows": "{count} righe sono operazioni di investimento: verranno importate come uscite \"Investimento\" (non contano come spese; le vendite non contano come entrate). Per registrare quantità e prezzo usa \"Importa investimenti\".",
         "retroHint": "{count} transazioni passate con una nota simile sono classificate in una categoria diversa.",
         "retroHintSuggestion": "Puoi aggiornarle manualmente dallo storico.",
         "dismiss": "Chiudi",

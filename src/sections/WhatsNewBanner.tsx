@@ -5,7 +5,11 @@
  * - Renders as a single icon button that sits alongside Compact / Customize.
  * - A red notification badge pulses when there are unseen updates.
  * - Clicking opens a dropdown panel anchored to the button (top-right).
- * - Closing the panel marks updates as "seen" (badge disappears).
+ * - Closing the panel (close button, outside click, Escape, the icon itself or
+ *   the roadmap link) marks EVERY recent update as seen, so the badge goes
+ *   away. It used to mark only the first page (5) of a 3-month list that
+ *   routinely holds more, so the badge never disappeared; and closing via
+ *   the icon marked nothing.
  * - Always re-openable to review news or jump to the roadmap.
  */
 import React, { useState, useContext, useMemo, useCallback, useEffect, useRef } from 'react';
@@ -243,17 +247,19 @@ const WhatsNewBanner = () => {
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
 
-  const handleToggle = useCallback(() => {
-    setOpen(prev => !prev);
-  }, []);
-
   const handleClose = useCallback(() => {
     setOpen(false);
-    const next = new Set(seenIds);
-    recentItems.slice(0, visibleCount).forEach((item) => next.add(item.id));
+    setVisibleCount(PAGE_SIZE);
+    // Only ids still in the lookback window are kept, so storage doesn't grow forever.
+    const next = new Set(recentItems.map((item) => item.id));
     setSeenIds(next);
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify([...next])); } catch { /* ignore */ }
-  }, [seenIds, recentItems, visibleCount]);
+  }, [recentItems]);
+
+  const handleToggle = useCallback(() => {
+    if (open) handleClose();
+    else setOpen(true);
+  }, [open, handleClose]);
 
   // Close on Escape
   useEffect(() => {
@@ -277,7 +283,7 @@ const WhatsNewBanner = () => {
         data-umami-event="whats-new-toggle"
       >
         <NewReleasesIcon style={{ color: open ? '#22c55e' : theme.secondaryColor, fontSize: 18 }} />
-        {hasNotification && <Badge theme={theme} />}
+        {hasNotification && <Badge theme={theme} data-testid="whats-new-badge" />}
       </IconBtn>
 
       {open && (

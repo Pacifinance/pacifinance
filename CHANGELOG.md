@@ -10,6 +10,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 ## [Unreleased]
 
 ### Changed
+- The "+" menu icons are now color-coded (red outflow, green income, blue
+  balance, and distinct colors for imports, recurring and shared expenses,
+  reusing the app's existing palette) so each action is recognizable at a
+  glance.
 - One "+" to add anything. The quick-add menu is now grouped (Add / Balance /
   Import / Manage) and opens every add flow on top of the current page:
   quick outflow/income entry (with a "More details" link that carries what
@@ -24,6 +28,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   `/insert-values` links redirect, keeping their `?section=`.
 
 ### Fixed
+- The "What's New" red dot never went away: closing the panel only marked
+  the first 5 updates as seen out of a 3-month list that usually holds more,
+  and closing it by clicking the icon again marked nothing. Closing it in any
+  way now marks every recent update as seen.
 - Toast notifications now appear above open dialogs instead of behind them.
 - Links without a language prefix now keep their query string when
   redirected (e.g. notification links).

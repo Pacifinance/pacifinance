@@ -657,7 +657,10 @@ export default function QuickAddTransaction({ theme, showFab = true, menuOpen: c
 
   return (
     <>
-      {showFab && (
+      {/* Portaled so `position: fixed` is relative to the viewport even when
+          mounted inside the Sidebar, whose container establishes its own
+          containing block (the Fab would otherwise sit inside the sidebar). */}
+      {showFab && createPortal((
         <Fab
           type="button"
           onClick={() => setMenuOpen(true)}
@@ -666,7 +669,7 @@ export default function QuickAddTransaction({ theme, showFab = true, menuOpen: c
         >
           <FontAwesomeIcon icon={faPlus} />
         </Fab>
-      )}
+      ), document.body)}
 
       {menuOpen && createPortal((
         <Overlay onClick={(e) => { if (e.target === e.currentTarget) setMenuOpen(false); }}>

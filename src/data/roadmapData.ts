@@ -23,6 +23,18 @@ export interface RoadmapItem {
 const roadmapData: RoadmapItem[] = [
   /* ──────────── COMPLETED ──────────── */
   {
+    id: 'unified-entry',
+    title: { it: 'Un solo "+" per inserire tutto', en: 'One "+" to add anything' },
+    description: {
+      it: 'Il pulsante + è su ogni pagina e raccoglie tutto: uscite ed entrate (rapide o con tutti i dettagli), aggiornamento del bilancio, import CSV, ricorrenti e spese condivise. La pagina Movimenti diventa il posto dove consultare e modificare quello che hai inserito.',
+      en: 'The + button is on every page and gathers everything: outflows and incomes (quick or fully detailed), balance updates, CSV imports, recurring and shared expenses. The new Transactions page is where you review and edit what you\'ve recorded.'
+    },
+    status: 'completed',
+    category: 'ux',
+    icon: '➕',
+    completedDate: '2026-09',
+  },
+  {
     id: 'interactive-investment-chart-legends',
     title: { it: 'Grafici investimenti interattivi', en: 'Interactive investment charts' },
     description: {

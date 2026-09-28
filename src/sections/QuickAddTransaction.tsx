@@ -19,23 +19,27 @@
  * date is always today), to avoid touching InsertValues' larger, more fragile
  * balance-delta logic.
  */
-import React, { useContext, useEffect, useMemo, useState, lazy, Suspense } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useState, lazy, Suspense } from 'react';
 import { createPortal } from 'react-dom';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faPlus, faCheck, faTimes, faKeyboard, faCommentDots, faMagic, faPencil, faFileImport, faChartLine, faWallet, faRepeat, faUsers,
+  faPlus, faCheck, faTimes, faKeyboard, faCommentDots, faMagic, faFileImport, faChartLine, faWallet, faRepeat, faUsers,
+  faArrowTrendDown, faArrowTrendUp, faSliders,
 } from '@fortawesome/free-solid-svg-icons';
 import { LanguageContext } from '../contexts/LanguageContext';
 import { CurrencyContext } from '../contexts/CurrencyContext';
 import { UserContext } from '../contexts/UserContext';
 import { useToast } from '../contexts/ToastContext';
 import { useDemoServices } from '../hooks/useDemoServices';
+import { useSpendingLimitAlert } from '../hooks/useSpendingLimitAlert';
 import { getOutflowsTags, getIncomesTags, getPaymentTags, getCustomCategories, getCurrentBalance } from '../utils/userDataSelectors';
 import { parseSmartPasteText } from '../utils/smartPasteParser';
 import { learnFromTransaction, suggestCategory } from '../utils/categoryPatterns';
 import { detectPlatform } from '../utils/platformDetection';
-import { useLocalizedNavigate } from '../hooks/useLocalizedNavigate';
+import { useEntrySheet } from '../hooks/useEntrySheet';
+import { isSheetEntryType } from '../utils/entrySheet';
+import EntrySheet from './EntrySheet';
 import { ASSET_KEYS, buildSnapshotWithDeltas } from '../constants/balanceSchema';
 import CategoryPicker from '../components/CategoryPicker';
 import { inferTransactionPurpose } from '../utils/transactionPurpose';
@@ -153,6 +157,45 @@ const MenuList = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+`;
+
+const MenuGroupLabel = styled.div`
+  margin: 0.35rem 0 -0.15rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: ${(p) => p.theme.textColor};
+  opacity: 0.5;
+
+  &:first-child { margin-top: 0; }
+`;
+
+/* Two items side by side even on phones - keeps the whole menu on one screen. */
+const MenuGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+`;
+
+const MoreDetailsButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  width: 100%;
+  margin-top: 0.6rem;
+  padding: 0.6rem;
+  border: none;
+  border-radius: 0.75rem;
+  background: transparent;
+  color: ${(p) => p.theme.buttonBackgroundColor};
+  font-family: inherit;
+  font-size: 0.86rem;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover { background: ${(p) => (p.theme.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)')}; }
 `;
 
 const MenuItemButton = styled.button`
@@ -381,10 +424,13 @@ export default function QuickAddTransaction({ theme, showFab = true, menuOpen: c
   const { currencySymbol, toEUR } = useContext(CurrencyContext);
   const { userData, handleSetIsUpdated, addCustomCategory } = useContext(UserContext) || {};
   const { showError, showWarning } = useToast();
+  const checkSpendingLimit = useSpendingLimitAlert();
   const {
     financeService, investmentService, liquidityAccountService, recurringTransactionService, sharedExpenseService,
   } = useDemoServices();
-  const navigate = useLocalizedNavigate();
+  // Every menu action is URL-addressable (?add=...), see utils/entrySheet.ts.
+  const { entry, entryMonth, openEntry, closeEntry } = useEntrySheet();
+  const [entryPrefill, setEntryPrefill] = useState(null);
 
   const t = translations?.dashboard?.quickAdd || {};
 
@@ -397,13 +443,9 @@ export default function QuickAddTransaction({ theme, showFab = true, menuOpen: c
     if (onMenuOpenChange) onMenuOpenChange(nextOpen);
     else setInternalMenuOpen(nextOpen);
   };
-  const [showDataImport, setShowDataImport] = useState(false);
-  const [showInvestmentImport, setShowInvestmentImport] = useState(false);
   // Recurring / shared-expense management lives here (not as extra buttons on
-  // the insert page) so the "+" is the single entry point for adding anything.
-  const [showRecurringPanel, setShowRecurringPanel] = useState(false);
+  // the transactions page) so the "+" is the single entry point for adding anything.
   const [recurringItems, setRecurringItems] = useState([]);
-  const [showSharedExpensesPanel, setShowSharedExpensesPanel] = useState(false);
   const [sharedReceivables, setSharedReceivables] = useState([]);
   const [open, setOpen] = useState(false);
   const [entryMode, setEntryMode] = useState('manual'); // 'manual' | 'paste'
@@ -484,6 +526,28 @@ export default function QuickAddTransaction({ theme, showFab = true, menuOpen: c
   const refreshSharedReceivables = async () => {
     const items = await sharedExpenseService.getReceivables();
     setSharedReceivables(Array.isArray(items) ? items : []);
+  };
+
+  useEffect(() => {
+    if (entry === 'recurring') refreshRecurringItems();
+    if (entry === 'shared') refreshSharedReceivables();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [entry]);
+
+  const closeEntrySheet = useCallback(() => {
+    setEntryPrefill(null);
+    closeEntry();
+  }, [closeEntry]);
+
+  const pickFromMenu = (action) => {
+    setMenuOpen(false);
+    action();
+  };
+
+  const openQuickAdd = (outflow) => {
+    setIsOutflow(outflow);
+    resetCategory();
+    setOpen(true);
   };
 
   // Matches the old SourceSelect native <select>'s look, translated to MUI sx.
@@ -635,6 +699,11 @@ export default function QuickAddTransaction({ theme, showFab = true, menuOpen: c
           const deltaEUR = toEUR(amountNumber) * (isOutflow ? -1 : 1);
           await applySourceDelta(source, deltaEUR);
         }
+        const purpose = inferTransactionPurpose(isOutflow ? 'outflow' : 'income', categoryIndex);
+        if (isOutflow && purpose === 'expense') {
+          // Before the refetch: the check adds this amount to the pre-save month total.
+          checkSpendingLimit({ amountEUR: toEUR(amountNumber), date: todayLocalISO() });
+        }
         setJustAdded(true);
         handleSetIsUpdated?.(false); // triggers the userData refetch
         setTimeout(() => {
@@ -657,7 +726,10 @@ export default function QuickAddTransaction({ theme, showFab = true, menuOpen: c
 
   return (
     <>
-      {showFab && (
+      {/* Portaled so `position: fixed` is relative to the viewport even when
+          mounted inside the Sidebar, whose container establishes its own
+          containing block (the Fab would otherwise sit inside the sidebar). */}
+      {showFab && createPortal((
         <Fab
           type="button"
           onClick={() => setMenuOpen(true)}
@@ -666,7 +738,7 @@ export default function QuickAddTransaction({ theme, showFab = true, menuOpen: c
         >
           <FontAwesomeIcon icon={faPlus} />
         </Fab>
-      )}
+      ), document.body)}
 
       {menuOpen && createPortal((
         <Overlay onClick={(e) => { if (e.target === e.currentTarget) setMenuOpen(false); }}>
@@ -678,61 +750,68 @@ export default function QuickAddTransaction({ theme, showFab = true, menuOpen: c
               </CloseBtn>
             </HeaderRow>
             <MenuList>
-              <MenuItemButton type="button" theme={theme} onClick={() => { setMenuOpen(false); setOpen(true); }}>
-                <FontAwesomeIcon icon={faPencil} />
-                {t.menuManual || 'Inserisci manualmente'}
-              </MenuItemButton>
-              <MenuItemButton type="button" theme={theme} onClick={() => { setMenuOpen(false); navigate('/insert-values'); }}>
+              <MenuGroupLabel theme={theme}>{t.groupAdd}</MenuGroupLabel>
+              <MenuGrid>
+                <MenuItemButton type="button" theme={theme} data-umami-event="quick-add-outflow" onClick={() => pickFromMenu(() => openQuickAdd(true))}>
+                  <FontAwesomeIcon icon={faArrowTrendDown} />
+                  {t.outflow || 'Uscita'}
+                </MenuItemButton>
+                <MenuItemButton type="button" theme={theme} data-umami-event="quick-add-income" onClick={() => pickFromMenu(() => openQuickAdd(false))}>
+                  <FontAwesomeIcon icon={faArrowTrendUp} />
+                  {t.income || 'Entrata'}
+                </MenuItemButton>
+              </MenuGrid>
+
+              <MenuGroupLabel theme={theme}>{t.groupBalance}</MenuGroupLabel>
+              <MenuItemButton type="button" theme={theme} data-umami-event="quick-add-balance" onClick={() => pickFromMenu(() => openEntry('balance'))}>
                 <FontAwesomeIcon icon={faWallet} />
                 {t.menuBalance || 'Aggiorna bilancio'}
               </MenuItemButton>
-              <MenuItemButton type="button" theme={theme} onClick={() => { setMenuOpen(false); setShowDataImport(true); }}>
-                <FontAwesomeIcon icon={faFileImport} />
-                {t.menuImportOutflowsIncome || 'Importa CSV — spese/entrate'}
-              </MenuItemButton>
-              <MenuItemButton type="button" theme={theme} onClick={() => { setMenuOpen(false); setShowInvestmentImport(true); }}>
-                <FontAwesomeIcon icon={faChartLine} />
-                {t.menuImportInvestments || 'Importa investimenti da CSV'}
-              </MenuItemButton>
-              <MenuItemButton
-                type="button"
-                theme={theme}
-                data-umami-event="quick-add-recurring-open"
-                onClick={() => { setMenuOpen(false); setShowRecurringPanel(true); refreshRecurringItems(); }}
-              >
-                <FontAwesomeIcon icon={faRepeat} />
-                {translations?.recurringTransactions?.navLabel || 'Ricorrenti'}
-              </MenuItemButton>
-              <MenuItemButton
-                type="button"
-                theme={theme}
-                data-umami-event="quick-add-shared-expenses-open"
-                onClick={() => { setMenuOpen(false); setShowSharedExpensesPanel(true); refreshSharedReceivables(); }}
-              >
-                <FontAwesomeIcon icon={faUsers} />
-                {translations?.insert?.sharedExpensesPanel?.navLabel || 'Spese condivise'}
-              </MenuItemButton>
+
+              <MenuGroupLabel theme={theme}>{t.groupImport}</MenuGroupLabel>
+              <MenuGrid>
+                <MenuItemButton type="button" theme={theme} onClick={() => pickFromMenu(() => openEntry('import'))}>
+                  <FontAwesomeIcon icon={faFileImport} />
+                  {t.importMovements}
+                </MenuItemButton>
+                <MenuItemButton type="button" theme={theme} onClick={() => pickFromMenu(() => openEntry('investmentImport'))}>
+                  <FontAwesomeIcon icon={faChartLine} />
+                  {t.importInvestments}
+                </MenuItemButton>
+              </MenuGrid>
+
+              <MenuGroupLabel theme={theme}>{t.groupManage}</MenuGroupLabel>
+              <MenuGrid>
+                <MenuItemButton type="button" theme={theme} data-umami-event="quick-add-recurring-open" onClick={() => pickFromMenu(() => openEntry('recurring'))}>
+                  <FontAwesomeIcon icon={faRepeat} />
+                  {translations?.recurringTransactions?.navLabel || 'Ricorrenti'}
+                </MenuItemButton>
+                <MenuItemButton type="button" theme={theme} data-umami-event="quick-add-shared-expenses-open" onClick={() => pickFromMenu(() => openEntry('shared'))}>
+                  <FontAwesomeIcon icon={faUsers} />
+                  {translations?.insert?.sharedExpensesPanel?.navLabel || 'Spese condivise'}
+                </MenuItemButton>
+              </MenuGrid>
             </MenuList>
           </Popup>
         </Overlay>
       ), document.body)}
 
-      {showDataImport && createPortal((
+      {entry === 'import' && createPortal((
         <Suspense fallback={null}>
-          <ModalOverlay theme={theme} onClick={() => setShowDataImport(false)}>
+          <ModalOverlay theme={theme} onClick={closeEntry}>
             <ModalContainer theme={theme} $maxWidth="960px" onClick={(e) => e.stopPropagation()}>
               <ModalHeader theme={theme}>
                 <ModalTitle theme={theme}>
                   <h2>{t.menuImportOutflowsIncome || 'Importa CSV — spese/entrate'}</h2>
                 </ModalTitle>
-                <CloseButton theme={theme} onClick={() => setShowDataImport(false)}>
+                <CloseButton theme={theme} onClick={closeEntry} aria-label={translations?.general?.close || 'Chiudi'}>
                   <FontAwesomeIcon icon={faTimes} />
                 </CloseButton>
               </ModalHeader>
               <ModalBody theme={theme}>
                 <DataImportWizard
-                  onClose={() => setShowDataImport(false)}
-                  onImportComplete={() => { setShowDataImport(false); handleSetIsUpdated?.(false); }}
+                  onClose={closeEntry}
+                  onImportComplete={() => { closeEntry(); handleSetIsUpdated?.(false); }}
                 />
               </ModalBody>
             </ModalContainer>
@@ -740,7 +819,7 @@ export default function QuickAddTransaction({ theme, showFab = true, menuOpen: c
         </Suspense>
       ), document.body)}
 
-      {showRecurringPanel && createPortal((
+      {entry === 'recurring' && createPortal((
         <Suspense fallback={null}>
           <RecurringTransactionsPanel
             theme={theme}
@@ -756,30 +835,41 @@ export default function QuickAddTransaction({ theme, showFab = true, menuOpen: c
               parent_index: parentIndex,
               is_expense: isExpense,
             })}
-            onClose={() => setShowRecurringPanel(false)}
+            onClose={closeEntry}
             onChanged={async () => { await refreshRecurringItems(); handleSetIsUpdated?.(false); }}
           />
         </Suspense>
       ), document.body)}
 
-      {showSharedExpensesPanel && createPortal((
+      {entry === 'shared' && createPortal((
         <Suspense fallback={null}>
           <SharedExpensesPanel
             theme={theme}
             items={sharedReceivables}
-            onClose={() => setShowSharedExpensesPanel(false)}
+            onClose={closeEntry}
             onChanged={async () => { await refreshSharedReceivables(); handleSetIsUpdated?.(false); }}
           />
         </Suspense>
       ), document.body)}
 
-      {showInvestmentImport && createPortal((
+      {entry === 'investmentImport' && createPortal((
         <Suspense fallback={null}>
           <InvestmentImportWizard
-            onClose={() => setShowInvestmentImport(false)}
-            onImported={async () => { setShowInvestmentImport(false); handleSetIsUpdated?.(false); }}
+            onClose={closeEntry}
+            onImported={async () => { closeEntry(); handleSetIsUpdated?.(false); }}
           />
         </Suspense>
+      ), document.body)}
+
+      {isSheetEntryType(entry) && createPortal((
+        <EntrySheet
+          key={entry}
+          theme={theme}
+          type={entry}
+          month={entryMonth}
+          prefill={entryPrefill}
+          onClose={closeEntrySheet}
+        />
       ), document.body)}
 
       {open && createPortal((
@@ -945,6 +1035,26 @@ export default function QuickAddTransaction({ theme, showFab = true, menuOpen: c
                   <FontAwesomeIcon icon={justAdded ? faCheck : faPlus} />
                   {justAdded ? (t.added || 'Aggiunta!') : (t.add || 'Aggiungi')}
                 </SubmitButton>
+
+                {/* Progressive disclosure: same entry, full form (date, payment
+                    type, account, shared, recurring, multi insert), keeping
+                    what was already typed. */}
+                <MoreDetailsButton
+                  type="button"
+                  theme={theme}
+                  data-umami-event="quick-add-more-details"
+                  onClick={() => {
+                    setEntryPrefill({ amount, categoryIndex, userCategoryId, note });
+                    setAmount('');
+                    resetCategory();
+                    setNote('');
+                    resetAndClose();
+                    openEntry(isOutflow ? 'outflow' : 'income');
+                  }}
+                >
+                  <FontAwesomeIcon icon={faSliders} />
+                  {t.moreDetails}
+                </MoreDetailsButton>
               </>
             )}
           </Popup>

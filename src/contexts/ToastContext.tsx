@@ -31,9 +31,11 @@ export const ToastProvider = ({ children }) => {
   const { translations } = useContext(LanguageContext) || {};
   const isMobile = mediaQuery?.isMobileScreen ?? false;
 
-  const showToast = (message, type = 'success', duration = 4000) => {
+  // `action` (optional): { label, onClick } — one inline button, e.g. "don't
+  // show this again this month"; clicking it also dismisses the toast.
+  const showToast = (message, type = 'success', duration = 4000, action = null) => {
     const id = `${Date.now()}-${Math.random()}`;
-    const newToast = { id, message, type, duration };
+    const newToast = { id, message, type, duration, action: action?.label ? action : null };
 
     setToasts(prev => [...prev, newToast]);
   };
@@ -52,8 +54,8 @@ export const ToastProvider = ({ children }) => {
     showToast(message, 'error', duration);
   };
 
-  const showWarning = (message, duration = 4000) => {
-    showToast(message, 'warning', duration);
+  const showWarning = (message, duration = 4000, action = null) => {
+    showToast(message, 'warning', duration, action);
   };
 
   const visibleToasts = toasts.slice(-MAX_VISIBLE_TOASTS);
@@ -68,6 +70,7 @@ export const ToastProvider = ({ children }) => {
           message={toast.message}
           type={toast.type}
           duration={toast.duration}
+          action={toast.action}
           show={true}
           stackIndex={stackSize - 1 - index}
           onClose={() => removeToast(toast.id)}
@@ -78,6 +81,7 @@ export const ToastProvider = ({ children }) => {
           onClick={closeAllToasts}
           className="fixed z-50"
           style={{
+            zIndex: 12000,
             bottom: `${(isMobile ? TOAST_BASE_BOTTOM.mobile : TOAST_BASE_BOTTOM.desktop)
               + stackSize * (isMobile ? TOAST_SLOT_HEIGHT.mobile : TOAST_SLOT_HEIGHT.desktop)}px`,
             right: isMobile ? '8px' : '16px',

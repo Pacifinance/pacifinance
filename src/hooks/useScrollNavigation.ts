@@ -7,7 +7,7 @@ import { removeLanguageFromPath } from '../utils/i18nRouting';
 const PAGE_ORDER = [
   '/dashboard',
   '/charts-statistics',
-  '/insert-values',
+  '/transactions',
   '/comparison'
 ];
 
@@ -18,7 +18,7 @@ const SCROLL_THRESHOLD_UP_TRIGGER = 0.05;
 
 // Page-specific thresholds to avoid interfering with forms
 const PAGE_SPECIFIC_THRESHOLDS = {
-  '/insert-values': { down: 0.99, up: 0.02 }, // Much more restrictive for forms with extra spacing
+  '/transactions': { down: 0.99, up: 0.02 }, // Much more restrictive for forms with extra spacing
   '/charts-statistics': { down: 0.998, up: 0.02 }, // Very restrictive to avoid overlapping with charts
   '/comparison': { down: 0.98, up: 0.05 },
   default: { down: 0.98, up: 0.05 }

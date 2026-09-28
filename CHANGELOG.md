@@ -9,7 +9,39 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+### Changed
+- One "+" to add anything. The quick-add menu is now grouped (Add / Balance /
+  Import / Manage) and opens every add flow on top of the current page:
+  quick outflow/income entry (with a "More details" link that carries what
+  you typed into the full form), the full outflow/income/balance forms with
+  multi-insert, CSV and investment imports, recurring and shared expenses.
+  Every flow has its own link (`?add=outflow|income|balance|import|...`), so
+  dashboard shortcuts, onboarding and push notifications open the right form
+  directly, and the phone's back button closes it.
+- The "Insert data" page became **Transactions** (`/transactions`): review
+  and edit your outflows, incomes and monthly balance; adding happens from
+  the "+" (or the page's own "Add" button, which opens the same form). Old
+  `/insert-values` links redirect, keeping their `?section=`.
+
 ### Fixed
+- Toast notifications now appear above open dialogs instead of behind them.
+- Links without a language prefix now keep their query string when
+  redirected (e.g. notification links).
+- The quick-add button stays bottom-right on desktop instead of rendering
+  inside the sidebar.
+- The monthly spending-limit alert no longer fires on every expense once the
+  month is over the limit: it appears when the limit is first crossed, then
+  only every further 5% of the limit (e.g. every 100 on a 2000 limit), and a
+  "Don't warn me again this month" button silences it until next month. It
+  is now a warning (not an error), translated in every language, uses the
+  selected display currency, only counts expenses dated in the current
+  month, respects a disabled limit (it used to keep alerting on the stored
+  default amount) and also works from quick add.
+- Choosing a payment type (e.g. "single payment") is no longer silently
+  overridden while typing the note, and the note-based guess from history
+  now requires the recurring type to be the most common one for that
+  merchant, instead of flipping to "periodic payment" because of a single
+  similar past expense.
 - CSV import no longer drops Trade Republic buy/sell trades: they are real
   cash leaving (or entering) the account, so a buy is now imported as an
   outflow in the Investment category (counted in outflows, never in

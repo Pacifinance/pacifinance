@@ -17,7 +17,7 @@ import HoldingsBreakdownChart from './HoldingsBreakdownChart';
 import HoldingsHistoryChart from './HoldingsHistoryChart';
 import PortfolioInsights from './PortfolioInsights';
 import { getIncomesArray, getOutflowsArray, getBalanceChartData, getTotalIncomesCurrentMonth } from '../utils/userDataSelectors';
-import { useLocalizedNavigate } from '../hooks/useLocalizedNavigate';
+import { useEntrySheet } from '../hooks/useEntrySheet';
 import type { InvestmentDividendSummaryDto } from '../types/api';
 import { useCryptoGroupingPref, type CryptoGroupingMode } from '../hooks/useCryptoGroupingPref';
 import { groupBitcoinWithCrypto } from '../utils/cryptoGrouping';
@@ -503,7 +503,7 @@ const GlobalAnimations = styled.div`
 
 
 export default function StatsCharts() {
-    const navigate = useLocalizedNavigate();
+    const { openEntry } = useEntrySheet();
     const auth = useAuth();
     const { userData } = auth;
     const { theme } = useContext(ThemeContext);
@@ -840,7 +840,7 @@ export default function StatsCharts() {
                     <CommunitySpotlight theme={theme}>
                         <span className="icon"><Users size={21}/></span>
                         <div><strong><ShieldCheck size={15}/>{t.communityDataTitle}</strong><p>{t.communityDataDescription}</p></div>
-                        <button type="button" onClick={() => navigate('/insert-values?section=balance')} data-umami-event="holdings-community-contribute">{t.communityDataAction}</button>
+                        <button type="button" onClick={() => openEntry('balance')} data-umami-event="holdings-community-contribute">{t.communityDataAction}</button>
                     </CommunitySpotlight>
 
                     <ChartGrid columns={2}>

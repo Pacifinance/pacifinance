@@ -19,6 +19,7 @@ const ToastNotification = ({
   onClose,
   show = false,
   stackIndex = 0, // 0 = closest to the corner; each older stacked toast increments by 1
+  action = null, // optional { label, onClick } — inline button that also dismisses the toast
 }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
@@ -82,6 +83,7 @@ const ToastNotification = ({
           : (isMobile ? 'translate-y-0 opacity-100' : 'translate-x-0 opacity-100')
       }`}
       style={{
+        zIndex: 12000,
         backgroundColor: bgColor,
         color: 'white',
         boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
@@ -97,6 +99,25 @@ const ToastNotification = ({
           >
             {message}
           </div>
+          {action && (
+            <button
+              type="button"
+              onClick={() => { action.onClick?.(); handleClose(); }}
+              style={{
+                marginTop: '6px',
+                padding: isMobile ? '3px 8px' : '4px 10px',
+                border: '1px solid rgba(255,255,255,0.7)',
+                borderRadius: '999px',
+                background: 'rgba(0,0,0,0.12)',
+                color: 'white',
+                fontSize: isMobile ? '0.72rem' : '0.78rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+              }}
+            >
+              {action.label}
+            </button>
+          )}
         </div>
         <button
           onClick={handleClose}

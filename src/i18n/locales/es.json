@@ -1,4 +1,14 @@
 {
+    "transactionsPage": {
+        "title": "Movimientos",
+        "subtitle": "Tus salidas, ingresos y balance, mes a mes",
+        "tabOutflows": "Salidas",
+        "tabIncome": "Ingresos",
+        "tabBalance": "Balance",
+        "addOutflow": "Añadir salida",
+        "addIncome": "Añadir ingreso",
+        "entrySheetTitle": "Nueva entrada"
+    },
     "importGuide": {
         "toggleLabel": "¿Dónde encuentro este archivo?",
         "platforms": {
@@ -431,7 +441,7 @@
         "dashboard": "Panel",
         "chartsStatistics": "Gráficos y estadísticas",
         "statisticsShort": "Estadísticas",
-        "insert": "Insertar",
+        "insert": "Movimientos",
         "check": "Consultar precios",
         "marketPrices": "Precios de mercado",
         "leaderboard": "Clasificación",
@@ -656,12 +666,17 @@
 
     "dashboard": {
         "quickAdd": {
+            "groupAdd": "Añadir",
+            "groupBalance": "Balance",
+            "groupImport": "Importar",
+            "groupManage": "Gestionar",
+            "importMovements": "Movimientos de la cuenta",
+            "importInvestments": "Inversiones",
+            "moreDetails": "Más detalles (fecha, cuenta, recurrencia…)",
             "title": "Añadir rápido",
             "menuTitle": "¿Qué quieres hacer?",
-            "menuManual": "Añadir manualmente",
             "menuBalance": "Actualizar balance",
             "menuImportOutflowsIncome": "Importar CSV — gastos/ingresos",
-            "menuImportInvestments": "Importar inversiones desde CSV",
             "outflow": "Salida",
             "income": "Ingreso",
             "amountLabel": "Importe",
@@ -921,6 +936,10 @@
         }
     },
     "insert": {
+        "limitAlert": {
+            "message": "Has superado tu límite mensual de {limit}: este mes vas por {total} (+{over}). Solo te avisaremos de nuevo si sigue subiendo.",
+            "muteForMonth": "No avisarme más este mes"
+        },
         "noteSuggestion": "Usar la nota sugerida: {note}",
         "title": "Insertar datos",
         "subtitle": "Gestiona tu balance, ingresos y gastos",

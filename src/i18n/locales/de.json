@@ -1,4 +1,14 @@
 {
+    "transactionsPage": {
+        "title": "Umsätze",
+        "subtitle": "Deine Ausgaben, Einnahmen und dein Guthaben, Monat für Monat",
+        "tabOutflows": "Ausgaben",
+        "tabIncome": "Einnahmen",
+        "tabBalance": "Guthaben",
+        "addOutflow": "Ausgabe hinzufügen",
+        "addIncome": "Einnahme hinzufügen",
+        "entrySheetTitle": "Neuer Eintrag"
+    },
     "importGuide": {
         "toggleLabel": "Wo finde ich diese Datei?",
         "platforms": {
@@ -431,7 +441,7 @@
         "dashboard": "Dashboard",
         "chartsStatistics": "Diagramme und Statistiken",
         "statisticsShort": "Statistiken",
-        "insert": "Einfügen",
+        "insert": "Umsätze",
         "check": "Preise prüfen",
         "marketPrices": "Marktpreise",
         "leaderboard": "Rangliste",
@@ -654,12 +664,17 @@
     },
     "dashboard": {
         "quickAdd": {
+            "groupAdd": "Hinzufügen",
+            "groupBalance": "Guthaben",
+            "groupImport": "Importieren",
+            "groupManage": "Verwalten",
+            "importMovements": "Kontobewegungen",
+            "importInvestments": "Investitionen",
+            "moreDetails": "Mehr Details (Datum, Konto, Wiederholung…)",
             "title": "Schnell hinzufügen",
             "menuTitle": "Was möchtest du tun?",
-            "menuManual": "Manuell eingeben",
             "menuBalance": "Bilanz aktualisieren",
             "menuImportOutflowsIncome": "CSV importieren — Ausgaben/Einnahmen",
-            "menuImportInvestments": "Investitionen aus CSV importieren",
             "outflow": "Ausgabe",
             "income": "Einnahme",
             "amountLabel": "Betrag",
@@ -919,6 +934,10 @@
         }
     },
     "insert": {
+        "limitAlert": {
+            "message": "Du hast dein Monatslimit von {limit} überschritten: Diesen Monat liegst du bei {total} (+{over}). Wir warnen dich nur erneut, wenn es weiter steigt.",
+            "muteForMonth": "Diesen Monat nicht mehr warnen"
+        },
         "noteSuggestion": "Vorgeschlagene Notiz verwenden: {note}",
         "title": "Daten eingeben",
         "subtitle": "Verwalte dein Guthaben, Einnahmen und Ausgaben",

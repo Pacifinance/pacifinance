@@ -353,6 +353,8 @@ export default function IncomeSection({
   // months) — used instead of the single selected month whenever the date
   // filter is active, so a date range can span across months.
   flatIncomesForRange,
+  // 'form' = add form only (entry sheet), 'list' = history only (Transactions page).
+  view = 'all',
 }) {
   const { language, translations } = React.useContext(LanguageContext);
   const { currencySymbol, formatNumber, fromEUR } = React.useContext(CurrencyContext);
@@ -1010,6 +1012,7 @@ export default function IncomeSection({
 
   return (
     <SectionWrapper>
+      {view !== 'list' && (<>
       {/* ── Quick-add Form ── */}
       <FormCard>
         {/* Category */}
@@ -1124,6 +1127,9 @@ export default function IncomeSection({
         )}
       </FormFooter>
 
+      </>)}
+
+      {view !== 'form' && (<>
       {/* ── Transaction Table ── */}
       <TableSection theme={theme}>
         <TableHeader theme={theme}>
@@ -1253,6 +1259,7 @@ export default function IncomeSection({
         )}
       </TableSection>
       {renderEditModal()}
+      </>)}
     </SectionWrapper>
   );
 }

@@ -5,6 +5,7 @@ import { BiTrendingUp } from 'react-icons/bi';
 import { AiOutlineDotChart } from 'react-icons/ai';
 import { BsBook, BsGraphUp, BsInfoCircle } from 'react-icons/bs';
 import { FaBullseye } from 'react-icons/fa';
+import { HiOutlineViewList } from 'react-icons/hi';
 import { IoAdd, IoGridOutline } from 'react-icons/io5';
 import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
@@ -27,6 +28,7 @@ export default function BottomNavBar({ onQuickAdd }: BottomNavBarProps) {
   const isActive = (path: string) => currentPath === path;
 
   const morePages = [
+    { path: '/transactions', icon: <HiOutlineViewList size={20} />, label: translations?.sidebar?.insert || 'Transactions' },
     { path: '/goals-limits', icon: <FaBullseye size={18} />, label: translations?.sidebar?.goalsShort || 'Obiettivi' },
     { path: '/market-prices', icon: <BsGraphUp size={20} />, label: translations?.sidebar?.marketPrices || 'Market Prices' },
     { path: '/knowledge', icon: <BsBook size={20} />, label: translations?.sidebar?.knowledge || 'Knowledge' },

@@ -13,6 +13,7 @@ import { LanguageContext } from "./contexts/LanguageContext";
 import { useAuth } from "./hooks/useAuth";
 import { useAuthenticatedPreloading, usePublicPreloading } from "./hooks/useSimplePreloading";
 import { addLanguageToPath, availableLanguages, getInitialLanguage } from "./utils/i18nRouting";
+import { ENTRY_PARAM, legacySectionToEntryType } from "./utils/entrySheet";
 import { useGamification } from "./hooks/useGamification";
 import { useAchievementNotifications } from "./hooks/useAchievementNotifications";
 import { getIsAdmin } from "./utils/userDataSelectors";
@@ -123,7 +124,24 @@ const LanguageRedirect = () => {
     return <Navigate to={addLanguageToPath("/", initialLang)} replace />;
   }
   
-  return <Navigate to={addLanguageToPath(location.pathname, initialLang)} replace />;
+  // Keep ?query and #hash (e.g. a push notification's "/transactions?add=balance").
+  return <Navigate to={`${addLanguageToPath(location.pathname, initialLang)}${location.search}${location.hash}`} replace />;
+};
+
+// "/insert-values" became the read-only Transactions page, and adding moved
+// into the global entry sheet — old bookmarks, emails and notifications keep
+// working: "?section=x" opens the matching tab and form.
+const LegacyInsertRedirect = () => {
+  const location = useLocation();
+  const { language } = useContext(LanguageContext);
+  const params = new URLSearchParams(location.search);
+  const section = params.get('section');
+  const entry = legacySectionToEntryType(section);
+  const next = new URLSearchParams();
+  if (section && section !== 'import') next.set('section', section);
+  if (entry) next.set(ENTRY_PARAM, entry);
+  const search = next.toString();
+  return <Navigate to={`${addLanguageToPath('/transactions', language)}${search ? `?${search}` : ''}`} replace />;
 };
 
 function AppRouter() {
@@ -262,13 +280,14 @@ const LanguageRoutes = () => {
         }
       />
       <Route
-        path="/insert-values"
+        path="/transactions"
         element={
           <ProtectedRoute>
             <InsertValues />
           </ProtectedRoute>
         }
       />
+      <Route path="/insert-values" element={<LegacyInsertRedirect />} />
       <Route
         path="/market-prices"
         element={

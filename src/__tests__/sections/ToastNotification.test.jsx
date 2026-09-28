@@ -45,6 +45,26 @@ describe('ToastNotification Component', () => {
     });
   });
 
+  describe('action button', () => {
+    it('runs the action and dismisses the toast', () => {
+      const onClose = vi.fn();
+      const onAction = vi.fn();
+      render(
+        <ToastNotification
+          message="Over limit"
+          type="warning"
+          show={true}
+          onClose={onClose}
+          action={{ label: "Don't warn me again this month", onClick: onAction }}
+        />
+      );
+      fireEvent.click(screen.getByText("Don't warn me again this month"));
+      expect(onAction).toHaveBeenCalledTimes(1);
+      act(() => { vi.advanceTimersByTime(300); });
+      expect(onClose).toHaveBeenCalled();
+    });
+  });
+
   describe('message display', () => {
     it('should display the message', () => {
       const mockClose = vi.fn();

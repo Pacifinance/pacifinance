@@ -85,7 +85,7 @@ jobs:
 
       - name: Extract GHCR metadata
         id: meta_ghcr
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: ghcr.io/pacifinance/${{ env.IMAGE_NAME }}-${{ matrix.target }}
           tags: |
@@ -95,7 +95,7 @@ jobs:
       - name: Extract Docker Hub metadata
         if: steps.dockerhub.outputs.enabled == 'true'
         id: meta_dockerhub
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: pacifinance/${{ env.IMAGE_NAME }}-${{ matrix.target }}
           tags: |
